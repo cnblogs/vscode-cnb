@@ -2,3 +2,4 @@ node_modules
 *.html
 *.md
 package-lock.json
+dist
