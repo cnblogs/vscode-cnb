@@ -11,6 +11,7 @@ export interface IConfig {
         scope: string;
         revocationEndpoint: string;
     };
+    apiBaseUrl: string;
 }
 
 export const isDev = () => {
@@ -28,12 +29,14 @@ const config: IConfig = {
         scope: 'openid profile CnBlogsApi CnblogsAdminApi',
         revocationEndpoint: '/connection/revocation',
     },
+    apiBaseUrl: 'https://i.cnblogs.com',
 };
 
 const devConfig = Object.assign({}, config, {
     oauth: Object.assign({}, config.oauth, {
         authority: 'https://my-oauth.cnblogs.com',
     }),
+    apiBaseUrl: 'https://admin.cnblogs.com',
 });
 
 export class GlobalManager {

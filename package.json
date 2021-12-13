@@ -11,7 +11,7 @@
     ],
     "activationEvents": [
         "onView:cnblogs-authorize",
-        "onView:cnblogs-my-posts-list"
+        "onView:cnblogs-posts-list"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -20,6 +20,28 @@
                 "command": "cnb-blogger.logout",
                 "title": "登出",
                 "icon": "dist/assets/icon-logout.svg"
+            },
+            {
+                "command": "cnb-blogger.previous-posts-list",
+                "title": "上一页",
+                "icon": "dist/assets/icon-page-previous.svg",
+                "enablement": "!cnb-blogger.posts-list.refreshing && cnb-blogger.posts-list.hasPrevious"
+            },
+            {
+                "command": "cnb-blogger.next-posts-list",
+                "title": "下一页",
+                "icon": "dist/assets/icon-page-next.svg",
+                "enablement": "!cnb-blogger.posts-list.refreshing && cnb-blogger.posts-list.hasNext"
+            },
+            {
+                "command": "cnb-blogger.seek-posts-list",
+                "title": "跳页"
+            },
+            {
+                "command": "cnb-blogger.refresh-posts-list",
+                "title": "刷新",
+                "icon": "dist/assets/icon-refresh.svg",
+                "enablement": "!cnb-blogger.posts-list.refreshing"
             }
         ],
         "views": {
@@ -30,7 +52,7 @@
                     "when": "!cnb-blogger.isAuthorized"
                 },
                 {
-                    "id": "cnblogs-my-posts-list",
+                    "id": "cnblogs-posts-list",
                     "name": "Posts Explorer",
                     "when": "cnb-blogger.isAuthorized"
                 },
@@ -46,6 +68,26 @@
                 {
                     "command": "cnb-blogger.logout",
                     "when": "view == cnblogs-account",
+                    "group": "navigation"
+                },
+                {
+                    "command": "cnb-blogger.seek-posts-list",
+                    "when": "view == cnblogs-posts-list",
+                    "group": "navigation"
+                },
+                {
+                    "command": "cnb-blogger.previous-posts-list",
+                    "when": "view == cnblogs-posts-list",
+                    "group": "navigation"
+                },
+                {
+                    "command": "cnb-blogger.next-posts-list",
+                    "when": "view == cnblogs-posts-list",
+                    "group": "navigation"
+                },
+                {
+                    "command": "cnb-blogger.refresh-posts-list",
+                    "when": "view == cnblogs-posts-list",
                     "group": "navigation"
                 }
             ]

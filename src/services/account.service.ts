@@ -13,7 +13,8 @@ const isAuthorizedStorageKey = 'isAuthorized';
 export class AccountService extends vscode.Disposable {
     private static _instance: AccountService = new AccountService();
 
-    static buildBearerAuthorizationHeader(accessToken: string): [string, string] {
+    buildBearerAuthorizationHeader(accessToken?: string): [string, string] {
+        accessToken ??= this.curUser.authorizationInfo?.accessToken;
         return ['Authorization', `Bearer ${accessToken}`];
     }
 
@@ -80,7 +81,7 @@ export class AccountService extends vscode.Disposable {
                 method: 'POST',
                 body: body,
                 headers: [
-                    AccountService.buildBearerAuthorizationHeader(token),
+                    this.buildBearerAuthorizationHeader(token),
                     ['Content-Type', 'application/x-www-form-urlencoded'],
                 ],
             });
@@ -130,7 +131,7 @@ export class AccountService extends vscode.Disposable {
         const { authority, userInfoEndpoint } = globalManager.config.oauth;
         const res = await fetch(`${authority}${userInfoEndpoint}`, {
             method: 'GET',
-            headers: [AccountService.buildBearerAuthorizationHeader(authorizationInfo.accessToken)],
+            headers: [this.buildBearerAuthorizationHeader(authorizationInfo.accessToken)],
         });
         const obj = convertObjectKeysToCamelCase((await res.json()) as any);
         obj.avatar = obj.picture;
