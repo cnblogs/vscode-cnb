@@ -4,7 +4,7 @@ import * as express from 'express';
 import { Server } from 'http';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
-import { globalManager } from '../models/global-manager';
+import { globalManager } from './global-state';
 import { Disposable } from 'vscode';
 
 export class CnblogsOAuthService extends Disposable {

@@ -4,7 +4,7 @@ import { openMyHomePage } from './open-my-home-page';
 import { login, logout } from './login';
 import * as vscode from 'vscode';
 import { openMyBlog } from './open-my-blog';
-import { globalManager } from '../models/global-manager';
+import { globalManager } from '../services/global-state';
 import { gotoNextPostsList, gotoPreviousPostsList, refreshPostsList, seekPostsList } from './posts-list';
 
 export const registerCommands = () => {

@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { BlogPost } from '../models/blog-post';
-import { globalManager } from '../models/global-manager';
+import { globalManager } from './global-state';
 import { PageModel } from '../models/page-model';
 import { PostsListState } from '../models/posts-list-state';
 import { accountService } from './account.service';

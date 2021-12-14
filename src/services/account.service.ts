@@ -1,6 +1,6 @@
 import { convertObjectKeysToCamelCase } from './fetch-json-response-to-camel-case';
 import { UserAuthorizationInfo, UserInfo } from './../models/user-settings';
-import { globalManager } from '../models/global-manager';
+import { globalManager } from './global-state';
 import { CnblogsOAuthService } from './cnblogs-oauth.service';
 import * as vscode from 'vscode';
 import { URLSearchParams } from 'url';

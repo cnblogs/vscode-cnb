@@ -1,4 +1,4 @@
-import { globalManager } from '../models/global-manager';
+import { globalManager } from '../services/global-state';
 import { accountService } from '../services/account.service';
 import { Event, ProviderResult, TreeDataProvider, TreeItem, Uri } from 'vscode';
 

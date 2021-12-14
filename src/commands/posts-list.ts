@@ -1,4 +1,4 @@
-import { globalManager } from '../models/global-manager';
+import { globalManager } from '../services/global-state';
 import { blogPostService } from '../services/blog-post.service';
 import * as vscode from 'vscode';
 import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
