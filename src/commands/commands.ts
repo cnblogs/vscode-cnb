@@ -4,12 +4,13 @@ import { openMyHomePage } from './open-my-home-page';
 import { login, logout } from './login';
 import * as vscode from 'vscode';
 import { openMyBlog } from './open-my-blog';
-import { globalManager } from '../services/global-state';
+import { globalState } from '../services/global-state';
 import { gotoNextPostsList, gotoPreviousPostsList, refreshPostsList, seekPostsList } from './posts-list';
+import { editPost } from './edit-post';
 
 export const registerCommands = () => {
-    const context = globalManager.extensionContext;
-    const appName = globalManager.extensionName;
+    const context = globalState.extensionContext;
+    const appName = globalState.extensionName;
     const disposables = [
         vscode.commands.registerCommand(`${appName}.login`, login),
         vscode.commands.registerCommand(`${appName}.open-my-blog`, openMyBlog),
@@ -24,6 +25,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.previous-posts-list`, gotoPreviousPostsList),
         vscode.commands.registerCommand(`${appName}.seek-posts-list`, seekPostsList),
         vscode.commands.registerCommand(`${appName}.next-posts-list`, gotoNextPostsList),
+        vscode.commands.registerCommand(`${appName}.edit-post`, editPost),
     ];
     context?.subscriptions.push(...disposables);
 };

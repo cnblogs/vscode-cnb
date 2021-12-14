@@ -1,9 +1,10 @@
 import fetch from 'node-fetch';
 import { BlogPost } from '../models/blog-post';
-import { globalManager } from './global-state';
+import { globalState } from './global-state';
 import { PageModel } from '../models/page-model';
 import { PostsListState } from '../models/posts-list-state';
 import { accountService } from './account.service';
+import { PostEditDto } from '../models/post-edit-dto';
 
 const defaultPageSize = 30;
 
@@ -11,7 +12,7 @@ export class BlogPostService {
     private static _instance = new BlogPostService();
 
     protected get _baseUrl() {
-        return globalManager.config.apiBaseUrl;
+        return globalState.config.apiBaseUrl;
     }
 
     static get instance() {
@@ -19,7 +20,7 @@ export class BlogPostService {
     }
 
     get postsListState(): PostsListState | undefined {
-        return globalManager.storage.get<PostsListState>('postsListState');
+        return globalState.storage.get<PostsListState>('postsListState');
     }
 
     protected constructor() {}
@@ -41,6 +42,18 @@ export class BlogPostService {
         return new PageModel(obj.pageIndex, obj.pageSize, obj.postsCount, obj.postList);
     }
 
+    async fetchPostEditDto(postId: number): Promise<PostEditDto> {
+        const response = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
+            headers: [accountService.buildBearerAuthorizationHeader()],
+            method: 'GET',
+        });
+        if (!response.ok) {
+            throw Error('failed to fetch postEditDto\n' + response.status + '\n' + (await response.text()));
+        }
+        const obj = (await response.json()) as any;
+        return new PostEditDto(obj.blogPost, obj.myConfig);
+    }
+
     async updatePostsListState(state: PostsListState | undefined | PageModel<BlogPost>) {
         const finalState: PostsListState | undefined =
             state instanceof PageModel
@@ -55,7 +68,7 @@ export class BlogPostService {
                       pageCount: state.pageCount,
                   }
                 : state;
-        await globalManager.storage.update('postsListState', finalState);
+        await globalState.storage.update('postsListState', finalState);
     }
 }
 

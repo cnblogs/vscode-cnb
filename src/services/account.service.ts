@@ -1,6 +1,6 @@
 import { convertObjectKeysToCamelCase } from './fetch-json-response-to-camel-case';
 import { UserAuthorizationInfo, UserInfo } from './../models/user-settings';
-import { globalManager } from './global-state';
+import { globalState } from './global-state';
 import { CnblogsOAuthService } from './cnblogs-oauth.service';
 import * as vscode from 'vscode';
 import { URLSearchParams } from 'url';
@@ -26,11 +26,11 @@ export class AccountService extends vscode.Disposable {
     }
 
     get isAuthorized() {
-        return globalManager.storage.get(isAuthorizedStorageKey);
+        return globalState.storage.get(isAuthorizedStorageKey);
     }
 
     get curUser(): UserInfo {
-        return this._curUser ? this._curUser : globalManager.storage.get('user') ?? new UserInfo();
+        return this._curUser ? this._curUser : globalState.storage.get('user') ?? new UserInfo();
     }
 
     protected constructor() {
@@ -44,7 +44,7 @@ export class AccountService extends vscode.Disposable {
                 this.handleAuthorized(authorizationInfo);
             }
         });
-        const { clientId, responseType, scope, authorizeEndpoint, authority } = globalManager.config.oauth;
+        const { clientId, responseType, scope, authorizeEndpoint, authority } = globalState.config.oauth;
         let url = `${authority}${authorizeEndpoint}`;
         const search = new URLSearchParams([
             ['client_id', clientId],
@@ -64,11 +64,11 @@ export class AccountService extends vscode.Disposable {
             return;
         }
 
-        const { clientId, revocationEndpoint, authority } = globalManager.config.oauth;
+        const { clientId, revocationEndpoint, authority } = globalState.config.oauth;
         const token = this.curUser?.authorizationInfo?.accessToken;
 
         this.setIsAuthorized(false);
-        globalManager.storage.update('user', {});
+        globalState.storage.update('user', {});
 
         if (token) {
             const body = new URLSearchParams([
@@ -100,11 +100,11 @@ export class AccountService extends vscode.Disposable {
     async setIsAuthorizedToContext() {
         await vscode.commands.executeCommand(
             'setContext',
-            `${globalManager.extensionName}.${isAuthorizedStorageKey}`,
+            `${globalState.extensionName}.${isAuthorizedStorageKey}`,
             this.isAuthorized
         );
         if (this.isAuthorized) {
-            await vscode.commands.executeCommand('setContext', `${globalManager.extensionName}.user`, {
+            await vscode.commands.executeCommand('setContext', `${globalState.extensionName}.user`, {
                 name: this.curUser.name,
                 avatar: this.curUser.avatar,
             });
@@ -112,7 +112,7 @@ export class AccountService extends vscode.Disposable {
     }
 
     private async setIsAuthorized(authorized = false): Promise<void> {
-        await globalManager.storage.update(isAuthorizedStorageKey, authorized);
+        await globalState.storage.update(isAuthorizedStorageKey, authorized);
         this.setIsAuthorizedToContext();
     }
 
@@ -123,12 +123,12 @@ export class AccountService extends vscode.Disposable {
 
     private async fetchAndStoreUserInfo(authorizationInfo: UserAuthorizationInfo) {
         const userInfo = await this.fetchUserInfo(authorizationInfo);
-        await globalManager.storage.update('user', userInfo);
+        await globalState.storage.update('user', userInfo);
         return userInfo;
     }
 
     private async fetchUserInfo(authorizationInfo: UserAuthorizationInfo): Promise<UserInfo> {
-        const { authority, userInfoEndpoint } = globalManager.config.oauth;
+        const { authority, userInfoEndpoint } = globalState.config.oauth;
         const res = await fetch(`${authority}${userInfoEndpoint}`, {
             method: 'GET',
             headers: [this.buildBearerAuthorizationHeader(authorizationInfo.accessToken)],

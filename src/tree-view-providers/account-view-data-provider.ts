@@ -1,4 +1,4 @@
-import { globalManager } from '../services/global-state';
+import { globalState } from '../services/global-state';
 import { accountService } from '../services/account.service';
 import { Event, ProviderResult, TreeDataProvider, TreeItem, Uri } from 'vscode';
 
@@ -13,7 +13,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
             return [];
         }
         const u = accountService.curUser;
-        const extensionPath = globalManager.extensionContext?.extensionPath;
+        const extensionPath = globalState.extensionContext?.extensionPath;
         return [
             { label: u.name, tooltip: '用户名', iconPath: Uri.parse(`${extensionPath}/dist/assets/icon-avatar.svg`) },
             {

@@ -38,4 +38,4 @@ export class GlobalState {
     protected constructor() {}
 }
 
-export const globalManager = GlobalState.instance;
+export const globalState = GlobalState.instance;

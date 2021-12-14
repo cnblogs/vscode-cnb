@@ -10,8 +10,7 @@
         "Other"
     ],
     "activationEvents": [
-        "onView:cnblogs-authorize",
-        "onView:cnblogs-posts-list"
+        "workspaceContains:**"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -54,14 +53,17 @@
                     "when": "!vscode-cnb.isAuthorized"
                 },
                 {
-                    "id": "cnblogs-posts-list",
-                    "name": "随笔列表",
-                    "when": "vscode-cnb.isAuthorized"
-                },
-                {
                     "id": "cnblogs-account",
                     "name": "我的博客园",
                     "when": "vscode-cnb.isAuthorized"
+                }
+            ],
+            "explorer": [
+                {
+                    "id": "cnblogs-posts-list",
+                    "name": "博客园-随笔列表",
+                    "when": "vscode-cnb.isTargetWorkspace && vscode-cnb.isAuthorized",
+                    "icon": "./dist/assets/favicon.svg"
                 }
             ]
         },

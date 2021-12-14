@@ -1,4 +1,4 @@
-import { globalManager } from '../services/global-state';
+import { globalState } from '../services/global-state';
 import * as vscode from 'vscode';
 import { AccountViewDataProvider } from './account-view-data-provider';
 import { postsDataProvider } from './blog-posts-data-provider';
@@ -17,5 +17,5 @@ export const registerTreeViews = () => {
         treeDataProvider: postsDataProvider,
     });
     const disposables = [extensionViews.account, extensionViews.postsList];
-    globalManager.extensionContext?.subscriptions.push(...disposables);
+    globalState.extensionContext?.subscriptions.push(...disposables);
 };

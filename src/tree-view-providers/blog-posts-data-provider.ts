@@ -4,6 +4,7 @@ import { BlogPost } from '../models/blog-post';
 import { PageModel } from '../models/page-model';
 import { AlertService } from '../services/alert.service';
 import { blogPostService } from '../services/blog-post.service';
+import { globalState } from '../services/global-state';
 
 export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
     private static _instance?: BlogPostsDataProvider;
@@ -48,6 +49,12 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
             id: `${post.id}`,
             label: `${post.title}`,
             tooltip: new MarkdownString(`[${url}](${url})` + descDatePublished),
+            command: {
+                command: `${globalState.extensionName}.edit-post`,
+                arguments: [post.id],
+                title: '编辑博文',
+            },
+            // description: post.isMarkdown ? 'md' : 'html',
         };
     }
 

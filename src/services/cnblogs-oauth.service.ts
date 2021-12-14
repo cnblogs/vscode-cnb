@@ -4,7 +4,7 @@ import * as express from 'express';
 import { Server } from 'http';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
-import { globalManager } from './global-state';
+import { globalState } from './global-state';
 import { Disposable } from 'vscode';
 
 export class CnblogsOAuthService extends Disposable {
@@ -46,8 +46,8 @@ export class CnblogsOAuthService extends Disposable {
     }
 
     async getAuthorizationInfo(authorizationCode: string, codeVerifier: string): Promise<UserAuthorizationInfo> {
-        let url = globalManager.config.oauth.authority + globalManager.config.oauth.tokenEndpoint;
-        const { clientId } = globalManager.config.oauth;
+        let url = globalState.config.oauth.authority + globalState.config.oauth.tokenEndpoint;
+        const { clientId } = globalState.config.oauth;
         const s = new URLSearchParams([
             ['code', authorizationCode],
             ['code_verifier', codeVerifier],

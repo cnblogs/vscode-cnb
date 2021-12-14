@@ -1,4 +1,4 @@
-import { globalManager } from '../services/global-state';
+import { globalState } from '../services/global-state';
 import { blogPostService } from '../services/blog-post.service';
 import * as vscode from 'vscode';
 import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
@@ -70,13 +70,13 @@ export const seekPostsList = async () => {
 
 let refreshing = false;
 const setRefreshing = async (value = false) => {
-    const extName = globalManager.extensionName;
+    const extName = globalState.extensionName;
     await vscode.commands.executeCommand('setContext', `${extName}.posts-list.refreshing`, value);
     refreshing = value;
 };
 
 const setPostListContext = async (pageCount: number, hasPrevious: boolean, hasNext: boolean) => {
-    const extName = globalManager.extensionName;
+    const extName = globalState.extensionName;
     await vscode.commands.executeCommand('setContext', `${extName}.posts-list.hasPrevious`, hasPrevious);
     await vscode.commands.executeCommand('setContext', `${extName}.posts-list.hasNext`, hasNext);
     await vscode.commands.executeCommand('setContext', `${extName}.posts-list.pageCount`, pageCount);
@@ -121,7 +121,7 @@ const updatePostsListViewTitle = () => {
         let title = view.title!;
         const idx = title.indexOf('(');
         const pager = `第${pageIndex}页,共${pageCount}页`;
-        title = idx >= 0 ? title.substring(0, idx - 1) : title;
+        title = idx >= 0 ? title.substring(0, idx) : title;
         view.title = `${title}(${pager})`;
     }
 };
