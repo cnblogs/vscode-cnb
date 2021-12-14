@@ -1,4 +1,4 @@
-import { UserInfo, UserAuthorizationInfo } from './../models/user-settings';
+import { UserAuthorizationInfo } from './../models/user-settings';
 import { convertObjectKeysToCamelCase } from './fetch-json-response-to-camel-case';
 import * as express from 'express';
 import { Server } from 'http';

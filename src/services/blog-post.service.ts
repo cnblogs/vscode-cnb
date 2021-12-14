@@ -55,7 +55,7 @@ export class BlogPostService {
                       pageCount: state.pageCount,
                   }
                 : state;
-        globalManager.storage.update('postsListState', finalState);
+        await globalManager.storage.update('postsListState', finalState);
     }
 }
 

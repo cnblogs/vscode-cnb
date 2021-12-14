@@ -29,11 +29,11 @@ export const refreshPostsList = async () => {
 };
 
 export const gotoNextPostsList = async () => {
-    gotoPage(c => c + 1);
+    await gotoPage(c => c + 1);
 };
 
 export const gotoPreviousPostsList = async () => {
-    gotoPage(c => c - 1);
+    await gotoPage(c => c - 1);
 };
 
 let refreshing = false;
