@@ -1,6 +1,6 @@
-# cnb-blogger README
+# vscode-cnb README
 
-This is the README for your extension "cnb-blogger". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "vscode-cnb". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 

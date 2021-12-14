@@ -1,5 +1,5 @@
 {
-    "name": "cnb-blogger",
+    "name": "vscode-cnb",
     "displayName": "Cnblogs blogger",
     "description": "A vscode extension used to write and publish blog post to cnblogs",
     "version": "0.0.1",
@@ -17,31 +17,31 @@
     "contributes": {
         "commands": [
             {
-                "command": "cnb-blogger.logout",
+                "command": "vscode-cnb.logout",
                 "title": "登出",
                 "icon": "dist/assets/icon-logout.svg"
             },
             {
-                "command": "cnb-blogger.previous-posts-list",
+                "command": "vscode-cnb.previous-posts-list",
                 "title": "上一页",
                 "icon": "dist/assets/icon-page-previous.svg",
-                "enablement": "!cnb-blogger.posts-list.refreshing && cnb-blogger.posts-list.hasPrevious"
+                "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.hasPrevious"
             },
             {
-                "command": "cnb-blogger.next-posts-list",
+                "command": "vscode-cnb.next-posts-list",
                 "title": "下一页",
                 "icon": "dist/assets/icon-page-next.svg",
-                "enablement": "!cnb-blogger.posts-list.refreshing && cnb-blogger.posts-list.hasNext"
+                "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.hasNext"
             },
             {
-                "command": "cnb-blogger.seek-posts-list",
+                "command": "vscode-cnb.seek-posts-list",
                 "title": "跳页"
             },
             {
-                "command": "cnb-blogger.refresh-posts-list",
+                "command": "vscode-cnb.refresh-posts-list",
                 "title": "刷新",
                 "icon": "dist/assets/icon-refresh.svg",
-                "enablement": "!cnb-blogger.posts-list.refreshing"
+                "enablement": "!vscode-cnb.posts-list.refreshing"
             }
         ],
         "views": {
@@ -49,44 +49,44 @@
                 {
                     "id": "cnblogs-authorize",
                     "name": "Authorize",
-                    "when": "!cnb-blogger.isAuthorized"
+                    "when": "!vscode-cnb.isAuthorized"
                 },
                 {
                     "id": "cnblogs-posts-list",
                     "name": "Posts Explorer",
-                    "when": "cnb-blogger.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized"
                 },
                 {
                     "id": "cnblogs-account",
                     "name": "Account",
-                    "when": "cnb-blogger.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized"
                 }
             ]
         },
         "menus": {
             "view/title": [
                 {
-                    "command": "cnb-blogger.logout",
+                    "command": "vscode-cnb.logout",
                     "when": "view == cnblogs-account",
                     "group": "navigation"
                 },
                 {
-                    "command": "cnb-blogger.seek-posts-list",
+                    "command": "vscode-cnb.seek-posts-list",
                     "when": "view == cnblogs-posts-list",
                     "group": "navigation"
                 },
                 {
-                    "command": "cnb-blogger.previous-posts-list",
+                    "command": "vscode-cnb.previous-posts-list",
                     "when": "view == cnblogs-posts-list",
                     "group": "navigation"
                 },
                 {
-                    "command": "cnb-blogger.next-posts-list",
+                    "command": "vscode-cnb.next-posts-list",
                     "when": "view == cnblogs-posts-list",
                     "group": "navigation"
                 },
                 {
-                    "command": "cnb-blogger.refresh-posts-list",
+                    "command": "vscode-cnb.refresh-posts-list",
                     "when": "view == cnblogs-posts-list",
                     "group": "navigation"
                 }
@@ -108,7 +108,7 @@
             },
             {
                 "view": "cnblogs-authorize",
-                "contents": "[Login](command:cnb-blogger.login)"
+                "contents": "[Login](command:vscode-cnb.login)"
             }
         ]
     },

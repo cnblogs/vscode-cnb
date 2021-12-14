@@ -24,7 +24,7 @@ const config: IConfig = {
         tokenEndpoint: '/connect/token',
         authorizeEndpoint: '/connect/authorize',
         userInfoEndpoint: '/connect/userinfo',
-        clientId: 'cnb-blogger',
+        clientId: 'vscode-cnb',
         responseType: 'code',
         scope: 'openid profile CnBlogsApi CnblogsAdminApi',
         revocationEndpoint: '/connection/revocation',

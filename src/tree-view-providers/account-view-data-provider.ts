@@ -21,7 +21,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 tooltip: '账户设置',
                 command: {
                     title: '打开账户设置',
-                    command: 'cnb-blogger.open-my-account-settings',
+                    command: 'vscode-cnb.open-my-account-settings',
                     tooltip: '浏览器中打开我的账户设置',
                 },
                 iconPath: Uri.parse(`${extensionPath}/dist/assets/icon-account-settings.svg`),
@@ -31,7 +31,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 tooltip: '博客后台',
                 command: {
                     title: '打开博客后台',
-                    command: 'cnb-blogger.open-my-blog-management-background',
+                    command: 'vscode-cnb.open-my-blog-management-background',
                     tooltip: '浏览器中打开我的博客后台',
                 },
                 iconPath: Uri.parse(`${extensionPath}/dist/assets/icon-blog-management.svg`),
@@ -41,7 +41,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 tooltip: '点击在浏览器中打开我的主页',
                 command: {
                     title: '打开我的博客',
-                    command: 'cnb-blogger.open-my-blog',
+                    command: 'vscode-cnb.open-my-blog',
                     tooltip: '浏览器中打开我的博客',
                 },
                 iconPath: Uri.parse(`${extensionPath}/dist/assets/icon-blog.svg`),
@@ -51,7 +51,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 tooltip: '点击在浏览器中打开我的主页',
                 command: {
                     title: '打开我的主页',
-                    command: 'cnb-blogger.open-my-home-page',
+                    command: 'vscode-cnb.open-my-home-page',
                     tooltip: '浏览器中打开我的博客',
                 },
                 iconPath: Uri.parse(`${extensionPath}/dist/assets/icon-home.svg`),
