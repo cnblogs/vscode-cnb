@@ -1,4 +1,5 @@
 import { Event, EventEmitter, MarkdownString, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
+import { refreshPostsList } from '../commands/posts-list';
 import { BlogPost } from '../models/blog-post';
 import { PageModel } from '../models/page-model';
 import { AlertService } from '../services/alert.service';
@@ -29,7 +30,7 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
             return [];
         } else {
             if (!this._pagedPosts) {
-                this.loadPosts();
+                refreshPostsList();
                 return [];
             }
             return this._pagedPosts.items;
