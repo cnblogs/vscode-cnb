@@ -9,6 +9,8 @@ export class Settings {
 
     static get workspaceUri() {
         const workspace = this.configuration.get<string>('workspace');
-        return workspace ? Uri.file(workspace) : Uri.joinPath(Uri.file(homedir()), 'Documents', 'Cnblogs');
+        return workspace
+            ? Uri.file(workspace.replace(/^~/, homedir()))
+            : Uri.joinPath(Uri.file(homedir()), 'Documents', 'Cnblogs');
     }
 }

@@ -8,3 +8,10 @@ export const isTargetWorkspace = (): boolean => {
     commands.executeCommand('setContext', `${globalState.extensionName}.isTargetWorkspace`, result);
     return result;
 };
+
+export const beginListenConfigurationChangeEvent = () => {
+    workspace.onDidChangeConfiguration(ev =>
+        ev.affectsConfiguration(globalState.extensionName) ? isTargetWorkspace() : false
+    );
+    isTargetWorkspace();
+};
