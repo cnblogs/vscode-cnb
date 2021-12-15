@@ -1,10 +1,11 @@
-import { Event, EventEmitter, MarkdownString, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
+import { Event, EventEmitter, MarkdownString, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode';
 import { refreshPostsList } from '../commands/posts-list';
 import { BlogPost } from '../models/blog-post';
 import { PageModel } from '../models/page-model';
 import { AlertService } from '../services/alert.service';
 import { blogPostService } from '../services/blog-post.service';
 import { globalState } from '../services/global-state';
+import { PostFileMapManager } from '../services/post-file-map';
 
 export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
     private static _instance?: BlogPostsDataProvider;
@@ -54,6 +55,8 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
                 arguments: [post.id],
                 title: '编辑博文',
             },
+            contextValue: PostFileMapManager.getFilePath(post.id) !== undefined ? 'cnb-post-cached' : 'cnb-post',
+            iconPath: new ThemeIcon(post.isMarkdown ? 'markdown' : 'file-text'),
             // description: post.isMarkdown ? 'md' : 'html',
         };
     }
@@ -65,7 +68,7 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
                 pageSize: undefined,
             };
             this._pagedPosts = await blogPostService.fetchPostsList({ pageIndex, pageSize });
-            this._onDidChangeTreeData.fire(undefined);
+            this.fireTreeDataChangedEvent(undefined);
         } catch (e) {
             if (e instanceof Error) {
                 AlertService.error(e.message);
@@ -73,6 +76,10 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
                 AlertService.error(`Failed to fetch posts list\n${JSON.stringify(e)}`);
             }
         }
+    }
+
+    fireTreeDataChangedEvent(post: BlogPost | undefined) {
+        this._onDidChangeTreeData.fire(post);
     }
 }
 

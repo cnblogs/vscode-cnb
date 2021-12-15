@@ -10,7 +10,10 @@
         "Other"
     ],
     "activationEvents": [
-        "workspaceContains:**"
+        "workspaceContains:**",
+        "onView:cnblogs-authorize",
+        "onView:cnblogs-account",
+        "onView:cnblogs-posts-list"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -43,6 +46,11 @@
                 "title": "刷新",
                 "icon": "dist/assets/icon-refresh.svg",
                 "enablement": "!vscode-cnb.posts-list.refreshing"
+            },
+            {
+                "command": "vscode-cnb.save-post",
+                "title": "保存博文",
+                "icon": "dist/assets/icon-upload.svg"
             }
         ],
         "configuration": {
@@ -65,17 +73,14 @@
                     "when": "!vscode-cnb.isAuthorized"
                 },
                 {
+                    "id": "cnblogs-posts-list",
+                    "name": "博客园-随笔列表",
+                    "when": "vscode-cnb.isAuthorized"
+                },
+                {
                     "id": "cnblogs-account",
                     "name": "我的博客园",
                     "when": "vscode-cnb.isAuthorized"
-                }
-            ],
-            "explorer": [
-                {
-                    "id": "cnblogs-posts-list",
-                    "name": "博客园-随笔列表",
-                    "when": "vscode-cnb.isTargetWorkspace && vscode-cnb.isAuthorized",
-                    "icon": "./dist/assets/favicon.svg"
                 }
             ]
         },
@@ -105,6 +110,13 @@
                     "command": "vscode-cnb.refresh-posts-list",
                     "when": "view == cnblogs-posts-list",
                     "group": "navigation@4"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "vscode-cnb.save-post",
+                    "group": "inline",
+                    "when": "viewItem == cnb-post-cached"
                 }
             ]
         },

@@ -5,6 +5,7 @@ import { PageModel } from '../models/page-model';
 import { PostsListState } from '../models/posts-list-state';
 import { accountService } from './account.service';
 import { PostEditDto } from '../models/post-edit-dto';
+import { PostUpdatedResponse } from '../models/post-updated-response';
 
 const defaultPageSize = 30;
 
@@ -52,6 +53,22 @@ export class BlogPostService {
         }
         const obj = (await response.json()) as any;
         return new PostEditDto(obj.blogPost, obj.myConfig);
+    }
+
+    async updatePost(post: BlogPost): Promise<PostUpdatedResponse> {
+        const response = await fetch(`${this._baseUrl}/api/posts`, {
+            headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
+            method: 'POST',
+            body: JSON.stringify(post),
+        });
+        if (!response.ok) {
+            throw Error(
+                `update post: response statue indicate failed\nstatus code: ${
+                    response.status
+                }\n response body: ${await response.text()}`
+            );
+        }
+        return Object.assign(new PostUpdatedResponse(), await response.json());
     }
 
     async updatePostsListState(state: PostsListState | undefined | PageModel<BlogPost>) {

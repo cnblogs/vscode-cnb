@@ -6,7 +6,8 @@ import * as vscode from 'vscode';
 import { openMyBlog } from './open-my-blog';
 import { globalState } from '../services/global-state';
 import { gotoNextPostsList, gotoPreviousPostsList, refreshPostsList, seekPostsList } from './posts-list';
-import { editPost } from './edit-post';
+import { openPostInVscode } from './open-post-in-vscode';
+import { savePost } from './save-post';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -25,7 +26,8 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.previous-posts-list`, gotoPreviousPostsList),
         vscode.commands.registerCommand(`${appName}.seek-posts-list`, seekPostsList),
         vscode.commands.registerCommand(`${appName}.next-posts-list`, gotoNextPostsList),
-        vscode.commands.registerCommand(`${appName}.edit-post`, editPost),
+        vscode.commands.registerCommand(`${appName}.edit-post`, openPostInVscode),
+        vscode.commands.registerCommand(`${appName}.save-post`, savePost),
     ];
     context?.subscriptions.push(...disposables);
 };

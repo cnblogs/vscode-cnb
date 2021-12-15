@@ -1,5 +1,5 @@
 import { registerTreeViews } from './tree-view-providers/tree-view-registration';
-import { registerCommands } from './commands/commands';
+import { registerCommands } from './commands/register-commands';
 import { globalState } from './services/global-state';
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
