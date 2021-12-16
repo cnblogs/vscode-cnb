@@ -59,10 +59,16 @@
                 "category": "vscode-cnb.posts-list"
             },
             {
+                "command": "vscode-cnb.delete-local-draft",
+                "title": "删除",
+                "icon": "$(trash)",
+                "category": "vscode-cnb.posts-list.local-draft"
+            },
+            {
                 "command": "vscode-cnb.create-local-draft",
                 "title": "新建本地草稿",
                 "icon": "$(new-file)",
-                "category": "vscode-cnb.posts-list"
+                "category": "vscode-cnb.posts-list.local-draft"
             }
         ],
         "configuration": {
@@ -138,6 +144,10 @@
                 {
                     "command": "vscode-cnb.create-local-draft",
                     "when": "viewItem == cnb-local-drafts-folder"
+                },
+                {
+                    "command": "vscode-cnb.delete-local-draft",
+                    "when": "viewItem == cnb-local-draft-file"
                 }
             ]
         },

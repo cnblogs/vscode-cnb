@@ -1,11 +1,11 @@
 import { commands, Uri } from 'vscode';
 import { BlogPost } from '../models/blog-post';
-import { LocalPostFile } from '../models/local-post-file';
+import { LocalDraftFile } from '../models/local-draft-file';
 import { PostFileMapManager } from '../services/post-file-map';
 
-export const openPostToEdit = async (post: LocalPostFile | BlogPost | string) => {
+export const openPostToEdit = async (post: LocalDraftFile | BlogPost | string) => {
     let filePath = '';
-    if (post instanceof LocalPostFile) {
+    if (post instanceof LocalDraftFile) {
         filePath = post.filePath;
     } else if (post instanceof BlogPost) {
         filePath = PostFileMapManager.getFilePath(post.id) ?? '';

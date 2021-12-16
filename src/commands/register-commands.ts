@@ -9,6 +9,7 @@ import { gotoNextPostsList, gotoPreviousPostsList, refreshPostsList, seekPostsLi
 import { openPostInVscode } from './open-post-in-vscode';
 import { savePost } from './save-post';
 import { createLocalDraft } from './create-local-draft';
+import { deleteLocalDraft } from './delete-local-draft';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -30,6 +31,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.edit-post`, openPostInVscode),
         vscode.commands.registerCommand(`${appName}.save-post`, savePost),
         vscode.commands.registerCommand(`${appName}.create-local-draft`, createLocalDraft),
+        vscode.commands.registerCommand(`${appName}.delete-local-draft`, deleteLocalDraft),
     ];
     context?.subscriptions.push(...disposables);
 };

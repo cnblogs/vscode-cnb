@@ -12,7 +12,7 @@ import {
 } from 'vscode';
 import { refreshPostsList } from '../commands/posts-list';
 import { BlogPost } from '../models/blog-post';
-import { LocalPostFile } from '../models/local-post-file';
+import { LocalDraftFile } from '../models/local-draft-file';
 import { PageModel } from '../models/page-model';
 import { AlertService } from '../services/alert.service';
 import { blogPostService } from '../services/blog-post.service';
@@ -20,7 +20,7 @@ import { globalState } from '../services/global-state';
 import { PostFileMapManager } from '../services/post-file-map';
 import { Settings } from '../services/settings.service';
 
-export const localDraftFolderItem: TreeItem = Object.assign(new TreeItem('本地草稿'), {
+export const localDraftsTreeItem: TreeItem = Object.assign(new TreeItem('本地草稿'), {
     iconPath: new ThemeIcon('folder'),
     collapsibleState: TreeItemCollapsibleState.Collapsed,
     contextValue: 'cnb-local-drafts-folder',
@@ -28,7 +28,7 @@ export const localDraftFolderItem: TreeItem = Object.assign(new TreeItem('本地
     tooltip: '在本地创建的还未保存到博客园的文章',
 } as TreeItem);
 
-export type BlogPostDataProviderItem = BlogPost | TreeItem | LocalPostFile;
+export type BlogPostDataProviderItem = BlogPost | TreeItem | LocalDraftFile;
 
 export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProviderItem> {
     private static _instance?: BlogPostsDataProvider;
@@ -52,17 +52,17 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
 
     getChildren(element?: BlogPostDataProviderItem): ProviderResult<BlogPostDataProviderItem[]> {
         return new Promise<BlogPostDataProviderItem[]>(resolve => {
-            if (element === localDraftFolderItem) {
-                LocalPostFile.read().then(v => resolve(v));
+            if (element === localDraftsTreeItem) {
+                LocalDraftFile.read().then(v => resolve(v));
                 return;
             } else if (!element) {
                 const pagedPosts = this._pagedPosts;
                 if (!pagedPosts) {
                     refreshPostsList();
-                    resolve([localDraftFolderItem]);
+                    resolve([localDraftsTreeItem]);
                     return;
                 }
-                resolve([localDraftFolderItem, ...pagedPosts.items]);
+                resolve([localDraftsTreeItem, ...pagedPosts.items]);
             } else {
                 resolve([]);
             }
@@ -70,8 +70,8 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
     }
 
     getParent(el: BlogPostDataProviderItem) {
-        if (el instanceof LocalPostFile) {
-            return localDraftFolderItem;
+        if (el instanceof LocalDraftFile) {
+            return localDraftsTreeItem;
         }
         return undefined;
     }
@@ -83,7 +83,7 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
         if (item instanceof TreeItem) {
             return item;
         }
-        if (item instanceof LocalPostFile) {
+        if (item instanceof LocalDraftFile) {
             return item.toTreeItem();
         }
         const descDatePublished = item.datePublished ? `  \n发布于: ${item.datePublished}` : '';
