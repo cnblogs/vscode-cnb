@@ -47,7 +47,7 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
         const descDatePublished = post.datePublished ? `  \n发布于: ${post.datePublished}` : '';
         const localPath = PostFileMapManager.getFilePath(post.id);
         const localPathForDesc = localPath?.replace(homedir(), '~') || '未关联本地文件';
-        const descLocalPath = `  \n本地路径: ${localPathForDesc}`;
+        const descLocalPath = localPath ? `  \n本地路径: ${localPathForDesc}` : '';
         let url = post.url;
         url = url.startsWith('//') ? `https:${url}` : url;
         return {
@@ -61,7 +61,7 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
             },
             contextValue: PostFileMapManager.getFilePath(post.id) !== undefined ? 'cnb-post-cached' : 'cnb-post',
             iconPath: new ThemeIcon(post.isMarkdown ? 'markdown' : 'file-text'),
-            description: localPathForDesc,
+            description: localPath ? localPathForDesc : '',
         };
     }
 
