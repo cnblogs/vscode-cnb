@@ -1,4 +1,4 @@
-import { Uri, workspace, window } from 'vscode';
+import { Uri, workspace, window, ProgressLocation } from 'vscode';
 import { BlogPost } from '../models/blog-post';
 import { AlertService } from '../services/alert.service';
 import { blogPostService } from '../services/blog-post.service';
@@ -14,7 +14,7 @@ export const savePost = async (arg: BlogPost) => {
     const postId = post.id;
     const localFilePath = PostFileMapManager.getFilePath(postId);
     if (!localFilePath) {
-        AlertService.warning('本地该博文的编辑记录');
+        AlertService.warning('本地无该博文的编辑记录');
         return;
     }
     const encoder = new TextDecoder();
@@ -25,12 +25,28 @@ export const savePost = async (arg: BlogPost) => {
         await activeEditor.document.save();
     }
 
-    try {
-        await blogPostService.updatePost(post);
-        AlertService.info('保存博文成功');
-        await openPostInVscode(postId);
-    } catch (err) {
-        AlertService.error('保存博文失败\n' + (err instanceof Error ? err.message : ''));
-        console.error(err);
-    }
+    await window.withProgress(
+        {
+            location: ProgressLocation.Notification,
+            title: '正在保存博文',
+            cancellable: false,
+        },
+        async progress => {
+            progress.report({
+                increment: 10,
+            });
+            let success = false;
+            try {
+                await blogPostService.updatePost(post);
+                await openPostInVscode(postId);
+                success = true;
+            } catch (err) {
+                progress.report({ message: '保存博文失败', increment: 50 });
+                console.error(err);
+            } finally {
+                progress.report({ increment: 90 });
+                success ? AlertService.info('保存博文成功') : AlertService.error('保存博文失败');
+            }
+        }
+    );
 };
