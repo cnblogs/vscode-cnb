@@ -21,41 +21,48 @@
             {
                 "command": "vscode-cnb.logout",
                 "title": "登出",
-                "icon": "dist/assets/icon-logout.svg"
+                "icon": "dist/assets/icon-logout.svg",
+                "category": "vscode-cnb.account"
             },
             {
                 "command": "vscode-cnb.previous-posts-list",
                 "title": "上一页",
                 "icon": "dist/assets/icon-page-previous.svg",
-                "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.hasPrevious"
+                "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.hasPrevious",
+                "category": "vscode-cnb.posts-list"
             },
             {
                 "command": "vscode-cnb.seek-posts-list",
                 "title": "跳页",
                 "icon": "dist/assets/icon-seek.svg",
-                "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.pageCount > 0"
+                "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.pageCount > 0",
+                "category": "vscode-cnb.posts-list"
             },
             {
                 "command": "vscode-cnb.next-posts-list",
                 "title": "下一页",
                 "icon": "dist/assets/icon-page-next.svg",
-                "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.hasNext"
+                "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.hasNext",
+                "category": "vscode-cnb.posts-list"
             },
             {
                 "command": "vscode-cnb.refresh-posts-list",
                 "title": "刷新",
                 "icon": "dist/assets/icon-refresh.svg",
-                "enablement": "!vscode-cnb.posts-list.refreshing"
+                "enablement": "!vscode-cnb.posts-list.refreshing",
+                "category": "vscode-cnb.posts-list"
             },
             {
                 "command": "vscode-cnb.save-post",
                 "title": "保存博文",
-                "icon": "dist/assets/icon-upload.svg"
+                "icon": "dist/assets/icon-upload.svg",
+                "category": "vscode-cnb.posts-list"
             },
             {
                 "command": "vscode-cnb.create-local-draft",
                 "title": "新建本地草稿",
-                "icon": "$(new-file)"
+                "icon": "$(new-file)",
+                "category": "vscode-cnb.posts-list"
             }
         ],
         "configuration": {
