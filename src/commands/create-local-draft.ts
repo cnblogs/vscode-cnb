@@ -6,7 +6,7 @@ import { AlertService } from '../services/alert.service';
 import { Settings } from '../services/settings.service';
 import { localDraftsTreeItem, postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
 import { extensionViews } from '../tree-view-providers/tree-view-registration';
-import { openPostToEdit } from './open-post-to-edit';
+import { openPostFile } from './open-post-file';
 
 export const createLocalDraft = async () => {
     let title = await window.showInputBox({
@@ -35,7 +35,7 @@ export const createLocalDraft = async () => {
     }
 
     await workspace.fs.writeFile(Uri.file(filePath), new TextEncoder().encode(''));
-    await openPostToEdit(filePath);
+    await openPostFile(filePath);
     postsDataProvider.fireTreeDataChangedEvent(localDraftsTreeItem);
     const items = (await postsDataProvider.getChildren(localDraftsTreeItem)) as LocalDraftFile[] | undefined;
     if (items) {

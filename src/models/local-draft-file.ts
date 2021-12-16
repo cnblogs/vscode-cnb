@@ -14,6 +14,14 @@ export class LocalDraftFile {
     get fileExt() {
         return path.extname(this.filePath);
     }
+    get filePathUri() {
+        return Uri.file(this.filePath);
+    }
+
+    async readAllText(): Promise<string> {
+        const binary = await workspace.fs.readFile(this.filePathUri);
+        return new TextDecoder().decode(binary);
+    }
 
     toTreeItem(): TreeItem {
         return Object.assign(new TreeItem(this.fileName), {

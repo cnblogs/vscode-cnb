@@ -8,6 +8,7 @@ import { PostEditDto } from '../models/post-edit-dto';
 import { PostUpdatedResponse } from '../models/post-updated-response';
 
 const defaultPageSize = 30;
+let newPostTemplate: PostEditDto;
 
 export class BlogPostService {
     private static _instance = new BlogPostService();
@@ -86,6 +87,14 @@ export class BlogPostService {
                   }
                 : state;
         await globalState.storage.update('postsListState', finalState);
+    }
+
+    async fetchPostEditDtoTemplate() {
+        if (!newPostTemplate) {
+            newPostTemplate = await this.fetchPostEditDto(-1);
+        }
+
+        return newPostTemplate;
     }
 }
 

@@ -69,6 +69,12 @@
                 "title": "新建本地草稿",
                 "icon": "$(new-file)",
                 "category": "vscode-cnb.posts-list.local-draft"
+            },
+            {
+                "command": "vscode-cnb.save-local-draft-to-cnblogs",
+                "title": "发布",
+                "icon": "dist/assets/icon-upload.svg",
+                "category": "vscode-cnb.posts-list.local-draft"
             }
         ],
         "configuration": {
@@ -148,6 +154,11 @@
                 {
                     "command": "vscode-cnb.delete-local-draft",
                     "when": "viewItem == cnb-local-draft-file"
+                },
+                {
+                    "command": "vscode-cnb.save-local-draft-to-cnblogs",
+                    "when": "viewItem == cnb-local-draft-file",
+                    "group": "inline"
                 }
             ]
         },

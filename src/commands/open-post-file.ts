@@ -3,7 +3,7 @@ import { BlogPost } from '../models/blog-post';
 import { LocalDraftFile } from '../models/local-draft-file';
 import { PostFileMapManager } from '../services/post-file-map';
 
-export const openPostToEdit = async (post: LocalDraftFile | BlogPost | string) => {
+export const openPostFile = async (post: LocalDraftFile | BlogPost | string) => {
     let filePath = '';
     if (post instanceof LocalDraftFile) {
         filePath = post.filePath;
