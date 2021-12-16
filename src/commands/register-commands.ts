@@ -7,7 +7,7 @@ import { openMyBlog } from './open-my-blog';
 import { globalState } from '../services/global-state';
 import { gotoNextPostsList, gotoPreviousPostsList, refreshPostsList, seekPostsList } from './posts-list';
 import { openPostInVscode } from './open-post-in-vscode';
-import { savePost } from './save-post';
+import { savePostToCnblogs } from './save-post';
 import { createLocalDraft } from './create-local-draft';
 import { deleteLocalDraft } from './delete-local-draft';
 
@@ -29,7 +29,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.seek-posts-list`, seekPostsList),
         vscode.commands.registerCommand(`${appName}.next-posts-list`, gotoNextPostsList),
         vscode.commands.registerCommand(`${appName}.edit-post`, openPostInVscode),
-        vscode.commands.registerCommand(`${appName}.save-post`, savePost),
+        vscode.commands.registerCommand(`${appName}.save-post`, savePostToCnblogs),
         vscode.commands.registerCommand(`${appName}.create-local-draft`, createLocalDraft),
         vscode.commands.registerCommand(`${appName}.delete-local-draft`, deleteLocalDraft),
     ];

@@ -5,7 +5,7 @@ import { blogPostService } from '../services/blog-post.service';
 import { PostFileMapManager } from '../services/post-file-map';
 import { openPostInVscode } from './open-post-in-vscode';
 
-export const savePost = async (arg: BlogPost) => {
+export const savePostToCnblogs = async (arg: BlogPost) => {
     if (!arg) {
         return;
     }
