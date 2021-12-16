@@ -51,6 +51,11 @@
                 "command": "vscode-cnb.save-post",
                 "title": "保存博文",
                 "icon": "dist/assets/icon-upload.svg"
+            },
+            {
+                "command": "vscode-cnb.create-local-draft",
+                "title": "新建本地草稿",
+                "icon": "$(new-file)"
             }
         ],
         "configuration": {
@@ -110,6 +115,11 @@
                     "command": "vscode-cnb.refresh-posts-list",
                     "when": "view == cnblogs-posts-list",
                     "group": "navigation@4"
+                },
+                {
+                    "command": "vscode-cnb.create-local-draft",
+                    "group": "navigation@5",
+                    "when": "view == cnblogs-posts-list"
                 }
             ],
             "view/item/context": [
@@ -117,6 +127,10 @@
                     "command": "vscode-cnb.save-post",
                     "group": "inline",
                     "when": "viewItem == cnb-post-cached"
+                },
+                {
+                    "command": "vscode-cnb.create-local-draft",
+                    "when": "viewItem == cnb-local-drafts-folder"
                 }
             ]
         },

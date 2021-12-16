@@ -20,7 +20,7 @@ import { globalState } from '../services/global-state';
 import { PostFileMapManager } from '../services/post-file-map';
 import { Settings } from '../services/settings.service';
 
-const localDraftFolderItem: TreeItem = Object.assign(new TreeItem('本地草稿'), {
+export const localDraftFolderItem: TreeItem = Object.assign(new TreeItem('本地草稿'), {
     iconPath: new ThemeIcon('folder'),
     collapsibleState: TreeItemCollapsibleState.Collapsed,
     contextValue: 'cnb-local-drafts-folder',
@@ -34,7 +34,7 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
     private static _instance?: BlogPostsDataProvider;
 
     protected _pagedPosts?: PageModel<BlogPost>;
-    protected _onDidChangeTreeData = new EventEmitter<BlogPost | undefined>();
+    protected _onDidChangeTreeData = new EventEmitter<BlogPostDataProviderItem | undefined>();
 
     static get instance() {
         if (!this._instance) {
@@ -69,14 +69,14 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
         });
     }
 
-    getParent(el: BlogPost | TreeItem) {
-        if (el instanceof TreeItem) {
+    getParent(el: BlogPostDataProviderItem) {
+        if (el instanceof LocalPostFile) {
             return localDraftFolderItem;
         }
         return undefined;
     }
 
-    readonly onDidChangeTreeData: Event<void | BlogPost | null | undefined> | undefined =
+    readonly onDidChangeTreeData: Event<BlogPostDataProviderItem | null | undefined> | undefined =
         this._onDidChangeTreeData.event;
 
     getTreeItem(item: BlogPostDataProviderItem): TreeItem | Thenable<TreeItem> {
@@ -124,7 +124,7 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
         }
     }
 
-    fireTreeDataChangedEvent(post: BlogPost | undefined) {
+    fireTreeDataChangedEvent(post: BlogPostDataProviderItem | undefined) {
         this._onDidChangeTreeData.fire(post);
     }
 }

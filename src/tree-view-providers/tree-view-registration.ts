@@ -11,9 +11,11 @@ export const extensionViews: {
 export const registerTreeViews = () => {
     extensionViews.account = vscode.window.createTreeView('cnblogs-account', {
         treeDataProvider: new AccountViewDataProvider(),
+        canSelectMany: false,
     });
     extensionViews.postsList = vscode.window.createTreeView('cnblogs-posts-list', {
         treeDataProvider: postsDataProvider,
+        canSelectMany: true,
     });
     const disposables = [extensionViews.account, extensionViews.postsList];
     globalState.extensionContext?.subscriptions.push(...disposables);
