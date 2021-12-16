@@ -1,3 +1,4 @@
+import { homedir } from 'os';
 import { Event, EventEmitter, MarkdownString, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode';
 import { refreshPostsList } from '../commands/posts-list';
 import { BlogPost } from '../models/blog-post';
@@ -44,12 +45,15 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
 
     getTreeItem(post: BlogPost): TreeItem | Thenable<TreeItem> {
         const descDatePublished = post.datePublished ? `  \n发布于: ${post.datePublished}` : '';
+        const localPath = PostFileMapManager.getFilePath(post.id);
+        const localPathForDesc = localPath?.replace(homedir(), '~') || '未关联本地文件';
+        const descLocalPath = `  \n本地路径: ${localPathForDesc}`;
         let url = post.url;
         url = url.startsWith('//') ? `https:${url}` : url;
         return {
             id: `${post.id}`,
             label: `${post.title}`,
-            tooltip: new MarkdownString(`[${url}](${url})` + descDatePublished),
+            tooltip: new MarkdownString(`[${url}](${url})` + descDatePublished + descLocalPath),
             command: {
                 command: `${globalState.extensionName}.edit-post`,
                 arguments: [post.id],
@@ -57,7 +61,7 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
             },
             contextValue: PostFileMapManager.getFilePath(post.id) !== undefined ? 'cnb-post-cached' : 'cnb-post',
             iconPath: new ThemeIcon(post.isMarkdown ? 'markdown' : 'file-text'),
-            // description: post.isMarkdown ? 'md' : 'html',
+            description: localPathForDesc,
         };
     }
 

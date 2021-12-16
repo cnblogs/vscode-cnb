@@ -74,12 +74,12 @@
                 },
                 {
                     "id": "cnblogs-posts-list",
-                    "name": "博客园-随笔列表",
+                    "name": "随笔列表",
                     "when": "vscode-cnb.isAuthorized"
                 },
                 {
                     "id": "cnblogs-account",
-                    "name": "我的博客园",
+                    "name": "账户信息",
                     "when": "vscode-cnb.isAuthorized"
                 }
             ]
