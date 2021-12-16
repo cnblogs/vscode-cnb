@@ -1,11 +1,10 @@
 import { globalState } from '../services/global-state';
 import * as vscode from 'vscode';
 import { AccountViewDataProvider } from './account-view-data-provider';
-import { postsDataProvider } from './blog-posts-data-provider';
-import { BlogPost } from '../models/blog-post';
+import { BlogPostDataProviderItem, postsDataProvider } from './blog-posts-data-provider';
 
 export const extensionViews: {
-    postsList?: vscode.TreeView<BlogPost>;
+    postsList?: vscode.TreeView<BlogPostDataProviderItem>;
     account?: vscode.TreeView<vscode.TreeItem>;
 } = {};
 

@@ -1,14 +1,36 @@
 import { homedir } from 'os';
-import { Event, EventEmitter, MarkdownString, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode';
+import {
+    Event,
+    EventEmitter,
+    MarkdownString,
+    ProviderResult,
+    ThemeIcon,
+    TreeDataProvider,
+    TreeItem,
+    TreeItemCollapsibleState,
+    Uri,
+} from 'vscode';
 import { refreshPostsList } from '../commands/posts-list';
 import { BlogPost } from '../models/blog-post';
+import { LocalPostFile } from '../models/local-post-file';
 import { PageModel } from '../models/page-model';
 import { AlertService } from '../services/alert.service';
 import { blogPostService } from '../services/blog-post.service';
 import { globalState } from '../services/global-state';
 import { PostFileMapManager } from '../services/post-file-map';
+import { Settings } from '../services/settings.service';
 
-export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
+const localDraftFolderItem: TreeItem = Object.assign(new TreeItem('本地草稿'), {
+    iconPath: new ThemeIcon('folder'),
+    collapsibleState: TreeItemCollapsibleState.Collapsed,
+    contextValue: 'cnb-local-drafts-folder',
+    description: Settings.workspaceUri.fsPath.replace(homedir(), '~'),
+    tooltip: '在本地创建的还未保存到博客园的文章',
+} as TreeItem);
+
+export type BlogPostDataProviderItem = BlogPost | TreeItem | LocalPostFile;
+
+export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProviderItem> {
     private static _instance?: BlogPostsDataProvider;
 
     protected _pagedPosts?: PageModel<BlogPost>;
@@ -28,41 +50,61 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPost> {
 
     protected constructor() {}
 
-    getChildren(element?: BlogPost): ProviderResult<BlogPost[]> {
-        if (element) {
-            return [];
-        } else {
-            if (!this._pagedPosts) {
-                refreshPostsList();
-                return [];
+    getChildren(element?: BlogPostDataProviderItem): ProviderResult<BlogPostDataProviderItem[]> {
+        return new Promise<BlogPostDataProviderItem[]>(resolve => {
+            if (element === localDraftFolderItem) {
+                LocalPostFile.read().then(v => resolve(v));
+                return;
+            } else if (!element) {
+                const pagedPosts = this._pagedPosts;
+                if (!pagedPosts) {
+                    refreshPostsList();
+                    resolve([localDraftFolderItem]);
+                    return;
+                }
+                resolve([localDraftFolderItem, ...pagedPosts.items]);
+            } else {
+                resolve([]);
             }
-            return this._pagedPosts.items;
+        });
+    }
+
+    getParent(el: BlogPost | TreeItem) {
+        if (el instanceof TreeItem) {
+            return localDraftFolderItem;
         }
+        return undefined;
     }
 
     readonly onDidChangeTreeData: Event<void | BlogPost | null | undefined> | undefined =
         this._onDidChangeTreeData.event;
 
-    getTreeItem(post: BlogPost): TreeItem | Thenable<TreeItem> {
-        const descDatePublished = post.datePublished ? `  \n发布于: ${post.datePublished}` : '';
-        const localPath = PostFileMapManager.getFilePath(post.id);
+    getTreeItem(item: BlogPostDataProviderItem): TreeItem | Thenable<TreeItem> {
+        if (item instanceof TreeItem) {
+            return item;
+        }
+        if (item instanceof LocalPostFile) {
+            return item.toTreeItem();
+        }
+        const descDatePublished = item.datePublished ? `  \n发布于: ${item.datePublished}` : '';
+        const localPath = PostFileMapManager.getFilePath(item.id);
         const localPathForDesc = localPath?.replace(homedir(), '~') || '未关联本地文件';
         const descLocalPath = localPath ? `  \n本地路径: ${localPathForDesc}` : '';
-        let url = post.url;
+        let url = item.url;
         url = url.startsWith('//') ? `https:${url}` : url;
-        return {
-            id: `${post.id}`,
-            label: `${post.title}`,
+        return Object.assign(new TreeItem(`${item.title}`), {
+            id: `${item.id}`,
             tooltip: new MarkdownString(`[${url}](${url})` + descDatePublished + descLocalPath),
             command: {
                 command: `${globalState.extensionName}.edit-post`,
-                arguments: [post.id],
+                arguments: [item.id],
                 title: '编辑博文',
             },
-            contextValue: PostFileMapManager.getFilePath(post.id) !== undefined ? 'cnb-post-cached' : 'cnb-post',
-            iconPath: new ThemeIcon(post.isMarkdown ? 'markdown' : 'file-text'),
+            contextValue: PostFileMapManager.getFilePath(item.id) !== undefined ? 'cnb-post-cached' : 'cnb-post',
+            // iconPath: new ThemeIcon(item.isMarkdown ? 'markdown' : 'file-text'),
             description: localPath ? localPathForDesc : '',
-        };
+            resourceUri: Uri.joinPath(Settings.workspaceUri, item.title + (item.isMarkdown ? '.md' : '.html')),
+        } as TreeItem);
     }
 
     async loadPosts(): Promise<void> {
