@@ -53,7 +53,7 @@ export class BlogPostService {
             throw Error('failed to fetch postEditDto\n' + response.status + '\n' + (await response.text()));
         }
         const obj = (await response.json()) as any;
-        return new PostEditDto(obj.blogPost, obj.myConfig);
+        return new PostEditDto(Object.assign(new BlogPost(), obj.blogPost), obj.myConfig);
     }
 
     async updatePost(post: BlogPost): Promise<PostUpdatedResponse> {
