@@ -7,6 +7,7 @@ import { PostFileMapManager } from '../services/post-file-map';
 import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
 import { openPostInVscode } from './open-post-in-vscode';
 import { openPostFile } from './open-post-file';
+import { inputPostConfiguration } from '../utils/input-post-configuration';
 
 export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
     if (!localDraft) {
@@ -14,7 +15,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
     }
     // check format
     if (!['.md'].some(x => localDraft.fileExt === x)) {
-        AlertService.warning('不受支持的文件格式! 暂时只支持markdown格式');
+        AlertService.warning('不受支持的文件格式! 只支持markdown格式');
         return;
     }
     const content = await localDraft.readAllText();
@@ -23,7 +24,16 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
     post.postBody = content;
     post.title = localDraft.fileNameWithoutExt;
     post.isMarkdown = true;
-    await savePostToCnblogs(post, true);
+    const userInputPostConfig = await inputPostConfiguration(post);
+    if (!userInputPostConfig) {
+        AlertService.warning('操作已取消');
+        return;
+    }
+    Object.assign(post, userInputPostConfig);
+
+    if (!(await savePostToCnblogs(post, true))) {
+        return;
+    }
     await PostFileMapManager.updateOrCreate(post.id, localDraft.filePath);
     postsDataProvider.fireTreeDataChangedEvent(undefined);
     await openPostFile(localDraft);
@@ -49,10 +59,10 @@ export const savePostToCnblogs = async (post: BlogPost, isNewPost = false) => {
         await activeEditor.document.save();
     }
     if (!validatePost(post)) {
-        return;
+        return false;
     }
 
-    await window.withProgress(
+    return await window.withProgress(
         {
             location: ProgressLocation.Notification,
             title: '正在保存博文',
@@ -71,13 +81,14 @@ export const savePostToCnblogs = async (post: BlogPost, isNewPost = false) => {
                     post.id = postId;
                 }
                 success = true;
-            } catch (err) {
-                progress.report({ message: '保存博文失败', increment: 50 });
-                console.error(err);
-            } finally {
                 progress.report({ increment: 90 });
-                success ? AlertService.info('保存博文成功') : AlertService.error('保存博文失败');
+                AlertService.info('保存成功');
+            } catch (err) {
+                progress.report({ increment: 90 });
+                AlertService.error(`保存失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`);
+                console.error(err);
             }
+            return success;
         }
     );
 };
