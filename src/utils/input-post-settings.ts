@@ -34,30 +34,31 @@ class AccessPermissionPickItem implements QuickPickItem {
     constructor(public id: AccessPermission, public label: string) {}
 }
 
-type PostConfigurationType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission';
-type PostConfigureDto = Pick<BlogPost, PostConfigurationType>;
+type PostSettingsType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission';
+type PostSettingsDto = Pick<BlogPost, PostSettingsType>;
 
-const defaultSteps: PostConfigurationType[] = ['accessPermission', 'description', 'categoryIds', 'tags', 'password'];
+const defaultSteps: PostSettingsType[] = ['accessPermission', 'description', 'categoryIds', 'tags', 'password'];
 
 const parseTagNames = (value: string) => {
     return value.split(/[,，]/).filter(t => !!t);
 };
 
-export const inputPostConfiguration = async (
-    source: PostConfigureDto,
-    steps: PostConfigurationType[] = []
-): Promise<PostConfigureDto | undefined> => {
+export const inputPostSettings = async (
+    postTitle: string,
+    source: PostSettingsDto,
+    steps: PostSettingsType[] = []
+): Promise<PostSettingsDto | undefined> => {
     steps = steps?.length > 0 ? steps : defaultSteps;
     const configuredPost = Object.assign({}, source);
     const state = {
-        title: '博文设置',
+        title: `${postTitle} - 博文设置`,
         totalSteps: steps.length,
         step: 1,
     };
-    let map: [PostConfigurationType, (input: MultiStepInput) => Promise<any>][] = [];
+    let map: [PostSettingsType, (input: MultiStepInput) => Promise<any>][] = [];
     const calculateNextStep = (): void | InputStep =>
         state.step > steps.length ? undefined : map.find(x => x[0] === steps[state.step - 1])![1];
-    const calculateStepNumber = (type: PostConfigurationType) => {
+    const calculateStepNumber = (type: PostSettingsType) => {
         state.step = steps.findIndex(x => x === type) + 1;
     };
 
@@ -78,7 +79,9 @@ export const inputPostConfiguration = async (
             step: state.step++,
             totalSteps: state.totalSteps,
             placeholder: '<必选>请选择博文访问权限',
-            activeItem: items.find(x => x.id === configuredPost.accessPermission),
+            activeItems: <AccessPermissionPickItem[]>(
+                [items.find(x => x.id === configuredPost.accessPermission)].filter(x => !!x)
+            ),
             buttons: [],
             canSelectMany: false,
             shouldResume: () => Promise.resolve(false),
@@ -107,13 +110,13 @@ export const inputPostConfiguration = async (
             step: state.step++,
             totalSteps: state.totalSteps,
             placeholder: '<非必选>请选择博文分类',
-            activeItem: items[0],
+            activeItems: items.filter(x => configuredPost.categoryIds.includes(x.id)),
             buttons: [],
             canSelectMany: true,
             shouldResume: () => Promise.resolve(false),
         });
-        if (picked instanceof CategoryPickItem) {
-            configuredPost.categoryIds = [picked.id];
+        if (picked instanceof Array) {
+            configuredPost.categoryIds = picked.map(p => (p as CategoryPickItem).id);
         }
         return calculateNextStep();
     };
@@ -127,7 +130,7 @@ export const inputPostConfiguration = async (
             placeHolder: '<非必填>请输入博文标签, 以 ","分隔',
             buttons: [],
             shouldResume: () => Promise.resolve(false),
-            prompt: '',
+            prompt: '请输入博文标签, 以 ","分隔',
             validateInput: () => Promise.resolve(undefined),
             value: configuredPost.tags?.join(',') ?? '',
         });
@@ -144,7 +147,7 @@ export const inputPostConfiguration = async (
             placeHolder: '<非必填>请输入博文摘要',
             buttons: [],
             shouldResume: () => Promise.resolve(false),
-            prompt: '',
+            prompt: '请输入博文摘要',
             validateInput: () => Promise.resolve(undefined),
             value: configuredPost.description ?? '',
         });
@@ -161,7 +164,7 @@ export const inputPostConfiguration = async (
             placeHolder: '<非必填>设置博文访问密码',
             buttons: [],
             shouldResume: () => Promise.resolve(false),
-            prompt: '',
+            prompt: '设置博文访问密码',
             validateInput: () => Promise.resolve(undefined),
             value: configuredPost.password ?? '',
             password: true,

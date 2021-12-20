@@ -27,7 +27,7 @@ export interface QuickPickParameters<T extends QuickPickItem> {
     step: number;
     totalSteps: number;
     items: T[];
-    activeItem?: T;
+    activeItems?: T[];
     placeholder: string;
     buttons?: QuickInputButton[];
     canSelectMany: boolean;
@@ -86,7 +86,7 @@ export class MultiStepInput {
         step,
         totalSteps,
         items,
-        activeItem,
+        activeItems,
         placeholder,
         buttons,
         canSelectMany,
@@ -104,8 +104,9 @@ export class MultiStepInput {
                 input.placeholder = placeholder;
                 input.items = items;
                 input.canSelectMany = canSelectMany;
-                if (activeItem) {
-                    input.activeItems = [activeItem];
+                if (activeItems) {
+                    input.activeItems = activeItems;
+                    input.selectedItems = activeItems;
                 }
                 input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])];
                 disposables.push(

@@ -81,6 +81,11 @@
                 "title": "发布",
                 "icon": "dist/assets/icon-upload.svg",
                 "category": "Cnblogs Local Draft"
+            },
+            {
+                "command": "vscode-cnb.modify-post-settings",
+                "title": "修改博文设置",
+                "icon": "$(gear)"
             }
         ],
         "configuration": {
@@ -159,6 +164,11 @@
                     "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
                 },
                 {
+                    "command": "vscode-cnb.modify-post-settings",
+                    "group": "inline",
+                    "when": "listMultiSelection == false && view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
+                },
+                {
                     "command": "vscode-cnb.save-local-draft-to-cnblogs",
                     "when": "viewItem == cnb-local-draft-file",
                     "group": "inline@1"
@@ -179,6 +189,10 @@
                 {
                     "command": "vscode-cnb.delete-post",
                     "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
+                },
+                {
+                    "command": "vscode-cnb.modify-post-settings",
+                    "when": "listMultiSelection == false && view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
                 }
             ]
         },

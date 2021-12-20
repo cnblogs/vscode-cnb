@@ -7,7 +7,7 @@ import { PostFileMapManager } from '../services/post-file-map';
 import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
 import { openPostInVscode } from './open-post-in-vscode';
 import { openPostFile } from './open-post-file';
-import { inputPostConfiguration } from '../utils/input-post-configuration';
+import { inputPostSettings } from '../utils/input-post-settings';
 
 export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
     if (!localDraft) {
@@ -24,7 +24,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
     post.postBody = content;
     post.title = localDraft.fileNameWithoutExt;
     post.isMarkdown = true;
-    const userInputPostConfig = await inputPostConfiguration(post);
+    const userInputPostConfig = await inputPostSettings(post.title, post);
     if (!userInputPostConfig) {
         AlertService.warning('操作已取消');
         return;
