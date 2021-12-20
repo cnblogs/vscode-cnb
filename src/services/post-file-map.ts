@@ -1,7 +1,9 @@
 import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
 import { globalState } from './global-state';
 
-export type PostFileMap = [number, string];
+const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && !!map[1];
+
+export type PostFileMap = [postId: number, filePath: string];
 
 export class PostFileMapManager {
     static storageKey = 'postFileMaps';
@@ -10,9 +12,15 @@ export class PostFileMapManager {
         return globalState.storage.get<PostFileMap[]>(this.storageKey) ?? [];
     }
 
-    static async updateOrCreate(postId: number, filePath: string) {
+    static async updateOrCreateMany(...maps: PostFileMap[]): Promise<void> {
+        for (const map of maps) {
+            await this.updateOrCreate(map[0], map[1]);
+        }
+    }
+
+    static async updateOrCreate(postId: number, filePath: string): Promise<void> {
         const validFileExt = ['.md', '.html'];
-        if (!validFileExt.some(x => filePath.endsWith(x))) {
+        if (filePath && !validFileExt.some(x => filePath.endsWith(x))) {
             throw Error('Invalid filepath, file must have type markdown or html');
         }
         const maps = this.maps;
@@ -22,7 +30,7 @@ export class PostFileMapManager {
         } else {
             maps.push([postId, filePath]);
         }
-        await globalState.storage.update(this.storageKey, maps);
+        await globalState.storage.update(this.storageKey, maps.filter(validatePostFileMap));
         const treeViewItem = postsDataProvider.pagedPosts?.items.find(x => x.id === postId);
         if (treeViewItem) {
             postsDataProvider.fireTreeDataChangedEvent(treeViewItem);
@@ -30,12 +38,12 @@ export class PostFileMapManager {
     }
 
     static findByPostId(postId: number) {
-        const maps = this.maps;
+        const maps = this.maps.filter(validatePostFileMap);
         return maps.find(x => x[0] === postId);
     }
 
     static findByFilePath(path: string) {
-        const maps = this.maps;
+        const maps = this.maps.filter(validatePostFileMap);
         return maps.find(x => x[1] === path);
     }
 

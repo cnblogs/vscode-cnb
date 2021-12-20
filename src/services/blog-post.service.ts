@@ -41,7 +41,12 @@ export class BlogPostService {
             throw Error(`request failed, ${response.status}, ${await response.text()}`);
         }
         const obj = <PagedBlogPostDto>await response.json();
-        return new PageModel(obj.pageIndex, obj.pageSize, obj.postsCount, obj.postList);
+        return new PageModel(
+            obj.pageIndex,
+            obj.pageSize,
+            obj.postsCount,
+            obj.postList.map(x => Object.assign(new BlogPost(), x))
+        );
     }
 
     async fetchPostEditDto(postId: number): Promise<PostEditDto> {
@@ -54,6 +59,27 @@ export class BlogPostService {
         }
         const obj = (await response.json()) as any;
         return new PostEditDto(Object.assign(new BlogPost(), obj.blogPost), obj.myConfig);
+    }
+
+    async deletePost(postId: number) {
+        const res = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
+            method: 'DELETE',
+            headers: [accountService.buildBearerAuthorizationHeader()],
+        });
+        if (!res.ok) {
+            throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`);
+        }
+    }
+
+    async deletePosts(postIds: number[]) {
+        const s = new URLSearchParams(postIds.map(id => ['postIds', `${id}`]));
+        const res = await fetch(`${this._baseUrl}/api/bulk-operation/post?${s}`, {
+            method: 'DELETE',
+            headers: [accountService.buildBearerAuthorizationHeader()],
+        });
+        if (!res.ok) {
+            throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`);
+        }
     }
 
     async updatePost(post: BlogPost): Promise<PostUpdatedResponse> {

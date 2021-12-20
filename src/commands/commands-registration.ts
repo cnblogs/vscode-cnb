@@ -10,6 +10,7 @@ import { openPostInVscode } from './open-post-in-vscode';
 import { saveLocalDraftToCnblogs, savePostToCnblogs } from './save-post';
 import { createLocalDraft } from './create-local-draft';
 import { deleteLocalDraft } from './delete-local-draft';
+import { deleteSelectedPosts } from './delete-post';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -30,6 +31,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.next-posts-list`, gotoNextPostsList),
         vscode.commands.registerCommand(`${appName}.edit-post`, openPostInVscode),
         vscode.commands.registerCommand(`${appName}.save-post`, savePostToCnblogs),
+        vscode.commands.registerCommand(`${appName}.delete-post`, deleteSelectedPosts),
         vscode.commands.registerCommand(`${appName}.create-local-draft`, createLocalDraft),
         vscode.commands.registerCommand(`${appName}.delete-local-draft`, deleteLocalDraft),
         vscode.commands.registerCommand(`${appName}.save-local-draft-to-cnblogs`, saveLocalDraftToCnblogs),

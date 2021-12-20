@@ -22,59 +22,65 @@
                 "command": "vscode-cnb.logout",
                 "title": "登出",
                 "icon": "dist/assets/icon-logout.svg",
-                "category": "vscode-cnb.account"
+                "category": "Cnblogs Account"
             },
             {
                 "command": "vscode-cnb.previous-posts-list",
                 "title": "上一页",
                 "icon": "dist/assets/icon-page-previous.svg",
                 "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.hasPrevious",
-                "category": "vscode-cnb.posts-list"
+                "category": "Cnblogs Posts List"
             },
             {
                 "command": "vscode-cnb.seek-posts-list",
                 "title": "跳页",
                 "icon": "dist/assets/icon-seek.svg",
                 "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.pageCount > 0",
-                "category": "vscode-cnb.posts-list"
+                "category": "Cnblogs Posts List"
             },
             {
                 "command": "vscode-cnb.next-posts-list",
                 "title": "下一页",
                 "icon": "dist/assets/icon-page-next.svg",
                 "enablement": "!vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.hasNext",
-                "category": "vscode-cnb.posts-list"
+                "category": "Cnblogs Posts List"
             },
             {
                 "command": "vscode-cnb.refresh-posts-list",
                 "title": "刷新",
                 "icon": "dist/assets/icon-refresh.svg",
                 "enablement": "!vscode-cnb.posts-list.refreshing",
-                "category": "vscode-cnb.posts-list"
+                "category": "Cnblogs Posts List"
             },
             {
                 "command": "vscode-cnb.save-post",
                 "title": "保存博文",
                 "icon": "dist/assets/icon-upload.svg",
-                "category": "vscode-cnb.posts-list"
+                "category": "Cnblogs Posts List"
+            },
+            {
+                "command": "vscode-cnb.delete-post",
+                "title": "删除随笔(支持多选)",
+                "icon": "$(trash)",
+                "category": "Cnblogs Posts List"
             },
             {
                 "command": "vscode-cnb.delete-local-draft",
                 "title": "删除",
                 "icon": "$(trash)",
-                "category": "vscode-cnb.posts-list.local-draft"
+                "category": "Cnblogs Local Draft"
             },
             {
                 "command": "vscode-cnb.create-local-draft",
                 "title": "新建本地草稿",
                 "icon": "$(new-file)",
-                "category": "vscode-cnb.posts-list.local-draft"
+                "category": "Cnblogs Local Draft"
             },
             {
                 "command": "vscode-cnb.save-local-draft-to-cnblogs",
                 "title": "发布",
                 "icon": "dist/assets/icon-upload.svg",
-                "category": "vscode-cnb.posts-list.local-draft"
+                "category": "Cnblogs Local Draft"
             }
         ],
         "configuration": {
@@ -148,6 +154,21 @@
                     "when": "viewItem == cnb-post-cached"
                 },
                 {
+                    "command": "vscode-cnb.delete-post",
+                    "group": "inline",
+                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
+                },
+                {
+                    "command": "vscode-cnb.save-local-draft-to-cnblogs",
+                    "when": "viewItem == cnb-local-draft-file",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "vscode-cnb.delete-local-draft",
+                    "when": "viewItem == cnb-local-draft-file",
+                    "group": "inline@2"
+                },
+                {
                     "command": "vscode-cnb.create-local-draft",
                     "when": "viewItem == cnb-local-drafts-folder"
                 },
@@ -156,9 +177,8 @@
                     "when": "viewItem == cnb-local-draft-file"
                 },
                 {
-                    "command": "vscode-cnb.save-local-draft-to-cnblogs",
-                    "when": "viewItem == cnb-local-draft-file",
-                    "group": "inline"
+                    "command": "vscode-cnb.delete-post",
+                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
                 }
             ]
         },
