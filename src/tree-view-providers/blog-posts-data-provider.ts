@@ -59,10 +59,10 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
                 const pagedPosts = this._pagedPosts;
                 if (!pagedPosts) {
                     refreshPostsList();
-                    resolve([localDraftsTreeItem]);
+                    resolve([]);
                     return;
                 }
-                resolve([localDraftsTreeItem, ...pagedPosts.items]);
+                resolve([...pagedPosts.items]);
             } else {
                 resolve([]);
             }
