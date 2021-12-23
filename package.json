@@ -103,6 +103,11 @@
                 "command": "vscode-cnb.upload-local-disk-image",
                 "title": "上传本地图片到博客园",
                 "category": "Cnblgos"
+            },
+            {
+                "command": "vscode-cnb.reveal-local-post-file-in-os",
+                "title": "在文件资源管理器中打开",
+                "category": "Cnblogs"
             }
         ],
         "configuration": {
@@ -169,6 +174,28 @@
                     "when": "view == cnblogs-posts-list"
                 }
             ],
+            "commandPalette": [
+                {
+                    "command": "vscode-cnb.reveal-local-post-file-in-os",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.save-post",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.modify-post-settings",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.save-local-draft-to-cnblogs",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.delete-post",
+                    "when": "false"
+                }
+            ],
             "view/item/context": [
                 {
                     "command": "vscode-cnb.save-post",
@@ -210,6 +237,10 @@
                 {
                     "command": "vscode-cnb.modify-post-settings",
                     "when": "listMultiSelection == false && view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
+                },
+                {
+                    "command": "vscode-cnb.reveal-local-post-file-in-os",
+                    "when": "view == cnblogs-posts-list"
                 }
             ],
             "editor/context": [
