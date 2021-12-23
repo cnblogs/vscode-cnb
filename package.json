@@ -89,8 +89,19 @@
                 "category": "Cnblgos Posts List"
             },
             {
+                "command": "vscode-cnb.upload-image",
+                "title": "上传图片到博客园",
+                "category": "Cnblgos",
+                "icon": "dist/assets/icon-image-upload.svg"
+            },
+            {
                 "command": "vscode-cnb.upload-image-from-clipboard",
-                "title": "上传剪贴板图片",
+                "title": "上传剪贴板图片到博客园",
+                "category": "Cnblgos"
+            },
+            {
+                "command": "vscode-cnb.upload-local-disk-image",
+                "title": "上传本地图片到博客园",
                 "category": "Cnblgos"
             }
         ],
@@ -200,8 +211,41 @@
                     "command": "vscode-cnb.modify-post-settings",
                     "when": "listMultiSelection == false && view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
                 }
+            ],
+            "editor/context": [
+                {
+                    "command": "vscode-cnb.upload-image-from-clipboard",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs"
+                },
+                {
+                    "command": "vscode-cnb.upload-local-disk-image",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs"
+                }
+            ],
+            "editor/title": [
+                {
+                    "command": "vscode-cnb.upload-image",
+                    "when": "resourceLangId == markdown",
+                    "group": "navigation"
+                }
             ]
         },
+        "keybindings": [
+            {
+                "command": "vscode-cnb.upload-image-from-clipboard",
+                "key": "ctrl+alt+u",
+                "mac": "cmd+alt+u",
+                "when": "editorTextFocus && resourceLangId == markdown"
+            },
+            {
+                "command": "vscode-cnb.upload-local-disk-image",
+                "key": "ctrl+alt+f",
+                "mac": "cmd+alt+f",
+                "when": "editorTextFocus && resourceLangId == markdown"
+            }
+        ],
         "viewsContainers": {
             "activitybar": [
                 {

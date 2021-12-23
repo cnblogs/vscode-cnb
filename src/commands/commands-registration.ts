@@ -12,7 +12,9 @@ import { createLocalDraft } from './create-local-draft';
 import { deleteLocalDraft } from './delete-local-draft';
 import { deleteSelectedPosts } from './delete-post';
 import { modifyPostSettings } from './modify-post-settings';
-import { uploadImageFromClipboard } from './upload-image-from-clipboard';
+import { uploadImageFromClipboard } from './upload-image/upload-image-from-clipboard';
+import { uploadLocalDiskImage } from './upload-image/upload-local-disk-image';
+import { uploadImage } from './upload-image/upload-image';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -39,6 +41,8 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.delete-local-draft`, deleteLocalDraft),
         vscode.commands.registerCommand(`${appName}.save-local-draft-to-cnblogs`, saveLocalDraftToCnblogs),
         vscode.commands.registerCommand(`${appName}.upload-image-from-clipboard`, uploadImageFromClipboard),
+        vscode.commands.registerCommand(`${appName}.upload-local-disk-image`, uploadLocalDiskImage),
+        vscode.commands.registerCommand(`${appName}.upload-image`, uploadImage),
     ];
     context?.subscriptions.push(...disposables);
 };
