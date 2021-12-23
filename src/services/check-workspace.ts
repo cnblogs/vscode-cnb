@@ -15,3 +15,9 @@ export const beginListenConfigurationChangeEvent = () => {
     );
     isTargetWorkspace();
 };
+
+export const beginListenWorkspaceFolderChangeEvent = () => {
+    workspace.onDidChangeWorkspaceFolders(() => {
+        isTargetWorkspace();
+    });
+};

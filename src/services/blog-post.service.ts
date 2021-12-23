@@ -27,11 +27,12 @@ export class BlogPostService {
 
     protected constructor() {}
 
-    async fetchPostsList({ pageIndex = 1, pageSize = defaultPageSize }): Promise<PageModel<BlogPost>> {
+    async fetchPostsList({ search = '', pageIndex = 1, pageSize = defaultPageSize }): Promise<PageModel<BlogPost>> {
         const s = new URLSearchParams([
             ['t', '1'],
             ['p', `${pageIndex}`],
             ['s', `${pageSize}`],
+            ['search', search],
         ]);
         const response = await fetch(`${this._baseUrl}/api/posts/list?${s}`, {
             headers: [accountService.buildBearerAuthorizationHeader()],

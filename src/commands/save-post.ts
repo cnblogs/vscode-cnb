@@ -1,4 +1,4 @@
-import { Uri, workspace, window, ProgressLocation } from 'vscode';
+import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode';
 import { BlogPost } from '../models/blog-post';
 import { LocalDraftFile } from '../models/local-draft-file';
 import { AlertService } from '../services/alert.service';
@@ -8,6 +8,52 @@ import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provid
 import { openPostInVscode } from './open-post-in-vscode';
 import { openPostFile } from './open-post-file';
 import { inputPostSettings } from '../utils/input-post-settings';
+import { searchPostsByTitle } from '../services/search-post-by-title';
+import * as path from 'path';
+
+export const savePostFileToCnblogs = async (fileUri: Uri) => {
+    if (!fileUri || fileUri.scheme !== 'file') {
+        return;
+    }
+    const filePath = fileUri.fsPath;
+    const fileName = path.basename(filePath);
+    const fileNameWithoutExt = path.basename(fileName, path.extname(fileName));
+    const postId = PostFileMapManager.getPostId(filePath);
+    if (postId && postId >= 0) {
+        await savePostToCnblogs((await blogPostService.fetchPostEditDto(postId)).post);
+    } else {
+        const options = [`新建博文`, `关联我博客园的其他博文(将根据标题搜索)`];
+        const selected = await window.showInformationMessage(
+            '保存博文到博客园',
+            {
+                modal: true,
+                detail: `您可以新建一篇名为"${fileNameWithoutExt}"博文, 或将文件 "${filePath}" 关联到一篇已有博文并更新该博文; 若您选择后者, 您将通过标题搜索您博客园的博文并选择一个进行关联, 关联后将会更新该博文的标题和内容.`,
+            } as MessageOptions,
+            ...options
+        );
+        switch (selected) {
+            case options[1]:
+                {
+                    const selectedPost = await searchPostsByTitle({
+                        postTitle: path.basename(filePath, path.extname(filePath)),
+                        quickPickTitle: '搜索要关联的博文',
+                    });
+                    if (selectedPost) {
+                        PostFileMapManager.updateOrCreate(selectedPost.id, filePath);
+                        await savePostToCnblogs((await blogPostService.fetchPostEditDto(selectedPost.id)).post);
+                    }
+                }
+                break;
+            case options[0]:
+                await saveLocalDraftToCnblogs(
+                    Object.assign(new LocalDraftFile(), {
+                        filePath,
+                    } as LocalDraftFile)
+                );
+                break;
+        }
+    }
+};
 
 export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
     if (!localDraft) {
@@ -52,6 +98,7 @@ export const savePostToCnblogs = async (post: BlogPost, isNewPost = false) => {
         }
         const updatedPostBody = new TextDecoder().decode(await workspace.fs.readFile(Uri.file(localFilePath)));
         post.postBody = updatedPostBody;
+        post.title = path.basename(localFilePath, path.extname(localFilePath));
     }
 
     const activeEditor = window.visibleTextEditors.find(x => x.document.uri.fsPath === localFilePath);
