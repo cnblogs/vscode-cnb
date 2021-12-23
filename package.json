@@ -113,6 +113,10 @@
                 "command": "vscode-cnb.save-post-file-to-cnblogs",
                 "title": "保存到博客园",
                 "icon": "dist/assets/icon-upload.svg"
+            },
+            {
+                "command": "vscode-cnb.show-post-to-local-file-info",
+                "title": "博文信息"
             }
         ],
         "configuration": {
@@ -213,6 +217,10 @@
                 {
                     "command": "vscode-cnb.logout",
                     "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.show-post-to-local-file-info",
+                    "when": "false"
                 }
             ],
             "view/item/context": [
@@ -294,6 +302,10 @@
             "explorer/context": [
                 {
                     "command": "vscode-cnb.save-post-file-to-cnblogs",
+                    "when": "resourceLangId == markdown && vscode-cnb.isTargetWorkspace && resourceScheme == file"
+                },
+                {
+                    "command": "vscode-cnb.show-post-to-local-file-info",
                     "when": "resourceLangId == markdown && vscode-cnb.isTargetWorkspace && resourceScheme == file"
                 }
             ]

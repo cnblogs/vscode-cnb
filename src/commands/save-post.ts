@@ -22,7 +22,7 @@ export const savePostFileToCnblogs = async (fileUri: Uri) => {
     if (postId && postId >= 0) {
         await savePostToCnblogs((await blogPostService.fetchPostEditDto(postId)).post);
     } else {
-        const options = [`新建博文`, `关联我博客园的其他博文(将根据标题搜索)`];
+        const options = [`新建博文`, `关联已有博文(可以根据标题搜索)`];
         const selected = await window.showInformationMessage(
             '保存博文到博客园',
             {
@@ -40,7 +40,12 @@ export const savePostFileToCnblogs = async (fileUri: Uri) => {
                     });
                     if (selectedPost) {
                         PostFileMapManager.updateOrCreate(selectedPost.id, filePath);
-                        await savePostToCnblogs((await blogPostService.fetchPostEditDto(selectedPost.id)).post);
+                        const postEditDto = await blogPostService.fetchPostEditDto(selectedPost.id);
+                        const fileContent = new TextDecoder().decode(await workspace.fs.readFile(fileUri));
+                        if (!fileContent) {
+                            await workspace.fs.writeFile(fileUri, new TextEncoder().encode(postEditDto.post.postBody));
+                        }
+                        await savePostToCnblogs(postEditDto.post);
                     }
                 }
                 break;

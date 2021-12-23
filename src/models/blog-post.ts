@@ -33,6 +33,17 @@ export class BlogPost {
     tags?: string[];
     title: string = '';
     url: string = '';
+
+    get accessPermissionDesc(): string {
+        switch (this.accessPermission) {
+            case AccessPermission.authenticated:
+                return '仅登录用户';
+            case AccessPermission.owner:
+                return '仅自己';
+            default:
+                return '公开';
+        }
+    }
 }
 
 export enum PostType {

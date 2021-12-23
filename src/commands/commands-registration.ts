@@ -16,6 +16,7 @@ import { uploadImageFromClipboard } from './upload-image/upload-clipboard-image'
 import { uploadLocalDiskImage } from './upload-image/upload-local-disk-image';
 import { uploadImage } from './upload-image/upload-image';
 import { revealLocalPostFileInOs } from './reveal-local-post-in-os';
+import { showPostToLocalFileInfo } from './show-post-to-local-file-info';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -46,6 +47,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.upload-local-disk-image`, uploadLocalDiskImage),
         vscode.commands.registerCommand(`${appName}.upload-image`, uploadImage),
         vscode.commands.registerCommand(`${appName}.reveal-local-post-file-in-os`, revealLocalPostFileInOs),
+        vscode.commands.registerCommand(`${appName}.show-post-to-local-file-info`, showPostToLocalFileInfo),
     ];
     context?.subscriptions.push(...disposables);
 };
