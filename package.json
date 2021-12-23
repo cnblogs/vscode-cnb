@@ -95,7 +95,7 @@
                 "icon": "dist/assets/icon-image-upload.svg"
             },
             {
-                "command": "vscode-cnb.upload-image-from-clipboard",
+                "command": "vscode-cnb.upload-clipboard-image",
                 "title": "上传剪贴板图片到博客园",
                 "category": "Cnblgos"
             },
@@ -214,7 +214,7 @@
             ],
             "editor/context": [
                 {
-                    "command": "vscode-cnb.upload-image-from-clipboard",
+                    "command": "vscode-cnb.upload-clipboard-image",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs"
                 },
@@ -234,7 +234,7 @@
         },
         "keybindings": [
             {
-                "command": "vscode-cnb.upload-image-from-clipboard",
+                "command": "vscode-cnb.upload-clipboard-image",
                 "key": "ctrl+alt+u",
                 "mac": "cmd+alt+u",
                 "when": "editorTextFocus && resourceLangId == markdown"

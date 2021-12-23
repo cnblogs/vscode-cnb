@@ -1,5 +1,5 @@
 import { MessageOptions, window } from 'vscode';
-import { uploadImageFromClipboard } from './upload-image-from-clipboard';
+import { uploadImageFromClipboard } from './upload-clipboard-image';
 import { uploadLocalDiskImage } from './upload-local-disk-image';
 
 export const uploadImage = async () => {
