@@ -5,9 +5,7 @@
         "ecmaVersion": 6,
         "sourceType": "module"
     },
-    "plugins": [
-        "@typescript-eslint"
-    ],
+    "plugins": ["@typescript-eslint"],
     "extends": "eslint:recommended",
     "rules": {
         "@typescript-eslint/naming-convention": "warn",
@@ -19,9 +17,5 @@
         "require-await": "warn",
         "no-undef": "off"
     },
-    "ignorePatterns": [
-        "out",
-        "dist",
-        "**/*.d.ts"
-    ]
+    "ignorePatterns": ["out", "dist", "**/*.d.ts"]
 }
