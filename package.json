@@ -127,7 +127,7 @@
                     "scope": "resource",
                     "type": "string",
                     "editPresentation": "singlelineText",
-                    "markdownDescription": "用于存放博文的工作空间, 默认会使用`~/Documents/Cnblogs`, 当检测到vscode处于此工作空间时, 通过vscode-cnb插件, 您可以在此目录下编辑博客园的博文"
+                    "markdownDescription": "存放markdown博文的文件夹, 默认为`~/Documents/Cnblogs`, 当检测到vscode处于此工作空间时, 可以vscode-cnb插件编辑已有博文, 也可以将本地markdown文件保存到博客园"
                 }
             }
         },
