@@ -116,7 +116,7 @@
             },
             {
                 "command": "vscode-cnb.show-post-to-local-file-info",
-                "title": "博文信息"
+                "title": "关联博文信息"
             }
         ],
         "configuration": {
