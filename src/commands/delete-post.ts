@@ -1,46 +1,38 @@
-import { ProgressLocation, QuickPickItem, Uri, window, workspace } from 'vscode';
+import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode';
 import { BlogPost } from '../models/blog-post';
-import { AlertService } from '../services/alert.service';
 import { blogPostService } from '../services/blog-post.service';
 import { PostFileMap, PostFileMapManager } from '../services/post-file-map';
 import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
 import { extensionViews } from '../tree-view-providers/tree-view-registration';
 import { refreshPostsList } from './posts-list';
 
-const requireConfirm = async (selectedPosts: BlogPost[]): Promise<boolean> => {
+const confirmDelete = async (
+    selectedPosts: BlogPost[]
+): Promise<{ confirmed: boolean; deleteLocalFileAtSameTime: boolean }> => {
+    const result = { confirmed: false, deleteLocalFileAtSameTime: false };
     if (!selectedPosts || selectedPosts.length <= 0) {
-        return false;
+        return result;
     }
-    const items = ['确定', '取消'];
-    const input = await window.showQuickPick(items, {
-        title: `确定要删除 ${selectedPosts.map(x => x.title).join(', ')} 这${selectedPosts.length}篇博文吗?`,
-        placeHolder: '请谨慎操作!',
-    });
-    return input === items[0];
-};
+    const items = ['确定(保留本地文件)', '确定(同时删除本地文件)'];
+    const clicked = await window.showWarningMessage(
+        '确定要删除吗?',
+        {
+            detail: `确认后将会删除 ${selectedPosts.map(x => x.title).join(', ')} 这${selectedPosts.length}篇博文吗?`,
 
-const askIsToDeleteLocalFile = async (selectedPosts: BlogPost[]) => {
-    if (!selectedPosts || selectedPosts.length <= 0) {
-        return false;
+            modal: true,
+        } as MessageOptions,
+        ...items
+    );
+    switch (clicked) {
+        case items[0]:
+            result.confirmed = true;
+            break;
+        case items[1]:
+            result.confirmed = true;
+            result.deleteLocalFileAtSameTime = true;
+            break;
     }
-    const items: QuickPickItem[] = [
-        {
-            label: '是',
-            picked: false,
-        },
-        {
-            label: '否',
-            picked: true,
-        },
-    ];
-    const input = await window.showQuickPick(items, {
-        title: `是否要同时删除本地文件?`,
-        placeHolder: '',
-    });
-    if (input === undefined) {
-        throw Error('canceled');
-    }
-    return input === items[0];
+    return result;
 };
 
 export const deleteSelectedPosts = async (post: BlogPost) => {
@@ -55,17 +47,8 @@ export const deleteSelectedPosts = async (post: BlogPost) => {
         return;
     }
 
-    if (!(await requireConfirm(selectedPosts))) {
-        return;
-    }
-
-    let isToDeleteLocalFile = false;
-    try {
-        isToDeleteLocalFile = selectedPosts.some(x => PostFileMapManager.getFilePath(x.id))
-            ? await askIsToDeleteLocalFile(selectedPosts)
-            : false;
-    } catch {
-        AlertService.warning('操作取消');
+    const { confirmed, deleteLocalFileAtSameTime: isToDeleteLocalFile } = await confirmDelete(selectedPosts);
+    if (!confirmed) {
         return;
     }
 
@@ -89,9 +72,11 @@ export const deleteSelectedPosts = async (post: BlogPost) => {
                     });
             }
             await PostFileMapManager.updateOrCreateMany(...selectedPosts.map<PostFileMap>(p => [p.id, '']));
-            refreshPostsList();
+            await refreshPostsList();
         } catch (err) {
-            AlertService.error(err instanceof Error ? err.message : `删除博文失败\n${JSON.stringify(err)}`);
+            window.showErrorMessage('删除博文失败', {
+                detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
+            } as MessageOptions);
         } finally {
             progress.report({
                 increment: 100,
