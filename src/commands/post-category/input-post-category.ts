@@ -80,7 +80,7 @@ export const inputPostCategory = async ({
         calculateStepNumber('description');
         const categoryTitle = await input.showInputBox({
             title: `分类描述 - ${title}`,
-            value: category?.title ?? '',
+            value: category?.description ?? '',
             step: state.step++,
             totalSteps: state.totalSteps,
             placeHolder: '<选填>请输入分类描述',

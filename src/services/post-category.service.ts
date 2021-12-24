@@ -45,7 +45,7 @@ export class PostCategoryService {
 
     async updateCategory(category: PostCategory) {
         const res = await fetch(`${globalState.config.apiBaseUrl}/api/category/blog/${category.categoryId}`, {
-            method: 'POST',
+            method: 'PUT',
             body: JSON.stringify(category),
             headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
         });

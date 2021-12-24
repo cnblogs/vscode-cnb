@@ -31,10 +31,11 @@ export const updatePostCategory = async (category?: PostCategory) => {
             p.report({ increment: 10 });
             try {
                 await postCategoryService.updateCategory(updateDto);
-                await refreshPostCategoriesList();
+                refreshPostCategoriesList();
             } catch (err) {
-                await window.showInformationMessage('更新博文分类失败', {
+                window.showErrorMessage('更新博文分类失败', {
                     detail: `服务器反回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
+                    modal: true,
                 } as MessageOptions);
             } finally {
                 p.report({ increment: 100 });
