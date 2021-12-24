@@ -17,6 +17,10 @@ import { uploadLocalDiskImage } from './upload-image/upload-local-disk-image';
 import { uploadImage } from './upload-image/upload-image';
 import { revealLocalPostFileInOs } from './reveal-local-post-in-os';
 import { showPostToLocalFileInfo } from './show-post-to-local-file-info';
+import { newPostCategory } from './post-category/new-post-category';
+import { deleteSelectedCategories } from './post-category/delete-selected-categoriess';
+import { refreshPostCategoriesList } from './post-category/refresh-post-categories-list';
+import { updatePostCategory } from './post-category/update-post-category';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -48,6 +52,10 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.upload-image`, uploadImage),
         vscode.commands.registerCommand(`${appName}.reveal-local-post-file-in-os`, revealLocalPostFileInOs),
         vscode.commands.registerCommand(`${appName}.show-post-to-local-file-info`, showPostToLocalFileInfo),
+        vscode.commands.registerCommand(`${appName}.new-post-category`, newPostCategory),
+        vscode.commands.registerCommand(`${appName}.delete-selected-post-categories`, deleteSelectedCategories),
+        vscode.commands.registerCommand(`${appName}.refresh-post-categories-list`, refreshPostCategoriesList),
+        vscode.commands.registerCommand(`${appName}.update-post-category`, updatePostCategory),
     ];
     context?.subscriptions.push(...disposables);
 };

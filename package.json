@@ -86,23 +86,23 @@
                 "command": "vscode-cnb.modify-post-settings",
                 "title": "修改博文设置",
                 "icon": "$(gear)",
-                "category": "Cnblgos Posts List"
+                "category": "Cnblogs Posts List"
             },
             {
                 "command": "vscode-cnb.upload-image",
                 "title": "上传图片到博客园",
-                "category": "Cnblgos",
+                "category": "Cnblogs",
                 "icon": "dist/assets/icon-image-upload.svg"
             },
             {
                 "command": "vscode-cnb.upload-clipboard-image",
                 "title": "上传剪贴板图片到博客园",
-                "category": "Cnblgos"
+                "category": "Cnblogs"
             },
             {
                 "command": "vscode-cnb.upload-local-disk-image",
                 "title": "上传本地图片到博客园",
-                "category": "Cnblgos"
+                "category": "Cnblogs"
             },
             {
                 "command": "vscode-cnb.reveal-local-post-file-in-os",
@@ -117,6 +117,33 @@
             {
                 "command": "vscode-cnb.show-post-to-local-file-info",
                 "title": "关联博文信息"
+            },
+            {
+                "command": "vscode-cnb.new-post-category",
+                "title": "新建博文分类",
+                "icon": "$(add)",
+                "category": "Cnblogs Post Categories Management"
+            },
+            {
+                "command": "vscode-cnb.delete-selected-post-categories",
+                "title": "删除",
+                "icon": "$(trash)",
+                "category": "Cnblogs Post Categories Management",
+                "enablement": "!vscode-cnb.postCategoriesList.isRefreshing"
+            },
+            {
+                "command": "vscode-cnb.refresh-post-categories-list",
+                "title": "刷新",
+                "icon": "dist/assets/icon-refresh.svg",
+                "category": "Cnblogs Post Categories Management",
+                "enablement": "!vscode-cnb.postCategoriesList.isRefreshing"
+            },
+            {
+                "command": "vscode-cnb.update-post-category",
+                "title": "编辑",
+                "icon": "$(edit)",
+                "category": "Cnblogs Post Categories Management",
+                "enablement": "!vscode-cnb.postCategoriesList.isRefreshing"
             }
         ],
         "configuration": {
@@ -148,6 +175,11 @@
                 {
                     "id": "cnblogs-account",
                     "name": "账户信息",
+                    "when": "vscode-cnb.isAuthorized"
+                },
+                {
+                    "id": "cnblogs-post-categories-list",
+                    "name": "分类列表",
                     "when": "vscode-cnb.isAuthorized"
                 }
             ]
@@ -183,6 +215,16 @@
                     "command": "vscode-cnb.create-local-draft",
                     "group": "navigation@5",
                     "when": "view == cnblogs-posts-list"
+                },
+                {
+                    "command": "vscode-cnb.new-post-category",
+                    "group": "navigation@1",
+                    "when": "view == cnblogs-post-categories-list"
+                },
+                {
+                    "command": "vscode-cnb.refresh-post-categories-list",
+                    "when": "view == cnblogs-post-categories-list",
+                    "group": "navigation@2"
                 }
             ],
             "commandPalette": [
@@ -220,6 +262,30 @@
                 },
                 {
                     "command": "vscode-cnb.show-post-to-local-file-info",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.new-post-category",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.delete-selected-post-categories",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.refresh-post-categories-list",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.update-post-category",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.next-posts-list",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.seek-posts-list",
                     "when": "false"
                 }
             ],
@@ -268,6 +334,24 @@
                 {
                     "command": "vscode-cnb.reveal-local-post-file-in-os",
                     "when": "view == cnblogs-posts-list"
+                },
+                {
+                    "command": "vscode-cnb.delete-selected-post-categories",
+                    "when": "viewItem == cnb-post-category"
+                },
+                {
+                    "command": "vscode-cnb.update-post-category",
+                    "when": "viewItem == cnb-post-category",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "vscode-cnb.delete-selected-post-categories",
+                    "when": "viewItem == cnb-post-category",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "vscode-cnb.update-post-category",
+                    "when": "viewItem == cnb-post-category"
                 }
             ],
             "editor/context": [
