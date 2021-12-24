@@ -48,7 +48,7 @@ export const deleteSelectedCategories = async (category?: PostCategory) => {
             for (const category of selectedCategories) {
                 try {
                     const increment = Math.round(10 + idx / selectedCategories.length / 90);
-                    p.report({ increment });
+                    p.report({ increment, message: `正在删除: 📂${category.title}` });
                     await postCategoryService.deleteCategory(category.categoryId);
                     idx++;
                 } catch (err) {
