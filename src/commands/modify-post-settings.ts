@@ -1,6 +1,7 @@
 import { BlogPost } from '../models/blog-post';
 import { AlertService } from '../services/alert.service';
 import { blogPostService } from '../services/blog-post.service';
+import { extensionViews } from '../tree-view-providers/tree-view-registration';
 import { inputPostSettings } from '../utils/input-post-settings';
 
 export const modifyPostSettings = async (post: BlogPost) => {
@@ -8,6 +9,7 @@ export const modifyPostSettings = async (post: BlogPost) => {
         return;
     }
 
+    await extensionViews.postsList?.reveal(post);
     const editDto = await blogPostService.fetchPostEditDto(post.id);
     const postEditDto = editDto.post;
     const inputSettings = await inputPostSettings(post.title, postEditDto);

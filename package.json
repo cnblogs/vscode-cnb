@@ -303,7 +303,7 @@
                 {
                     "command": "vscode-cnb.modify-post-settings",
                     "group": "inline",
-                    "when": "listMultiSelection == false && view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
+                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
                 },
                 {
                     "command": "vscode-cnb.save-local-draft-to-cnblogs",
@@ -329,7 +329,7 @@
                 },
                 {
                     "command": "vscode-cnb.modify-post-settings",
-                    "when": "listMultiSelection == false && view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
+                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
                 },
                 {
                     "command": "vscode-cnb.reveal-local-post-file-in-os",
