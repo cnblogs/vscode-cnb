@@ -9,10 +9,7 @@ export const updatePostCategory = async (category?: PostCategory) => {
     if (!category) {
         return;
     }
-    const selection = extensionViews.postCategoriesList?.selection ?? [];
-    if (selection.length > 1 && selection.includes(category)) {
-        return;
-    }
+    extensionViews.postCategoriesList?.reveal(category);
     const addDto = await inputPostCategory({
         title: '编辑博文分类',
         category,
