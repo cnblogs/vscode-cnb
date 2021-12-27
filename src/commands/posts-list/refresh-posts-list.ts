@@ -1,13 +1,13 @@
-import { globalState } from '../services/global-state';
-import { blogPostService } from '../services/blog-post.service';
+import { globalState } from '../../services/global-state';
+import { blogPostService } from '../../services/blog-post.service';
 import * as vscode from 'vscode';
-import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
-import { AlertService } from '../services/alert.service';
-import { PostsListState } from '../models/posts-list-state';
-import { PageModel } from '../models/page-model';
-import { BlogPost } from '../models/blog-post';
+import { postsDataProvider } from '../../tree-view-providers/blog-posts-data-provider';
+import { AlertService } from '../../services/alert.service';
+import { PostsListState } from '../../models/posts-list-state';
+import { PageModel } from '../../models/page-model';
+import { BlogPost } from '../../models/blog-post';
 import { window } from 'vscode';
-import { extensionViews } from '../tree-view-providers/tree-view-registration';
+import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
 export const refreshPostsList = async () => {
     if (refreshing) {

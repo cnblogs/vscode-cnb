@@ -3,15 +3,15 @@ import { AlertService } from '../services/alert.service';
 import { blogPostService } from '../services/blog-post.service';
 import { postCategoryService } from '../services/post-category.service';
 import { PostFileMapManager } from '../services/post-file-map';
-import { savePostFileToCnblogs } from './save-post';
+import { savePostFileToCnblogs } from './posts-list/save-post';
 
 /**
- * 博文与本地文件关联信息
+ * 本地文件所关联的博文信息
  *
  * @param {(Uri | number)} input
  * @returns {*}  {Promise<void>}
  */
-export const showPostToLocalFileInfo = async (input: Uri | number): Promise<void> => {
+export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void> => {
     let filePath: string | undefined;
     let postId: number | undefined;
     if (input instanceof Uri && input.scheme === 'file') {
@@ -47,13 +47,14 @@ export const showPostToLocalFileInfo = async (input: Uri | number): Promise<void
     const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : '';
     const tagsDesc = post.tags?.length ?? 0 > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : '';
     const options = ['取消关联'];
+    const postUrl = post.url.startsWith('//') ? `https:${post.url}` : post.url;
     const selected = await window.showInformationMessage(
-        `博文信息`,
+        `关联博文 - ${post.title}(Id: ${post.id})`,
         {
             modal: true,
-            detail: `博文标题: ${post.title}\n本地文件: ${filePath}\n发布时间: ${post.datePublished}\n发布状态: ${
+            detail: `🔗博文链接: ${postUrl}\n博文发布时间: ${post.datePublished}\n博文发布状态: ${
                 post.isPublished ? '已发布' : '未发布'
-            }\n访问权限: ${post.accessPermissionDesc}\n${categoryDesc}${tagsDesc}`.replace(/\n$/, ''),
+            }\n博文访问权限: ${post.accessPermissionDesc}\n${categoryDesc}${tagsDesc}`.replace(/\n$/, ''),
         } as MessageOptions,
         ...options
     );

@@ -5,22 +5,27 @@ import { login, logout } from './login';
 import * as vscode from 'vscode';
 import { openMyBlog } from './open-my-blog';
 import { globalState } from '../services/global-state';
-import { gotoNextPostsList, gotoPreviousPostsList, refreshPostsList, seekPostsList } from './posts-list';
-import { openPostInVscode } from './open-post-in-vscode';
-import { saveLocalDraftToCnblogs, savePostFileToCnblogs, savePostToCnblogs } from './save-post';
-import { createLocalDraft } from './create-local-draft';
-import { deleteLocalDraft } from './delete-local-draft';
-import { deleteSelectedPosts } from './delete-post';
-import { modifyPostSettings } from './modify-post-settings';
+import {
+    gotoNextPostsList,
+    gotoPreviousPostsList,
+    refreshPostsList,
+    seekPostsList,
+} from './posts-list/refresh-posts-list';
+import { saveLocalDraftToCnblogs, savePostFileToCnblogs, savePostToCnblogs } from './posts-list/save-post';
+import { createLocalDraft } from './posts-list/create-local-draft';
+import { deleteLocalDraft } from './posts-list/delete-local-draft';
+import { deleteSelectedPosts } from './posts-list/delete-post';
+import { modifyPostSettings } from './posts-list/modify-post-settings';
 import { uploadImageFromClipboard } from './upload-image/upload-clipboard-image';
 import { uploadLocalDiskImage } from './upload-image/upload-local-disk-image';
 import { uploadImage } from './upload-image/upload-image';
-import { revealLocalPostFileInOs } from './reveal-local-post-in-os';
-import { showPostToLocalFileInfo } from './show-post-to-local-file-info';
+import { revealLocalPostFileInOs } from './reveal-local-post-file-in-os';
+import { showLocalFileToPostInfo } from './show-local-file-to-post-info';
 import { newPostCategory } from './post-category/new-post-category';
 import { deleteSelectedCategories } from './post-category/delete-selected-categoriess';
 import { refreshPostCategoriesList } from './post-category/refresh-post-categories-list';
 import { updatePostCategory } from './post-category/update-post-category';
+import { openPostInVscode } from './posts-list/open-post-in-vscode';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -51,7 +56,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.upload-local-disk-image`, uploadLocalDiskImage),
         vscode.commands.registerCommand(`${appName}.upload-image`, uploadImage),
         vscode.commands.registerCommand(`${appName}.reveal-local-post-file-in-os`, revealLocalPostFileInOs),
-        vscode.commands.registerCommand(`${appName}.show-post-to-local-file-info`, showPostToLocalFileInfo),
+        vscode.commands.registerCommand(`${appName}.show-post-to-local-file-info`, showLocalFileToPostInfo),
         vscode.commands.registerCommand(`${appName}.new-post-category`, newPostCategory),
         vscode.commands.registerCommand(`${appName}.delete-selected-post-categories`, deleteSelectedCategories),
         vscode.commands.registerCommand(`${appName}.refresh-post-categories-list`, refreshPostCategoriesList),

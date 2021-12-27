@@ -10,7 +10,7 @@ import {
     TreeItemCollapsibleState,
     Uri,
 } from 'vscode';
-import { refreshPostsList } from '../commands/posts-list';
+import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
 import { BlogPost } from '../models/blog-post';
 import { LocalDraftFile } from '../models/local-draft-file';
 import { PageModel } from '../models/page-model';

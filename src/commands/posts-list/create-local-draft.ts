@@ -1,11 +1,11 @@
 import { homedir } from 'os';
 import path = require('path');
 import { Uri, window, workspace } from 'vscode';
-import { LocalDraftFile } from '../models/local-draft-file';
-import { AlertService } from '../services/alert.service';
-import { Settings } from '../services/settings.service';
-import { localDraftsTreeItem, postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
-import { extensionViews } from '../tree-view-providers/tree-view-registration';
+import { LocalDraftFile } from '../../models/local-draft-file';
+import { AlertService } from '../../services/alert.service';
+import { Settings } from '../../services/settings.service';
+import { localDraftsTreeItem, postsDataProvider } from '../../tree-view-providers/blog-posts-data-provider';
+import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 import { openPostFile } from './open-post-file';
 
 export const createLocalDraft = async () => {

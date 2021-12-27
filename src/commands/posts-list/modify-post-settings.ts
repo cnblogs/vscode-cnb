@@ -1,8 +1,8 @@
-import { BlogPost } from '../models/blog-post';
-import { AlertService } from '../services/alert.service';
-import { blogPostService } from '../services/blog-post.service';
-import { extensionViews } from '../tree-view-providers/tree-view-registration';
-import { inputPostSettings } from '../utils/input-post-settings';
+import { BlogPost } from '../../models/blog-post';
+import { AlertService } from '../../services/alert.service';
+import { blogPostService } from '../../services/blog-post.service';
+import { extensionViews } from '../../tree-view-providers/tree-view-registration';
+import { inputPostSettings } from '../../utils/input-post-settings';
 
 export const modifyPostSettings = async (post: BlogPost) => {
     if (!post || post.id < 0) {

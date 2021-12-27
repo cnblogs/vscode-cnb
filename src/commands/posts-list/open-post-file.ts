@@ -1,7 +1,7 @@
 import { commands, Uri } from 'vscode';
-import { BlogPost } from '../models/blog-post';
-import { LocalDraftFile } from '../models/local-draft-file';
-import { PostFileMapManager } from '../services/post-file-map';
+import { BlogPost } from '../../models/blog-post';
+import { LocalDraftFile } from '../../models/local-draft-file';
+import { PostFileMapManager } from '../../services/post-file-map';
 
 export const openPostFile = async (post: LocalDraftFile | BlogPost | string) => {
     let filePath = '';

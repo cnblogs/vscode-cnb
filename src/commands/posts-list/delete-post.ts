@@ -1,11 +1,11 @@
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode';
-import { BlogPost } from '../models/blog-post';
-import { AlertService } from '../services/alert.service';
-import { blogPostService } from '../services/blog-post.service';
-import { PostFileMap, PostFileMapManager } from '../services/post-file-map';
-import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
-import { extensionViews } from '../tree-view-providers/tree-view-registration';
-import { refreshPostsList } from './posts-list';
+import { BlogPost } from '../../models/blog-post';
+import { AlertService } from '../../services/alert.service';
+import { blogPostService } from '../../services/blog-post.service';
+import { PostFileMap, PostFileMapManager } from '../../services/post-file-map';
+import { postsDataProvider } from '../../tree-view-providers/blog-posts-data-provider';
+import { extensionViews } from '../../tree-view-providers/tree-view-registration';
+import { refreshPostsList } from './refresh-posts-list';
 
 let deleting = false;
 

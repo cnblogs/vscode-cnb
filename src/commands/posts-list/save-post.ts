@@ -1,16 +1,16 @@
 import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode';
-import { BlogPost } from '../models/blog-post';
-import { LocalDraftFile } from '../models/local-draft-file';
-import { AlertService } from '../services/alert.service';
-import { blogPostService } from '../services/blog-post.service';
-import { PostFileMapManager } from '../services/post-file-map';
-import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
+import { BlogPost } from '../../models/blog-post';
+import { LocalDraftFile } from '../../models/local-draft-file';
+import { AlertService } from '../../services/alert.service';
+import { blogPostService } from '../../services/blog-post.service';
+import { PostFileMapManager } from '../../services/post-file-map';
+import { postsDataProvider } from '../../tree-view-providers/blog-posts-data-provider';
 import { openPostInVscode } from './open-post-in-vscode';
 import { openPostFile } from './open-post-file';
-import { inputPostSettings } from '../utils/input-post-settings';
-import { searchPostsByTitle } from '../services/search-post-by-title';
+import { inputPostSettings } from '../../utils/input-post-settings';
+import { searchPostsByTitle } from '../../services/search-post-by-title';
 import * as path from 'path';
-import { refreshPostsList } from './posts-list';
+import { refreshPostsList } from './refresh-posts-list';
 
 export const savePostFileToCnblogs = async (fileUri: Uri) => {
     if (!fileUri || fileUri.scheme !== 'file') {
