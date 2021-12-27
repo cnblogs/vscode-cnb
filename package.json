@@ -9,6 +9,11 @@
         "url": "https://github.com",
         "directory": "cnblogs/vscode-cnb"
     },
+    "keywords": [
+        "cnblogs",
+        "blog"
+    ],
+    "icon": "dist/assets/favicon.png",
     "engines": {
         "vscode": "^1.62.0"
     },
