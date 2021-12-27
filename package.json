@@ -4,6 +4,7 @@
     "description": "A vscode extension used to write and publish blog post to cnblogs",
     "version": "0.0.1",
     "license": "LICENSE.txt",
+    "preview": true,
     "repository": {
         "type": "github",
         "url": "https://github.com",
