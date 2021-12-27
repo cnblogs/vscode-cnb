@@ -44,7 +44,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
                 '覆盖本地文件(会导致本地文件中内容丢失)',
             ];
             const selectedOption = await window.showInformationMessage(
-                `无法保存博文到本地以进行编辑, 文件名冲突`,
+                `无法新建博文与本地文件的关联, 文件名冲突`,
                 { detail: `本地已存在名为"${path.basename(fileUri.fsPath)}"的文件`, modal: true } as MessageOptions,
                 ...conflictOptions
             );

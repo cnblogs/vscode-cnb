@@ -155,6 +155,11 @@
                 "icon": "$(edit)",
                 "category": "Cnblogs Post Categories Management",
                 "enablement": "!vscode-cnb.postCategoriesList.isRefreshing"
+            },
+            {
+                "command": "vscode-cnb.delete-post-to-local-file-map",
+                "title": "取消关联本地文件(支持多选)",
+                "category": "Cnblogs Posts List"
             }
         ],
         "configuration": {
@@ -298,6 +303,10 @@
                 {
                     "command": "vscode-cnb.seek-posts-list",
                     "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.delete-post-to-local-file-map",
+                    "when": "false"
                 }
             ],
             "view/item/context": [
@@ -335,16 +344,24 @@
                     "when": "viewItem == cnb-local-draft-file"
                 },
                 {
-                    "command": "vscode-cnb.delete-post",
-                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
+                    "command": "vscode-cnb.modify-post-settings",
+                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file",
+                    "group": "@1"
                 },
                 {
-                    "command": "vscode-cnb.modify-post-settings",
-                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
+                    "command": "vscode-cnb.delete-post",
+                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file",
+                    "group": "delete@1"
+                },
+                {
+                    "command": "vscode-cnb.delete-post-to-local-file-map",
+                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file",
+                    "group": "delete@2"
                 },
                 {
                     "command": "vscode-cnb.reveal-local-post-file-in-os",
-                    "when": "view == cnblogs-posts-list"
+                    "when": "view == cnblogs-posts-list",
+                    "group": "@3"
                 },
                 {
                     "command": "vscode-cnb.delete-selected-post-categories",

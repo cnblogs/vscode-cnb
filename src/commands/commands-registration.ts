@@ -26,6 +26,7 @@ import { deleteSelectedCategories } from './post-category/delete-selected-catego
 import { refreshPostCategoriesList } from './post-category/refresh-post-categories-list';
 import { updatePostCategory } from './post-category/update-post-category';
 import { openPostInVscode } from './posts-list/open-post-in-vscode';
+import { deletePostToLocalFileMap } from './posts-list/delete-post-to-local-file-map';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -61,6 +62,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.delete-selected-post-categories`, deleteSelectedCategories),
         vscode.commands.registerCommand(`${appName}.refresh-post-categories-list`, refreshPostCategoriesList),
         vscode.commands.registerCommand(`${appName}.update-post-category`, updatePostCategory),
+        vscode.commands.registerCommand(`${appName}.delete-post-to-local-file-map`, deletePostToLocalFileMap),
     ];
     context?.subscriptions.push(...disposables);
 };
