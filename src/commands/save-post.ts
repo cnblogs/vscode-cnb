@@ -10,6 +10,7 @@ import { openPostFile } from './open-post-file';
 import { inputPostSettings } from '../utils/input-post-settings';
 import { searchPostsByTitle } from '../services/search-post-by-title';
 import * as path from 'path';
+import { refreshPostsList } from './posts-list';
 
 export const savePostFileToCnblogs = async (fileUri: Uri) => {
     if (!fileUri || fileUri.scheme !== 'file') {
@@ -133,10 +134,11 @@ export const savePostToCnblogs = async (post: BlogPost, isNewPost = false) => {
                     post.id = postId;
                 }
                 success = true;
-                progress.report({ increment: 90 });
+                progress.report({ increment: 100 });
                 AlertService.info('保存成功');
+                await refreshPostsList();
             } catch (err) {
-                progress.report({ increment: 90 });
+                progress.report({ increment: 100 });
                 AlertService.error(`保存失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`);
                 console.error(err);
             }
