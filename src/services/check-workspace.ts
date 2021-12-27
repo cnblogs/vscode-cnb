@@ -1,5 +1,6 @@
 import { commands, workspace } from 'vscode';
 import { globalState } from './global-state';
+import { PostFileMapManager } from './post-file-map';
 import { Settings } from './settings.service';
 
 export const isTargetWorkspace = (): boolean => {
@@ -10,14 +11,27 @@ export const isTargetWorkspace = (): boolean => {
 };
 
 export const beginListenConfigurationChangeEvent = () => {
-    workspace.onDidChangeConfiguration(ev =>
-        ev.affectsConfiguration(globalState.extensionName) ? isTargetWorkspace() : false
+    globalState.extensionContext?.subscriptions.push(
+        workspace.onDidChangeConfiguration(ev =>
+            ev.affectsConfiguration(globalState.extensionName) ? isTargetWorkspace() : false
+        )
     );
     isTargetWorkspace();
 };
 
 export const beginListenWorkspaceFolderChangeEvent = () => {
-    workspace.onDidChangeWorkspaceFolders(() => {
-        isTargetWorkspace();
-    });
+    globalState.extensionContext?.subscriptions.push(
+        workspace.onDidRenameFiles(e => {
+            for (const item of e.files) {
+                const { oldUri, newUri } = item;
+                const postId = PostFileMapManager.getPostId(oldUri.fsPath);
+                if (postId !== undefined) {
+                    PostFileMapManager.updateOrCreate(postId, newUri.fsPath);
+                }
+            }
+        }),
+        workspace.onDidChangeWorkspaceFolders(() => {
+            isTargetWorkspace();
+        })
+    );
 };
