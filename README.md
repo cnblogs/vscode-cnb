@@ -1,70 +1,32 @@
-# vscode-cnb README
+# vscode-cnb
 
-This is the README for your extension "vscode-cnb". After writing up a brief description, we recommend including the following sections.
+博客园vscode插件, 主要功能是将本地markdown文件对应到博文园中博文, 从而让vscode用户可以一键发布markdown博文到博客园.
 
-## Features
+## 其他功能
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### 登录/授权
 
-For example if there is an image subfolder under your extension project workspace:
+使用本插件发布博文前, 需要用户使用浏览器进行授权操作.
 
-\!\[feature X\]\(images/feature-x.png\)
+## 博客园博文列表
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+当点击列表中的博文时, 会自动将博文内容下载到一个本地文件中, 之后便可以对本地文件进行编辑, 再次保存到博客园等操作
 
-## Requirements
+![img](https://img2020.cnblogs.com/blog/3/202112/3-20211227184342642-1938639868.png)
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
 
-## Extension Settings
+### 图片上传
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+当vscode处于配置好的`vscode-cnb`工作空间时, 可以通过快捷键, 上下文菜单, 编辑器工具栏等方式上传本地或剪贴板中的图片到博客园
 
-For example:
+![demo-upload-clipboard-image](https://img2020.cnblogs.com/blog/3/202112/3-20211223133219376-311354679.gif)
 
-This extension contributes the following settings:
+## vscode版本要求
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+>=1.62.0
 
-## Known Issues
+## 插件设置
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+* `vscode-cnb.workspace`: `vscode-cnb`需要用到的一个工作空间, `vscode-cnb`只有检测到vscode处于此目录下才会生效, 默认会使用`~/Documents/Cnblogs`最为工作空间
 
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+![img](https://img2020.cnblogs.com/blog/3/202112/3-20211227183958436-462553661.png)
