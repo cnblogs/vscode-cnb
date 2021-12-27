@@ -4,6 +4,11 @@
     "description": "A vscode extension used to write and publish blog post to cnblogs",
     "version": "0.0.1",
     "license": "LICENSE.txt",
+    "repository": {
+        "type": "github",
+        "url": "https://github.com",
+        "directory": "cnblogs/vscode-cnb"
+    },
     "engines": {
         "vscode": "^1.62.0"
     },
