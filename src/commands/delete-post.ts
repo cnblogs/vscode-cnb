@@ -1,10 +1,13 @@
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode';
 import { BlogPost } from '../models/blog-post';
+import { AlertService } from '../services/alert.service';
 import { blogPostService } from '../services/blog-post.service';
 import { PostFileMap, PostFileMapManager } from '../services/post-file-map';
 import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
 import { extensionViews } from '../tree-view-providers/tree-view-registration';
 import { refreshPostsList } from './posts-list';
+
+let deleting = false;
 
 const confirmDelete = async (
     selectedPosts: BlogPost[]
@@ -47,10 +50,17 @@ export const deleteSelectedPosts = async (post: BlogPost) => {
         return;
     }
 
+    if (deleting) {
+        AlertService.warning('休息会儿再点吧~');
+        return;
+    }
+
     const { confirmed, deleteLocalFileAtSameTime: isToDeleteLocalFile } = await confirmDelete(selectedPosts);
     if (!confirmed) {
         return;
     }
+
+    deleting = true;
 
     await window.withProgress({ location: ProgressLocation.Notification }, async progress => {
         progress.report({
@@ -83,4 +93,6 @@ export const deleteSelectedPosts = async (post: BlogPost) => {
             });
         }
     });
+
+    deleting = false;
 };
