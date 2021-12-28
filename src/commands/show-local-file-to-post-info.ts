@@ -1,9 +1,10 @@
+import path = require('path');
 import { MessageOptions, Uri, window } from 'vscode';
 import { AlertService } from '../services/alert.service';
 import { blogPostService } from '../services/blog-post.service';
 import { postCategoryService } from '../services/post-category.service';
 import { PostFileMapManager } from '../services/post-file-map';
-import { savePostFileToCnblogs } from './posts-list/save-post';
+import { searchPostsByTitle } from '../services/search-post-by-title';
 
 /**
  * 本地文件所关联的博文信息
@@ -28,7 +29,14 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
                 ...options
             );
             if (selected === options[0]) {
-                await savePostFileToCnblogs(input);
+                const selectedPost = await searchPostsByTitle({
+                    postTitle: path.basename(filePath, path.extname(filePath)),
+                    quickPickTitle: '搜索要关联的博文',
+                });
+                if (selectedPost) {
+                    await PostFileMapManager.updateOrCreate(selectedPost.id, filePath);
+                    AlertService.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`);
+                }
             }
             return;
         }

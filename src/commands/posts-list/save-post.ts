@@ -17,18 +17,18 @@ export const savePostFileToCnblogs = async (fileUri: Uri) => {
         return;
     }
     const filePath = fileUri.fsPath;
-    const fileName = path.basename(filePath);
-    const fileNameWithoutExt = path.basename(fileName, path.extname(fileName));
+    // const fileName = path.basename(filePath);
+    // const fileNameWithoutExt = path.basename(fileName, path.extname(fileName));
     const postId = PostFileMapManager.getPostId(filePath);
     if (postId && postId >= 0) {
         await savePostToCnblogs((await blogPostService.fetchPostEditDto(postId)).post);
     } else {
-        const options = [`新建博文`, `关联已有博文(可以根据标题搜索)`];
+        const options = [`新建博文`, `关联已有博文`];
         const selected = await window.showInformationMessage(
-            '保存博文到博客园',
+            '本地文件尚未关联到博客园博文',
             {
                 modal: true,
-                detail: `您可以新建一篇名为"${fileNameWithoutExt}"博文, 或将文件 "${filePath}" 关联到一篇已有博文并更新该博文; 若您选择后者, 您将通过标题搜索您博客园的博文并选择一个进行关联, 关联后将会更新该博文的标题和内容.`,
+                detail: `您可以选择新建一篇博文或将本地文件关联到一篇博客园博文(您可以根据标题搜索您在博客园博文)`,
             } as MessageOptions,
             ...options
         );
