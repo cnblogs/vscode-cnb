@@ -204,6 +204,10 @@
                     "id": "cnblogs-post-categories-list",
                     "name": "分类列表",
                     "when": "vscode-cnb.isAuthorized"
+                },
+                {
+                    "id": "cnblogs-navigation",
+                    "name": "博客园导航"
                 }
             ]
         },
@@ -469,6 +473,10 @@
             {
                 "view": "cnblogs-authorize",
                 "contents": "[Login](command:vscode-cnb.login)"
+            },
+            {
+                "view": "cnblogs-navigation",
+                "contents": "[博客园首页](https://www.cnblogs.com)\n[新闻](https://news.cnblogs.com/)\n[博问](https://q.cnblogs.com/)\n[闪存](https://ing.cnblogs.com/)\n[小组](https://group.cnblogs.com/)"
             }
         ]
     },
