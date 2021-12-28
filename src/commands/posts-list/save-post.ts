@@ -76,6 +76,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
     post.postBody = content;
     post.title = localDraft.fileNameWithoutExt;
     post.isMarkdown = true;
+    post.categoryIds ??= [];
     const userInputPostConfig = await inputPostSettings(post.title, post);
     if (!userInputPostConfig) {
         AlertService.warning('操作已取消');
