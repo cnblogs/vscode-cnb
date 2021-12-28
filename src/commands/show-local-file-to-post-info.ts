@@ -20,7 +20,7 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
         if (!postId) {
             const options = ['现在去关联'];
             const selected = await window.showInformationMessage(
-                '本地文件未关联博文',
+                '本地文件尚未关联到博文',
                 {
                     modal: true,
                     detail: filePath,
