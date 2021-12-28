@@ -44,7 +44,7 @@ export class AccountService extends vscode.Disposable {
                 this.handleAuthorized(authorizationInfo);
             }
         });
-        const { clientId, responseType, scope, authorizeEndpoint, authority } = globalState.config.oauth;
+        const { clientId, responseType, scope, authorizeEndpoint, authority, clientSecret } = globalState.config.oauth;
         let url = `${authority}${authorizeEndpoint}`;
         const search = new URLSearchParams([
             ['client_id', clientId],
@@ -54,6 +54,7 @@ export class AccountService extends vscode.Disposable {
             ['code_challenge', codeChallenge],
             ['code_challenge_method', 'S256'],
             ['scope', scope],
+            ['client_secret', clientSecret],
         ]);
         url = `${url}?${search}`;
         await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(url));

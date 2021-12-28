@@ -1,3 +1,5 @@
+import { env } from 'process';
+
 export interface IConfig {
     oauth: {
         authority: string;
@@ -5,6 +7,7 @@ export interface IConfig {
         authorizeEndpoint: string;
         userInfoEndpoint: string;
         clientId: string;
+        clientSecret: string;
         responseType: string;
         scope: string;
         revocationEndpoint: string;
@@ -23,6 +26,7 @@ export const defaultConfig: IConfig = {
         authorizeEndpoint: '/connect/authorize',
         userInfoEndpoint: '/connect/userinfo',
         clientId: 'vscode-cnb',
+        clientSecret: '',
         responseType: 'code',
         scope: 'openid profile CnBlogsApi CnblogsAdminApi',
         revocationEndpoint: '/connection/revocation',
@@ -32,7 +36,9 @@ export const defaultConfig: IConfig = {
 
 export const devConfig = Object.assign({}, defaultConfig, {
     oauth: Object.assign({}, defaultConfig.oauth, {
-        authority: 'https://my-oauth.cnblogs.com',
+        authority: env.Authority ? env.Authority : 'https://my-oauth.cnblogs.com',
+        clientId: env.ClientId ? env.ClientId : 'vscode-cnb',
+        clientSecret: env.ClientSecret ? env.ClientSecret : '',
     }),
     apiBaseUrl: 'https://admin.cnblogs.com',
 });
