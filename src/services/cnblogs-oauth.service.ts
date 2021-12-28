@@ -47,12 +47,13 @@ export class CnblogsOAuthService extends Disposable {
 
     async getAuthorizationInfo(authorizationCode: string, codeVerifier: string): Promise<UserAuthorizationInfo> {
         let url = globalState.config.oauth.authority + globalState.config.oauth.tokenEndpoint;
-        const { clientId } = globalState.config.oauth;
+        const { clientId, clientSecret } = globalState.config.oauth;
         const s = new URLSearchParams([
             ['code', authorizationCode],
             ['code_verifier', codeVerifier],
             ['grant_type', 'authorization_code'],
             ['client_id', clientId],
+            ['client_secret', clientSecret],
             ['redirect_uri', this.listenUrl],
         ]);
         url = `${url}`;
