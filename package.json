@@ -5,6 +5,7 @@
     "version": "0.0.1",
     "license": "LICENSE.txt",
     "preview": true,
+    "publisher": "cnblogs",
     "repository": {
         "type": "github",
         "url": "https://github.com",
