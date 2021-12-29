@@ -34,10 +34,17 @@ class AccessPermissionPickItem implements QuickPickItem {
     constructor(public id: AccessPermission, public label: string) {}
 }
 
-type PostSettingsType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission';
+type PostSettingsType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission' | 'isPublished';
 type PostSettingsDto = Pick<BlogPost, PostSettingsType>;
 
-const defaultSteps: PostSettingsType[] = ['accessPermission', 'description', 'categoryIds', 'tags', 'password'];
+const defaultSteps: PostSettingsType[] = [
+    'accessPermission',
+    'description',
+    'categoryIds',
+    'tags',
+    'password',
+    'isPublished',
+];
 
 const parseTagNames = (value: string) => {
     return value.split(/[,，]/).filter(t => !!t);
@@ -172,12 +179,34 @@ export const inputPostSettings = async (
         configuredPost.password = value ?? '';
         return calculateNextStep();
     };
+    // 是否发布
+    const inputIsPublished = async (input: MultiStepInput) => {
+        calculateStepNumber('isPublished');
+        const items = [{ label: '是' } as QuickPickItem, { label: '否' } as QuickPickItem];
+        const picked = await input.showQuickPick({
+            items: items,
+            title: state.title,
+            step: state.step++,
+            totalSteps: state.totalSteps,
+            placeholder: '<必选>是否发布',
+            activeItems: configuredPost.isPublished ? [items[0]] : [items[1]],
+            buttons: [],
+            canSelectMany: false,
+            shouldResume: () => Promise.resolve(false),
+        });
+        if (picked) {
+            configuredPost.isPublished = picked === items[0];
+        }
+
+        return calculateNextStep();
+    };
     map = [
         ['accessPermission', inputAccessPermission],
         ['categoryIds', inputCategory],
         ['password', inputPassword],
         ['description', inputDescription],
         ['tags', inputTags],
+        ['isPublished', inputIsPublished],
     ];
 
     await MultiStepInput.run(calculateNextStep()!);
