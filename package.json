@@ -170,7 +170,7 @@
             },
             {
                 "command": "vscode-cnb.open-post-in-blog-admin",
-                "title": "在博客后台中打开",
+                "title": "在博客后台中编辑",
                 "category": "Cnblogs"
             }
         ],
