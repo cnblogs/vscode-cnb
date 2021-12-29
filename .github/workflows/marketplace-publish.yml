@@ -34,7 +34,7 @@ jobs:
     # replace client_id
     - run: sed -i "s/clientId:\ 'vscode-cnb'/clientId:\ '${{ secrets.OAUTHCLIENTID }}'/" src/models/config.ts
     # replace client_secret
-    - run: sed -i "s/clientId:\ ''/clientSecret:\ '${{ secrets.OAUTHCLIENTSECRET }}'/" src/models/config.ts
+    - run: sed -i "s/clientSecret:\ ''/clientSecret:\ '${{ secrets.OAUTHCLIENTSECRET }}'/" src/models/config.ts
     - run: echo "src/models/config.ts\n" && cat src/models/config.ts
     # use env.VERSION to replace version property in package.json
     - run: sed -i 's/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"${{ env.VERSION }}\"/' package.json
