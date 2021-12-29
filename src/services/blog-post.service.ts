@@ -116,12 +116,14 @@ export class BlogPostService {
         await globalState.storage.update('postsListState', finalState);
     }
 
-    async fetchPostEditDtoTemplate() {
+    async fetchPostEditDtoTemplate(): Promise<PostEditDto> {
         if (!newPostTemplate) {
             newPostTemplate = await this.fetchPostEditDto(-1);
         }
 
-        return newPostTemplate;
+        return Object.assign({}, newPostTemplate, {
+            post: Object.assign({}, newPostTemplate.post),
+        } as PostEditDto);
     }
 }
 
