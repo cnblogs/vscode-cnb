@@ -29,6 +29,7 @@ import { openPostInVscode } from './posts-list/open-post-in-vscode';
 import { deletePostToLocalFileMap } from './posts-list/delete-post-to-local-file-map';
 import { renamePost } from './posts-list/rename-post';
 import { openPostInBlogAdmin } from './open-post-in-blog-admin';
+import { openWorkspace } from './open-workspace';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -67,6 +68,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.delete-post-to-local-file-map`, deletePostToLocalFileMap),
         vscode.commands.registerCommand(`${appName}.rename-post`, renamePost),
         vscode.commands.registerCommand(`${appName}.open-post-in-blog-admin`, openPostInBlogAdmin),
+        vscode.commands.registerCommand(`${appName}.open-workspace`, openWorkspace),
     ];
     context?.subscriptions.push(...disposables);
 };

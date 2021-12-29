@@ -172,6 +172,11 @@
                 "command": "vscode-cnb.open-post-in-blog-admin",
                 "title": "在博客后台中编辑",
                 "category": "Cnblogs"
+            },
+            {
+                "command": "vscode-cnb.open-workspace",
+                "title": "打开工作空间",
+                "category": "Cnblogs"
             }
         ],
         "configuration": {
@@ -199,6 +204,11 @@
                     "id": "cnblogs-authorize",
                     "name": "登录/授权",
                     "when": "!vscode-cnb.isAuthorized"
+                },
+                {
+                    "id": "vscode-cnb-workspace",
+                    "name": "工作空间",
+                    "when": "vscode-cnb.isAuthorized"
                 },
                 {
                     "id": "cnblogs-post-categories-list",
@@ -495,6 +505,15 @@
             {
                 "view": "cnblogs-navigation",
                 "contents": "[首页](https://www.cnblogs.com)\n[新闻](https://news.cnblogs.com/)\n[博问](https://q.cnblogs.com/)\n[闪存](https://ing.cnblogs.com/)\n[小组](https://group.cnblogs.com/)"
+            },
+            {
+                "view": "vscode-cnb-workspace",
+                "contents": "[打开工作空间](command:vscode-cnb.open-workspace)",
+                "when": "!vscode-cnb.isTargetWorkspace"
+            },
+            {
+                "view": "vscode-cnb-workspace",
+                "contents": "[设置工作空间](command:vscode-cnb.set-workspace)"
             }
         ]
     },
