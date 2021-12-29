@@ -26,7 +26,9 @@
         "workspaceContains:**",
         "onView:cnblogs-authorize",
         "onView:cnblogs-account",
-        "onView:cnblogs-posts-list"
+        "onView:cnblogs-posts-list",
+        "onView:vscode-cnb-workspace",
+        "onCommand:vscode-cnb.open-workspace"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -183,7 +185,7 @@
             "title": "vscode-cnb",
             "properties": {
                 "vscode-cnb.workspace": {
-                    "default": "",
+                    "default": "~/Documents/Cnblogs",
                     "scope": "resource",
                     "type": "string",
                     "editPresentation": "singlelineText",
@@ -508,8 +510,18 @@
             },
             {
                 "view": "vscode-cnb-workspace",
-                "contents": "[打开工作空间](command:vscode-cnb.open-workspace)",
+                "contents": "[在vscode中打开工作空间](command:vscode-cnb.open-workspace)",
                 "when": "!vscode-cnb.isTargetWorkspace"
+            },
+            {
+                "view": "vscode-cnb-workspace",
+                "contents": "[在访达中打开工作空间](command:vscode-cnb.reveal-workspace-in-os)",
+                "when": "isMac"
+            },
+            {
+                "view": "vscode-cnb-workspace",
+                "contents": "[在文件资源器中打开工作空间](command:vscode-cnb.reveal-workspace-in-os)",
+                "when": "isWindows"
             },
             {
                 "view": "vscode-cnb-workspace",

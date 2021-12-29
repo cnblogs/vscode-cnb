@@ -23,7 +23,7 @@ export const createLocalDraft = async () => {
     if (!title) {
         return;
     }
-    const workspacePath = Settings.workspaceUri.fsPath;
+    const { fsPath: workspacePath } = Settings.workspaceUri;
     title = ['.md', '.html'].some(ext => title!.endsWith(ext)) ? title : `${title}${title.endsWith('.') ? '' : '.'}md`;
     const filePath = path.join(workspacePath, title);
     try {

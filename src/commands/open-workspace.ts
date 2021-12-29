@@ -10,6 +10,9 @@ export const openWorkspace = async () => {
         { modal: true } as MessageOptions,
         ...options
     );
+    if (!input) {
+        return;
+    }
     const newWindow = input === options[1];
 
     await commands.executeCommand('vscode.openFolder', uri, newWindow);

@@ -1,5 +1,5 @@
 import { openMyAccountSettings } from './open-my-account-settings';
-import { openMyBlogManagementBackground } from './open-my-blog-management-background';
+import { openMyWebBlogConsole } from './open-my-blog-management-background';
 import { openMyHomePage } from './open-my-home-page';
 import { login, logout } from './login';
 import * as vscode from 'vscode';
@@ -30,6 +30,8 @@ import { deletePostToLocalFileMap } from './posts-list/delete-post-to-local-file
 import { renamePost } from './posts-list/rename-post';
 import { openPostInBlogAdmin } from './open-post-in-blog-admin';
 import { openWorkspace } from './open-workspace';
+import { setWorkspace } from './set-workspace';
+import { revealWorkspaceInOs } from './reveal-workspace-in-os';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -38,10 +40,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.login`, login),
         vscode.commands.registerCommand(`${appName}.open-my-blog`, openMyBlog),
         vscode.commands.registerCommand(`${appName}.open-my-home-page`, openMyHomePage),
-        vscode.commands.registerCommand(
-            `${appName}.open-my-blog-management-background`,
-            openMyBlogManagementBackground
-        ),
+        vscode.commands.registerCommand(`${appName}.open-my-blog-management-background`, openMyWebBlogConsole),
         vscode.commands.registerCommand(`${appName}.open-my-account-settings`, openMyAccountSettings),
         vscode.commands.registerCommand(`${appName}.logout`, logout),
         vscode.commands.registerCommand(`${appName}.refresh-posts-list`, refreshPostsList),
@@ -69,6 +68,8 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.rename-post`, renamePost),
         vscode.commands.registerCommand(`${appName}.open-post-in-blog-admin`, openPostInBlogAdmin),
         vscode.commands.registerCommand(`${appName}.open-workspace`, openWorkspace),
+        vscode.commands.registerCommand(`${appName}.set-workspace`, setWorkspace),
+        vscode.commands.registerCommand(`${appName}.reveal-workspace-in-os`, revealWorkspaceInOs),
     ];
     context?.subscriptions.push(...disposables);
 };
