@@ -32,6 +32,7 @@ import { openPostInBlogAdmin } from './open-post-in-blog-admin';
 import { openWorkspace } from './open-workspace';
 import { setWorkspace } from './set-workspace';
 import { revealWorkspaceInOs } from './reveal-workspace-in-os';
+import { viewPostOnline } from './view-post-online';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -70,6 +71,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.open-workspace`, openWorkspace),
         vscode.commands.registerCommand(`${appName}.set-workspace`, setWorkspace),
         vscode.commands.registerCommand(`${appName}.reveal-workspace-in-os`, revealWorkspaceInOs),
+        vscode.commands.registerCommand(`${appName}.view-post-online`, viewPostOnline),
     ];
     context?.subscriptions.push(...disposables);
 };
