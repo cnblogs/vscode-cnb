@@ -454,24 +454,29 @@
                     "group": "cnblogs@0"
                 },
                 {
-                    "command": "vscode-cnb.save-post-file-to-cnblogs",
+                    "command": "vscode-cnb.show-post-to-local-file-info",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@1"
                 },
                 {
-                    "command": "vscode-cnb.open-post-in-blog-admin",
+                    "command": "vscode-cnb.save-post-file-to-cnblogs",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@2"
                 },
                 {
-                    "command": "vscode-cnb.upload-clipboard-image",
+                    "command": "vscode-cnb.open-post-in-blog-admin",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@3"
                 },
                 {
-                    "command": "vscode-cnb.upload-local-disk-image",
+                    "command": "vscode-cnb.upload-clipboard-image",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@4"
+                },
+                {
+                    "command": "vscode-cnb.upload-local-disk-image",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs@5"
                 }
             ],
             "editor/title": [
