@@ -1,8 +1,8 @@
 import { commands, Uri } from 'vscode';
-import { BlogPost } from '../models/blog-post';
+import { Post } from '../models/post';
 import { PostFileMapManager } from '../services/post-file-map';
 
-export const revealLocalPostFileInOs = (post: BlogPost) => {
+export const revealLocalPostFileInOs = (post: Post) => {
     if (!post) {
         return;
     }

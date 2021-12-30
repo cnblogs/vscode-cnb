@@ -1,10 +1,10 @@
 import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode';
-import { BlogPost } from '../../models/blog-post';
+import { Post } from '../../models/post';
 import { LocalDraftFile } from '../../models/local-draft-file';
 import { AlertService } from '../../services/alert.service';
-import { blogPostService } from '../../services/blog-post.service';
+import { postService } from '../../services/post.service';
 import { PostFileMapManager } from '../../services/post-file-map';
-import { postsDataProvider } from '../../tree-view-providers/blog-posts-data-provider';
+import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { openPostInVscode } from './open-post-in-vscode';
 import { openPostFile } from './open-post-file';
 import { inputPostSettings } from '../../utils/input-post-settings';
@@ -21,7 +21,7 @@ export const savePostFileToCnblogs = async (fileUri: Uri) => {
     // const fileNameWithoutExt = path.basename(fileName, path.extname(fileName));
     const postId = PostFileMapManager.getPostId(filePath);
     if (postId && postId >= 0) {
-        await savePostToCnblogs((await blogPostService.fetchPostEditDto(postId)).post);
+        await savePostToCnblogs((await postService.fetchPostEditDto(postId)).post);
     } else {
         const options = [`新建博文`, `关联已有博文`];
         const selected = await window.showInformationMessage(
@@ -41,7 +41,7 @@ export const savePostFileToCnblogs = async (fileUri: Uri) => {
                     });
                     if (selectedPost) {
                         PostFileMapManager.updateOrCreate(selectedPost.id, filePath);
-                        const postEditDto = await blogPostService.fetchPostEditDto(selectedPost.id);
+                        const postEditDto = await postService.fetchPostEditDto(selectedPost.id);
                         const fileContent = new TextDecoder().decode(await workspace.fs.readFile(fileUri));
                         if (!fileContent) {
                             await workspace.fs.writeFile(fileUri, new TextEncoder().encode(postEditDto.post.postBody));
@@ -71,7 +71,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
         return;
     }
     const content = await localDraft.readAllText();
-    const editDto = await blogPostService.fetchPostEditDtoTemplate();
+    const editDto = await postService.fetchPostEditDtoTemplate();
     const { post } = editDto;
     post.postBody = content;
     post.title = localDraft.fileNameWithoutExt;
@@ -92,7 +92,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
     await openPostFile(localDraft);
 };
 
-export const savePostToCnblogs = async (post: BlogPost, isNewPost = false) => {
+export const savePostToCnblogs = async (post: Post, isNewPost = false) => {
     if (!post) {
         return;
     }
@@ -128,7 +128,7 @@ export const savePostToCnblogs = async (post: BlogPost, isNewPost = false) => {
             });
             let success = false;
             try {
-                let { id: postId } = await blogPostService.updatePost(post);
+                let { id: postId } = await postService.updatePost(post);
                 if (!isNewPost) {
                     await openPostInVscode(postId);
                 } else {
@@ -148,7 +148,7 @@ export const savePostToCnblogs = async (post: BlogPost, isNewPost = false) => {
     );
 };
 
-const validatePost = (post: BlogPost): boolean => {
+const validatePost = (post: Post): boolean => {
     if (!post.postBody) {
         AlertService.warning('文件内容为空!');
         return false;

@@ -1,4 +1,4 @@
-import { postsDataProvider } from '../tree-view-providers/blog-posts-data-provider';
+import { postsDataProvider } from '../tree-view-providers/posts-data-provider';
 import { globalState } from './global-state';
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && !!map[1];

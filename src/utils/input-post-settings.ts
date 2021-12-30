@@ -1,5 +1,5 @@
 import { QuickPickItem } from 'vscode';
-import { AccessPermission, BlogPost } from '../models/blog-post';
+import { AccessPermission, Post } from '../models/post';
 import { PostCategories, PostCategory } from '../models/post-category';
 import { AlertService } from '../services/alert.service';
 import { InputFlowAction, InputStep, MultiStepInput, QuickPickParameters } from '../services/multi-step-input';
@@ -35,7 +35,7 @@ class AccessPermissionPickItem implements QuickPickItem {
 }
 
 type PostSettingsType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission' | 'isPublished';
-type PostSettingsDto = Pick<BlogPost, PostSettingsType>;
+type PostSettingsDto = Pick<Post, PostSettingsType>;
 
 const defaultSteps: PostSettingsType[] = [
     'accessPermission',

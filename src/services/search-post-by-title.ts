@@ -1,9 +1,9 @@
 import { QuickPickItem, window } from 'vscode';
-import { BlogPost } from '../models/blog-post';
-import { blogPostService } from './blog-post.service';
+import { Post } from '../models/post';
+import { postService } from './post.service';
 
 class PostPickItem implements QuickPickItem {
-    constructor(public post: BlogPost) {
+    constructor(public post: Post) {
         this.label = post.title;
         this.description = post.description;
     }
@@ -18,8 +18,8 @@ class PostPickItem implements QuickPickItem {
 export const searchPostsByTitle = async ({
     postTitle = '',
     quickPickTitle = '按标题搜索博文',
-}): Promise<BlogPost | undefined> => {
-    return await new Promise<BlogPost | undefined>(resolve => {
+}): Promise<Post | undefined> => {
+    return await new Promise<Post | undefined>(resolve => {
         const quickPick = window.createQuickPick<PostPickItem>();
         quickPick.title = quickPickTitle;
         quickPick.value = postTitle ?? '';
@@ -31,7 +31,7 @@ export const searchPostsByTitle = async ({
             const value = quickPick.value;
             try {
                 quickPick.busy = true;
-                const paged = await blogPostService.fetchPostsList({ search: value });
+                const paged = await postService.fetchPostsList({ search: value });
                 const posts = paged.items;
                 const pickItems = posts.map(p => new PostPickItem(p));
                 if (value === quickPick.value) {

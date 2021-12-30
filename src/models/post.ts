@@ -1,4 +1,4 @@
-export class BlogPost {
+export class Post {
     id: number = -1;
     author: string = '';
     autoDesc: string = '';

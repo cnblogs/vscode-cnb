@@ -1,13 +1,13 @@
 import { commands, Uri } from 'vscode';
-import { BlogPost } from '../models/blog-post';
+import { Post } from '../models/post';
 import { PostFileMapManager } from '../services/post-file-map';
 
-export const openPostInBlogAdmin = (item: BlogPost | Uri) => {
+export const openPostInBlogAdmin = (item: Post | Uri) => {
     if (!item) {
         return;
     }
 
-    const postId = item instanceof BlogPost ? item.id : PostFileMapManager.getPostId(item.fsPath) ?? -1;
+    const postId = item instanceof Post ? item.id : PostFileMapManager.getPostId(item.fsPath) ?? -1;
 
     commands.executeCommand('vscode.open', Uri.parse(`https://i.cnblogs.com/posts/edit;postId=${postId}`));
 };

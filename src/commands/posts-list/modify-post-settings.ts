@@ -1,15 +1,15 @@
 import { Uri } from 'vscode';
-import { BlogPost } from '../../models/blog-post';
+import { Post } from '../../models/post';
 import { AlertService } from '../../services/alert.service';
-import { blogPostService } from '../../services/blog-post.service';
+import { postService } from '../../services/post.service';
 import { PostFileMapManager } from '../../services/post-file-map';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 import { inputPostSettings } from '../../utils/input-post-settings';
 
-export const modifyPostSettings = async (input: BlogPost | Uri) => {
-    let post: BlogPost | undefined;
+export const modifyPostSettings = async (input: Post | Uri) => {
+    let post: Post | undefined;
     let postId = -1;
-    if (input instanceof BlogPost) {
+    if (input instanceof Post) {
         post = input;
         postId = input.id;
     } else if (input instanceof Uri) {
@@ -27,7 +27,7 @@ export const modifyPostSettings = async (input: BlogPost | Uri) => {
     if (post) {
         await extensionViews.postsList?.reveal(post);
     }
-    const editDto = await blogPostService.fetchPostEditDto(postId);
+    const editDto = await postService.fetchPostEditDto(postId);
     const postEditDto = editDto.post;
     const inputSettings = await inputPostSettings(postEditDto.title, postEditDto);
     if (!inputSettings) {
@@ -36,7 +36,7 @@ export const modifyPostSettings = async (input: BlogPost | Uri) => {
 
     Object.assign(postEditDto, inputSettings);
     try {
-        await blogPostService.updatePost(postEditDto);
+        await postService.updatePost(postEditDto);
         AlertService.info('更新博文设置成功');
     } catch (err) {
         AlertService.error(err instanceof Error ? err.message : `更新博文设置失败\n${JSON.stringify(err)}`);

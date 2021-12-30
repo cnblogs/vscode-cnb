@@ -1,11 +1,11 @@
 import { globalState } from '../../services/global-state';
-import { blogPostService } from '../../services/blog-post.service';
+import { postService } from '../../services/post.service';
 import * as vscode from 'vscode';
-import { postsDataProvider } from '../../tree-view-providers/blog-posts-data-provider';
+import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { AlertService } from '../../services/alert.service';
 import { PostsListState } from '../../models/posts-list-state';
 import { PageModel } from '../../models/page-model';
-import { BlogPost } from '../../models/blog-post';
+import { Post } from '../../models/post';
 import { window } from 'vscode';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
@@ -15,12 +15,12 @@ export const refreshPostsList = async () => {
         return;
     }
     await setRefreshing(true);
-    let pagedPosts: PageModel<BlogPost> | undefined;
+    let pagedPosts: PageModel<Post> | undefined;
     try {
         await postsDataProvider.loadPosts();
         pagedPosts = postsDataProvider.pagedPosts;
         if (pagedPosts) {
-            await blogPostService.updatePostsListState(pagedPosts);
+            await postService.updatePostsListState(pagedPosts);
             updatePostsListViewTitle();
         }
     } catch (e) {
@@ -51,7 +51,7 @@ export const seekPostsList = async () => {
             if (isNaN(n) || !n) {
                 return '请输入正确格式的页码';
             }
-            const state = blogPostService.postsListState;
+            const state = postService.postsListState;
             if (!state) {
                 return '博文列表尚未加载';
             }
@@ -91,7 +91,7 @@ const gotoPage = async (pageIndex: (currentIndex: number) => number) => {
         alertRefreshing();
         return;
     }
-    const state = blogPostService.postsListState;
+    const state = postService.postsListState;
     if (!state) {
         console.warn('Cannot goto previous page posts list because post list state not defined');
         return;
@@ -104,14 +104,14 @@ const gotoPage = async (pageIndex: (currentIndex: number) => number) => {
         return;
     }
     state.pageIndex = idx;
-    await blogPostService.updatePostsListState(state);
+    await postService.updatePostsListState(state);
     await refreshPostsList();
 };
 
 const isPageIndexInRange = (pageIndex: number, state: PostsListState) => pageIndex <= state.pageCount && pageIndex >= 1;
 
 const updatePostsListViewTitle = () => {
-    const state = blogPostService.postsListState;
+    const state = postService.postsListState;
     if (!state) {
         return;
     }

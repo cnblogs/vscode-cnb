@@ -1,14 +1,14 @@
 import * as fs from 'fs';
 import path = require('path');
 import { FileSystemError, MessageOptions, Uri, window, workspace } from 'vscode';
-import { BlogPost } from '../../models/blog-post';
+import { Post } from '../../models/post';
 import { AlertService } from '../../services/alert.service';
-import { blogPostService } from '../../services/blog-post.service';
+import { postService } from '../../services/post.service';
 import { PostFileMapManager } from '../../services/post-file-map';
 import { Settings } from '../../services/settings.service';
 import { openPostFile } from './open-post-file';
 
-const generateLocalPostFileUri = (post: BlogPost, includePostId = false): Uri => {
+const generateLocalPostFileUri = (post: Post, includePostId = false): Uri => {
     const workspaceUri = Settings.workspaceUri;
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`;
     const postIdSegment = includePostId ? `.${post.id}` : '';
@@ -28,7 +28,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
         mappedPostFilePath = undefined;
     }
 
-    const postEditDto = await blogPostService.fetchPostEditDto(postId);
+    const postEditDto = await postService.fetchPostEditDto(postId);
     const post = postEditDto.post;
 
     const workspaceUri = Settings.workspaceUri;

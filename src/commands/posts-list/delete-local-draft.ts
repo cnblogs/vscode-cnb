@@ -1,6 +1,6 @@
 import { Uri, window, workspace } from 'vscode';
 import { LocalDraftFile } from '../../models/local-draft-file';
-import { localDraftsTreeItem, postsDataProvider } from '../../tree-view-providers/blog-posts-data-provider';
+import { localDraftsTreeItem, postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
 const options = ['确定', '取消'];

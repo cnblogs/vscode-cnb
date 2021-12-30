@@ -1,9 +1,9 @@
 import { MessageOptions, window } from 'vscode';
-import { BlogPost } from '../../models/blog-post';
+import { Post } from '../../models/post';
 import { PostFileMap, PostFileMapManager } from '../../services/post-file-map';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
-const confirm = async (posts: BlogPost[]): Promise<boolean> => {
+const confirm = async (posts: Post[]): Promise<boolean> => {
     const options = ['确定'];
     const input = await window.showInformationMessage(
         '确定要取消这些博文与本地文件的关联吗?',
@@ -16,9 +16,9 @@ const confirm = async (posts: BlogPost[]): Promise<boolean> => {
     return input === options[0];
 };
 
-export const deletePostToLocalFileMap = async (post: BlogPost) => {
+export const deletePostToLocalFileMap = async (post: Post) => {
     const view = extensionViews.postsList!;
-    let selectedPosts = view.selection.filter(x => x instanceof BlogPost).map(x => x as BlogPost);
+    let selectedPosts = view.selection.filter(x => x instanceof Post).map(x => x as Post);
     if (!selectedPosts.includes(post)) {
         await view.reveal(post);
         selectedPosts = post ? [post] : [];

@@ -1,7 +1,7 @@
 import path = require('path');
 import { MessageOptions, Uri, window } from 'vscode';
 import { AlertService } from '../services/alert.service';
-import { blogPostService } from '../services/blog-post.service';
+import { postService } from '../services/post.service';
 import { postCategoryService } from '../services/post-category.service';
 import { PostFileMapManager } from '../services/post-file-map';
 import { searchPostsByTitle } from '../services/search-post-by-title';
@@ -50,7 +50,7 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
         return;
     }
 
-    const post = (await blogPostService.fetchPostEditDto(postId)).post;
+    const post = (await postService.fetchPostEditDto(postId)).post;
     let categories = await postCategoryService.fetchCategories();
     categories = categories.filter(x => post.categoryIds.includes(x.categoryId));
     const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : '';

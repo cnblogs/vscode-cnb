@@ -1,13 +1,13 @@
 import { escapeRegExp } from 'lodash';
 import path = require('path');
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode';
-import { BlogPost } from '../../models/blog-post';
-import { blogPostService } from '../../services/blog-post.service';
+import { Post } from '../../models/post';
+import { postService } from '../../services/post.service';
 import { PostFileMapManager } from '../../services/post-file-map';
-import { postsDataProvider } from '../../tree-view-providers/blog-posts-data-provider';
+import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
-const renameLinkedFile = async (post: BlogPost): Promise<void> => {
+const renameLinkedFile = async (post: Post): Promise<void> => {
     const filePath = PostFileMapManager.getFilePath(post.id);
 
     if (!filePath) {
@@ -33,7 +33,7 @@ const renameLinkedFile = async (post: BlogPost): Promise<void> => {
     }
 };
 
-export const renamePost = async (post: BlogPost) => {
+export const renamePost = async (post: Post) => {
     if (!post) {
         return;
     }
@@ -59,14 +59,14 @@ export const renamePost = async (post: BlogPost) => {
         },
         async p => {
             p.report({ increment: 10 });
-            const editDto = await blogPostService.fetchPostEditDto(post.id);
+            const editDto = await postService.fetchPostEditDto(post.id);
             p.report({ increment: 60 });
 
             const editingPost = editDto.post;
             editingPost.title = input;
             let success = false;
             try {
-                await blogPostService.updatePost(editingPost);
+                await postService.updatePost(editingPost);
                 post.title = input;
                 postsDataProvider.fireTreeDataChangedEvent(post);
                 success = true;

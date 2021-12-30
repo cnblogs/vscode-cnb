@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { BlogPost } from '../models/blog-post';
+import { Post } from '../models/post';
 import { globalState } from './global-state';
 import { PageModel } from '../models/page-model';
 import { PostsListState } from '../models/posts-list-state';
@@ -10,8 +10,8 @@ import { PostUpdatedResponse } from '../models/post-updated-response';
 const defaultPageSize = 30;
 let newPostTemplate: PostEditDto;
 
-export class BlogPostService {
-    private static _instance = new BlogPostService();
+export class PostService {
+    private static _instance = new PostService();
 
     protected get _baseUrl() {
         return globalState.config.apiBaseUrl;
@@ -27,7 +27,7 @@ export class BlogPostService {
 
     protected constructor() {}
 
-    async fetchPostsList({ search = '', pageIndex = 1, pageSize = defaultPageSize }): Promise<PageModel<BlogPost>> {
+    async fetchPostsList({ search = '', pageIndex = 1, pageSize = defaultPageSize }): Promise<PageModel<Post>> {
         const s = new URLSearchParams([
             ['t', '1'],
             ['p', `${pageIndex}`],
@@ -46,7 +46,7 @@ export class BlogPostService {
             obj.pageIndex,
             obj.pageSize,
             obj.postsCount,
-            obj.postList.map(x => Object.assign(new BlogPost(), x))
+            obj.postList.map(x => Object.assign(new Post(), x))
         );
     }
 
@@ -59,7 +59,7 @@ export class BlogPostService {
             throw Error('failed to fetch postEditDto\n' + response.status + '\n' + (await response.text()));
         }
         const obj = (await response.json()) as any;
-        return new PostEditDto(Object.assign(new BlogPost(), obj.blogPost), obj.myConfig);
+        return new PostEditDto(Object.assign(new Post(), obj.blogPost), obj.myConfig);
     }
 
     async deletePost(postId: number) {
@@ -83,7 +83,7 @@ export class BlogPostService {
         }
     }
 
-    async updatePost(post: BlogPost): Promise<PostUpdatedResponse> {
+    async updatePost(post: Post): Promise<PostUpdatedResponse> {
         const response = await fetch(`${this._baseUrl}/api/posts`, {
             headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
             method: 'POST',
@@ -99,7 +99,7 @@ export class BlogPostService {
         return Object.assign(new PostUpdatedResponse(), await response.json());
     }
 
-    async updatePostsListState(state: PostsListState | undefined | PageModel<BlogPost>) {
+    async updatePostsListState(state: PostsListState | undefined | PageModel<Post>) {
         const finalState: PostsListState | undefined =
             state instanceof PageModel
                 ? {
@@ -127,7 +127,7 @@ export class BlogPostService {
     }
 }
 
-export const blogPostService = BlogPostService.instance;
+export const postService = PostService.instance;
 
 interface PagedBlogPostDto {
     categoryName: string;

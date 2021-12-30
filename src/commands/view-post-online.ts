@@ -1,14 +1,14 @@
 import { commands, Uri } from 'vscode';
-import { BlogPost } from '../models/blog-post';
-import { blogPostService } from '../services/blog-post.service';
+import { Post } from '../models/post';
+import { postService } from '../services/post.service';
 import { PostFileMapManager } from '../services/post-file-map';
 
-export const viewPostOnline = async (input: BlogPost | Uri) => {
-    let post: BlogPost | undefined = input instanceof BlogPost ? input : undefined;
+export const viewPostOnline = async (input: Post | Uri) => {
+    let post: Post | undefined = input instanceof Post ? input : undefined;
     if (input instanceof Uri) {
         const postId = PostFileMapManager.getPostId(input.fsPath);
         if (postId) {
-            post = (await blogPostService.fetchPostEditDto(postId)).post;
+            post = (await postService.fetchPostEditDto(postId)).post;
         }
     }
 

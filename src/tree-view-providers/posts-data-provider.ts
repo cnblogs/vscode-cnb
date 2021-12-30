@@ -11,11 +11,11 @@ import {
     Uri,
 } from 'vscode';
 import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
-import { BlogPost } from '../models/blog-post';
+import { Post } from '../models/post';
 import { LocalDraftFile } from '../models/local-draft-file';
 import { PageModel } from '../models/page-model';
 import { AlertService } from '../services/alert.service';
-import { blogPostService } from '../services/blog-post.service';
+import { postService } from '../services/post.service';
 import { globalState } from '../services/global-state';
 import { PostFileMapManager } from '../services/post-file-map';
 import { Settings } from '../services/settings.service';
@@ -28,17 +28,17 @@ export const localDraftsTreeItem: TreeItem = Object.assign(new TreeItem('本地�
     tooltip: '在本地创建的还未保存到博客园的文章',
 } as TreeItem);
 
-export type BlogPostDataProviderItem = BlogPost | TreeItem | LocalDraftFile;
+export type PostDataProviderItem = Post | TreeItem | LocalDraftFile;
 
-export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProviderItem> {
-    private static _instance?: BlogPostsDataProvider;
+export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem> {
+    private static _instance?: PostsDataProvider;
 
-    protected _pagedPosts?: PageModel<BlogPost>;
-    protected _onDidChangeTreeData = new EventEmitter<BlogPostDataProviderItem | undefined>();
+    protected _pagedPosts?: PageModel<Post>;
+    protected _onDidChangeTreeData = new EventEmitter<PostDataProviderItem | undefined>();
 
     static get instance() {
         if (!this._instance) {
-            this._instance = new BlogPostsDataProvider();
+            this._instance = new PostsDataProvider();
         }
 
         return this._instance;
@@ -50,8 +50,8 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
 
     protected constructor() {}
 
-    getChildren(element?: BlogPostDataProviderItem): ProviderResult<BlogPostDataProviderItem[]> {
-        return new Promise<BlogPostDataProviderItem[]>(resolve => {
+    getChildren(element?: PostDataProviderItem): ProviderResult<PostDataProviderItem[]> {
+        return new Promise<PostDataProviderItem[]>(resolve => {
             if (element === localDraftsTreeItem) {
                 LocalDraftFile.read().then(v => resolve(v));
                 return;
@@ -69,17 +69,17 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
         });
     }
 
-    getParent(el: BlogPostDataProviderItem) {
+    getParent(el: PostDataProviderItem) {
         if (el instanceof LocalDraftFile) {
             return localDraftsTreeItem;
         }
         return undefined;
     }
 
-    readonly onDidChangeTreeData: Event<BlogPostDataProviderItem | null | undefined> | undefined =
+    readonly onDidChangeTreeData: Event<PostDataProviderItem | null | undefined> | undefined =
         this._onDidChangeTreeData.event;
 
-    getTreeItem(item: BlogPostDataProviderItem): TreeItem | Thenable<TreeItem> {
+    getTreeItem(item: PostDataProviderItem): TreeItem | Thenable<TreeItem> {
         if (item instanceof TreeItem) {
             return item;
         }
@@ -109,11 +109,11 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
 
     async loadPosts(): Promise<void> {
         try {
-            const { pageIndex, pageSize } = blogPostService.postsListState ?? {
+            const { pageIndex, pageSize } = postService.postsListState ?? {
                 pageIndex: undefined,
                 pageSize: undefined,
             };
-            this._pagedPosts = await blogPostService.fetchPostsList({ pageIndex, pageSize });
+            this._pagedPosts = await postService.fetchPostsList({ pageIndex, pageSize });
             this.fireTreeDataChangedEvent(undefined);
         } catch (e) {
             if (e instanceof Error) {
@@ -124,9 +124,9 @@ export class BlogPostsDataProvider implements TreeDataProvider<BlogPostDataProvi
         }
     }
 
-    fireTreeDataChangedEvent(post: BlogPostDataProviderItem | undefined) {
+    fireTreeDataChangedEvent(post: PostDataProviderItem | undefined) {
         this._onDidChangeTreeData.fire(post);
     }
 }
 
-export const postsDataProvider = BlogPostsDataProvider.instance;
+export const postsDataProvider = PostsDataProvider.instance;

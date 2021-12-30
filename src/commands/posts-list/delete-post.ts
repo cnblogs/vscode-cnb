@@ -1,16 +1,16 @@
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode';
-import { BlogPost } from '../../models/blog-post';
+import { Post } from '../../models/post';
 import { AlertService } from '../../services/alert.service';
-import { blogPostService } from '../../services/blog-post.service';
+import { postService } from '../../services/post.service';
 import { PostFileMap, PostFileMapManager } from '../../services/post-file-map';
-import { postsDataProvider } from '../../tree-view-providers/blog-posts-data-provider';
+import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 import { refreshPostsList } from './refresh-posts-list';
 
 let deleting = false;
 
 const confirmDelete = async (
-    selectedPosts: BlogPost[]
+    selectedPosts: Post[]
 ): Promise<{ confirmed: boolean; deleteLocalFileAtSameTime: boolean }> => {
     const result = { confirmed: false, deleteLocalFileAtSameTime: false };
     if (!selectedPosts || selectedPosts.length <= 0) {
@@ -38,10 +38,10 @@ const confirmDelete = async (
     return result;
 };
 
-export const deleteSelectedPosts = async (post: BlogPost) => {
-    const selectedPosts: BlogPost[] = [...(post ? [post] : [])];
+export const deleteSelectedPosts = async (post: Post) => {
+    const selectedPosts: Post[] = [...(post ? [post] : [])];
     extensionViews.postsList?.selection.map(post => {
-        if (post instanceof BlogPost && !selectedPosts.includes(post)) {
+        if (post instanceof Post && !selectedPosts.includes(post)) {
             postsDataProvider.pagedPosts?.items.find(item => item === post);
             selectedPosts.push(post);
         }
@@ -68,7 +68,7 @@ export const deleteSelectedPosts = async (post: BlogPost) => {
             increment: 0,
         });
         try {
-            await blogPostService.deletePosts(selectedPosts.map(p => p.id));
+            await postService.deletePosts(selectedPosts.map(p => p.id));
             if (isToDeleteLocalFile) {
                 selectedPosts
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')

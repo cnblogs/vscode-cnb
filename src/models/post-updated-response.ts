@@ -1,4 +1,4 @@
-import { PostType } from './blog-post';
+import { PostType } from './post';
 
 export class PostUpdatedResponse {
     id: number = -1;

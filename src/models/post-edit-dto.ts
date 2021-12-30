@@ -1,5 +1,5 @@
-import { BlogPost } from './blog-post';
+import { Post } from './post';
 
 export class PostEditDto {
-    constructor(public post: BlogPost, public config: any) {}
+    constructor(public post: Post, public config: any) {}
 }
