@@ -14,7 +14,7 @@
         "cnblogs",
         "blog"
     ],
-    "icon": "dist/assets/favicon.svg",
+    "icon": "dist/assets/logo.png",
     "engines": {
         "vscode": "^1.62.0"
     },
