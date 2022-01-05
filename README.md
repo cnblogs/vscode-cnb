@@ -61,6 +61,6 @@
 
 ## 插件设置
 
-* `vscode-cnb.workspace`: `vscode-cnb`需要用到的一个工作空间, `vscode-cnb`只有检测到vscode处于此目录下才会生效, 默认会使用`~/Documents/Cnblogs`最为工作空间
+* `vscode-cnb.workspace`: `vscode-cnb`需要用到的一个工作空间, `vscode-cnb`只有检测到vscode处于此目录下才会生效, 默认会使用`~/Documents/Cnblogs`作为工作空间
 
 ![img](https://img2020.cnblogs.com/blog/3/202112/3-20211227183958436-462553661.png)
