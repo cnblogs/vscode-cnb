@@ -14,7 +14,7 @@
         "cnblogs",
         "blog"
     ],
-    "icon": "dist/assets/favicon.png",
+    "icon": "dist/assets/favicon.svg",
     "engines": {
         "vscode": "^1.62.0"
     },
@@ -42,7 +42,7 @@
             {
                 "command": "vscode-cnb.logout",
                 "title": "登出",
-                "icon": "dist/assets/icon-logout.svg",
+                "icon": "$(log-out)",
                 "category": "Cnblogs Account",
                 "enablement": "vscode-cnb.isAuthorized"
             },

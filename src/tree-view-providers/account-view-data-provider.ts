@@ -1,6 +1,5 @@
-import { globalState } from '../services/global-state';
 import { accountService } from '../services/account.service';
-import { Event, ProviderResult, TreeDataProvider, TreeItem, Uri } from 'vscode';
+import { Event, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode';
 
 export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     constructor() {}
@@ -13,9 +12,8 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
             return [];
         }
         const u = accountService.curUser;
-        const extensionPath = globalState.extensionContext?.extensionPath;
         return [
-            { label: u.name, tooltip: '用户名', iconPath: Uri.parse(`${extensionPath}/dist/assets/icon-avatar.svg`) },
+            { label: u.name, tooltip: '用户名', iconPath: new ThemeIcon('account') },
             {
                 label: '账户设置',
                 tooltip: '账户设置',
@@ -24,7 +22,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                     command: 'vscode-cnb.open-my-account-settings',
                     tooltip: '浏览器中打开我的账户设置',
                 },
-                iconPath: Uri.parse(`${extensionPath}/dist/assets/icon-account-settings.svg`),
+                iconPath: new ThemeIcon('gear'),
             },
             {
                 label: '博客后台',
@@ -34,7 +32,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                     command: 'vscode-cnb.open-my-blog-management-background',
                     tooltip: '浏览器中打开我的博客后台',
                 },
-                iconPath: Uri.parse(`${extensionPath}/dist/assets/icon-blog-management.svg`),
+                iconPath: new ThemeIcon('console'),
             },
             {
                 label: '我的博客',
@@ -44,7 +42,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                     command: 'vscode-cnb.open-my-blog',
                     tooltip: '浏览器中打开我的博客',
                 },
-                iconPath: Uri.parse(`${extensionPath}/dist/assets/icon-blog.svg`),
+                iconPath: new ThemeIcon('window'),
             },
             {
                 label: '我的主页',
@@ -54,7 +52,16 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                     command: 'vscode-cnb.open-my-home-page',
                     tooltip: '浏览器中打开我的博客',
                 },
-                iconPath: Uri.parse(`${extensionPath}/dist/assets/icon-home.svg`),
+                iconPath: new ThemeIcon('home'),
+            },
+            {
+                label: '退出登录',
+                tooltip: '',
+                command: {
+                    title: '退出登录',
+                    command: 'vscode-cnb.logout',
+                },
+                iconPath: new ThemeIcon('log-out'),
             },
         ];
     }
