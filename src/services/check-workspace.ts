@@ -10,7 +10,7 @@ export const isTargetWorkspace = (): boolean => {
     return result;
 };
 
-export const beginListenConfigurationChangeEvent = () => {
+export const observeConfigurationChange = () => {
     globalState.extensionContext?.subscriptions.push(
         workspace.onDidChangeConfiguration(ev =>
             ev.affectsConfiguration(globalState.extensionName) ? isTargetWorkspace() : false

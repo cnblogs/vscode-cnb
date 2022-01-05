@@ -5,7 +5,10 @@ import { globalState } from './services/global-state';
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { accountService } from './services/account.service';
-import { beginListenConfigurationChangeEvent, beginListenWorkspaceFolderChangeEvent } from './services/check-workspace';
+import {
+    observeConfigurationChange,
+    beginListenWorkspaceFolderChangeEvent as observeWorkspaceFolderChange,
+} from './services/check-workspace';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -16,8 +19,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     registerCommands();
     registerTreeViews();
-    beginListenConfigurationChangeEvent();
-    beginListenWorkspaceFolderChangeEvent();
+    observeConfigurationChange();
+    observeWorkspaceFolderChange();
 }
 
 // this method is called when your extension is deactivated
