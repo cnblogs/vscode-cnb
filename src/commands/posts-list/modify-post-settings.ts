@@ -3,8 +3,8 @@ import { Post } from '../../models/post';
 import { AlertService } from '../../services/alert.service';
 import { postService } from '../../services/post.service';
 import { PostFileMapManager } from '../../services/post-file-map';
-import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 import { inputPostSettings } from '../../utils/input-post-settings';
+import { revealPostsListItem } from '../../services/posts-list-view';
 
 export const modifyPostSettings = async (input: Post | Uri) => {
     let post: Post | undefined;
@@ -25,7 +25,7 @@ export const modifyPostSettings = async (input: Post | Uri) => {
     }
 
     if (post) {
-        await extensionViews.postsList?.reveal(post);
+        await revealPostsListItem(post);
     }
     const editDto = await postService.fetchPostEditDto(postId);
     const postEditDto = editDto.post;

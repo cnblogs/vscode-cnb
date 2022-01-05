@@ -1,6 +1,7 @@
 import { MessageOptions, window } from 'vscode';
 import { Post } from '../../models/post';
 import { PostFileMap, PostFileMapManager } from '../../services/post-file-map';
+import { revealPostsListItem } from '../../services/posts-list-view';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
 const confirm = async (posts: Post[]): Promise<boolean> => {
@@ -20,7 +21,7 @@ export const deletePostToLocalFileMap = async (post: Post) => {
     const view = extensionViews.postsList!;
     let selectedPosts = view.selection.filter(x => x instanceof Post).map(x => x as Post);
     if (!selectedPosts.includes(post)) {
-        await view.reveal(post);
+        await revealPostsListItem(post);
         selectedPosts = post ? [post] : [];
     }
     if (selectedPosts.length <= 0) {

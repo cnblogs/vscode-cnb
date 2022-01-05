@@ -5,7 +5,7 @@ import { Post } from '../../models/post';
 import { postService } from '../../services/post.service';
 import { PostFileMapManager } from '../../services/post-file-map';
 import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
-import { extensionViews } from '../../tree-view-providers/tree-view-registration';
+import { revealPostsListItem } from '../../services/posts-list-view';
 
 const renameLinkedFile = async (post: Post): Promise<void> => {
     const filePath = PostFileMapManager.getFilePath(post.id);
@@ -38,8 +38,7 @@ export const renamePost = async (post: Post) => {
         return;
     }
 
-    const view = extensionViews.postsList!;
-    await view.reveal(post);
+    await revealPostsListItem(post);
 
     const input = await window.showInputBox({
         title: '请输入新的博文标题',

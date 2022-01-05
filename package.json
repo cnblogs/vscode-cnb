@@ -237,6 +237,11 @@
                     "when": "vscode-cnb.isAuthorized"
                 },
                 {
+                    "id": "cnblogs-posts-list-another",
+                    "name": "博客园 - 随笔列表",
+                    "when": "vscode-cnb.isAuthorized"
+                },
+                {
                     "id": "cnblogs-post-categories-list",
                     "name": "分类列表",
                     "when": "vscode-cnb.isAuthorized"
@@ -261,28 +266,28 @@
                 },
                 {
                     "command": "vscode-cnb.previous-posts-list",
-                    "when": "view == cnblogs-posts-list",
+                    "when": "view == cnblogs-posts-list || view == cnblogs-posts-list-another",
                     "group": "navigation@1"
                 },
                 {
                     "command": "vscode-cnb.next-posts-list",
-                    "when": "view == cnblogs-posts-list",
+                    "when": "view == cnblogs-posts-list || view == cnblogs-posts-list-another",
                     "group": "navigation@2"
                 },
                 {
                     "command": "vscode-cnb.seek-posts-list",
-                    "when": "view == cnblogs-posts-list",
+                    "when": "view == cnblogs-posts-list || view == cnblogs-posts-list-another",
                     "group": "navigation@3"
                 },
                 {
                     "command": "vscode-cnb.refresh-posts-list",
-                    "when": "view == cnblogs-posts-list",
+                    "when": "view == cnblogs-posts-list || view == cnblogs-posts-list-another",
                     "group": "navigation@4"
                 },
                 {
                     "command": "vscode-cnb.create-local-draft",
                     "group": "navigation@5",
-                    "when": "view == cnblogs-posts-list"
+                    "when": "view == cnblogs-posts-list || view == cnblogs-posts-list-another"
                 },
                 {
                     "command": "vscode-cnb.new-post-category",
@@ -386,12 +391,12 @@
                 {
                     "command": "vscode-cnb.delete-post",
                     "group": "inline",
-                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
+                    "when": "viewItem =~ /^cnb-post/"
                 },
                 {
                     "command": "vscode-cnb.modify-post-settings",
                     "group": "inline",
-                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file"
+                    "when": "viewItem =~ /^cnb-post/"
                 },
                 {
                     "command": "vscode-cnb.save-local-draft-to-cnblogs",
@@ -413,32 +418,32 @@
                 },
                 {
                     "command": "vscode-cnb.rename-post",
-                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file",
+                    "when": "viewItem =~ /^cnb-post/",
                     "group": "1@2"
                 },
                 {
                     "command": "vscode-cnb.modify-post-settings",
-                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file",
+                    "when": "viewItem =~ /^cnb-post/",
                     "group": "1@1"
                 },
                 {
                     "command": "vscode-cnb.delete-post",
-                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file",
+                    "when": "viewItem =~ /^cnb-post/",
                     "group": "delete@1"
                 },
                 {
                     "command": "vscode-cnb.delete-post-to-local-file-map",
-                    "when": "view == cnblogs-posts-list && viewItem != cnb-local-drafts-folder && viewItem != cnb-local-draft-file",
+                    "when": "viewItem =~ /^cnb-post-cached/",
                     "group": "delete@2"
                 },
                 {
                     "command": "vscode-cnb.reveal-local-post-file-in-os",
-                    "when": "view == cnblogs-posts-list",
+                    "when": "viewItem =~ /^cnb-post-cached/",
                     "group": "0@1"
                 },
                 {
                     "command": "vscode-cnb.view-post-online",
-                    "when": "view == cnblogs-posts-list",
+                    "when": "viewItem =~ /^cnb-post/",
                     "group": "0@2"
                 },
                 {

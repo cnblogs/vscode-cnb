@@ -7,6 +7,7 @@ import { postCategoriesDataProvider } from './categories-view-data-provider';
 
 export const extensionViews: {
     postsList?: vscode.TreeView<PostDataProviderItem>;
+    anotherPostsList?: vscode.TreeView<PostDataProviderItem>;
     account?: vscode.TreeView<vscode.TreeItem>;
     postCategoriesList?: vscode.TreeView<PostCategory>;
 } = {};
@@ -20,10 +21,17 @@ export const registerTreeViews = () => {
         treeDataProvider: postsDataProvider,
         canSelectMany: true,
     });
+    extensionViews.anotherPostsList = vscode.window.createTreeView('cnblogs-posts-list-another', {
+        treeDataProvider: postsDataProvider,
+        canSelectMany: true,
+    });
     extensionViews.postCategoriesList = vscode.window.createTreeView('cnblogs-post-categories-list', {
         treeDataProvider: postCategoriesDataProvider,
         canSelectMany: true,
     });
-    const disposables = [extensionViews.account, extensionViews.postsList, extensionViews.postCategoriesList];
+    const disposables = [];
+    for (const key in extensionViews) {
+        disposables.push((extensionViews as any)[key]);
+    }
     globalState.extensionContext?.subscriptions.push(...disposables);
 };
