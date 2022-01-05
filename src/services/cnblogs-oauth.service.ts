@@ -92,7 +92,14 @@ export class CnblogsOAuthService extends Disposable {
                 throw Error(`Unable to resolve authorization code from callback url, ${req.originalUrl}`);
             }
             authorizationInfo = await this.getAuthorizationInfo(code, this._codeVerifier);
-            res.send('授权成功, 您现在可以关闭此页面, 返回vscode.');
+            res.send(
+                `<p>授权成功, 您现在可以关闭此页面, 返回vscode.</p>
+                <script type="text/javascript">
+                var el = document.createElement('a');
+                el.href='vscode://vscode.vscode-cnb';
+                el.click();
+                </script>`
+            );
         } catch (err) {
             error = err;
             const stringifiedError = JSON.stringify(err, undefined, 4);
