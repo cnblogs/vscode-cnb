@@ -15,6 +15,6 @@ export const setWorkspace = async () => {
         return;
     }
 
-    Settings.workspaceUri = input;
+    await Settings.setWorkspaceUri(input);
     AlertService.info(`工作空间成功修改为: "${Settings.workspaceUri.fsPath}"`);
 };

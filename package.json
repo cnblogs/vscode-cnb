@@ -8,8 +8,7 @@
     "publisher": "cnblogs",
     "repository": {
         "type": "github",
-        "url": "https://github.com",
-        "directory": "cnblogs/vscode-cnb"
+        "url": "https://github.com/cnblogs/vscode-cnb"
     },
     "keywords": [
         "cnblogs",
@@ -211,7 +210,7 @@
             "properties": {
                 "vscode-cnb.workspace": {
                     "default": "~/Documents/Cnblogs",
-                    "scope": "resource",
+                    "scope": "application",
                     "type": "string",
                     "editPresentation": "singlelineText",
                     "markdownDescription": "存放markdown博文的文件夹, 默认为`~/Documents/Cnblogs`, 当检测到vscode处于此工作空间时, 可以vscode-cnb插件编辑已有博文, 也可以将本地markdown文件保存到博客园"

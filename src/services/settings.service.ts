@@ -1,6 +1,6 @@
 import { homedir } from 'os';
 import * as fs from 'fs';
-import { Uri, workspace } from 'vscode';
+import { ConfigurationTarget, Uri, workspace } from 'vscode';
 import { globalState } from './global-state';
 
 export class Settings {
@@ -15,13 +15,13 @@ export class Settings {
             : Uri.joinPath(Uri.file(homedir()), 'Documents', 'Cnblogs');
     }
 
-    static set workspaceUri(value: Uri) {
+    static async setWorkspaceUri(value: Uri) {
         if (!value.fsPath || !(value.scheme === 'file')) {
             throw Error('Invalid uri');
         }
         if (!fs.existsSync(value.fsPath)) {
             throw Error(`Folder "${value.fsPath}" not exist`);
         }
-        this.configuration.update('workspace', value.fsPath);
+        await this.configuration.update('workspace', value.fsPath, ConfigurationTarget.Global);
     }
 }
