@@ -64,7 +64,7 @@ export class PostCategoriesViewDataProvider implements TreeDataProvider<PostCate
         return Promise.resolve(undefined);
     }
 
-    triggerTreeDataChangeEvent(item?: PostCategory) {
+    fireTreeDataChangedEvent(item?: PostCategory) {
         this._treeDataChanged.fire(item);
     }
 }

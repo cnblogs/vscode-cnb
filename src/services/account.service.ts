@@ -7,6 +7,9 @@ import { URLSearchParams } from 'url';
 import { generateCodeChallenge } from './code-challenge.service';
 import * as RandomString from 'randomstring';
 import fetch from 'node-fetch';
+import { accountViewDataProvider } from '../tree-view-providers/account-view-data-provider';
+import { postsDataProvider } from '../tree-view-providers/posts-data-provider';
+import { postCategoriesDataProvider } from '../tree-view-providers/categories-view-data-provider';
 
 const isAuthorizedStorageKey = 'isAuthorized';
 
@@ -58,6 +61,9 @@ export class AccountService extends vscode.Disposable {
         ]);
         url = `${url}?${search}`;
         await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(url));
+        accountViewDataProvider.fireTreeDataChangedEvent();
+        postsDataProvider.fireTreeDataChangedEvent(undefined);
+        postCategoriesDataProvider.fireTreeDataChangedEvent();
     }
 
     async logout() {
@@ -68,8 +74,8 @@ export class AccountService extends vscode.Disposable {
         const { clientId, revocationEndpoint, authority } = globalState.config.oauth;
         const token = this.curUser?.authorizationInfo?.accessToken;
 
-        this.setIsAuthorized(false);
-        globalState.storage.update('user', {});
+        await globalState.storage.update('user', {});
+        await this.setIsAuthorized(false);
 
         if (token) {
             const body = new URLSearchParams([

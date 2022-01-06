@@ -1,12 +1,25 @@
 import { accountService } from '../services/account.service';
-import { Event, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode';
+import { Event, EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode';
 
 export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
-    constructor() {}
-    onDidChangeTreeData?: Event<void | TreeItem | null | undefined> | undefined;
+    private static _instance?: AccountViewDataProvider;
+    protected _onDidChangeTreeData = new EventEmitter<null | undefined>();
+
+    static get instance() {
+        if (!this._instance) {
+            this._instance = new AccountViewDataProvider();
+        }
+        return this._instance;
+    }
+
+    protected constructor() {}
+
+    onDidChangeTreeData: Event<void | TreeItem | null | undefined> | undefined = this._onDidChangeTreeData.event;
+
     getTreeItem(element: TreeItem): TreeItem | Thenable<TreeItem> {
         return element;
     }
+
     getChildren(element?: TreeItem): ProviderResult<TreeItem[]> {
         if (!accountService.isAuthorized || element) {
             return [];
@@ -65,4 +78,10 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
             },
         ];
     }
+
+    fireTreeDataChangedEvent() {
+        this._onDidChangeTreeData.fire(undefined);
+    }
 }
+
+export const accountViewDataProvider = AccountViewDataProvider.instance;
