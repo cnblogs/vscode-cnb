@@ -3,5 +3,5 @@ import { postCategoriesDataProvider } from '../../tree-view-providers/categories
 
 export const refreshPostCategoriesList = () => {
     postCategoryService.clearCache();
-    postCategoriesDataProvider.triggerTreeDataChangeEvent();
+    postCategoriesDataProvider.fireTreeDataChangedEvent();
 };

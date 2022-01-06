@@ -1,6 +1,6 @@
 import { globalState } from '../services/global-state';
 import * as vscode from 'vscode';
-import { AccountViewDataProvider } from './account-view-data-provider';
+import { accountViewDataProvider } from './account-view-data-provider';
 import { PostDataProviderItem, postsDataProvider } from './posts-data-provider';
 import { PostCategory } from '../models/post-category';
 import { postCategoriesDataProvider } from './categories-view-data-provider';
@@ -14,7 +14,7 @@ export const extensionViews: {
 
 export const registerTreeViews = () => {
     extensionViews.account = vscode.window.createTreeView('cnblogs-account', {
-        treeDataProvider: new AccountViewDataProvider(),
+        treeDataProvider: accountViewDataProvider,
         canSelectMany: false,
     });
     extensionViews.postsList = vscode.window.createTreeView('cnblogs-posts-list', {
