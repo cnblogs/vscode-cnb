@@ -121,9 +121,10 @@ export class PostService {
             newPostTemplate = await this.fetchPostEditDto(-1);
         }
 
-        return Object.assign({}, newPostTemplate, {
-            post: Object.assign({}, newPostTemplate.post),
-        } as PostEditDto);
+        return new PostEditDto(
+            Object.assign(new Post(), newPostTemplate.post),
+            Object.assign({}, newPostTemplate.config)
+        );
     }
 }
 

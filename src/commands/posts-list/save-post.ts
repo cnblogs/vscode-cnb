@@ -11,6 +11,7 @@ import { inputPostSettings } from '../../utils/input-post-settings';
 import { searchPostsByTitle } from '../../services/search-post-by-title';
 import * as path from 'path';
 import { refreshPostsList } from './refresh-posts-list';
+import { PostEditDto } from '../../models/post-edit-dto';
 
 export const savePostFileToCnblogs = async (fileUri: Uri) => {
     if (!fileUri || fileUri.scheme !== 'file') {
@@ -21,7 +22,7 @@ export const savePostFileToCnblogs = async (fileUri: Uri) => {
     // const fileNameWithoutExt = path.basename(fileName, path.extname(fileName));
     const postId = PostFileMapManager.getPostId(filePath);
     if (postId && postId >= 0) {
-        await savePostToCnblogs((await postService.fetchPostEditDto(postId)).post);
+        await savePostToCnblogs(await postService.fetchPostEditDto(postId));
     } else {
         const options = [`新建博文`, `关联已有博文`];
         const selected = await window.showInformationMessage(
@@ -84,7 +85,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
     }
     Object.assign(post, userInputPostConfig);
 
-    if (!(await savePostToCnblogs(post, true))) {
+    if (!(await savePostToCnblogs(editDto, true))) {
         return;
     }
     await PostFileMapManager.updateOrCreate(post.id, localDraft.filePath);
@@ -92,7 +93,8 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraftFile) => {
     await openPostFile(localDraft);
 };
 
-export const savePostToCnblogs = async (post: Post, isNewPost = false) => {
+export const savePostToCnblogs = async (input: Post | PostEditDto, isNewPost = false) => {
+    const post = input instanceof PostEditDto ? input.post : (await postService.fetchPostEditDto(input.id)).post;
     if (!post) {
         return;
     }
