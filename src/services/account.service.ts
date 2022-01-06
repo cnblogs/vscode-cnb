@@ -10,6 +10,7 @@ import fetch from 'node-fetch';
 import { accountViewDataProvider } from '../tree-view-providers/account-view-data-provider';
 import { postsDataProvider } from '../tree-view-providers/posts-data-provider';
 import { postCategoriesDataProvider } from '../tree-view-providers/categories-view-data-provider';
+import { checkIsAccessTokenExpired } from '../utils/check-access-token-expired';
 
 const isAuthorizedStorageKey = 'isAuthorized';
 
@@ -18,7 +19,12 @@ export class AccountService extends vscode.Disposable {
 
     buildBearerAuthorizationHeader(accessToken?: string): [string, string] {
         accessToken ??= this.curUser.authorizationInfo?.accessToken;
-        return ['Authorization', `Bearer ${accessToken}`];
+        let expired = checkIsAccessTokenExpired(accessToken!);
+        if (expired) {
+            this.logout();
+            this.alertLoginStatusExpired();
+        }
+        return ['Authorization', `Bearer ${expired ? '' : accessToken}`];
     }
 
     private _curUser?: UserInfo;
@@ -144,6 +150,18 @@ export class AccountService extends vscode.Disposable {
         obj.avatar = obj.picture;
         delete obj.picture;
         return Object.assign(new UserInfo(authorizationInfo), obj, { avatar: obj.picture });
+    }
+
+    private async alertLoginStatusExpired() {
+        const options = ['登录'];
+        const input = await vscode.window.showInformationMessage(
+            '登录状态已过期, 请重新登录',
+            { modal: true } as vscode.MessageOptions,
+            ...options
+        );
+        if (input === options[0]) {
+            await this.login();
+        }
     }
 }
 
