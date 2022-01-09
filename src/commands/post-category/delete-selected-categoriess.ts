@@ -32,7 +32,7 @@ export const deleteSelectedCategories = async (category?: PostCategory) => {
         AlertService.warning('删除博文分类失败, 没有选中任何博文分类');
         return;
     }
-    if (!(await confirmDelete(selectedCategories))) {
+    if (!(await confirmDelete(Array.from(selectedCategories)))) {
         return;
     }
 
