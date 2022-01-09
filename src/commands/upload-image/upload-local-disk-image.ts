@@ -9,7 +9,7 @@ export const uploadLocalDiskImage = async () => {
         canSelectMany: false,
         canSelectFolders: false,
         filters: {
-            images: ['png', 'jpg', 'bpm', 'jpeg', 'webp', 'svg'],
+            images: ['png', 'jpg', 'bmp', 'jpeg', 'webp', 'svg', 'gif'],
         },
     })) ?? [])[0];
     if (!imageFileUri) {
