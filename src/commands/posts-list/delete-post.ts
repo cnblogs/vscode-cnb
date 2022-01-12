@@ -39,7 +39,7 @@ const confirmDelete = async (
 };
 
 export const deleteSelectedPosts = async (post: Post) => {
-    const selectedPosts: Post[] = [...(post ? [post] : [])];
+    const selectedPosts: Post[] = post ? [post] : [];
     extensionViews.postsList?.selection.map(post => {
         if (post instanceof Post && !selectedPosts.includes(post)) {
             postsDataProvider.pagedPosts?.items.find(item => item === post);

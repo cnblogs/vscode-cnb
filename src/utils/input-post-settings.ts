@@ -117,7 +117,7 @@ export const inputPostSettings = async (
             step: state.step++,
             totalSteps: state.totalSteps,
             placeholder: '<非必选>请选择博文分类',
-            activeItems: items.filter(x => configuredPost.categoryIds.includes(x.id)),
+            activeItems: items.filter(x => configuredPost.categoryIds?.includes(x.id)),
             buttons: [],
             canSelectMany: true,
             shouldResume: () => Promise.resolve(false),

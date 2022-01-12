@@ -209,6 +209,11 @@
                 "command": "vscode-cnb.view-post-online",
                 "title": "在线查看博文",
                 "category": "Cnblogs"
+            },
+            {
+                "command": "vscode-cnb.export-post-to-pdf",
+                "title": "导出pdf",
+                "category": "Cnblogs"
             }
         ],
         "configuration": {
@@ -220,6 +225,22 @@
                     "type": "string",
                     "editPresentation": "singlelineText",
                     "markdownDescription": "存放markdown博文的文件夹, 默认为`~/Documents/Cnblogs`, 当检测到vscode处于此工作空间时, 可以vscode-cnb插件编辑已有博文, 也可以将本地markdown文件保存到博客园"
+                },
+                "vscode-cnb.chromiumPathForMac": {
+                    "default": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                    "scope": "application",
+                    "type": "string",
+                    "editPresentation": "singlelineText",
+                    "format": "uri",
+                    "markdownDeprecationMessage": "Chromium可执行文件路径, 用于进行pdf导出等操作"
+                },
+                "vscode-cnb.chromiumPathForWin": {
+                    "default": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+                    "scope": "application",
+                    "type": "string",
+                    "editPresentation": "singlelineText",
+                    "format": "uri",
+                    "markdownDeprecationMessage": "Chromium可执行文件路径, 用于进行pdf导出等操作"
                 }
             }
         },
@@ -386,6 +407,10 @@
                 {
                     "command": "vscode-cnb.view-post-online",
                     "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.export-post-to-pdf",
+                    "when": "false"
                 }
             ],
             "view/item/context": [
@@ -451,6 +476,11 @@
                     "command": "vscode-cnb.view-post-online",
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
                     "group": "0@2"
+                },
+                {
+                    "command": "vscode-cnb.export-post-to-pdf",
+                    "when": "viewItem =~ /^cnb-post/",
+                    "group": "0@3"
                 },
                 {
                     "command": "vscode-cnb.delete-selected-post-categories",
@@ -527,19 +557,24 @@
                     "group": "cnblogs@2"
                 },
                 {
-                    "command": "vscode-cnb.modify-post-settings",
+                    "command": "vscode-cnb.export-post-to-pdf",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@3"
                 },
                 {
-                    "command": "vscode-cnb.show-post-to-local-file-info",
+                    "command": "vscode-cnb.modify-post-settings",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@4"
                 },
                 {
-                    "command": "vscode-cnb.open-post-in-blog-admin",
+                    "command": "vscode-cnb.show-post-to-local-file-info",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@5"
+                },
+                {
+                    "command": "vscode-cnb.open-post-in-blog-admin",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs@6"
                 }
             ]
         },
@@ -616,9 +651,11 @@
         "@types/express": "^4.17.1",
         "@types/glob": "^7.1.4",
         "@types/lodash": "^4.14.178",
+        "@types/markdown-it": "^12.2.3",
         "@types/mime-types": "^2.1.1",
         "@types/mocha": "^9.0.0",
         "@types/node": "14.x",
+        "@types/puppeteer": "^5.4.4",
         "@types/randomstring": "^1.1.8",
         "@types/vscode": "^1.62.0",
         "@typescript-eslint/eslint-plugin": "^5.1.0",
@@ -636,17 +673,22 @@
         "webpack-cli": "^4.8.0"
     },
     "dependencies": {
+        "@cnblogs-gitlab/markdown-it-presets": "^1.3.1",
         "base64url": "^3.0.1",
         "blob": "^0.1.0",
         "crypto": "^1.0.1",
         "date-fns": "^2.27.0",
+        "download-chromium": "^2.2.1",
         "express": "^4.17.1",
         "form-data": "^4.0.0",
         "is-wsl": "^2.2.0",
         "lodash": "^4.17.21",
+        "markdown-it": "^12.3.2",
+        "markdown-it-table-of-contents": "^0.6.0",
         "mime-types": "^2.1.34",
         "node-fetch": "^3.0.0",
         "oidc-client": "^1.11.5",
+        "puppeteer-core": "^13.5.1",
         "randomstring": "^1.1.4",
         "sanitize-filename": "^1.6.3"
     }

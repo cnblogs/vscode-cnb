@@ -1,4 +1,4 @@
-import { homedir } from 'os';
+import { homedir, platform } from 'os';
 import * as fs from 'fs';
 import { ConfigurationTarget, Uri, workspace } from 'vscode';
 import { globalState } from './global-state';
@@ -23,5 +23,35 @@ export class Settings {
             throw Error(`Folder "${value.fsPath}" not exist`);
         }
         await this.configuration.update('workspace', value.fsPath, ConfigurationTarget.Global);
+    }
+
+    static get chromiumPath(): string {
+        const p = platform();
+        if (p === 'darwin') {
+            return this.configuration.get<string>('chromiumPathForMac') ?? '';
+        }
+
+        if (p === 'win32') {
+            return this.configuration.get<string>('chromiumPathForWin') ?? '';
+        }
+
+        return '';
+    }
+
+    static async setChromiumPath(value: string) {
+        if (!value) {
+            return;
+        }
+        let key = '';
+        const p = platform();
+        if (p === 'darwin') {
+            key = 'chromiumPathForMac';
+        }
+
+        if (p === 'win32') {
+            key = 'chromiumPathForWin';
+        }
+
+        await this.configuration.update(key, value, ConfigurationTarget.Global);
     }
 }
