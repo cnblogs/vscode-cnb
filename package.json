@@ -397,12 +397,12 @@
                 {
                     "command": "vscode-cnb.delete-post",
                     "group": "inline",
-                    "when": "viewItem =~ /^cnb-post/"
+                    "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
                 },
                 {
                     "command": "vscode-cnb.modify-post-settings",
                     "group": "inline",
-                    "when": "viewItem =~ /^cnb-post/"
+                    "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
                 },
                 {
                     "command": "vscode-cnb.save-local-draft-to-cnblogs",
@@ -424,17 +424,17 @@
                 },
                 {
                     "command": "vscode-cnb.rename-post",
-                    "when": "viewItem =~ /^cnb-post/",
+                    "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
                     "group": "1@2"
                 },
                 {
                     "command": "vscode-cnb.modify-post-settings",
-                    "when": "viewItem =~ /^cnb-post/",
+                    "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
                     "group": "1@1"
                 },
                 {
                     "command": "vscode-cnb.delete-post",
-                    "when": "viewItem =~ /^cnb-post/",
+                    "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
                     "group": "delete@1"
                 },
                 {
@@ -449,7 +449,7 @@
                 },
                 {
                     "command": "vscode-cnb.view-post-online",
-                    "when": "viewItem =~ /^cnb-post/",
+                    "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
                     "group": "0@2"
                 },
                 {
