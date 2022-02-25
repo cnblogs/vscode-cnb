@@ -7,12 +7,14 @@ import { postService } from '../../services/post.service';
 import { PostFileMapManager } from '../../services/post-file-map';
 import { Settings } from '../../services/settings.service';
 import { openPostFile } from './open-post-file';
+import { PostTitleSanitizer } from '../../services/post-title-sanitizer.service';
 
-const generateLocalPostFileUri = (post: Post, includePostId = false): Uri => {
+const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise<Uri> => {
     const workspaceUri = Settings.workspaceUri;
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`;
     const postIdSegment = includePostId ? `.${post.id}` : '';
-    return Uri.joinPath(workspaceUri, `${post.title}${postIdSegment}${ext}`);
+    const { text: postTitle } = await PostTitleSanitizer.sanitize(post);
+    return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`);
 };
 
 export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile = false) => {
@@ -33,7 +35,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
 
     const workspaceUri = Settings.workspaceUri;
     await createDirectoryIfNotExist(workspaceUri);
-    let fileUri = mappedPostFilePath ? Uri.file(mappedPostFilePath) : generateLocalPostFileUri(post);
+    let fileUri = mappedPostFilePath ? Uri.file(mappedPostFilePath) : await buildLocalPostFileUri(post);
 
     // 博文尚未关联到本地文件的情况
     if (!mappedPostFilePath) {
@@ -50,7 +52,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
             );
             switch (selectedOption) {
                 case conflictOptions[0]:
-                    fileUri = generateLocalPostFileUri(post, true);
+                    fileUri = await buildLocalPostFileUri(post, true);
                     break;
                 // 取消, 直接返回, 不进行任何操作
                 case undefined:

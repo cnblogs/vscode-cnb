@@ -647,6 +647,7 @@
         "mime-types": "^2.1.34",
         "node-fetch": "^3.0.0",
         "oidc-client": "^1.11.5",
-        "randomstring": "^1.1.4"
+        "randomstring": "^1.1.4",
+        "sanitize-filename": "^1.6.3"
     }
 }
