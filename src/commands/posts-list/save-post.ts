@@ -12,6 +12,7 @@ import { searchPostsByTitle } from '../../services/search-post-by-title';
 import * as path from 'path';
 import { refreshPostsList } from './refresh-posts-list';
 import { PostEditDto } from '../../models/post-edit-dto';
+import { PostTitleSanitizer } from '../../services/post-title-sanitizer.service';
 
 export const savePostFileToCnblogs = async (fileUri: Uri) => {
     if (!fileUri || fileUri.scheme !== 'file') {
@@ -107,7 +108,7 @@ export const savePostToCnblogs = async (input: Post | PostEditDto, isNewPost = f
         }
         const updatedPostBody = new TextDecoder().decode(await workspace.fs.readFile(Uri.file(localFilePath)));
         post.postBody = updatedPostBody;
-        post.title = path.basename(localFilePath, path.extname(localFilePath));
+        post.title = await PostTitleSanitizer.unSanitize(post);
     }
 
     const activeEditor = window.visibleTextEditors.find(x => x.document.uri.fsPath === localFilePath);
