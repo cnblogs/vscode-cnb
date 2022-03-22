@@ -1,4 +1,4 @@
-import * as puppeteer from 'puppeteer-core';
+import puppeteer from 'puppeteer-core';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -10,71 +10,6 @@ import { extensionViews } from '../../tree-view-providers/tree-view-registration
 import { postPdfTemplateBuilder } from './post-pdf-template-builder';
 import { chromiumPathProvider } from '../../utils/chromium-path-provider';
 import { Settings } from '../../services/settings.service';
-
-const exportPostToPdf = async (input: Post | Uri) => {
-    let inputPost: Post;
-    let selectedPosts: Post[] = [];
-
-    if (input instanceof Post) {
-        selectedPosts.push(input);
-        extensionViews.postsList?.selection.map(post => {
-            if (post instanceof Post && !selectedPosts.includes(post)) {
-                selectedPosts.push(post);
-            }
-        });
-    } else {
-        const postId = PostFileMapManager.getPostId(input.fsPath);
-        if (postId && postId > 0) {
-            inputPost = (await postService.fetchPostEditDto(postId)).post;
-        } else {
-            const { fsPath } = input;
-            inputPost = Object.assign((await postService.fetchPostEditDto(-1)).post, {
-                id: -1,
-                title: path.basename(fsPath, path.extname(fsPath)),
-                postBody: new TextDecoder().decode(await workspace.fs.readFile(input)),
-            } as Post);
-        }
-
-        selectedPosts.push(inputPost);
-    }
-
-    if (selectedPosts.length <= 0) {
-        return;
-    }
-
-    if (input instanceof Post) {
-        selectedPosts = (await Promise.all(selectedPosts.map(p => postService.fetchPostEditDto(p.id)))).map(
-            x => x.post
-        );
-    }
-
-    const chromiumPath = await retrieveChromiumPath();
-    let dir = await inputTargetFolder();
-    if (!dir || !chromiumPath) {
-        return;
-    }
-
-    await window.withProgress(
-        {
-            title: `正在导出`,
-            location: ProgressLocation.Notification,
-        },
-        async progress => {
-            const { browser, page } = await launchBrowser(chromiumPath);
-            let idx = 0;
-            const { length: total } = selectedPosts;
-            for (const post of selectedPosts) {
-                try {
-                    await exportOne(idx++, total, post, page, dir!, progress);
-                } catch {
-                    continue;
-                }
-            }
-            await page.close();
-            await browser.close();
-        }
-    );
-};
 
 const launchBrowser = async (chromiumPath: string) => {
     const browser = await puppeteer.launch({
@@ -187,6 +122,75 @@ const inputTargetFolder = async (): Promise<Uri | undefined> => {
         canSelectMany: false,
         title: '请选择用于保存pdf的目录',
     })) ?? [])[0];
+};
+
+const handlePostInput = (post: Post): Promise<Post[]> => {
+    const posts: Post[] = [post];
+    posts.push(post);
+    extensionViews.postsList?.selection.map(post => {
+        if (post instanceof Post && !posts.includes(post)) {
+            posts.push(post);
+        }
+    });
+    return Promise.resolve(posts);
+};
+
+const handleUriInput = async (uri: Uri): Promise<Post[]> => {
+    const posts: Post[] = [];
+    const postId = PostFileMapManager.getPostId(uri.fsPath);
+    let inputPost: Post;
+    if (postId && postId > 0) {
+        inputPost = (await postService.fetchPostEditDto(postId)).post;
+    } else {
+        const { fsPath } = uri;
+        inputPost = Object.assign((await postService.fetchPostEditDto(-1)).post, {
+            id: -1,
+            title: path.basename(fsPath, path.extname(fsPath)),
+            postBody: new TextDecoder().decode(await workspace.fs.readFile(uri)),
+        } as Post);
+    }
+
+    posts.push(inputPost);
+
+    return posts;
+};
+
+const exportPostToPdf = async (input: Post | Uri): Promise<void> => {
+    await window.withProgress(
+        {
+            title: `正在导出`,
+            location: ProgressLocation.Notification,
+        },
+        async progress => {
+            let selectedPosts = await (input instanceof Post ? handlePostInput(input) : handleUriInput(input));
+            if (selectedPosts.length <= 0) {
+                return;
+            }
+            if (input instanceof Post) {
+                selectedPosts = (await Promise.all(selectedPosts.map(p => postService.fetchPostEditDto(p.id)))).map(
+                    x => x.post
+                );
+            }
+            const chromiumPath = await retrieveChromiumPath();
+            let dir = await inputTargetFolder();
+            if (!dir || !chromiumPath) {
+                return;
+            }
+
+            const { browser, page } = await launchBrowser(chromiumPath);
+            let idx = 0;
+            const { length: total } = selectedPosts;
+            for (const post of selectedPosts) {
+                try {
+                    await exportOne(idx++, total, post, page, dir!, progress);
+                } catch {
+                    continue;
+                }
+            }
+            await page.close();
+            await browser.close();
+        }
+    );
 };
 
 export { exportPostToPdf };
