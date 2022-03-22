@@ -4,41 +4,43 @@
 name: Publish extension to vscode extension marketplace
 
 on:
-  push:
-    tags:
-      - v*.*.*
+    push:
+        tags:
+            - v*.*.*
+
+env:
+    GITLAB_NPM_TOKEN: ${{secrets.GITLAB_NPM_TOKEN}}
 
 jobs:
-  build:
+    build:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [16.x]
+                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-    strategy:
-      matrix:
-        node-version: [14.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: echo "VERSION=${GITHUB_REF#refs/*/}"
-    # add tag value to env
-    - run: echo "VERSION=${GITHUB_REF#refs/*/}" | sed 's/v//' >> $GITHUB_ENV
-    - run: echo "version:\ ${{ env.VERSION }}"
-    # globally install vsce
-    - run: npm i -g vsce 
-    # replace client_id
-    - run: sed -i "s/clientId:\ 'vscode-cnb'/clientId:\ '${{ secrets.OAUTHCLIENTID }}'/" src/models/config.ts
-    # replace client_secret
-    - run: sed -i "s/clientSecret:\ ''/clientSecret:\ '${{ secrets.OAUTHCLIENTSECRET }}'/" src/models/config.ts
-    - run: echo "src/models/config.ts\n" && cat src/models/config.ts
-    # use env.VERSION to replace version property in package.json
-    - run: sed -i 's/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"${{ env.VERSION }}\"/' package.json
-    - run: echo "package.json\n" && cat package.json
-    - run: npm ci
-    # publish to vscode extension marketplace
-    - run: vsce publish -p ${{ secrets.VSCETOKEN }}
+        steps:
+            - uses: actions/checkout@v2
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v2
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+            - run: echo "VERSION=${GITHUB_REF#refs/*/}"
+            # add tag value to env
+            - run: echo "VERSION=${GITHUB_REF#refs/*/}" | sed 's/v//' >> $GITHUB_ENV
+            - run: echo "version:\ ${{ env.VERSION }}"
+            # globally install vsce
+            - run: npm i -g vsce
+            # replace client_id
+            - run: sed -i "s/clientId:\ 'vscode-cnb'/clientId:\ '${{ secrets.OAUTHCLIENTID }}'/" src/models/config.ts
+            # replace client_secret
+            - run: sed -i "s/clientSecret:\ ''/clientSecret:\ '${{ secrets.OAUTHCLIENTSECRET }}'/" src/models/config.ts
+            - run: echo "src/models/config.ts\n" && cat src/models/config.ts
+            # use env.VERSION to replace version property in package.json
+            - run: sed -i 's/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"${{ env.VERSION }}\"/' package.json
+            - run: echo "package.json\n" && cat package.json
+            - run: npm ci
+            # publish to vscode extension marketplace
+            - run: vsce publish -p ${{ secrets.VSCETOKEN }}

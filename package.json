@@ -645,7 +645,8 @@
         "pretest": "npm run compile-tests && npm run compile && npm run lint",
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "format-check": "prettier --check ."
     },
     "devDependencies": {
         "@types/express": "^4.17.1",
