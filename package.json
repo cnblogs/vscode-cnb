@@ -532,6 +532,11 @@
                     "command": "vscode-cnb.upload-local-disk-image",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@5"
+                },
+                {
+                    "command": "vscode-cnb.export-post-to-pdf",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs@6"
                 }
             ],
             "editor/title": [
@@ -558,22 +563,22 @@
                     "group": "cnblogs@2"
                 },
                 {
-                    "command": "vscode-cnb.export-post-to-pdf",
+                    "command": "vscode-cnb.modify-post-settings",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@3"
                 },
                 {
-                    "command": "vscode-cnb.modify-post-settings",
+                    "command": "vscode-cnb.show-post-to-local-file-info",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@4"
                 },
                 {
-                    "command": "vscode-cnb.show-post-to-local-file-info",
+                    "command": "vscode-cnb.open-post-in-blog-admin",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@5"
                 },
                 {
-                    "command": "vscode-cnb.open-post-in-blog-admin",
+                    "command": "vscode-cnb.export-post-to-pdf",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@6"
                 }
