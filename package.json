@@ -213,7 +213,8 @@
             {
                 "command": "vscode-cnb.export-post-to-pdf",
                 "title": "导出pdf",
-                "category": "Cnblogs"
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized"
             }
         ],
         "configuration": {
