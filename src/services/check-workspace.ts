@@ -13,7 +13,7 @@ export const isTargetWorkspace = (): boolean => {
 export const observeConfigurationChange = () => {
     globalState.extensionContext?.subscriptions.push(
         workspace.onDidChangeConfiguration(ev =>
-            ev.affectsConfiguration(globalState.extensionName) ? isTargetWorkspace() : false
+            ev.affectsConfiguration(Settings.prefix) ? isTargetWorkspace() : false
         )
     );
     isTargetWorkspace();

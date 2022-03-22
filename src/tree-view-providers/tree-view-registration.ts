@@ -10,7 +10,13 @@ export const extensionViews: {
     anotherPostsList?: vscode.TreeView<PostDataProviderItem>;
     account?: vscode.TreeView<vscode.TreeItem>;
     postCategoriesList?: vscode.TreeView<PostCategory>;
-} = {};
+    visiblePostList: () => vscode.TreeView<PostDataProviderItem> | undefined;
+} = {
+    visiblePostList: () => {
+        const lists = [extensionViews.postsList, extensionViews.anotherPostsList];
+        return lists.find(x => x && x.visible);
+    },
+};
 
 export const registerTreeViews = () => {
     extensionViews.account = vscode.window.createTreeView('cnblogs-account', {

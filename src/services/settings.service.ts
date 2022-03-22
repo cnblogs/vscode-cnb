@@ -1,11 +1,14 @@
 import { homedir, platform } from 'os';
 import * as fs from 'fs';
 import { ConfigurationTarget, Uri, workspace } from 'vscode';
-import { globalState } from './global-state';
 
 export class Settings {
+    static get prefix() {
+        return `cnblogsClientForVSCode`;
+    }
+
     static get configuration() {
-        return workspace.getConfiguration(globalState.extensionName);
+        return workspace.getConfiguration(this.prefix);
     }
 
     static get workspaceUri(): Uri {
@@ -28,11 +31,11 @@ export class Settings {
     static get chromiumPath(): string {
         const p = platform();
         if (p === 'darwin') {
-            return this.configuration.get<string>('chromiumPathForMac') ?? '';
+            return this.configuration.get<string>('macos.chromiumPath') ?? '';
         }
 
         if (p === 'win32') {
-            return this.configuration.get<string>('chromiumPathForWin') ?? '';
+            return this.configuration.get<string>('windows.chromiumPath') ?? '';
         }
 
         return '';

@@ -30,7 +30,7 @@ const exportOne = async (
     post: Post,
     page: puppeteer.Page,
     targetFileUri: Uri,
-    progress: Progress<any>
+    progress: Progress<{ message: string; increment: number }>
 ) => {
     let message = `[${idx + 1}/${total}]正在导出 - ${post.title}`;
     const report = (increment: number) => {
@@ -59,6 +59,7 @@ const exportOne = async (
     let pdfBuffer = await createPdfBuffer(page);
     report(90);
     await writePdfToFile(targetFileUri!, post, pdfBuffer);
+    report(-100);
 };
 
 const createPdfBuffer = (page: puppeteer.Page) =>
@@ -126,10 +127,9 @@ const inputTargetFolder = async (): Promise<Uri | undefined> => {
 
 const handlePostInput = (post: Post): Promise<Post[]> => {
     const posts: Post[] = [post];
-    posts.push(post);
-    extensionViews.postsList?.selection.map(post => {
-        if (post instanceof Post && !posts.includes(post)) {
-            posts.push(post);
+    extensionViews.visiblePostList()?.selection.map(item => {
+        if (item instanceof Post && !posts.includes(item)) {
+            posts.push(item);
         }
     });
     return Promise.resolve(posts);
@@ -156,27 +156,29 @@ const handleUriInput = async (uri: Uri): Promise<Post[]> => {
 };
 
 const exportPostToPdf = async (input: Post | Uri): Promise<void> => {
+    const chromiumPath = await retrieveChromiumPath();
+
     await window.withProgress(
         {
-            title: `正在导出`,
             location: ProgressLocation.Notification,
         },
         async progress => {
+            progress.report({ message: '导出pdf - 处理博文数据' });
             let selectedPosts = await (input instanceof Post ? handlePostInput(input) : handleUriInput(input));
             if (selectedPosts.length <= 0) {
                 return;
             }
-            if (input instanceof Post) {
-                selectedPosts = (await Promise.all(selectedPosts.map(p => postService.fetchPostEditDto(p.id)))).map(
-                    x => x.post
-                );
-            }
-            const chromiumPath = await retrieveChromiumPath();
+            selectedPosts =
+                input instanceof Post
+                    ? (await Promise.all(selectedPosts.map(p => postService.fetchPostEditDto(p.id)))).map(x => x.post)
+                    : selectedPosts;
+            progress.report({ message: '选择输出文件夹' });
             let dir = await inputTargetFolder();
             if (!dir || !chromiumPath) {
                 return;
             }
 
+            progress.report({ message: '启动Chromium' });
             const { browser, page } = await launchBrowser(chromiumPath);
             let idx = 0;
             const { length: total } = selectedPosts;
