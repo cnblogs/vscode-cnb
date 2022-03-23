@@ -2,6 +2,18 @@ import { commands, Event, EventEmitter, MessageOptions, ThemeIcon, TreeDataProvi
 import { PostCategories, PostCategory } from '../models/post-category';
 import { globalState } from '../services/global-state';
 import { postCategoryService } from '../services/post-category.service';
+import { Settings } from '../services/settings.service';
+
+const categoryIcon = () => {
+    const iconTheme = Settings.iconTheme;
+    let iconId = 'folder';
+    switch (iconTheme) {
+        case 'vs-seti':
+            iconId = 'file-directory';
+            break;
+    }
+    return new ThemeIcon(iconId);
+};
 
 export class PostCategoriesViewDataProvider implements TreeDataProvider<PostCategory> {
     private static _instance: PostCategoriesViewDataProvider;
@@ -36,7 +48,7 @@ export class PostCategoriesViewDataProvider implements TreeDataProvider<PostCate
     getTreeItem(element: PostCategory): TreeItem | Thenable<TreeItem> {
         const label = `${element.title}(${element.count})`;
         return Object.assign(new TreeItem(label), {
-            iconPath: new ThemeIcon('folder'),
+            iconPath: categoryIcon(),
             contextValue: 'cnb-post-category',
         } as TreeItem);
     }

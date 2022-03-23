@@ -1,4 +1,5 @@
 import { commands, workspace } from 'vscode';
+import { refreshPostCategoriesList } from '../commands/post-category/refresh-post-categories-list';
 import { globalState } from './global-state';
 import { PostFileMapManager } from './post-file-map';
 import { Settings } from './settings.service';
@@ -12,9 +13,14 @@ export const isTargetWorkspace = (): boolean => {
 
 export const observeConfigurationChange = () => {
     globalState.extensionContext?.subscriptions.push(
-        workspace.onDidChangeConfiguration(ev =>
-            ev.affectsConfiguration(Settings.prefix) ? isTargetWorkspace() : false
-        )
+        workspace.onDidChangeConfiguration(ev => {
+            if (ev.affectsConfiguration(Settings.prefix)) {
+                isTargetWorkspace();
+            }
+            if (ev.affectsConfiguration(`${Settings.iconThemePrefix}.${Settings.iconThemeKey}`)) {
+                refreshPostCategoriesList();
+            }
+        })
     );
     isTargetWorkspace();
 };
