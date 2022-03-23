@@ -148,7 +148,8 @@
                 "command": "vscode-cnb.save-post-file-to-cnblogs",
                 "title": "保存到博客园",
                 "icon": "$(cloud-upload)",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthorized",
+                "category": "Cnblogs"
             },
             {
                 "command": "vscode-cnb.show-post-to-local-file-info",
@@ -354,7 +355,7 @@
                 },
                 {
                     "command": "vscode-cnb.save-post-file-to-cnblogs",
-                    "when": "false"
+                    "when": "true"
                 },
                 {
                     "command": "vscode-cnb.delete-local-draft",

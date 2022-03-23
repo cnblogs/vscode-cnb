@@ -14,13 +14,29 @@ import { refreshPostsList } from './refresh-posts-list';
 import { PostEditDto } from '../../models/post-edit-dto';
 import { PostTitleSanitizer } from '../../services/post-title-sanitizer.service';
 
-export const savePostFileToCnblogs = async (fileUri: Uri) => {
-    if (!fileUri || fileUri.scheme !== 'file') {
+const parseFileUri = async (fileUri: Uri | undefined): Promise<Uri | undefined> => {
+    if (fileUri && fileUri.scheme !== 'file') {
+        fileUri = undefined;
+    } else if (!fileUri) {
+        const { activeTextEditor } = window;
+        if (activeTextEditor) {
+            const { document } = activeTextEditor;
+            if (document.languageId === 'markdown' && !document.isUntitled) {
+                await document.save();
+                fileUri = document.uri;
+            }
+        }
+    }
+
+    return fileUri;
+};
+
+export const savePostFileToCnblogs = async (fileUri: Uri | undefined) => {
+    fileUri = await parseFileUri(fileUri);
+    if (!fileUri) {
         return;
     }
-    const filePath = fileUri.fsPath;
-    // const fileName = path.basename(filePath);
-    // const fileNameWithoutExt = path.basename(fileName, path.extname(fileName));
+    const { fsPath: filePath } = fileUri;
     const postId = PostFileMapManager.getPostId(filePath);
     if (postId && postId >= 0) {
         await savePostToCnblogs(await postService.fetchPostEditDto(postId));

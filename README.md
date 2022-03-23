@@ -32,6 +32,10 @@
 
 若本地文件已经关联到一篇博客园博文, 那么会直接更新这篇博文.
 
+也通过vscode的`Command Palette`(唤起`Command Palette`快捷键, windows:`ctrl+shift+p`, macos: `command+shift+p`)调用`Cnblogs: 保存到博客园`命令, 将当前正在编辑的markdown文件保存到博客园上
+
+![image](https://img2022.cnblogs.com/blog/1596066/202203/1596066-20220323151757542-155709896.png)
+
 ### 博客园博文列表
 
 当点击列表中的博文时, 会自动将博文内容下载到工作空间一个本地文件中(此时这个本地文件就关联到了这篇博文), 完成编辑后可以再将本地的内容保存到博客园博文
