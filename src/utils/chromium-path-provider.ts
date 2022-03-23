@@ -1,6 +1,7 @@
 import { window, ProgressLocation } from 'vscode';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
 const download = require('download-chromium');
 
 namespace chromiumPathProvider {
@@ -10,7 +11,7 @@ namespace chromiumPathProvider {
     };
     export type ChromiumProviderFunc = () => Promise<string | undefined>;
     const selectFromLocalTitle = '选择本地Chromium';
-    const lookupExecutableFromMacApp = (path?: string) => {
+    export const lookupExecutableFromMacApp = (path?: string) => {
         if (path?.endsWith('.app')) {
             path = `${path}/Contents/MacOS`;
             if (!fs.existsSync(path)) {
@@ -36,7 +37,10 @@ namespace chromiumPathProvider {
                 canSelectFiles: true,
                 filters: {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
-                    Program: [...(platform === 'darwin' ? ['app'] : []), ...(platform === 'win32' ? ['exe'] : [])],
+                    Program: [
+                        ...(platform === 'darwin' ? ['app', 'exe'] : []),
+                        ...(platform === 'win32' ? ['exe'] : []),
+                    ],
                 },
             })
         )?.pop()?.fsPath;
@@ -44,22 +48,27 @@ namespace chromiumPathProvider {
     };
     const downloadFromInternetTitle = '帮我下载Chromium';
     export const downloadFromInternet: ChromiumProviderFunc = async (): Promise<string | undefined> => {
-        const installPath = `${os.homedir()}/Downloads`;
+        const installPath = path.join(os.homedir(), `Downloads`);
         fs.mkdirSync(installPath, { recursive: true });
         const chromiumPath = await window.withProgress(
             { title: '正在下载Chromium', location: ProgressLocation.Notification },
             async progress => {
+                progress.report({ increment: 0 });
                 try {
+                    let percentCache = 0;
                     return <string>await download({
                         log: false,
                         revision: 983122,
                         installPath,
                         onProgress: (arg: any) => {
-                            const { percent, transferred, total } = arg;
+                            let { percent } = arg;
+                            percent *= 100;
+                            percent = Math.floor(percent);
                             progress.report({
-                                message: `${(transferred / total) * 100}%`,
-                                increment: percent,
+                                message: `${percent}%`,
+                                increment: percent - percentCache,
                             });
+                            percentCache = percent;
                         },
                     });
                 } catch {

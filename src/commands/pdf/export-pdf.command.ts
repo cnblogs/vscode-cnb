@@ -94,8 +94,8 @@ const writePdfToFile = (dir: Uri, post: Post, buffer: Buffer) =>
     });
 
 const retrieveChromiumPath = async (): Promise<string | undefined> => {
-    let path: string | undefined = Settings.chromiumPath;
-    if (fs.existsSync(path)) {
+    let path: string | undefined = chromiumPathProvider.lookupExecutableFromMacApp(Settings.chromiumPath);
+    if (path && fs.existsSync(path)) {
         return path;
     }
 
@@ -104,27 +104,29 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
     if (platform === 'darwin') {
         // mac
         path = defaultChromiumPath.osx.find(x => fs.existsSync(x)) ?? '';
+        path = chromiumPathProvider.lookupExecutableFromMacApp(path);
     } else if (platform === 'win32') {
         // windows
         path = defaultChromiumPath.win.find(x => fs.existsSync(x)) ?? '';
     }
 
-    if (path) {
-        return path;
+    if (!path) {
+        const { options } = chromiumPathProvider;
+        const input = await window.showWarningMessage(
+            '未找到Chromium可执行文件',
+            {
+                modal: true,
+            },
+            ...options.map(x => x[0])
+        );
+        const op = options.find(x => x[0] === input);
+        path = op ? await op[1]() : undefined;
     }
-    const { options } = chromiumPathProvider;
-    const input = await window.showWarningMessage(
-        '未找到Chromium可执行文件',
-        {
-            modal: true,
-        },
-        ...options.map(x => x[0])
-    );
-    const op = options.find(x => x[0] === input);
-    path = op ? await op[1]() : undefined;
+
     if (path && path !== Settings.chromiumPath) {
         Settings.setChromiumPath(path);
     }
+
     return path;
 };
 
@@ -178,6 +180,9 @@ const reportErrors = (errors: string[] | undefined) => {
 
 const exportPostToPdf = async (input: Post | Uri): Promise<void> => {
     const chromiumPath = await retrieveChromiumPath();
+    if (!chromiumPath) {
+        return;
+    }
 
     reportErrors(
         await window.withProgress<string[] | undefined>(

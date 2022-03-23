@@ -28,33 +28,28 @@ export class Settings {
         await this.configuration.update('workspace', value.fsPath, ConfigurationTarget.Global);
     }
 
-    static get chromiumPath(): string {
+    static get chromiumPathConfigurationKey() {
+        let key = '';
         const p = platform();
         if (p === 'darwin') {
-            return this.configuration.get<string>('macos.chromiumPath') ?? '';
+            key = `macos.chromiumPath`;
         }
 
         if (p === 'win32') {
-            return this.configuration.get<string>('windows.chromiumPath') ?? '';
+            key = `windows.chromiumPath`;
         }
 
-        return '';
+        return key;
+    }
+
+    static get chromiumPath(): string {
+        return this.configuration.get<string>(this.chromiumPathConfigurationKey) ?? '';
     }
 
     static async setChromiumPath(value: string) {
         if (!value) {
             return;
         }
-        let key = '';
-        const p = platform();
-        if (p === 'darwin') {
-            key = 'chromiumPathForMac';
-        }
-
-        if (p === 'win32') {
-            key = 'chromiumPathForWin';
-        }
-
-        await this.configuration.update(key, value, ConfigurationTarget.Global);
+        await this.configuration.update(this.chromiumPathConfigurationKey, value, ConfigurationTarget.Global);
     }
 }
