@@ -7,6 +7,20 @@ export class Settings {
         return `cnblogsClientForVSCode`;
     }
 
+    static get iconThemePrefix() {
+        return 'workbench';
+    }
+
+    static get iconThemeKey() {
+        return `iconTheme`;
+    }
+
+    static get iconTheme() {
+        return <'vs-seti' | 'vs-minimal' | undefined | string>(
+            workspace.getConfiguration(this.iconThemePrefix).get<string>(this.iconThemeKey)
+        );
+    }
+
     static get configuration() {
         return workspace.getConfiguration(this.prefix);
     }
