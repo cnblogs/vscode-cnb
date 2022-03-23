@@ -8,6 +8,7 @@
   - [将本地文件关联到博客园博文](#将本地文件关联到博客园博文)
   - [图片上传](#图片上传)
   - [博文分类管理](#博文分类管理)
+  - [导出pdf](#导出pdf)
 - [vscode版本要求](#vscode版本要求)
 - [插件设置](#插件设置)
 
@@ -55,12 +56,26 @@
 
 ![](https://img2020.cnblogs.com/blog/1596066/202112/1596066-20211228130552877-1788018336.png)
 
+### 导出pdf
+
+支持将博文导出为pdf格式的文件到本地, 此功能依赖于[Chromium](https://www.chromium.org/chromium-projects/), vscode-cnb默认会先从本地寻找是否有已安装的Chrome或基于Chromium的Edge浏览器, 若有的话则会直接使用本地的Chrome或基于Chromium的Edge; 若未找到, 那么会提示用户手动选择本地的Chromium或其他基于Chromium的浏览器
+
+![image](https://img2022.cnblogs.com/blog/1596066/202203/1596066-20220323135717910-1090211493.png)
+
+也可以在vscode的设置中手动配置**Chromium或其他基于Chromium的浏览器的可执行文件路径**, 这个路径针对windows和macos是不同的两个配置, 可以根据自己使用的系统进行配置
+
+![image](https://img2022.cnblogs.com/blog/1596066/202203/1596066-20220323135918858-1619509502.png)
+
+支持多选
+
+![image](https://img2022.cnblogs.com/blog/1596066/202203/1596066-20220323140426961-1518402131.png)
+
 ## vscode版本要求
 
 \>=1.62.0
 
 ## 插件设置
 
-* `vscode-cnb.workspace`: `vscode-cnb`需要用到的一个工作空间, `vscode-cnb`只有检测到vscode处于此目录下才会生效, 默认会使用`~/Documents/Cnblogs`作为工作空间
+* `workspace`: `vscode-cnb`需要用到的一个工作空间, `vscode-cnb`只有检测到vscode处于此目录下才会生效, 默认会使用`~/Documents/Cnblogs`作为工作空间
 
 ![img](https://img2020.cnblogs.com/blog/3/202112/3-20211227183958436-462553661.png)

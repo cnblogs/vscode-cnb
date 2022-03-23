@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import { accountService } from './account.service';
 import { globalState } from './global-state';
-import * as FormData from 'form-data';
+import FormData from 'form-data';
 
 export class ImageService {
     private static _instance: ImageService;

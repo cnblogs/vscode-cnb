@@ -1,6 +1,6 @@
 import { UserAuthorizationInfo } from './../models/user-settings';
 import { convertObjectKeysToCamelCase } from './fetch-json-response-to-camel-case';
-import * as express from 'express';
+import express from 'express';
 import { Server } from 'http';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';

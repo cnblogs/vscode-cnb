@@ -5,7 +5,7 @@ export class Post {
     blogId: number = -1;
     blogTeamIds: number[] = [];
     canChangeCreatedTime: boolean = false;
-    categoryIds: number[] = [];
+    categoryIds: number[] | null = [];
     changeCreatedTime: boolean = false;
     changePostType: boolean = false;
     datePublished?: Date;

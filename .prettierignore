@@ -3,3 +3,5 @@ node_modules
 *.md
 package-lock.json
 dist
+.vscode-test
+out
