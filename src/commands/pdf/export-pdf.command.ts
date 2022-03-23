@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer-core';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { Progress, ProgressLocation, Uri, window, workspace } from 'vscode';
+import { MessageOptions, Progress, ProgressLocation, Uri, window, workspace } from 'vscode';
 import { Post } from '../../models/post';
 import { PostFileMapManager } from '../../services/post-file-map';
 import { postService } from '../../services/post.service';
@@ -11,17 +11,29 @@ import { postPdfTemplateBuilder } from './post-pdf-template-builder';
 import { chromiumPathProvider } from '../../utils/chromium-path-provider';
 import { Settings } from '../../services/settings.service';
 
-const launchBrowser = async (chromiumPath: string) => {
-    const browser = await puppeteer.launch({
-        dumpio: true,
-        headless: true,
-        devtools: false,
-        executablePath: chromiumPath,
-    });
-    const page = await browser.newPage();
-    await page.setExtraHTTPHeaders({ referer: 'https://www.cnblogs.com/' });
-    await page.setCacheEnabled(false);
-    return { browser, page };
+const launchBrowser = async (
+    chromiumPath: string
+): Promise<
+    | {
+          browser: puppeteer.Browser;
+          page: puppeteer.Page;
+      }
+    | undefined
+> => {
+    try {
+        const browser = await puppeteer.launch({
+            dumpio: true,
+            headless: true,
+            devtools: false,
+            executablePath: chromiumPath,
+        });
+        const page = await browser.newPage();
+        await page.setExtraHTTPHeaders({ referer: 'https://www.cnblogs.com/' });
+        await page.setCacheEnabled(false);
+        return { browser, page };
+    } catch {
+        return undefined;
+    }
 };
 
 const exportOne = async (
@@ -155,43 +167,56 @@ const handleUriInput = async (uri: Uri): Promise<Post[]> => {
     return posts;
 };
 
+const mapToPostEditDto = async (posts: Post[]) =>
+    (await Promise.all(posts.map(p => postService.fetchPostEditDto(p.id)))).map(x => x.post);
+
+const reportErrors = (errors: string[] | undefined) => {
+    if (errors && errors.length > 0) {
+        window.showErrorMessage('导出pdf时遇到错误', { modal: true, detail: errors.join('\n') } as MessageOptions);
+    }
+};
+
 const exportPostToPdf = async (input: Post | Uri): Promise<void> => {
     const chromiumPath = await retrieveChromiumPath();
 
-    await window.withProgress(
-        {
-            location: ProgressLocation.Notification,
-        },
-        async progress => {
-            progress.report({ message: '导出pdf - 处理博文数据' });
-            let selectedPosts = await (input instanceof Post ? handlePostInput(input) : handleUriInput(input));
-            if (selectedPosts.length <= 0) {
-                return;
-            }
-            selectedPosts =
-                input instanceof Post
-                    ? (await Promise.all(selectedPosts.map(p => postService.fetchPostEditDto(p.id)))).map(x => x.post)
-                    : selectedPosts;
-            progress.report({ message: '选择输出文件夹' });
-            let dir = await inputTargetFolder();
-            if (!dir || !chromiumPath) {
-                return;
-            }
-
-            progress.report({ message: '启动Chromium' });
-            const { browser, page } = await launchBrowser(chromiumPath);
-            let idx = 0;
-            const { length: total } = selectedPosts;
-            for (const post of selectedPosts) {
-                try {
-                    await exportOne(idx++, total, post, page, dir!, progress);
-                } catch {
-                    continue;
+    reportErrors(
+        await window.withProgress<string[] | undefined>(
+            {
+                location: ProgressLocation.Notification,
+            },
+            async progress => {
+                const errors: string[] = [];
+                progress.report({ message: '导出pdf - 处理博文数据' });
+                let selectedPosts = await (input instanceof Post ? handlePostInput(input) : handleUriInput(input));
+                if (selectedPosts.length <= 0) {
+                    return;
                 }
+                selectedPosts = input instanceof Post ? await mapToPostEditDto(selectedPosts) : selectedPosts;
+                progress.report({ message: '选择输出文件夹' });
+                let dir = await inputTargetFolder();
+                if (!dir || !chromiumPath) {
+                    return;
+                }
+
+                progress.report({ message: '启动Chromium' });
+                const { browser, page } = (await launchBrowser(chromiumPath)) ?? {};
+                if (!browser || !page) {
+                    return ['启动Chromium失败'];
+                }
+                let idx = 0;
+                const { length: total } = selectedPosts;
+                for (const post of selectedPosts) {
+                    try {
+                        await exportOne(idx++, total, post, page, dir!, progress);
+                    } catch (err) {
+                        errors.push(`导出"${post.title}失败", ${err}`);
+                    }
+                }
+                await page.close();
+                await browser.close();
+                return errors;
             }
-            await page.close();
-            await browser.close();
-        }
+        )
     );
 };
 
