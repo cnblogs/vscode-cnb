@@ -1,6 +1,6 @@
 import { Post } from '../../models/post';
 import { PostFileMapManager } from '../../services/post-file-map';
-import * as fs from 'fs';
+import fs from 'fs';
 import { markdownItFactory } from '@cnblogs-gitlab/markdown-it-presets';
 import { blogSettingsService } from '../../services/blog-settings.service';
 import { accountService } from '../../services/account.service';

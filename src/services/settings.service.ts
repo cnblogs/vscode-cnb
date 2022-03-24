@@ -1,5 +1,5 @@
 import { homedir, platform } from 'os';
-import * as fs from 'fs';
+import fs from 'fs';
 import { ConfigurationTarget, Uri, workspace } from 'vscode';
 
 export class Settings {

@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import path = require('path');
 import { FileSystemError, MessageOptions, Uri, window, workspace } from 'vscode';
 import { Post } from '../../models/post';

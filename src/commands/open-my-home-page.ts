@@ -1,5 +1,5 @@
 import { accountService } from '../services/account.service';
-import * as vscode from 'vscode';
+import vscode from 'vscode';
 
 export const openMyHomePage = () => {
     const { accountId } = accountService.curUser;

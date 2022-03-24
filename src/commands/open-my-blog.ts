@@ -1,5 +1,5 @@
 import { accountService } from '../services/account.service';
-import * as vscode from 'vscode';
+import vscode from 'vscode';
 
 export const openMyBlog = () => {
     const userBlogUrl = accountService.curUser?.website;

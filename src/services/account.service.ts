@@ -2,10 +2,10 @@ import { convertObjectKeysToCamelCase } from './fetch-json-response-to-camel-cas
 import { UserAuthorizationInfo, UserInfo } from './../models/user-settings';
 import { globalState } from './global-state';
 import { CnblogsOAuthService } from './cnblogs-oauth.service';
-import * as vscode from 'vscode';
+import vscode from 'vscode';
 import { URLSearchParams } from 'url';
 import { generateCodeChallenge } from './code-challenge.service';
-import * as RandomString from 'randomstring';
+import RandomString from 'randomstring';
 import fetch from 'node-fetch';
 import { accountViewDataProvider } from '../tree-view-providers/account-view-data-provider';
 import { postsDataProvider } from '../tree-view-providers/posts-data-provider';

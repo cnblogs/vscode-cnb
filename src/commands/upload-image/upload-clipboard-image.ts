@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import { ProgressLocation, Uri, window, workspace } from 'vscode';
 import { AlertService } from '../../services/alert.service';
 import { imageService } from '../../services/image.service';

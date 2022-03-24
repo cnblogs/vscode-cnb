@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer-core';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 import { MessageOptions, Progress, ProgressLocation, Uri, window, workspace } from 'vscode';
 import { Post } from '../../models/post';
 import { PostFileMapManager } from '../../services/post-file-map';

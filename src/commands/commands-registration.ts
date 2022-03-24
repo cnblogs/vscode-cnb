@@ -1,8 +1,8 @@
+import vscode from 'vscode';
 import { openMyAccountSettings } from './open-my-account-settings';
 import { openMyWebBlogConsole } from './open-my-blog-management-background';
 import { openMyHomePage } from './open-my-home-page';
 import { login, logout } from './login';
-import * as vscode from 'vscode';
 import { openMyBlog } from './open-my-blog';
 import { globalState } from '../services/global-state';
 import {
