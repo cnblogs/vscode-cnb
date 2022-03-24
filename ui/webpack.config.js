@@ -20,7 +20,10 @@ const buildEntry = () => {
         fs.cpSync(`./ui/${folder}/index.html`, `./dist/assets/ui/${folder}/index.html`);
     }
 
-    fs.cpSync('./ui/lib/', './dist/assets/ui/lib/', { recursive: true });
+    const libPath = './ui/lib/';
+    if (fs.existsSync(libPath)) {
+        fs.cpSync(libPath, './dist/assets/ui/lib/', { recursive: true });
+    }
 
     if (isDev) {
         console.log(entries);
