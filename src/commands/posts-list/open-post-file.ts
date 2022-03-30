@@ -1,11 +1,11 @@
 import { commands, Uri } from 'vscode';
 import { Post } from '../../models/post';
-import { LocalDraftFile } from '../../models/local-draft-file';
+import { LocalFileService } from '../../services/local-draft.service';
 import { PostFileMapManager } from '../../services/post-file-map';
 
-export const openPostFile = async (post: LocalDraftFile | Post | string) => {
+export const openPostFile = async (post: LocalFileService | Post | string) => {
     let filePath = '';
-    if (post instanceof LocalDraftFile) {
+    if (post instanceof LocalFileService) {
         filePath = post.filePath;
     } else if (post instanceof Post) {
         filePath = PostFileMapManager.getFilePath(post.id) ?? '';

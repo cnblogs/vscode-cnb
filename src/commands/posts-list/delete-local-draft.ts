@@ -1,14 +1,15 @@
 import { Uri, window, workspace } from 'vscode';
-import { LocalDraftFile } from '../../models/local-draft-file';
+import { LocalFileService } from '../../services/local-draft.service';
 import { localDraftsTreeItem, postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
 const options = ['确定', '取消'];
 
-export const deleteLocalDraft = async (targetFile: LocalDraftFile) => {
+export const deleteLocalDraft = async (targetFile: LocalFileService) => {
     const files =
-        extensionViews.postsList?.selection.filter(s => s instanceof LocalDraftFile).map(x => x as LocalDraftFile) ??
-        [];
+        extensionViews.postsList?.selection
+            .filter(s => s instanceof LocalFileService)
+            .map(x => x as LocalFileService) ?? [];
     if (!files.includes(targetFile)) {
         files.push(targetFile);
     }

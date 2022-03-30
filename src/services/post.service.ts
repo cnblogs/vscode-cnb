@@ -6,6 +6,7 @@ import { PostsListState } from '../models/posts-list-state';
 import { accountService } from './account.service';
 import { PostEditDto } from '../models/post-edit-dto';
 import { PostUpdatedResponse } from '../models/post-updated-response';
+import { throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
 
 const defaultPageSize = 30;
 let newPostTemplate: PostEditDto;
@@ -89,13 +90,7 @@ export class PostService {
             method: 'POST',
             body: JSON.stringify(post),
         });
-        if (!response.ok) {
-            throw Error(
-                `update post: response statue indicate failed\nstatus code: ${
-                    response.status
-                }\n response body: ${await response.text()}`
-            );
-        }
+        await throwIfNotOkResponse(response);
         return Object.assign(new PostUpdatedResponse(), await response.json());
     }
 

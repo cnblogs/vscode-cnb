@@ -1,7 +1,7 @@
 import { homedir } from 'os';
 import path = require('path');
 import { Uri, window, workspace } from 'vscode';
-import { LocalDraftFile } from '../../models/local-draft-file';
+import { LocalFileService } from '../../services/local-draft.service';
 import { AlertService } from '../../services/alert.service';
 import { Settings } from '../../services/settings.service';
 import { localDraftsTreeItem, postsDataProvider } from '../../tree-view-providers/posts-data-provider';
@@ -37,7 +37,7 @@ export const createLocalDraft = async () => {
     await workspace.fs.writeFile(Uri.file(filePath), new TextEncoder().encode(''));
     await openPostFile(filePath);
     postsDataProvider.fireTreeDataChangedEvent(localDraftsTreeItem);
-    const items = (await postsDataProvider.getChildren(localDraftsTreeItem)) as LocalDraftFile[] | undefined;
+    const items = (await postsDataProvider.getChildren(localDraftsTreeItem)) as LocalFileService[] | undefined;
     if (items) {
         const item = items.find(x => x.filePath === filePath);
         if (item) {

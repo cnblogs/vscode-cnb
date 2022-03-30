@@ -7,7 +7,7 @@ import vscode from 'vscode';
 import { accountService } from './services/account.service';
 import {
     observeConfigurationChange,
-    beginListenWorkspaceFolderChangeEvent as observeWorkspaceFolderChange,
+    observeWorkspaceFolderAndFileChange as observeWorkspaceFolderChange,
 } from './services/check-workspace';
 
 // this method is called when your extension is activated

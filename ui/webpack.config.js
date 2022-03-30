@@ -2,7 +2,9 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const fs = require('fs');
 const path = require('path');
-// const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const tailwindConfig = require('./tailwind.config');
+/** @type {any} */
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const isDev = process.env.ASPNETCORE_ENVIRONMENT === 'Development' || process.env.NODE_ENV === 'development';
 
@@ -16,14 +18,15 @@ const buildEntry = () => {
         .map(x => x.name);
     for (let folder of folders) {
         const key = `${folder}/index`;
-        entries[key] = `./ui/${folder}/index.ts`;
-        fs.cpSync(`./ui/${folder}/index.html`, `./dist/assets/ui/${folder}/index.html`);
+        entries[key] = `./ui/${folder}/index.tsx`;
+        fs.cpSync(`./ui/${folder}/index.html`, `./dist/assets/ui/${folder}/index.html`, { force: true });
     }
 
     const libPath = './ui/lib/';
     if (fs.existsSync(libPath)) {
         fs.cpSync(libPath, './dist/assets/ui/lib/', { recursive: true });
     }
+    fs.cpSync('./node_modules/@fluentui/font-icons-mdl2/fonts/', './dist/assets/fonts/', { recursive: true });
 
     if (isDev) {
         console.log(entries);
@@ -31,6 +34,9 @@ const buildEntry = () => {
     return entries;
 };
 
+/** @typedef {import('webpack').Configuration} WebpackConfig **/
+
+/** @type WebpackConfig */
 module.exports = {
     entry: buildEntry(),
     output: {
@@ -38,7 +44,8 @@ module.exports = {
         filename: '[name].js', //打包后输出文件的文件名
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.css', '.js'],
+        extensions: ['.tsx', '.ts', 'less', '.css', '.js'],
+        plugins: [new TsconfigPathsPlugin({ configFile: './ui/tsconfig.json' })],
     },
     devtool: isDev ? 'eval-source-map' : false,
     mode: isDev ? 'development' : 'production',
@@ -56,7 +63,14 @@ module.exports = {
                             url: false,
                         },
                     },
-                    'postcss-loader',
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                plugins: [['tailwindcss', tailwindConfig], 'autoprefixer'],
+                            },
+                        },
+                    },
                     {
                         loader: 'less-loader',
                         options: {
@@ -78,15 +92,23 @@ module.exports = {
                 },
             },
             {
-                // ts loader
                 test: /\.tsx?$/,
                 use: 'ts-loader',
             },
         ],
     },
-    plugins: [new MiniCssExtractPlugin()],
-    devServer: {
-        contentBase: './',
-        hot: true,
+    performance: {
+        hints: false,
     },
+
+    plugins: [
+        new MiniCssExtractPlugin(),
+        {
+            apply: compiler => {
+                compiler.hooks.watchRun.tap('customPreTask', () => {
+                    buildEntry();
+                });
+            },
+        },
+    ],
 };

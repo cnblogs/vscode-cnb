@@ -1,11 +1,22 @@
 {
     "compilerOptions": {
         "module": "es2015",
+        "target": "es5",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "outDir": "./dist"
+        "outDir": "./dist",
+        "allowSyntheticDefaultImports": true,
+        "jsx": "react-jsx",
+        "moduleResolution": "node",
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "baseUrl": ".",
+        "paths": {
+            "@models/*": ["../src/models/*"]
+        },
+        "lib": ["DOM", "ES2020"]
     },
-    "include": ["./**/*.ts"],
-    "exclude": ["./dist"]
+    "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "../src/models/*.ts"],
+    "exclude": ["./dist", "./webpack.config.js"]
 }

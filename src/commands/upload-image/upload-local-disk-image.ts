@@ -1,7 +1,6 @@
 import { ProgressLocation, window } from 'vscode';
 import { imageService } from '../../services/image.service';
 import fs from 'fs';
-import { insertImageLinkToActiveEditor, showUploadSuccessModel } from './upload-image-utils';
 
 export const uploadLocalDiskImage = async () => {
     const imageFileUri = ((await window.showOpenDialog({
@@ -35,7 +34,5 @@ export const uploadLocalDiskImage = async () => {
             }
         }
     );
-    if (!(await insertImageLinkToActiveEditor(imageLink))) {
-        await showUploadSuccessModel(imageLink);
-    }
+    return imageLink;
 };

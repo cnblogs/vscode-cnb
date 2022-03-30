@@ -25,7 +25,7 @@ export const observeConfigurationChange = () => {
     isTargetWorkspace();
 };
 
-export const beginListenWorkspaceFolderChangeEvent = () => {
+export const observeWorkspaceFolderAndFileChange = () => {
     globalState.extensionContext?.subscriptions.push(
         workspace.onDidRenameFiles(e => {
             for (const item of e.files) {
