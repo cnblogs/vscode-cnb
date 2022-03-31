@@ -15,7 +15,7 @@ export const uploadLocalDiskImage = async () => {
         return;
     }
     const imageFilePath = imageFileUri.fsPath;
-    const imageLink = await window.withProgress(
+    return await window.withProgress(
         {
             title: '正在上传图片',
             location: ProgressLocation.Notification,
@@ -34,5 +34,4 @@ export const uploadLocalDiskImage = async () => {
             }
         }
     );
-    return imageLink;
 };

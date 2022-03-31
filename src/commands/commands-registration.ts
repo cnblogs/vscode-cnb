@@ -16,8 +16,6 @@ import { createLocalDraft } from './posts-list/create-local-draft';
 import { deleteLocalDraft } from './posts-list/delete-local-draft';
 import { deleteSelectedPosts } from './posts-list/delete-post';
 import { modifyPostSettings } from './posts-list/modify-post-settings';
-import { uploadImageFromClipboard } from './upload-image/upload-clipboard-image';
-import { uploadLocalDiskImage } from './upload-image/upload-local-disk-image';
 import { uploadImage } from './upload-image/upload-image';
 import { revealLocalPostFileInOs } from './reveal-local-post-file-in-os';
 import { showLocalFileToPostInfo } from './show-local-file-to-post-info';
@@ -57,8 +55,8 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.delete-local-draft`, deleteLocalDraft),
         vscode.commands.registerCommand(`${appName}.save-local-draft-to-cnblogs`, saveLocalDraftToCnblogs),
         vscode.commands.registerCommand(`${appName}.save-post-file-to-cnblogs`, savePostFileToCnblogs),
-        vscode.commands.registerCommand(`${appName}.upload-clipboard-image`, uploadImageFromClipboard),
-        vscode.commands.registerCommand(`${appName}.upload-local-disk-image`, uploadLocalDiskImage),
+        vscode.commands.registerCommand(`${appName}.upload-clipboard-image`, () => uploadImage(true, 'clipboard')),
+        vscode.commands.registerCommand(`${appName}.upload-local-disk-image`, () => uploadImage(true, 'local')),
         vscode.commands.registerCommand(`${appName}.upload-image`, uploadImage),
         vscode.commands.registerCommand(`${appName}.reveal-local-post-file-in-os`, revealLocalPostFileInOs),
         vscode.commands.registerCommand(`${appName}.show-post-to-local-file-info`, showLocalFileToPostInfo),
