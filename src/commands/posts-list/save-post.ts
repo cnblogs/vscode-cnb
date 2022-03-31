@@ -61,11 +61,16 @@ export const savePostFileToCnblogs = async (fileUri: Uri | undefined) => {
                     if (selectedPost) {
                         PostFileMapManager.updateOrCreate(selectedPost.id, filePath);
                         const postEditDto = await postService.fetchPostEditDto(selectedPost.id);
-                        const fileContent = new TextDecoder().decode(await workspace.fs.readFile(fileUri));
-                        if (!fileContent) {
-                            await workspace.fs.writeFile(fileUri, new TextEncoder().encode(postEditDto.post.postBody));
+                        if (postEditDto) {
+                            const fileContent = new TextDecoder().decode(await workspace.fs.readFile(fileUri));
+                            if (!fileContent) {
+                                await workspace.fs.writeFile(
+                                    fileUri,
+                                    new TextEncoder().encode(postEditDto.post.postBody)
+                                );
+                            }
+                            await savePostToCnblogs(postEditDto.post);
                         }
-                        await savePostToCnblogs(postEditDto.post);
                     }
                 }
                 break;
@@ -86,6 +91,9 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalFileService) => {
         return;
     }
     const editDto = await postService.fetchPostEditDtoTemplate();
+    if (!editDto) {
+        return;
+    }
     const { post } = editDto;
     post.title = localDraft.fileNameWithoutExt;
     post.isMarkdown = true;
@@ -117,8 +125,13 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalFileService) => {
     );
 };
 
-export const savePostToCnblogs = async (input: Post | PostEditDto, isNewPost = false) => {
-    const post = input instanceof PostEditDto ? input.post : (await postService.fetchPostEditDto(input.id)).post;
+export const savePostToCnblogs = async (input: Post | PostEditDto | undefined, isNewPost = false) => {
+    const post =
+        input instanceof PostEditDto
+            ? input.post
+            : input
+            ? (await postService.fetchPostEditDto(input.id))?.post
+            : undefined;
     if (!post) {
         return;
     }

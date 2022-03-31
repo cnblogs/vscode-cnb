@@ -31,6 +31,9 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
     }
 
     const postEditDto = await postService.fetchPostEditDto(postId);
+    if (!postEditDto) {
+        return;
+    }
     const post = postEditDto.post;
 
     const workspaceUri = Settings.workspaceUri;

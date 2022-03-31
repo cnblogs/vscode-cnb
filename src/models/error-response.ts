@@ -1,6 +1,7 @@
 interface IErrorResponse {
     errors: string[];
     type: number;
+    statusCode: number;
 }
 
 const isErrorResponse = (obj: any): obj is IErrorResponse => {

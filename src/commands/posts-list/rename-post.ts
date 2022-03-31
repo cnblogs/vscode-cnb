@@ -56,10 +56,13 @@ export const renamePost = async (post: Post) => {
             location: ProgressLocation.Notification,
             title: '正在更新博文',
         },
-        async p => {
-            p.report({ increment: 10 });
+        async progress => {
+            progress.report({ increment: 10 });
             const editDto = await postService.fetchPostEditDto(post.id);
-            p.report({ increment: 60 });
+            if (!editDto) {
+                return false;
+            }
+            progress.report({ increment: 60 });
 
             const editingPost = editDto.post;
             editingPost.title = input;
@@ -75,7 +78,7 @@ export const renamePost = async (post: Post) => {
                     detail: err instanceof Error ? err.message : '服务器返回了异常',
                 } as MessageOptions);
             } finally {
-                p.report({ increment: 100 });
+                progress.report({ increment: 100 });
             }
 
             return success;

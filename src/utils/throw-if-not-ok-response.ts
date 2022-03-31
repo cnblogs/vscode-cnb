@@ -11,10 +11,11 @@ const throwIfNotOkResponse = async (response: Response) => {
             // ignore
         }
         throw isErrorResponse(responseJson)
-            ? responseJson
+            ? Object.assign(responseJson, { statusCode: response.status } as IErrorResponse)
             : ({
                   errors: [`状态码: ${response.status}(${response.statusText})`, responseText],
                   type: -1,
+                  statusCode: -1,
               } as IErrorResponse);
     }
 };

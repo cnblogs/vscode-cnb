@@ -50,7 +50,10 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
         return;
     }
 
-    const post = (await postService.fetchPostEditDto(postId)).post;
+    const post = (await postService.fetchPostEditDto(postId))?.post;
+    if (!post) {
+        return;
+    }
     let categories = await postCategoryService.fetchCategories();
     categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
     const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : '';
