@@ -1,7 +1,6 @@
 import { ProgressLocation, window } from 'vscode';
 import { imageService } from '../../services/image.service';
-import * as fs from 'fs';
-import { insertImageLinkToActiveEditor, showUploadSuccessModel } from './upload-image-utils';
+import fs from 'fs';
 
 export const uploadLocalDiskImage = async () => {
     const imageFileUri = ((await window.showOpenDialog({
@@ -16,7 +15,7 @@ export const uploadLocalDiskImage = async () => {
         return;
     }
     const imageFilePath = imageFileUri.fsPath;
-    const imageLink = await window.withProgress(
+    return await window.withProgress(
         {
             title: '正在上传图片',
             location: ProgressLocation.Notification,
@@ -35,7 +34,4 @@ export const uploadLocalDiskImage = async () => {
             }
         }
     );
-    if (!(await insertImageLinkToActiveEditor(imageLink))) {
-        await showUploadSuccessModel(imageLink);
-    }
 };

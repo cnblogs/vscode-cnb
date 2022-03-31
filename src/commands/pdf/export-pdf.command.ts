@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer-core';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 import { MessageOptions, Progress, ProgressLocation, Uri, window, workspace } from 'vscode';
 import { Post } from '../../models/post';
 import { PostFileMapManager } from '../../services/post-file-map';
@@ -152,16 +152,20 @@ const handlePostInput = (post: Post): Promise<Post[]> => {
 const handleUriInput = async (uri: Uri): Promise<Post[]> => {
     const posts: Post[] = [];
     const postId = PostFileMapManager.getPostId(uri.fsPath);
-    let inputPost: Post;
+    let inputPost: Post | undefined;
     if (postId && postId > 0) {
-        inputPost = (await postService.fetchPostEditDto(postId)).post;
+        inputPost = (await postService.fetchPostEditDto(postId))?.post;
     } else {
         const { fsPath } = uri;
-        inputPost = Object.assign((await postService.fetchPostEditDto(-1)).post, {
+        inputPost = Object.assign((await postService.fetchPostEditDto(-1))?.post, {
             id: -1,
             title: path.basename(fsPath, path.extname(fsPath)),
             postBody: new TextDecoder().decode(await workspace.fs.readFile(uri)),
         } as Post);
+    }
+
+    if (!inputPost) {
+        return [];
     }
 
     posts.push(inputPost);
@@ -170,7 +174,7 @@ const handleUriInput = async (uri: Uri): Promise<Post[]> => {
 };
 
 const mapToPostEditDto = async (posts: Post[]) =>
-    (await Promise.all(posts.map(p => postService.fetchPostEditDto(p.id)))).map(x => x.post);
+    (await Promise.all(posts.map(p => postService.fetchPostEditDto(p.id)))).filter(x => !!x).map(x => x!.post);
 
 const reportErrors = (errors: string[] | undefined) => {
     if (errors && errors.length > 0) {

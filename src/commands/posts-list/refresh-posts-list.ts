@@ -1,6 +1,6 @@
 import { globalState } from '../../services/global-state';
 import { postService } from '../../services/post.service';
-import * as vscode from 'vscode';
+import vscode from 'vscode';
 import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { AlertService } from '../../services/alert.service';
 import { PostsListState } from '../../models/posts-list-state';

@@ -1,5 +1,5 @@
 import { globalState } from '../services/global-state';
-import * as vscode from 'vscode';
+import vscode from 'vscode';
 import { accountViewDataProvider } from './account-view-data-provider';
 import { PostDataProviderItem, postsDataProvider } from './posts-data-provider';
 import { PostCategory } from '../models/post-category';

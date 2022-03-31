@@ -1,10 +1,10 @@
 // reference: https://github.com/PicGo/PicGo-Core/blob/dev/src/utils/getClipboardImage.ts
 
 import { spawn } from 'child_process';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as isWsl from 'is-wsl';
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
+import isWsl from 'is-wsl';
 import { globalState } from '../services/global-state';
 import { AlertService } from '../services/alert.service';
 import { IClipboardImage } from '../models/clipboard-image';

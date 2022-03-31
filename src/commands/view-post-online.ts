@@ -8,7 +8,7 @@ export const viewPostOnline = async (input: Post | Uri) => {
     if (input instanceof Uri) {
         const postId = PostFileMapManager.getPostId(input.fsPath);
         if (postId) {
-            post = (await postService.fetchPostEditDto(postId)).post;
+            post = (await postService.fetchPostEditDto(postId))?.post;
         }
     }
 

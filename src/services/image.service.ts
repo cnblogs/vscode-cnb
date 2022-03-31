@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import { accountService } from './account.service';
 import { globalState } from './global-state';
 import FormData from 'form-data';
+import { throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
 
 export class ImageService {
     private static _instance: ImageService;
@@ -23,9 +24,7 @@ export class ImageService {
             headers: [accountService.buildBearerAuthorizationHeader()],
             body: <any>form,
         });
-        if (!response.ok) {
-            throw Error(await response.text());
-        }
+        await throwIfNotOkResponse(response);
         return await response.text();
     }
 }

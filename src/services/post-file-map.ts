@@ -44,7 +44,7 @@ export class PostFileMapManager {
 
     static findByFilePath(path: string) {
         const maps = this.maps.filter(validatePostFileMap);
-        return maps.find(x => x[1] === path);
+        return maps.find(x => x[0] && x[1] === path);
     }
 
     static getFilePath(postId: number) {

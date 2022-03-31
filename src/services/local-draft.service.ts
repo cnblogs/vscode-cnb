@@ -1,10 +1,10 @@
-import path = require('path');
+import path from 'path';
+import fs from 'fs';
 import { TreeItem, Uri, workspace } from 'vscode';
-import { PostFileMapManager } from '../services/post-file-map';
-import { Settings } from '../services/settings.service';
+import { PostFileMapManager } from './post-file-map';
+import { Settings } from './settings.service';
 
-export class LocalDraftFile {
-    filePath: string = '';
+export class LocalFileService {
     get fileName(): string {
         return path.basename(this.filePath);
     }
@@ -17,6 +17,11 @@ export class LocalDraftFile {
     get filePathUri() {
         return Uri.file(this.filePath);
     }
+    get exist() {
+        return fs.existsSync(this.filePath);
+    }
+
+    constructor(public filePath: string) {}
 
     async readAllText(): Promise<string> {
         const binary = await workspace.fs.readFile(this.filePathUri);
@@ -35,14 +40,10 @@ export class LocalDraftFile {
         } as TreeItem);
     }
 
-    static async read(): Promise<LocalDraftFile[]> {
+    static async readDrafts(): Promise<LocalFileService[]> {
         const files = await workspace.fs.readDirectory(Settings.workspaceUri);
         return files
-            .map(x =>
-                Object.assign(new LocalDraftFile(), {
-                    filePath: path.join(`${Settings.workspaceUri.fsPath}`, x[0]),
-                } as LocalDraftFile)
-            )
+            .map(x => Object.assign(new LocalFileService(path.join(`${Settings.workspaceUri.fsPath}`, x[0]))))
             .filter(
                 x => !PostFileMapManager.getPostId(x.filePath) && ['.md', '.html'].some(ext => x.fileName.endsWith(ext))
             );

@@ -112,7 +112,7 @@
             },
             {
                 "command": "vscode-cnb.modify-post-settings",
-                "title": "修改博文设置",
+                "title": "博文设置",
                 "icon": "$(gear)",
                 "category": "Cnblogs Posts List",
                 "enablement": "vscode-cnb.isAuthorized"
@@ -523,24 +523,29 @@
                     "group": "cnblogs@2"
                 },
                 {
-                    "command": "vscode-cnb.open-post-in-blog-admin",
+                    "command": "vscode-cnb.modify-post-settings",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@3"
                 },
                 {
-                    "command": "vscode-cnb.upload-clipboard-image",
+                    "command": "vscode-cnb.open-post-in-blog-admin",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@4"
                 },
                 {
-                    "command": "vscode-cnb.upload-local-disk-image",
+                    "command": "vscode-cnb.upload-clipboard-image",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@5"
                 },
                 {
-                    "command": "vscode-cnb.export-post-to-pdf",
+                    "command": "vscode-cnb.upload-local-disk-image",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@6"
+                },
+                {
+                    "command": "vscode-cnb.export-post-to-pdf",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs@7"
                 }
             ],
             "editor/title": [
@@ -647,9 +652,12 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run package",
-        "compile": "webpack",
+        "compile": "webpack && npm run ui:compile",
+        "ui:compile": "webpack -c ./ui/webpack.config.js",
         "watch": "webpack --watch",
-        "package": "webpack --mode production --devtool hidden-source-map",
+        "ui:watch": "webpack watch -c ./ui/webpack.config.js",
+        "package": "webpack --mode production --devtool hidden-source-map && npm run ui:package",
+        "ui:package": "webpack --mode production --devtool hidden-source-map -c ./ui/webpack.config.js",
         "compile-tests": "tsc -p . --outDir out",
         "watch-tests": "tsc -p . -w --outDir out",
         "pretest": "npm run compile-tests && npm run compile && npm run lint",
@@ -667,23 +675,40 @@
         "@types/mocha": "^9.0.0",
         "@types/node": "14.x",
         "@types/randomstring": "^1.1.8",
+        "@types/react": "^17.0.43",
+        "@types/react-dom": "^17.0.14",
         "@types/vscode": "^1.62.0",
         "@typescript-eslint/eslint-plugin": "^5.1.0",
         "@typescript-eslint/parser": "^5.1.0",
         "@vscode/test-electron": "^1.6.2",
+        "autoprefixer": "^10.4.4",
         "babel-plugin-module-resolver": "^4.1.0",
+        "clean-webpack-plugin": "^4.0.0",
         "copy-webpack-plugin": "^10.0.0",
+        "css-loader": "^6.7.1",
         "eslint": "^8.1.0",
         "glob": "^7.1.7",
+        "i": "^0.3.7",
+        "less": "^4.1.2",
+        "less-loader": "^10.2.0",
+        "mini-css-extract-plugin": "^2.6.0",
         "mocha": "^9.1.3",
+        "npm": "^8.5.5",
+        "postcss": "^8.4.12",
+        "postcss-loader": "^6.2.1",
+        "postcss-preset-env": "^7.4.3",
         "prettier": "^2.5.0",
+        "style-loader": "^3.3.1",
+        "tailwindcss": "^3.0.23",
         "ts-loader": "^9.2.5",
+        "tsconfig-paths-webpack-plugin": "^3.5.2",
         "typescript": "^4.4.4",
-        "webpack": "^5.52.1",
+        "webpack": "5.70.x",
         "webpack-cli": "^4.8.0"
     },
     "dependencies": {
         "@cnblogs-gitlab/markdown-it-presets": "^1.3.1",
+        "@fluentui/react": "^8.62.4",
         "base64url": "^3.0.1",
         "blob": "^0.1.0",
         "crypto": "^1.0.1",
@@ -696,10 +721,13 @@
         "markdown-it": "^12.3.2",
         "markdown-it-table-of-contents": "^0.6.0",
         "mime-types": "^2.1.34",
-        "node-fetch": "^3.0.0",
+        "node-fetch": "3.0.x",
         "oidc-client": "^1.11.5",
         "puppeteer-core": "^13.5.1",
         "randomstring": "^1.1.4",
-        "sanitize-filename": "^1.6.3"
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "sanitize-filename": "^1.6.3",
+        "utility-types": "^3.10.0"
     }
 }

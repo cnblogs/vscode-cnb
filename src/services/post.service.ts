@@ -6,9 +6,13 @@ import { PostsListState } from '../models/posts-list-state';
 import { accountService } from './account.service';
 import { PostEditDto } from '../models/post-edit-dto';
 import { PostUpdatedResponse } from '../models/post-updated-response';
+import { throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
+import { IErrorResponse } from '../models/error-response';
+import { AlertService } from './alert.service';
+import { PostFileMapManager } from './post-file-map';
 
 const defaultPageSize = 30;
-let newPostTemplate: PostEditDto;
+let newPostTemplate: PostEditDto | undefined;
 
 export class PostService {
     private static _instance = new PostService();
@@ -50,13 +54,27 @@ export class PostService {
         );
     }
 
-    async fetchPostEditDto(postId: number): Promise<PostEditDto> {
+    async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
         const response = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
             headers: [accountService.buildBearerAuthorizationHeader()],
             method: 'GET',
         });
-        if (!response.ok) {
-            throw Error('failed to fetch postEditDto\n' + response.status + '\n' + (await response.text()));
+        try {
+            await throwIfNotOkResponse(response);
+        } catch (ex) {
+            const { statusCode, errors } = ex as IErrorResponse;
+            if (!muteErrorNotification) {
+                if (statusCode === 404) {
+                    AlertService.error('博文不存在');
+                    const postFilePath = PostFileMapManager.getFilePath(postId);
+                    if (postFilePath) {
+                        await PostFileMapManager.updateOrCreate(postId, '');
+                    }
+                } else {
+                    AlertService.error(errors.join('\n'));
+                }
+            }
+            return undefined;
         }
         const obj = (await response.json()) as any;
         return new PostEditDto(Object.assign(new Post(), obj.blogPost), obj.myConfig);
@@ -89,13 +107,7 @@ export class PostService {
             method: 'POST',
             body: JSON.stringify(post),
         });
-        if (!response.ok) {
-            throw Error(
-                `update post: response statue indicate failed\nstatus code: ${
-                    response.status
-                }\n response body: ${await response.text()}`
-            );
-        }
+        await throwIfNotOkResponse(response);
         return Object.assign(new PostUpdatedResponse(), await response.json());
     }
 
@@ -116,15 +128,17 @@ export class PostService {
         await globalState.storage.update('postsListState', finalState);
     }
 
-    async fetchPostEditDtoTemplate(): Promise<PostEditDto> {
+    async fetchPostEditDtoTemplate(): Promise<PostEditDto | undefined> {
         if (!newPostTemplate) {
             newPostTemplate = await this.fetchPostEditDto(-1);
         }
 
-        return new PostEditDto(
-            Object.assign(new Post(), newPostTemplate.post),
-            Object.assign({}, newPostTemplate.config)
-        );
+        return newPostTemplate
+            ? new PostEditDto(
+                  Object.assign(new Post(), newPostTemplate.post),
+                  Object.assign({}, newPostTemplate.config)
+              )
+            : undefined;
     }
 }
 

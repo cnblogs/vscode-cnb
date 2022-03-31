@@ -1,6 +1,6 @@
 import base64url from 'base64url';
-import * as crypto from 'crypto';
-import * as RandomString from 'randomstring';
+import crypto from 'crypto';
+import RandomString from 'randomstring';
 
 export const generateCodeVerifier = () => {
     return RandomString.generate(128);

@@ -12,7 +12,7 @@ import {
 } from 'vscode';
 import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
 import { Post } from '../models/post';
-import { LocalDraftFile } from '../models/local-draft-file';
+import { LocalFileService } from '../services/local-draft.service';
 import { PageModel } from '../models/page-model';
 import { AlertService } from '../services/alert.service';
 import { postService } from '../services/post.service';
@@ -28,7 +28,7 @@ export const localDraftsTreeItem: TreeItem = Object.assign(new TreeItem('本地�
     tooltip: '在本地创建的还未保存到博客园的文章',
 } as TreeItem);
 
-export type PostDataProviderItem = Post | TreeItem | LocalDraftFile;
+export type PostDataProviderItem = Post | TreeItem | LocalFileService;
 
 export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem> {
     private static _instance?: PostsDataProvider;
@@ -53,7 +53,7 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
     getChildren(element?: PostDataProviderItem): ProviderResult<PostDataProviderItem[]> {
         return new Promise<PostDataProviderItem[]>(resolve => {
             if (element === localDraftsTreeItem) {
-                LocalDraftFile.read().then(v => resolve(v));
+                LocalFileService.readDrafts().then(v => resolve(v));
                 return;
             } else if (!element) {
                 const pagedPosts = this._pagedPosts;
@@ -70,7 +70,7 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
     }
 
     getParent(el: PostDataProviderItem) {
-        if (el instanceof LocalDraftFile) {
+        if (el instanceof LocalFileService) {
             return localDraftsTreeItem;
         }
         return undefined;
@@ -83,7 +83,7 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
         if (item instanceof TreeItem) {
             return item;
         }
-        if (item instanceof LocalDraftFile) {
+        if (item instanceof LocalFileService) {
             return item.toTreeItem();
         }
         const descDatePublished = item.datePublished ? `  \n发布于: ${item.datePublished}` : '';
