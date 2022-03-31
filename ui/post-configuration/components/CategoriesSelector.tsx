@@ -49,7 +49,7 @@ class CategoriesSelector extends Component<CategoriesSelectorProps, CategoriesSe
             />
         ));
         return (
-            <Stack tokens={{ childrenGap: 16 }} horizontal>
+            <Stack tokens={{ childrenGap: 16 }} horizontal wrap>
                 {items}
             </Stack>
         );
