@@ -9,7 +9,7 @@
      height="200">
       <style>
             path {
-                  fill: #000;
+                  fill: #efefef;
             }
       </style>
       <path
