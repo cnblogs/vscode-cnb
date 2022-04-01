@@ -77,7 +77,7 @@ namespace chromiumPathProvider {
             }
         );
         if (chromiumPath) {
-            window.showInformationMessage(`Chromium已下载至${chromiumPath}`);
+            void window.showInformationMessage(`Chromium已下载至${chromiumPath}`);
         }
 
         return chromiumPath;

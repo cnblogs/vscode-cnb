@@ -73,7 +73,7 @@ export const renamePost = async (post: Post) => {
                 postsDataProvider.fireTreeDataChangedEvent(post);
                 success = true;
             } catch (err) {
-                window.showInformationMessage('更新博文失败', {
+                void window.showInformationMessage('更新博文失败', {
                     modal: true,
                     detail: err instanceof Error ? err.message : '服务器返回了异常',
                 } as MessageOptions);

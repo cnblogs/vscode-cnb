@@ -22,8 +22,8 @@ export const deleteLocalDraft = async (targetFile: LocalFileService) => {
         placeHolder: options.join('/'),
     });
     if (picked === options[0]) {
-        const deleteTasks: Thenable<any>[] = [];
-        extensionViews.postsList?.reveal(localDraftsTreeItem);
+        const deleteTasks: Thenable<unknown>[] = [];
+        void extensionViews.postsList?.reveal(localDraftsTreeItem);
         files.forEach(f => {
             deleteTasks.push(workspace.fs.delete(Uri.file(f.filePath), { useTrash: true }));
         });

@@ -14,7 +14,7 @@ import {
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
     globalState.extensionContext = context;
-    accountService.setIsAuthorizedToContext();
+    void accountService.setIsAuthorizedToContext();
     context.subscriptions.push(accountService);
 
     registerCommands();

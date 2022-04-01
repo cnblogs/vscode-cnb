@@ -9,7 +9,7 @@ export const updatePostCategory = async (category?: PostCategory) => {
     if (!category) {
         return;
     }
-    extensionViews.postCategoriesList?.reveal(category);
+    await extensionViews.postCategoriesList?.reveal(category);
     const addDto = await inputPostCategory({
         title: '编辑博文分类',
         category,
@@ -33,7 +33,7 @@ export const updatePostCategory = async (category?: PostCategory) => {
                 await postCategoryService.updateCategory(updateDto);
                 refreshPostCategoriesList();
             } catch (err) {
-                window.showErrorMessage('更新博文分类失败', {
+                void window.showErrorMessage('更新博文分类失败', {
                     detail: `服务器反回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
                     modal: true,
                 } as MessageOptions);

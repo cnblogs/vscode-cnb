@@ -124,7 +124,7 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
     }
 
     if (path && path !== Settings.chromiumPath) {
-        Settings.setChromiumPath(path);
+        await Settings.setChromiumPath(path);
     }
 
     return path;
@@ -178,7 +178,7 @@ const mapToPostEditDto = async (posts: Post[]) =>
 
 const reportErrors = (errors: string[] | undefined) => {
     if (errors && errors.length > 0) {
-        window.showErrorMessage('导出pdf时遇到错误', { modal: true, detail: errors.join('\n') } as MessageOptions);
+        void window.showErrorMessage('导出pdf时遇到错误', { modal: true, detail: errors.join('\n') } as MessageOptions);
     }
 };
 

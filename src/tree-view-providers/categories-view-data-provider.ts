@@ -62,7 +62,7 @@ export class PostCategoriesViewDataProvider implements TreeDataProvider<PostCate
         try {
             categories = await postCategoryService.fetchCategories();
         } catch (err) {
-            window.showWarningMessage('获取博文分类失败', {
+            void window.showWarningMessage('获取博文分类失败', {
                 detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
             } as MessageOptions);
         } finally {

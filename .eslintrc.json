@@ -3,7 +3,8 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 6,
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": ["./tsconfig.json", "./ui/tsconfig.json"]
     },
     "plugins": ["@typescript-eslint"],
     "extends": "eslint:recommended",
@@ -15,7 +16,8 @@
         "no-throw-literal": "warn",
         "semi": "warn",
         "require-await": "warn",
-        "no-undef": "off"
+        "no-undef": "off",
+        "@typescript-eslint/no-floating-promises": "warn"
     },
-    "ignorePatterns": ["out", "dist", "**/*.d.ts"]
+    "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts"]
 }

@@ -9,5 +9,5 @@ export const openPostInBlogAdmin = (item: Post | Uri) => {
 
     const postId = item instanceof Post ? item.id : PostFileMapManager.getPostId(item.fsPath) ?? -1;
 
-    commands.executeCommand('vscode.open', Uri.parse(`https://i.cnblogs.com/posts/edit;postId=${postId}`));
+    void commands.executeCommand('vscode.open', Uri.parse(`https://i.cnblogs.com/posts/edit;postId=${postId}`));
 };

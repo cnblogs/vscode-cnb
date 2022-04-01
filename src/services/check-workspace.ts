@@ -7,7 +7,7 @@ import { Settings } from './settings.service';
 export const isTargetWorkspace = (): boolean => {
     const folders = workspace.workspaceFolders;
     const result = !!folders && folders.length === 1 && folders[0].uri.path === Settings.workspaceUri.path;
-    commands.executeCommand('setContext', `${globalState.extensionName}.isTargetWorkspace`, result);
+    void commands.executeCommand('setContext', `${globalState.extensionName}.isTargetWorkspace`, result);
     return result;
 };
 
@@ -32,7 +32,7 @@ export const observeWorkspaceFolderAndFileChange = () => {
                 const { oldUri, newUri } = item;
                 const postId = PostFileMapManager.getPostId(oldUri.fsPath);
                 if (postId !== undefined) {
-                    PostFileMapManager.updateOrCreate(postId, newUri.fsPath);
+                    void PostFileMapManager.updateOrCreate(postId, newUri.fsPath);
                 }
             }
         }),

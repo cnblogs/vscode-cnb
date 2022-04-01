@@ -23,7 +23,7 @@ export const uploadImageFromClipboard = async () => {
         );
     } finally {
         if (!clipboardImage.shouldKeepAfterUploading) {
-            workspace.fs.delete(Uri.file(clipboardImage.imgPath));
+            await workspace.fs.delete(Uri.file(clipboardImage.imgPath));
         }
     }
 };

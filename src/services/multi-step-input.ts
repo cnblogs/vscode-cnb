@@ -119,12 +119,12 @@ export class MultiStepInput {
                     }),
                     input.onDidChangeValue(() => {
                         if (onValueChange) {
-                            onValueChange(input);
+                            void onValueChange(input);
                         }
                     }),
                     input.onDidChangeSelection(() => {
                         if (onSelectionChange) {
-                            onSelectionChange(input);
+                            void onSelectionChange(input);
                         }
                     }),
                     input.onDidHide(() => {
