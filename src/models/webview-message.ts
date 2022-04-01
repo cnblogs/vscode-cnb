@@ -12,6 +12,14 @@ export namespace webviewMessage {
         command: webviewCommand.UiCommands | webviewCommand.ExtensionCommands;
     }
 
+    /**
+     * messages which post from the extension to the webview
+     *
+     * @export
+     * @interface IUiMessage
+     */
+    export interface IUiMessage {}
+
     export interface EditPostConfigurationMessage extends Message {
         post: Post;
         activeTheme: ColorThemeKind;
@@ -25,11 +33,11 @@ export namespace webviewMessage {
         post: Post;
     }
 
-    export interface ShowErrorResponseMessage extends Message {
+    export interface ShowErrorResponseMessage extends Message, IUiMessage {
         errorResponse: ErrorResponse;
     }
 
-    export interface UpdateBreadcrumbsMessage extends Message {
+    export interface UpdateBreadcrumbsMessage extends Message, IUiMessage {
         breadcrumbs?: string[];
     }
 
@@ -37,12 +45,16 @@ export namespace webviewMessage {
         imageId: string;
     }
 
-    export interface UpdateImageUpdateStatusMessage extends Message {
+    export interface UpdateImageUpdateStatusMessage extends Message, IUiMessage {
         imageId: string;
         status: ImageUploadStatus;
     }
 
-    export interface SetFluentIconBaseUrlMessage extends Message {
+    export interface SetFluentIconBaseUrlMessage extends Message, IUiMessage {
         baseUrl: string;
+    }
+
+    export interface ChangeThemeMessage extends Message, IUiMessage {
+        colorThemeKind: ColorThemeKind;
     }
 }

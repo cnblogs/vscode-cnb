@@ -38,23 +38,21 @@ export const modifyPostSettings = async (input: Post | Uri) => {
     }
     const postEditDto = editDto.post;
     const localFilePath = PostFileMapManager.getFilePath(postId);
-    await postConfigurationPanel.open(
-        {
-            panelTitle: '',
-            breadcrumbs: ['更新博文设置', editDto.post.title],
-            post: postEditDto,
-            localFileUri: localFilePath ? Uri.file(localFilePath) : undefined,
-        },
-        () => {
+    await postConfigurationPanel.open({
+        panelTitle: '',
+        breadcrumbs: ['更新博文设置', editDto.post.title],
+        post: postEditDto,
+        localFileUri: localFilePath ? Uri.file(localFilePath) : undefined,
+        successCallback: () => {
             AlertService.info('博文已更新');
         },
-        async post => {
+        beforeUpdate: async post => {
             if (localFilePath && fs.existsSync(localFilePath)) {
                 await saveFilePendingChanges(localFilePath);
                 const content = await new LocalFileService(localFilePath).readAllText();
                 post.postBody = content;
             }
             return true;
-        }
-    );
+        },
+    });
 };

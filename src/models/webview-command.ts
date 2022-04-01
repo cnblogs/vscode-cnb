@@ -5,6 +5,7 @@ export namespace webviewCommand {
         updateBreadcrumbs = 'updateBreadcrumbs',
         updateImageUploadStatus = 'updateImageUploadStatus',
         setFluentIconBaseUrl = 'setFluentIconBaseUrl',
+        changeTheme = 'changeTheme',
     }
 
     export enum ExtensionCommands {
