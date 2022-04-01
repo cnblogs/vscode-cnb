@@ -9,6 +9,7 @@ import {
     observeConfigurationChange,
     observeWorkspaceFolderAndFileChange as observeWorkspaceFolderChange,
 } from './services/check-workspace';
+import { EditPostUriHandler } from './services/edit-post-uri-handler';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -21,6 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
     registerTreeViews();
     observeConfigurationChange();
     observeWorkspaceFolderChange();
+    vscode.window.registerUriHandler(new EditPostUriHandler());
 }
 
 // this method is called when your extension is deactivated
