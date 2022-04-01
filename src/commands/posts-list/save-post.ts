@@ -135,6 +135,7 @@ export const savePostToCnblogs = async (input: Post | PostEditDto | undefined, i
     }
     let { id: postId } = post;
     const localFilePath = PostFileMapManager.getFilePath(postId);
+    await saveFilePendingChanges(localFilePath);
     if (!isNewPost) {
         if (!localFilePath) {
             AlertService.warning('本地无该博文的编辑记录');
@@ -144,8 +145,6 @@ export const savePostToCnblogs = async (input: Post | PostEditDto | undefined, i
         post.postBody = updatedPostBody;
         post.title = await PostTitleSanitizer.unSanitize(post);
     }
-
-    await saveFilePendingChanges(localFilePath);
 
     if (!validatePost(post)) {
         return false;
