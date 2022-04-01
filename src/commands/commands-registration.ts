@@ -57,7 +57,7 @@ export const registerCommands = () => {
         vscode.commands.registerCommand(`${appName}.save-post-file-to-cnblogs`, savePostFileToCnblogs),
         vscode.commands.registerCommand(`${appName}.upload-clipboard-image`, () => uploadImage(true, 'clipboard')),
         vscode.commands.registerCommand(`${appName}.upload-local-disk-image`, () => uploadImage(true, 'local')),
-        vscode.commands.registerCommand(`${appName}.upload-image`, uploadImage),
+        vscode.commands.registerCommand(`${appName}.upload-image`, () => uploadImage(true)),
         vscode.commands.registerCommand(`${appName}.reveal-local-post-file-in-os`, revealLocalPostFileInOs),
         vscode.commands.registerCommand(`${appName}.show-post-to-local-file-info`, showLocalFileToPostInfo),
         vscode.commands.registerCommand(`${appName}.new-post-category`, newPostCategory),
