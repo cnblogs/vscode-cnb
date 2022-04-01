@@ -1,5 +1,5 @@
 import fs from 'fs';
-import path = require('path');
+import path from 'path';
 import { FileSystemError, MessageOptions, Uri, window, workspace } from 'vscode';
 import { Post } from '../../models/post';
 import { AlertService } from '../../services/alert.service';
@@ -17,12 +17,12 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
     return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`);
 };
 
-export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile = false) => {
+export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> => {
     let mappedPostFilePath = PostFileMapManager.getFilePath(postId);
     const isFileExist = mappedPostFilePath ? fs.existsSync(mappedPostFilePath) : false;
     if (isFileExist && !forceUpdateLocalPostFile) {
         await openPostFile(mappedPostFilePath!);
-        return;
+        return Uri.file(mappedPostFilePath!);
     }
     // 本地文件已经被删除了, 确保重新生成博文与本地文件的关联
     if (mappedPostFilePath && !isFileExist) {
@@ -32,7 +32,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
 
     const postEditDto = await postService.fetchPostEditDto(postId);
     if (!postEditDto) {
-        return;
+        return false;
     }
     const post = postEditDto.post;
 
@@ -59,7 +59,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
                     break;
                 // 取消, 直接返回, 不进行任何操作
                 case undefined:
-                    return;
+                    return false;
             }
         }
     }
@@ -68,6 +68,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
     await workspace.fs.writeFile(fileUri, new TextEncoder().encode(postEditDto.post.postBody));
     await PostFileMapManager.updateOrCreate(postId, fileUri.fsPath);
     await openPostFile(post);
+    return fileUri;
 };
 
 const createDirectoryIfNotExist = async (uri: Uri) => {

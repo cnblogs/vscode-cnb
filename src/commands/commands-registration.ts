@@ -1,4 +1,4 @@
-import vscode from 'vscode';
+import { commands } from 'vscode';
 import { openMyAccountSettings } from './open-my-account-settings';
 import { openMyWebBlogConsole } from './open-my-blog-management-background';
 import { openMyHomePage } from './open-my-home-page';
@@ -32,46 +32,48 @@ import { setWorkspace } from './set-workspace';
 import { revealWorkspaceInOs } from './reveal-workspace-in-os';
 import { viewPostOnline } from './view-post-online';
 import { exportPostToPdf } from './pdf/export-pdf.command';
+import { pullPostRemoteUpdates } from './pull-post-remote-updates';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
     const appName = globalState.extensionName;
     const disposables = [
-        vscode.commands.registerCommand(`${appName}.login`, login),
-        vscode.commands.registerCommand(`${appName}.open-my-blog`, openMyBlog),
-        vscode.commands.registerCommand(`${appName}.open-my-home-page`, openMyHomePage),
-        vscode.commands.registerCommand(`${appName}.open-my-blog-management-background`, openMyWebBlogConsole),
-        vscode.commands.registerCommand(`${appName}.open-my-account-settings`, openMyAccountSettings),
-        vscode.commands.registerCommand(`${appName}.logout`, logout),
-        vscode.commands.registerCommand(`${appName}.refresh-posts-list`, refreshPostsList),
-        vscode.commands.registerCommand(`${appName}.previous-posts-list`, gotoPreviousPostsList),
-        vscode.commands.registerCommand(`${appName}.seek-posts-list`, seekPostsList),
-        vscode.commands.registerCommand(`${appName}.next-posts-list`, gotoNextPostsList),
-        vscode.commands.registerCommand(`${appName}.edit-post`, openPostInVscode),
-        vscode.commands.registerCommand(`${appName}.save-post`, savePostToCnblogs),
-        vscode.commands.registerCommand(`${appName}.modify-post-settings`, modifyPostSettings),
-        vscode.commands.registerCommand(`${appName}.delete-post`, deleteSelectedPosts),
-        vscode.commands.registerCommand(`${appName}.create-local-draft`, createLocalDraft),
-        vscode.commands.registerCommand(`${appName}.delete-local-draft`, deleteLocalDraft),
-        vscode.commands.registerCommand(`${appName}.save-local-draft-to-cnblogs`, saveLocalDraftToCnblogs),
-        vscode.commands.registerCommand(`${appName}.save-post-file-to-cnblogs`, savePostFileToCnblogs),
-        vscode.commands.registerCommand(`${appName}.upload-clipboard-image`, () => uploadImage(true, 'clipboard')),
-        vscode.commands.registerCommand(`${appName}.upload-local-disk-image`, () => uploadImage(true, 'local')),
-        vscode.commands.registerCommand(`${appName}.upload-image`, () => uploadImage(true)),
-        vscode.commands.registerCommand(`${appName}.reveal-local-post-file-in-os`, revealLocalPostFileInOs),
-        vscode.commands.registerCommand(`${appName}.show-post-to-local-file-info`, showLocalFileToPostInfo),
-        vscode.commands.registerCommand(`${appName}.new-post-category`, newPostCategory),
-        vscode.commands.registerCommand(`${appName}.delete-selected-post-categories`, deleteSelectedCategories),
-        vscode.commands.registerCommand(`${appName}.refresh-post-categories-list`, refreshPostCategoriesList),
-        vscode.commands.registerCommand(`${appName}.update-post-category`, updatePostCategory),
-        vscode.commands.registerCommand(`${appName}.delete-post-to-local-file-map`, deletePostToLocalFileMap),
-        vscode.commands.registerCommand(`${appName}.rename-post`, renamePost),
-        vscode.commands.registerCommand(`${appName}.open-post-in-blog-admin`, openPostInBlogAdmin),
-        vscode.commands.registerCommand(`${appName}.open-workspace`, openWorkspace),
-        vscode.commands.registerCommand(`${appName}.set-workspace`, setWorkspace),
-        vscode.commands.registerCommand(`${appName}.reveal-workspace-in-os`, revealWorkspaceInOs),
-        vscode.commands.registerCommand(`${appName}.view-post-online`, viewPostOnline),
-        vscode.commands.registerCommand(`${appName}.export-post-to-pdf`, exportPostToPdf),
+        commands.registerCommand(`${appName}.login`, login),
+        commands.registerCommand(`${appName}.open-my-blog`, openMyBlog),
+        commands.registerCommand(`${appName}.open-my-home-page`, openMyHomePage),
+        commands.registerCommand(`${appName}.open-my-blog-management-background`, openMyWebBlogConsole),
+        commands.registerCommand(`${appName}.open-my-account-settings`, openMyAccountSettings),
+        commands.registerCommand(`${appName}.logout`, logout),
+        commands.registerCommand(`${appName}.refresh-posts-list`, refreshPostsList),
+        commands.registerCommand(`${appName}.previous-posts-list`, gotoPreviousPostsList),
+        commands.registerCommand(`${appName}.seek-posts-list`, seekPostsList),
+        commands.registerCommand(`${appName}.next-posts-list`, gotoNextPostsList),
+        commands.registerCommand(`${appName}.edit-post`, openPostInVscode),
+        commands.registerCommand(`${appName}.save-post`, savePostToCnblogs),
+        commands.registerCommand(`${appName}.modify-post-settings`, modifyPostSettings),
+        commands.registerCommand(`${appName}.delete-post`, deleteSelectedPosts),
+        commands.registerCommand(`${appName}.create-local-draft`, createLocalDraft),
+        commands.registerCommand(`${appName}.delete-local-draft`, deleteLocalDraft),
+        commands.registerCommand(`${appName}.save-local-draft-to-cnblogs`, saveLocalDraftToCnblogs),
+        commands.registerCommand(`${appName}.save-post-file-to-cnblogs`, savePostFileToCnblogs),
+        commands.registerCommand(`${appName}.pull-post-remote-updates`, pullPostRemoteUpdates),
+        commands.registerCommand(`${appName}.upload-clipboard-image`, () => uploadImage(true, 'clipboard')),
+        commands.registerCommand(`${appName}.upload-local-disk-image`, () => uploadImage(true, 'local')),
+        commands.registerCommand(`${appName}.upload-image`, () => uploadImage(true)),
+        commands.registerCommand(`${appName}.reveal-local-post-file-in-os`, revealLocalPostFileInOs),
+        commands.registerCommand(`${appName}.show-post-to-local-file-info`, showLocalFileToPostInfo),
+        commands.registerCommand(`${appName}.new-post-category`, newPostCategory),
+        commands.registerCommand(`${appName}.delete-selected-post-categories`, deleteSelectedCategories),
+        commands.registerCommand(`${appName}.refresh-post-categories-list`, refreshPostCategoriesList),
+        commands.registerCommand(`${appName}.update-post-category`, updatePostCategory),
+        commands.registerCommand(`${appName}.delete-post-to-local-file-map`, deletePostToLocalFileMap),
+        commands.registerCommand(`${appName}.rename-post`, renamePost),
+        commands.registerCommand(`${appName}.open-post-in-blog-admin`, openPostInBlogAdmin),
+        commands.registerCommand(`${appName}.open-workspace`, openWorkspace),
+        commands.registerCommand(`${appName}.set-workspace`, setWorkspace),
+        commands.registerCommand(`${appName}.reveal-workspace-in-os`, revealWorkspaceInOs),
+        commands.registerCommand(`${appName}.view-post-online`, viewPostOnline),
+        commands.registerCommand(`${appName}.export-post-to-pdf`, exportPostToPdf),
     ];
     context?.subscriptions.push(...disposables);
 };
