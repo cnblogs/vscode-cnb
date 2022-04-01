@@ -30,7 +30,7 @@ export const showUploadSuccessModel = async (imgLink: string): Promise<void> => 
             break;
     }
     if (formattedImageLink) {
-        env.clipboard.writeText(formattedImageLink);
+        await env.clipboard.writeText(formattedImageLink);
     }
 };
 

@@ -8,6 +8,6 @@ export const openMyHomePage = () => {
     }
     const userHomePageUrl = `https://home.cnblogs.com/u/${accountId}`;
     if (userHomePageUrl) {
-        vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(userHomePageUrl));
+        void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(userHomePageUrl));
     }
 };

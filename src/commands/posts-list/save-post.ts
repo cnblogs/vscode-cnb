@@ -59,7 +59,7 @@ export const savePostFileToCnblogs = async (fileUri: Uri | undefined) => {
                         quickPickTitle: '搜索要关联的博文',
                     });
                     if (selectedPost) {
-                        PostFileMapManager.updateOrCreate(selectedPost.id, filePath);
+                        await PostFileMapManager.updateOrCreate(selectedPost.id, filePath);
                         const postEditDto = await postService.fetchPostEditDto(selectedPost.id);
                         if (postEditDto) {
                             const fileContent = new TextDecoder().decode(await workspace.fs.readFile(fileUri));
@@ -98,7 +98,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalFileService) => {
     post.title = localDraft.fileNameWithoutExt;
     post.isMarkdown = true;
     post.categoryIds ??= [];
-    postConfigurationPanel.open(
+    void postConfigurationPanel.open(
         {
             panelTitle: '',
             breadcrumbs: ['新建博文', '博文设置', post.title],

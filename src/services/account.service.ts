@@ -21,8 +21,7 @@ export class AccountService extends vscode.Disposable {
         accessToken ??= this.curUser.authorizationInfo?.accessToken;
         let expired = checkIsAccessTokenExpired(accessToken!);
         if (expired) {
-            this.logout();
-            this.alertLoginStatusExpired();
+            void Promise.all([this.logout(), this.alertLoginStatusExpired()]);
         }
         return ['Authorization', `Bearer ${expired ? '' : accessToken}`];
     }
@@ -50,7 +49,7 @@ export class AccountService extends vscode.Disposable {
         const { codeVerifier, codeChallenge } = generateCodeChallenge();
         this._oauthServ.startListenAuthorizationCodeCallback(codeVerifier, (authorizationInfo, err) => {
             if (authorizationInfo && !err) {
-                this.handleAuthorized(authorizationInfo);
+                return this.handleAuthorized(authorizationInfo);
             }
         });
         const { clientId, responseType, scope, authorizeEndpoint, authority, clientSecret } = globalState.config.oauth;
@@ -126,7 +125,7 @@ export class AccountService extends vscode.Disposable {
 
     private async setIsAuthorized(authorized = false): Promise<void> {
         await globalState.storage.update(isAuthorizedStorageKey, authorized);
-        this.setIsAuthorizedToContext();
+        await this.setIsAuthorizedToContext();
     }
 
     private async handleAuthorized(authorizationInfo: UserAuthorizationInfo) {

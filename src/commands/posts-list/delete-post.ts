@@ -74,17 +74,13 @@ export const deleteSelectedPosts = async (post: Post) => {
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')
                     .filter(x => !!x)
                     .forEach(path => {
-                        try {
-                            workspace.fs.delete(Uri.file(path));
-                        } catch (err) {
-                            console.error(err);
-                        }
+                        workspace.fs.delete(Uri.file(path)).then(undefined, ex => console.error(ex));
                     });
             }
             await PostFileMapManager.updateOrCreateMany(...selectedPosts.map<PostFileMap>(p => [p.id, '']));
             await refreshPostsList();
         } catch (err) {
-            window.showErrorMessage('删除博文失败', {
+            void window.showErrorMessage('删除博文失败', {
                 detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
             } as MessageOptions);
         } finally {

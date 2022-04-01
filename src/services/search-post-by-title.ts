@@ -15,11 +15,11 @@ class PostPickItem implements QuickPickItem {
     alwaysShow?: boolean | undefined;
 }
 
-export const searchPostsByTitle = async ({
+export const searchPostsByTitle = ({
     postTitle = '',
     quickPickTitle = '按标题搜索博文',
 }): Promise<Post | undefined> => {
-    return await new Promise<Post | undefined>(resolve => {
+    return new Promise<Post | undefined>(resolve => {
         const quickPick = window.createQuickPick<PostPickItem>();
         quickPick.title = quickPickTitle;
         quickPick.value = postTitle ?? '';
@@ -56,6 +56,6 @@ export const searchPostsByTitle = async ({
             quickPick.dispose();
         });
         quickPick.show();
-        handleValueChange();
+        void handleValueChange();
     });
 };

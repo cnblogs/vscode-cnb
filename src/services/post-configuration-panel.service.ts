@@ -62,11 +62,11 @@ export namespace postConfigurationPanel {
         }
         panel = await createPanel(panelTitle, post);
         const { webview } = panel;
-        webview.postMessage({
+        await webview.postMessage({
             command: webviewCommand.UiCommands.setFluentIconBaseUrl,
             baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
         } as webviewMessage.SetFluentIconBaseUrlMessage);
-        webview.postMessage({
+        await webview.postMessage({
             command: webviewCommand.UiCommands.editPostConfiguration,
             post: cloneDeep(post),
             activeTheme: vscode.window.activeColorTheme.kind,
@@ -96,7 +96,7 @@ export namespace postConfigurationPanel {
                             successCallback(Object.assign({}, postToUpdate, postSavedModel));
                         } catch (err) {
                             if (isErrorResponse(err)) {
-                                webview.postMessage({
+                                await webview.postMessage({
                                     command: webviewCommand.UiCommands.showErrorResponse,
                                     errorResponse: err,
                                 } as webviewMessage.ShowErrorResponseMessage);
@@ -136,7 +136,7 @@ export namespace postConfigurationPanel {
         try {
             const { breadcrumbs } = options;
             const { webview } = panel;
-            webview.postMessage({
+            void webview.postMessage({
                 command: webviewCommand.UiCommands.updateBreadcrumbs,
                 breadcrumbs,
             } as webviewMessage.UpdateBreadcrumbsMessage);
@@ -166,7 +166,7 @@ export namespace postConfigurationPanel {
     ) => {
         if (panel) {
             const { webview } = panel;
-            webview.postMessage({
+            await webview.postMessage({
                 command: webviewCommand.UiCommands.updateImageUploadStatus,
                 status: {
                     id: ImageUploadStatusId.uploading,
@@ -175,7 +175,7 @@ export namespace postConfigurationPanel {
             } as webviewMessage.UpdateImageUpdateStatusMessage);
             try {
                 const imageUrl = await uploadImage(false);
-                webview.postMessage({
+                await webview.postMessage({
                     command: webviewCommand.UiCommands.updateImageUploadStatus,
                     status: {
                         imageUrl,
@@ -185,7 +185,7 @@ export namespace postConfigurationPanel {
                 } as webviewMessage.UpdateImageUpdateStatusMessage);
             } catch (err) {
                 if (isErrorResponse(err)) {
-                    webview.postMessage({
+                    await webview.postMessage({
                         command: webviewCommand.UiCommands.updateImageUploadStatus,
                         status: {
                             id: ImageUploadStatusId.failed,

@@ -12,5 +12,10 @@
     "typescript.tsc.autoDetect": "off",
     "editor.formatOnSave": true,
     "cSpell.words": ["ASPNETCORE", "fluentui", "randomstring", "tailwindcss"],
-    "json.format.enable": false
+    "json.format.enable": false,
+    "eslint.alwaysShowStatus": true,
+    "eslint.lintTask.enable": true,
+    "eslint.run": "onType",
+    "eslint.debug": false,
+    "eslint.format.enable": true
 }

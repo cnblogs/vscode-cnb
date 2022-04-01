@@ -53,12 +53,15 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
     getChildren(element?: PostDataProviderItem): ProviderResult<PostDataProviderItem[]> {
         return new Promise<PostDataProviderItem[]>(resolve => {
             if (element === localDraftsTreeItem) {
-                LocalFileService.readDrafts().then(v => resolve(v));
+                LocalFileService.readDrafts().then(
+                    v => resolve(v),
+                    () => void 0
+                );
                 return;
             } else if (!element) {
                 const pagedPosts = this._pagedPosts;
                 if (!pagedPosts) {
-                    refreshPostsList();
+                    void refreshPostsList();
                     resolve([]);
                     return;
                 }

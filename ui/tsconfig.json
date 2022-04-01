@@ -17,6 +17,6 @@
         },
         "lib": ["DOM", "ES2020"]
     },
-    "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "../src/models/*.ts"],
-    "exclude": ["./dist", "./webpack.config.js"]
+    "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "./**/*.js", "../src/models/*.ts"],
+    "exclude": ["./dist"]
 }

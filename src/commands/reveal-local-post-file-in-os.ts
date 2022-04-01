@@ -11,5 +11,5 @@ export const revealLocalPostFileInOs = (post: Post) => {
         return;
     }
 
-    commands.executeCommand('revealFileInOS', Uri.file(postFilePath));
+    return commands.executeCommand('revealFileInOS', Uri.file(postFilePath));
 };

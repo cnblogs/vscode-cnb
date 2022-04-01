@@ -38,9 +38,9 @@ export class CnblogsOAuthService extends Disposable {
         this._app.get(['/', '/callback'], async (req, res) => {
             const authorizationInfo = await this.handleOAuthRedirect(req, res);
             if (authorizationInfo instanceof UserAuthorizationInfo) {
-                callback(authorizationInfo);
+                await callback(authorizationInfo);
             } else {
-                callback(undefined, authorizationInfo);
+                await callback(undefined, authorizationInfo);
             }
         });
     }
