@@ -4,7 +4,6 @@ import { Theme, PartialTheme, Stack, Breadcrumb, IBreadcrumbItem, Spinner, initi
 import { darkTheme, lightTheme } from './models/theme';
 import { PostForm } from './components/PostForm';
 import { Post } from '@models/post';
-import { PostConfiguration } from '@models/post-configuration';
 import { personalCategoriesStore } from './services/personal-categories-store';
 import { siteCategoriesStore } from './services/site-categories-store';
 import { tagsStore } from './services/tags-store';
@@ -20,18 +19,17 @@ interface AppState {
 }
 
 export interface AppProps {}
-const defaultState = {
-    theme: activeThemeProvider.getActiveTheme() === 'dark' ? darkTheme : lightTheme,
+
+const resolveTheme = (colorThemeKind?: number | undefined | null) => {
+    const isDark = colorThemeKind === 2 || activeThemeProvider.getActiveTheme() === 'dark';
+    return isDark ? darkTheme : lightTheme;
 };
+
 class App extends Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props);
-        this.state = defaultState;
+        this.state = { theme: resolveTheme() };
         this.observerMessages();
-    }
-
-    onConfirm(postConfig: PostConfiguration) {
-        throw Error(JSON.stringify(postConfig));
     }
 
     render() {
@@ -41,14 +39,14 @@ class App extends Component<AppProps, AppState> {
                 {this.renderBreadcrumbs()}
                 <Stack tokens={{ padding: '8px 10px 16px 10px' }}>
                     <PostFormContextProvider>
-                        <PostForm post={this.state.post} onConfirm={this.onConfirm} />
+                        <PostForm post={this.state.post} />
                     </PostFormContextProvider>
                 </Stack>
             </>
         );
         return (
             <React.StrictMode>
-                <ThemeProvider theme={this.state?.theme}>{isReady ? content : this.renderSpinner()}</ThemeProvider>
+                <ThemeProvider theme={this.state.theme}>{isReady ? content : this.renderSpinner()}</ThemeProvider>
             </React.StrictMode>
         );
     }
@@ -92,6 +90,9 @@ class App extends Component<AppProps, AppState> {
             } else if (command === webviewCommand.UiCommands.setFluentIconBaseUrl) {
                 const { baseUrl } = message as webviewMessage.SetFluentIconBaseUrlMessage;
                 initializeIcons(baseUrl);
+            } else if (command === webviewCommand.UiCommands.changeTheme) {
+                const { colorThemeKind } = message as webviewMessage.ChangeThemeMessage;
+                this.setState({ theme: resolveTheme(colorThemeKind) });
             }
         });
     }

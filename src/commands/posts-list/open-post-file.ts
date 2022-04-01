@@ -1,9 +1,9 @@
-import { commands, Uri } from 'vscode';
+import { commands, TextDocumentShowOptions, Uri } from 'vscode';
 import { Post } from '../../models/post';
 import { LocalFileService } from '../../services/local-draft.service';
 import { PostFileMapManager } from '../../services/post-file-map';
 
-export const openPostFile = async (post: LocalFileService | Post | string) => {
+export const openPostFile = async (post: LocalFileService | Post | string, options?: TextDocumentShowOptions) => {
     let filePath = '';
     if (post instanceof LocalFileService) {
         filePath = post.filePath;
@@ -15,7 +15,9 @@ export const openPostFile = async (post: LocalFileService | Post | string) => {
     if (!filePath) {
         return;
     }
-    await commands.executeCommand('vscode.open', Uri.file(filePath), {
-        preview: false,
-    });
+    await commands.executeCommand(
+        'vscode.open',
+        Uri.file(filePath),
+        Object.assign({ preview: false } as TextDocumentShowOptions, options ?? {})
+    );
 };

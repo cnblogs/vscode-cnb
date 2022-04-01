@@ -98,20 +98,18 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalFileService) => {
     post.title = localDraft.fileNameWithoutExt;
     post.isMarkdown = true;
     post.categoryIds ??= [];
-    void postConfigurationPanel.open(
-        {
-            panelTitle: '',
-            breadcrumbs: ['新建博文', '博文设置', post.title],
-            post,
-        },
-        async savedPost => {
+    void postConfigurationPanel.open({
+        panelTitle: '',
+        breadcrumbs: ['新建博文', '博文设置', post.title],
+        post,
+        successCallback: async savedPost => {
             await refreshPostsList();
             await PostFileMapManager.updateOrCreate(savedPost.id, localDraft.filePath);
             postsDataProvider.fireTreeDataChangedEvent(undefined);
             await openPostFile(localDraft);
             AlertService.info('博文已创建');
         },
-        async (postToSave, panel) => {
+        beforeUpdate: async (postToSave, panel) => {
             await saveFilePendingChanges(localDraft.filePath);
             // 本地文件已经被删除了
             if (!localDraft.exist && panel) {
@@ -121,8 +119,8 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalFileService) => {
             const content = await localDraft.readAllText();
             postToSave.postBody = content;
             return true;
-        }
-    );
+        },
+    });
 };
 
 export const savePostToCnblogs = async (input: Post | PostEditDto | undefined, isNewPost = false) => {
