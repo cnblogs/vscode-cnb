@@ -155,6 +155,13 @@
                 "category": "Cnblogs"
             },
             {
+                "command": "vscode-cnb.pull-post-remote-updates",
+                "title": "拉取远程更新",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized",
+                "icon": "$(cloud-download)"
+            },
+            {
                 "command": "vscode-cnb.show-post-to-local-file-info",
                 "title": "博客园关联博文",
                 "enablement": "vscode-cnb.isAuthorized"
@@ -424,17 +431,22 @@
             "view/item/context": [
                 {
                     "command": "vscode-cnb.save-post",
-                    "group": "inline",
+                    "group": "inline@1",
                     "when": "viewItem == cnb-post-cached"
                 },
                 {
-                    "command": "vscode-cnb.delete-post",
-                    "group": "inline",
-                    "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
+                    "command": "vscode-cnb.pull-post-remote-updates",
+                    "group": "inline@2",
+                    "when": "viewItem == cnb-post-cached"
                 },
                 {
                     "command": "vscode-cnb.modify-post-settings",
-                    "group": "inline",
+                    "group": "inline@3",
+                    "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
+                },
+                {
+                    "command": "vscode-cnb.delete-post",
+                    "group": "inline@4",
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
                 },
                 {
@@ -476,19 +488,29 @@
                     "group": "delete@2"
                 },
                 {
+                    "command": "vscode-cnb.save-post",
+                    "group": "0@1",
+                    "when": "viewItem == cnb-post-cached"
+                },
+                {
+                    "command": "vscode-cnb.pull-post-remote-updates",
+                    "group": "0@2",
+                    "when": "viewItem == cnb-post-cached"
+                },
+                {
                     "command": "vscode-cnb.reveal-local-post-file-in-os",
                     "when": "viewItem =~ /^cnb-post-cached/",
-                    "group": "0@1"
+                    "group": "0@3"
                 },
                 {
                     "command": "vscode-cnb.view-post-online",
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
-                    "group": "0@2"
+                    "group": "0@4"
                 },
                 {
                     "command": "vscode-cnb.export-post-to-pdf",
-                    "when": "viewItem =~ /^cnb-post/",
-                    "group": "0@3"
+                    "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
+                    "group": "0@5"
                 },
                 {
                     "command": "vscode-cnb.delete-selected-post-categories",
@@ -526,29 +548,34 @@
                     "group": "cnblogs@2"
                 },
                 {
-                    "command": "vscode-cnb.modify-post-settings",
+                    "command": "vscode-cnb.pull-post-remote-updates",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@3"
                 },
                 {
-                    "command": "vscode-cnb.open-post-in-blog-admin",
+                    "command": "vscode-cnb.modify-post-settings",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@4"
                 },
                 {
-                    "command": "vscode-cnb.upload-clipboard-image",
+                    "command": "vscode-cnb.open-post-in-blog-admin",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@5"
                 },
                 {
-                    "command": "vscode-cnb.upload-local-disk-image",
+                    "command": "vscode-cnb.upload-clipboard-image",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@6"
                 },
                 {
-                    "command": "vscode-cnb.export-post-to-pdf",
+                    "command": "vscode-cnb.upload-local-disk-image",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@7"
+                },
+                {
+                    "command": "vscode-cnb.export-post-to-pdf",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs@8"
                 }
             ],
             "editor/title": [
@@ -575,24 +602,29 @@
                     "group": "cnblogs@2"
                 },
                 {
-                    "command": "vscode-cnb.modify-post-settings",
+                    "command": "vscode-cnb.pull-post-remote-updates",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@3"
                 },
                 {
-                    "command": "vscode-cnb.show-post-to-local-file-info",
+                    "command": "vscode-cnb.modify-post-settings",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@4"
                 },
                 {
-                    "command": "vscode-cnb.open-post-in-blog-admin",
+                    "command": "vscode-cnb.show-post-to-local-file-info",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@5"
                 },
                 {
-                    "command": "vscode-cnb.export-post-to-pdf",
+                    "command": "vscode-cnb.open-post-in-blog-admin",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@6"
+                },
+                {
+                    "command": "vscode-cnb.export-post-to-pdf",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs@7"
                 }
             ]
         },
