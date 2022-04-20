@@ -1,9 +1,11 @@
-import { MessageOptions, ProgressLocation, window } from 'vscode';
+import fs from 'fs';
+import { MessageOptions, ProgressLocation, window, Uri, workspace } from 'vscode';
 import { PostCategory } from '../../models/post-category';
 import { postCategoryService } from '../../services/post-category.service';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 import { inputPostCategory } from './input-post-category';
 import { refreshPostCategoriesList } from './refresh-post-categories-list';
+import { Settings } from '../../services/settings.service';
 
 export const updatePostCategory = async (category?: PostCategory) => {
     if (!category) {
@@ -32,9 +34,19 @@ export const updatePostCategory = async (category?: PostCategory) => {
             try {
                 await postCategoryService.updateCategory(updateDto);
                 refreshPostCategoriesList();
+                // 如果选择了saveWithC模式且本地有该目录,则重命名该目录
+                const workspaceUri = Settings.workspaceUri;
+                const saveWithC = Settings.saveWithC;
+                const uri = Uri.joinPath(workspaceUri, category.title).fsPath;
+                const isFileExist = fs.existsSync(uri);
+                if (saveWithC && isFileExist) {
+                    const oldUri = Uri.joinPath(workspaceUri, category.title);
+                    const newUri = Uri.joinPath(workspaceUri, addDto.title);
+                    await workspace.fs.rename(oldUri, newUri);
+                }
             } catch (err) {
                 void window.showErrorMessage('更新博文分类失败', {
-                    detail: `服务器反回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
+                    detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
                     modal: true,
                 } as MessageOptions);
             } finally {

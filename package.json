@@ -255,6 +255,13 @@
                         "type": "string",
                         "editPresentation": "singlelineText",
                         "markdownDescription": "Chromium可执行文件路径, 用于进行pdf导出等操作"
+                    },
+                    "cnblogsClientForVSCode.saveWithC": {
+                        "order": 3,
+                        "default": true,
+                        "scope": "application",
+                        "type": "boolean",
+                        "markdownDescription": "设置是否根据博文分类保存到不同的文件夹中"
                     }
                 }
             }

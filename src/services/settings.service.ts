@@ -66,4 +66,12 @@ export class Settings {
         }
         await this.configuration.update(this.chromiumPathConfigurationKey, value, ConfigurationTarget.Global);
     }
+
+    static get saveWithC(): boolean {
+        return this.configuration.get<boolean>('saveWithC') ?? false;
+    }
+
+    static async setSaveWithC(value: boolean) {
+        await this.configuration.update('saveWithC', value, ConfigurationTarget.Global);
+    }
 }
