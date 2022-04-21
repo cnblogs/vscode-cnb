@@ -19,7 +19,7 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
     if (createLocalPostFileWithCategory) {
         let categories = await postCategoryService.fetchCategories();
         categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
-        const categoryTitle = categories.length > 0 ? categories.map(c => c.title).join(',') : '';
+        const categoryTitle = categories[0]?.title ?? '';
         return Uri.joinPath(workspaceUri, categoryTitle, `${postTitle}${postIdSegment}${ext}`);
     } else {
         return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`);
