@@ -66,4 +66,12 @@ export class Settings {
         }
         await this.configuration.update(this.chromiumPathConfigurationKey, value, ConfigurationTarget.Global);
     }
+
+    static get createLocalPostFileWithCategory(): boolean {
+        return this.configuration.get<boolean>('createLocalPostFileWithCategory') ?? false;
+    }
+
+    static async setCreateLocalPostFileWithCategory(value: boolean) {
+        await this.configuration.update('createLocalPostFileWithCategory', value, ConfigurationTarget.Global);
+    }
 }

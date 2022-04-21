@@ -8,13 +8,22 @@ import { PostFileMapManager } from '../../services/post-file-map';
 import { Settings } from '../../services/settings.service';
 import { openPostFile } from './open-post-file';
 import { PostTitleSanitizer } from '../../services/post-title-sanitizer.service';
+import { postCategoryService } from '../../services/post-category.service';
 
 const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise<Uri> => {
     const workspaceUri = Settings.workspaceUri;
+    const createLocalPostFileWithCategory = Settings.createLocalPostFileWithCategory;
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`;
     const postIdSegment = includePostId ? `.${post.id}` : '';
     const { text: postTitle } = await PostTitleSanitizer.sanitize(post);
-    return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`);
+    if (createLocalPostFileWithCategory) {
+        let categories = await postCategoryService.fetchCategories();
+        categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
+        const categoryTitle = categories[0]?.title ?? '';
+        return Uri.joinPath(workspaceUri, categoryTitle, `${postTitle}${postIdSegment}${ext}`);
+    } else {
+        return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`);
+    }
 };
 
 export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> => {
