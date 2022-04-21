@@ -12,14 +12,14 @@ import { postCategoryService } from '../../services/post-category.service';
 
 const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise<Uri> => {
     const workspaceUri = Settings.workspaceUri;
-    const saveWithC = Settings.saveWithC;
+    const createLocalPostFileWithCategory = Settings.createLocalPostFileWithCategory;
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`;
     const postIdSegment = includePostId ? `.${post.id}` : '';
     const { text: postTitle } = await PostTitleSanitizer.sanitize(post);
-    if (saveWithC) {
+    if (createLocalPostFileWithCategory) {
         let categories = await postCategoryService.fetchCategories();
         categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
-        const categoryTitle = categories.length > 0 ? categories.map(c => c.title).join(',') : '未分类';
+        const categoryTitle = categories.length > 0 ? categories.map(c => c.title).join(',') : '';
         return Uri.joinPath(workspaceUri, categoryTitle, `${postTitle}${postIdSegment}${ext}`);
     } else {
         return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`);

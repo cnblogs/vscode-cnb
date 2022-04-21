@@ -67,11 +67,11 @@ export class Settings {
         await this.configuration.update(this.chromiumPathConfigurationKey, value, ConfigurationTarget.Global);
     }
 
-    static get saveWithC(): boolean {
-        return this.configuration.get<boolean>('saveWithC') ?? false;
+    static get createLocalPostFileWithCategory(): boolean {
+        return this.configuration.get<boolean>('createLocalPostFileWithCategory') ?? false;
     }
 
-    static async setSaveWithC(value: boolean) {
-        await this.configuration.update('saveWithC', value, ConfigurationTarget.Global);
+    static async setCreateLocalPostFileWithCategory(value: boolean) {
+        await this.configuration.update('createLocalPostFileWithCategory', value, ConfigurationTarget.Global);
     }
 }

@@ -34,12 +34,12 @@ export const updatePostCategory = async (category?: PostCategory) => {
             try {
                 await postCategoryService.updateCategory(updateDto);
                 refreshPostCategoriesList();
-                // 如果选择了saveWithC模式且本地有该目录,则重命名该目录
+                // 如果选择了createLocalPostFileWithCategory模式且本地有该目录,则重命名该目录
                 const workspaceUri = Settings.workspaceUri;
-                const saveWithC = Settings.saveWithC;
+                const createLocalPostFileWithCategory = Settings.createLocalPostFileWithCategory;
                 const uri = Uri.joinPath(workspaceUri, category.title).fsPath;
                 const isFileExist = fs.existsSync(uri);
-                if (saveWithC && isFileExist) {
+                if (createLocalPostFileWithCategory && isFileExist) {
                     const oldUri = Uri.joinPath(workspaceUri, category.title);
                     const newUri = Uri.joinPath(workspaceUri, addDto.title);
                     await workspace.fs.rename(oldUri, newUri);
