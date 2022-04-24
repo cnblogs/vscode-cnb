@@ -428,7 +428,7 @@
                 },
                 {
                     "command": "vscode-cnb.view-post-online",
-                    "when": "false"
+                    "when": "true"
                 },
                 {
                     "command": "vscode-cnb.export-post-to-pdf",
