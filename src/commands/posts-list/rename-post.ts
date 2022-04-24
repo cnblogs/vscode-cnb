@@ -45,7 +45,7 @@ export const renamePost = async (post: Post) => {
         validateInput: v => {
             return v ? undefined : '请输入一个标题';
         },
-        value: post.title
+        value: post.title,
     });
 
     if (!input) {
