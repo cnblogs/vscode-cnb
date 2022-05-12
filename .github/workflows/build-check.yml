@@ -3,7 +3,8 @@ name: Build and check the code format
 on:
     push:
         branches:
-            - '**'
+            - main
+    pull_request:
 env:
     GITLAB_NPM_TOKEN: ${{secrets.GITLAB_NPM_TOKEN}}
 jobs:

@@ -1,3 +1,9 @@
+[![Current Version](https://vsmarketplacebadge.apphb.com/version-short/cnblogs.vscode-cnb.svg)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
+[![](https://vsmarketplacebadge.apphb.com/downloads-short/cnblogs.vscode-cnb.svg)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/cnblogs/vscode-cnb/Build%20and%20check%20the%20code%20format/main)](https://github.com/cnblogs/vscode-cnb)
+[![GitHub](https://img.shields.io/github/license/cnblogs/vscode-cnb)](https://github.com/cnblogs/vscode-cnb/blob/main/LICENSE.txt)
+[![GitHub issues](https://img.shields.io/github/issues-raw/cnblogs/vscode-cnb)](https://github.com/cnblogs/vscode-cnb/issues)
+
 **目录**
 
 - [简介](#简介)
