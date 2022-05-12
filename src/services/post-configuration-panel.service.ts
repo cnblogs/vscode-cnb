@@ -54,11 +54,13 @@ export namespace postConfigurationPanel {
         let disposables: (vscode.Disposable | undefined)[] = [];
         panel = await createPanel(panelTitle, post);
         const { webview } = panel;
-        await webview.postMessage({
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        webview.postMessage({
             command: webviewCommand.UiCommands.setFluentIconBaseUrl,
             baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
         } as webviewMessage.SetFluentIconBaseUrlMessage);
-        await webview.postMessage({
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        webview.postMessage({
             command: webviewCommand.UiCommands.editPostConfiguration,
             post: cloneDeep(post),
             activeTheme: vscode.window.activeColorTheme.kind,
