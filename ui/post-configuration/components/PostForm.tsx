@@ -17,6 +17,7 @@ import { webviewCommand } from '@models/webview-command';
 import { webviewMessage } from '@models/webview-message';
 import { InputSummary } from './InputSummary';
 import { IPostFormContext, PostFormContext } from './PostFormContext';
+import PostEntryNameInput from './PostEntryNameInput';
 
 export interface IPostFormProps {
     post?: Post;
@@ -121,6 +122,10 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                     <SiteCategoriesSelector
                         categoryIds={this.state.siteCategoryId ? [this.state.siteCategoryId] : []}
                         onChange={categoryId => this.setState({ siteCategoryId: categoryId })}
+                    />
+                    <PostEntryNameInput
+                        entryName={this.state.entryName}
+                        onChange={value => this.setState({ entryName: value })}
                     />
                     <ErrorResponse />
                     <Stack horizontal tokens={{ childrenGap: 8 }}>
