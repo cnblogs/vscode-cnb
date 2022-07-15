@@ -5,3 +5,4 @@ package-lock.json
 dist
 .vscode-test
 out
+.github/ISSUE_TEMPLATE/**/*.*
