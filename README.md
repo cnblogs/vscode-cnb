@@ -102,9 +102,9 @@
 
 <kbd><img src="https://img2022.cnblogs.com/blog/1596066/202203/1596066-20220323135918858-1619509502.png" height="350"></kbd>
 
-支持多选
+列表中选择要导出的博文时, 支持多选
 
-<kbd><img src="https://minio.mytechsky.top/blog/images/2022041520261503-1596066-20220323140426961-1518402131.png"></kbd>
+<kbd><img src="https://img2022.cnblogs.com/blog/35695/202209/35695-20220907203200119-1667606464.png"></kbd>
 
 ### 博文设置面板
 
