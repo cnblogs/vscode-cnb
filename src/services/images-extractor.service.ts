@@ -17,6 +17,24 @@ export type MarkdownImages = MarkdownImage[];
 const markdownImageRegex = /(!\[.*?\])\((.*?)( {0,}["'].*?['"])?\)/g;
 const cnblogsImageLinkRegex = /\.cnblogs\.com\//;
 
+interface ImageTypeFilter {
+    (image: MarkdownImage): boolean;
+}
+
+const webImageFilter: ImageTypeFilter = image => /^(https?:)?\/\//.test(image.link);
+const localImageFilter: ImageTypeFilter = image => !webImageFilter(image);
+const allImageFilter: ImageTypeFilter = () => true;
+const createImageTypeFilter = (type: MarkdownImagesExtractor['imageType']) => {
+    switch (type) {
+        case 'web':
+            return webImageFilter;
+        case 'local':
+            return localImageFilter;
+        default:
+            return allImageFilter;
+    }
+};
+
 export class MarkdownImagesExtractor {
     get status() {
         return this._status;
@@ -24,7 +42,9 @@ export class MarkdownImagesExtractor {
     get errors() {
         return this._errors;
     }
+    imageType: 'web' | 'local' | 'all' = 'all';
     readonly markdownImageRegex = markdownImageRegex;
+    readonly createImageTypeFilter = createImageTypeFilter;
 
     private _status: 'pending' | 'extracting' | 'extracted' = 'pending';
     private _errors: [symbol: string, message: string][] = [];
@@ -32,7 +52,7 @@ export class MarkdownImagesExtractor {
 
     constructor(
         private markdown: string,
-        private path: Uri,
+        private filePath: Uri,
         public onProgress?: (index: number, images: MarkdownImages) => void
     ) {}
 
@@ -72,21 +92,24 @@ export class MarkdownImagesExtractor {
     }
 
     findImages(): MarkdownImage[] {
-        return this._images == null
-            ? (this._images = Array.from(this.markdown.matchAll(markdownImageRegex))
-                  .map<MarkdownImage>(g => ({
-                      link: g[2],
-                      symbol: g[0],
-                      alt: g[1].substring(2, g[1].length - 1),
-                      title: g[3] ?? '',
-                      index: g.index,
-                  }))
-                  .filter(x => !cnblogsImageLinkRegex.test(x.link)))
-            : this._images;
+        return (
+            this._images == null
+                ? (this._images = Array.from(this.markdown.matchAll(markdownImageRegex))
+                      .map<MarkdownImage>(g => ({
+                          link: g[2],
+                          symbol: g[0],
+                          alt: g[1].substring(2, g[1].length - 1),
+                          title: g[3] ?? '',
+                          index: g.index,
+                      }))
+                      .filter(x => !cnblogsImageLinkRegex.test(x.link)))
+                : this._images
+        ).filter(x => createImageTypeFilter(this.imageType).call(null, x));
     }
 
-    private async resolveImageFile({ link, symbol, alt, title }: MarkdownImage) {
-        if (/^https?:\/\//.test(link)) {
+    private async resolveImageFile(image: MarkdownImage) {
+        const { link, symbol, alt, title } = image;
+        if (webImageFilter(image)) {
             let imageStream = await imageService.download(link, alt ?? title);
             if (!(imageStream instanceof Array)) {
                 return imageStream;
@@ -97,7 +120,8 @@ export class MarkdownImagesExtractor {
         } else {
             const createReadStream = (file: string) => (fs.existsSync(file) ? fs.createReadStream(file) : false);
             let stream = createReadStream(link);
-            return stream === false ? createReadStream(path.resolve(this.path.fsPath, link)) : stream;
+
+            return stream === false ? createReadStream(path.resolve(path.dirname(this.filePath.fsPath), link)) : stream;
         }
     }
 }

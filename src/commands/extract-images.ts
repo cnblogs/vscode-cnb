@@ -1,27 +1,47 @@
 import { Uri, workspace, window, MessageOptions, MessageItem, ProgressLocation, Range } from 'vscode';
 import { MarkdownImage, MarkdownImagesExtractor } from '../services/images-extractor.service';
 
-export const extractImages = async (arg: unknown) => {
+export const extractImages = async (
+    arg: unknown,
+    inputImageType: MarkdownImagesExtractor['imageType'] | null | undefined
+) => {
     if (arg instanceof Uri && arg.scheme === 'file') {
         const markdown = new TextDecoder().decode(await workspace.fs.readFile(arg));
         const extractor = new MarkdownImagesExtractor(markdown, arg);
         const images = extractor.findImages();
+        const availableWebImagesCount = images.filter(extractor.createImageTypeFilter('web')).length;
+        const availableLocalImagesCount = images.filter(extractor.createImageTypeFilter('local')).length;
         if (images.length <= 0) {
-            await window.showInformationMessage('没有需要提取的图片');
+            await window.showWarningMessage('没有可以提取的图片');
             return;
         }
-        const messageItems: MessageItem[] = [{ title: '确定' }, { title: '取消', isCloseAffordance: true }];
-        const result = await window.showInformationMessage<MessageItem>(
-            '确定要提取图片吗? 此操作会替换源文件中的图片链接!',
-            {
-                modal: true,
-                detail: `共找到 ${images.length} 张需要提取的图片`,
-            } as MessageOptions,
-            ...messageItems
-        );
+        const messageItems: (MessageItem & Partial<Pick<MarkdownImagesExtractor, 'imageType'>>)[] = [
+            { title: '提取本地图片', imageType: 'local' },
+            { title: '提取网络图片', imageType: 'web' },
+            { title: '提取全部', imageType: 'all' },
+            { title: '取消', imageType: undefined, isCloseAffordance: true },
+        ];
+        let result = messageItems.find(x => inputImageType != null && x.imageType === inputImageType);
+        result = result
+            ? result
+            : await window.showInformationMessage<typeof messageItems extends [...infer U] ? U[0] : never>(
+                  '请选择要提取哪些图片? 注意! 此操作会替换源文件中的图片链接!',
+                  {
+                      modal: true,
+                      detail:
+                          `共找到 ${availableWebImagesCount} 张可以提取的网络图片\n` +
+                          `${availableLocalImagesCount} 张可以提取的本地图片`,
+                  } as MessageOptions,
+                  ...messageItems
+              );
         const editor = window.visibleTextEditors.find(x => x.document.fileName === arg.fsPath);
 
-        if (result === messageItems[0] && editor) {
+        if (result && result.imageType && editor) {
+            extractor.imageType = result.imageType;
+            if (extractor.findImages().length <= 0) {
+                await window.showWarningMessage('没有可以提取的图片');
+                return;
+            }
             const document = editor.document;
             await document.save();
             const failedImages = await window.withProgress(
