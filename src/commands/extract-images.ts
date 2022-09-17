@@ -95,6 +95,7 @@ export const extractImages = async (
                             editBuilder.replace(range, extractedImage.symbol);
                         }
                     });
+                    await document.save();
                     return extractResults.filter(x => x[1] === null).map(x => x[0]);
                 }
             );

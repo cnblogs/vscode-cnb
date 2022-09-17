@@ -118,10 +118,20 @@ export class MarkdownImagesExtractor {
                 return false;
             }
         } else {
-            const createReadStream = (file: string) => (fs.existsSync(file) ? fs.createReadStream(file) : false);
+            const triedPathed: string[] = [];
+            const createReadStream = (file: string) => {
+                triedPathed.push(file);
+                return fs.existsSync(file) ? fs.createReadStream(file) : false;
+            };
             let stream = createReadStream(link);
 
-            return stream === false ? createReadStream(path.resolve(path.dirname(this.filePath.fsPath), link)) : stream;
+            stream =
+                stream === false ? createReadStream(path.resolve(path.dirname(this.filePath.fsPath), link)) : stream;
+            if (stream === false) {
+                this._errors.push([symbol, `本地图片文件不存在(${triedPathed.join(', ')})`]);
+            }
+
+            return stream;
         }
     }
 }
