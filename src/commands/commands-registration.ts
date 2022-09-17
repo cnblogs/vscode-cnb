@@ -33,6 +33,7 @@ import { revealWorkspaceInOs } from './reveal-workspace-in-os';
 import { viewPostOnline } from './view-post-online';
 import { exportPostToPdf } from './pdf/export-pdf.command';
 import { pullPostRemoteUpdates } from './pull-post-remote-updates';
+import { extractImages } from './extract-images';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -74,6 +75,7 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.reveal-workspace-in-os`, revealWorkspaceInOs),
         commands.registerCommand(`${appName}.view-post-online`, viewPostOnline),
         commands.registerCommand(`${appName}.export-post-to-pdf`, exportPostToPdf),
+        commands.registerCommand(`${appName}.extract-images`, extractImages),
     ];
     context?.subscriptions.push(...disposables);
 };

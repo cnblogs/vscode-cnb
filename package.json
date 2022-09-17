@@ -226,6 +226,12 @@
                 "title": "导出pdf",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized"
+            },
+            {
+                "command": "vscode-cnb.extract-images",
+                "title": "提取图片",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized"
             }
         ],
         "configuration": [
@@ -583,6 +589,11 @@
                     "command": "vscode-cnb.export-post-to-pdf",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@8"
+                },
+                {
+                    "command": "vscode-cnb.extract-images",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs@9"
                 }
             ],
             "editor/title": [
