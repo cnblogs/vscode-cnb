@@ -226,6 +226,12 @@
                 "title": "导出pdf",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized"
+            },
+            {
+                "command": "vscode-cnb.extract-images",
+                "title": "提取图片",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized"
             }
         ],
         "configuration": [
@@ -262,6 +268,25 @@
                         "scope": "application",
                         "type": "boolean",
                         "markdownDescription": "设置是否根据博文分类保存到不同的文件夹中"
+                    },
+                    "cnblogsClientForVSCode.automaticallyExtractImages": {
+                        "order": 4,
+                        "default": "---",
+                        "scope": "application",
+                        "enum": [
+                            "---",
+                            "local",
+                            "web",
+                            "all"
+                        ],
+                        "enumItemLabels": [
+                            "不自动提取图片",
+                            "自动提取本地图片",
+                            "自动提取网络图片",
+                            "自动提取全部图片"
+                        ],
+                        "editPresentation": "singlelineText",
+                        "description": "配置保存到博客园时要自动进行提取上传到博客园的图片"
                     }
                 }
             }
@@ -583,6 +608,11 @@
                     "command": "vscode-cnb.export-post-to-pdf",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@8"
+                },
+                {
+                    "command": "vscode-cnb.extract-images",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs@9"
                 }
             ],
             "editor/title": [

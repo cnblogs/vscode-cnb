@@ -1,6 +1,7 @@
 import { homedir, platform } from 'os';
 import fs from 'fs';
 import { ConfigurationTarget, Uri, workspace } from 'vscode';
+import { MarkdownImagesExtractor } from './images-extractor.service';
 
 export class Settings {
     static get prefix() {
@@ -73,5 +74,11 @@ export class Settings {
 
     static async setCreateLocalPostFileWithCategory(value: boolean) {
         await this.configuration.update('createLocalPostFileWithCategory', value, ConfigurationTarget.Global);
+    }
+
+    static get automaticallyExtractImagesType(): MarkdownImagesExtractor['imageType'] | null {
+        const value =
+            this.configuration.get<MarkdownImagesExtractor['imageType']>('automaticallyExtractImages') ?? null;
+        return value?.startsWith('---') ? null : value;
     }
 }

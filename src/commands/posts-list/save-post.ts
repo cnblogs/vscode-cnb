@@ -14,6 +14,8 @@ import { PostEditDto } from '../../models/post-edit-dto';
 import { PostTitleSanitizer } from '../../services/post-title-sanitizer.service';
 import { postConfigurationPanel } from '../../services/post-configuration-panel.service';
 import { saveFilePendingChanges } from '../../utils/save-file-pending-changes';
+import { extractImages } from '../extract-images';
+import { Settings } from '../../services/settings.service';
 
 const parseFileUri = async (fileUri: Uri | undefined): Promise<Uri | undefined> => {
     if (fileUri && fileUri.scheme !== 'file') {
@@ -104,9 +106,13 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalFileService) => {
         post,
         successCallback: async savedPost => {
             await refreshPostsList();
-            await PostFileMapManager.updateOrCreate(savedPost.id, localDraft.filePath);
-            postsDataProvider.fireTreeDataChangedEvent(undefined);
             await openPostFile(localDraft);
+            if (Settings.automaticallyExtractImagesType) {
+                await extractImages(localDraft.filePathUri, Settings.automaticallyExtractImagesType);
+            }
+            await PostFileMapManager.updateOrCreate(savedPost.id, localDraft.filePath);
+            await openPostFile(localDraft);
+            postsDataProvider.fireTreeDataChangedEvent(undefined);
             AlertService.info('博文已创建');
         },
         beforeUpdate: async (postToSave, panel) => {
@@ -162,6 +168,9 @@ export const savePostToCnblogs = async (input: Post | PostEditDto | undefined, i
             });
             let success = false;
             try {
+                if (Settings.automaticallyExtractImagesType && localFilePath) {
+                    await extractImages(Uri.file(localFilePath), Settings.automaticallyExtractImagesType);
+                }
                 let { id: postId } = await postService.updatePost(post);
                 if (!isNewPost) {
                     await openPostInVscode(postId);
