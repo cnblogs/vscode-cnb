@@ -1,6 +1,6 @@
 {
     "name": "vscode-cnb",
-    "displayName": "Cnblogs Client For VSCode",
+    "displayName": "博客园Cnblogs客户端",
     "description": "A vscode extension used to write and publish blog post to cnblogs",
     "version": "0.0.1",
     "license": "LICENSE.txt",

@@ -1,9 +1,3 @@
 # Change Log
 
-All notable changes to the "vscode-cnb" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+see [Github release](https://github.com/cnblogs/vscode-cnb/releases)
