@@ -1,30 +1,34 @@
 import { Uri, workspace, window, MessageOptions, MessageItem, ProgressLocation, Range } from 'vscode';
 import { MarkdownImage, MarkdownImagesExtractor } from '../services/images-extractor.service';
 
+type ExtractOption = MessageItem & Partial<Pick<MarkdownImagesExtractor, 'imageType'>>;
+const extractOptions: readonly ExtractOption[] = [
+    { title: '提取本地图片', imageType: 'local' },
+    { title: '提取网络图片', imageType: 'web' },
+    { title: '提取全部', imageType: 'all' },
+    { title: '取消', imageType: undefined, isCloseAffordance: true },
+];
+
 export const extractImages = async (
     arg: unknown,
     inputImageType: MarkdownImagesExtractor['imageType'] | null | undefined
-) => {
+): Promise<void> => {
     if (arg instanceof Uri && arg.scheme === 'file') {
+        const ignoreWarnings = inputImageType != null;
         const markdown = new TextDecoder().decode(await workspace.fs.readFile(arg));
         const extractor = new MarkdownImagesExtractor(markdown, arg);
         const images = extractor.findImages();
         const availableWebImagesCount = images.filter(extractor.createImageTypeFilter('web')).length;
         const availableLocalImagesCount = images.filter(extractor.createImageTypeFilter('local')).length;
+        const warnNoImages = (): void => void (ignoreWarnings ? null : window.showWarningMessage('没有可以提取的图片'));
         if (images.length <= 0) {
-            await window.showWarningMessage('没有可以提取的图片');
-            return;
+            return warnNoImages();
         }
-        const messageItems: (MessageItem & Partial<Pick<MarkdownImagesExtractor, 'imageType'>>)[] = [
-            { title: '提取本地图片', imageType: 'local' },
-            { title: '提取网络图片', imageType: 'web' },
-            { title: '提取全部', imageType: 'all' },
-            { title: '取消', imageType: undefined, isCloseAffordance: true },
-        ];
-        let result = messageItems.find(x => inputImageType != null && x.imageType === inputImageType);
+
+        let result = extractOptions.find(x => inputImageType != null && x.imageType === inputImageType);
         result = result
             ? result
-            : await window.showInformationMessage<typeof messageItems extends [...infer U] ? U[0] : never>(
+            : await window.showInformationMessage<ExtractOption>(
                   '请选择要提取哪些图片? 注意! 此操作会替换源文件中的图片链接!',
                   {
                       modal: true,
@@ -32,15 +36,14 @@ export const extractImages = async (
                           `共找到 ${availableWebImagesCount} 张可以提取的网络图片\n` +
                           `${availableLocalImagesCount} 张可以提取的本地图片`,
                   } as MessageOptions,
-                  ...messageItems
+                  ...extractOptions
               );
         const editor = window.visibleTextEditors.find(x => x.document.fileName === arg.fsPath);
 
         if (result && result.imageType && editor) {
             extractor.imageType = result.imageType;
             if (extractor.findImages().length <= 0) {
-                await window.showWarningMessage('没有可以提取的图片');
-                return;
+                return warnNoImages();
             }
             const document = editor.document;
             await document.save();
