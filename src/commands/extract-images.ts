@@ -103,7 +103,8 @@ export const extractImages = async (
                 }
             );
             if (failedImages && failedImages.length > 0) {
-                await window.showErrorMessage(
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                window.showErrorMessage(
                     `${failedImages.length}张图片提取失败\n${failedImages
                         .map(x => [x.symbol, extractor.errors.find(y => y[0] === x.symbol)?.[1] ?? ''].join(': '))
                         .join('\n')}`
