@@ -1,10 +1,22 @@
+import { trim } from 'lodash';
+
 export class UserAuthorizationInfo {
     constructor(public idToken: string, public accessToken: string, expiresIn: number, public tokenType: string) {}
 }
 
 export class UserInfo {
+    private _blogApp?: string | null;
+
     get userId() {
         return this.sub;
+    }
+
+    get blogApp(): string | null {
+        if (this._blogApp == null) {
+            this._blogApp = this.parseBlogApp();
+        }
+
+        return this._blogApp;
     }
 
     /**
@@ -26,4 +38,12 @@ export class UserInfo {
         public sub: string = '',
         public accountId: number = -1
     ) {}
+
+    private parseBlogApp(): string | null {
+        return (
+            trim(this.website ?? '', '/')
+                .split('/')
+                .pop() ?? null
+        );
+    }
 }

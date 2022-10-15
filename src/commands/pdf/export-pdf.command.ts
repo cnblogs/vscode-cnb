@@ -10,6 +10,8 @@ import { extensionViews } from '../../tree-view-providers/tree-view-registration
 import { postPdfTemplateBuilder } from './post-pdf-template-builder';
 import { chromiumPathProvider } from '../../utils/chromium-path-provider';
 import { Settings } from '../../services/settings.service';
+import { accountService } from '../../services/account.service';
+import { AlertService } from '../../services/alert.service';
 
 const launchBrowser = async (
     chromiumPath: string
@@ -42,7 +44,8 @@ const exportOne = async (
     post: Post,
     page: puppeteer.Page,
     targetFileUri: Uri,
-    progress: Progress<{ message: string; increment: number }>
+    progress: Progress<{ message: string; increment: number }>,
+    blogApp: string
 ) => {
     let message = `[${idx + 1}/${total}]正在导出 - ${post.title}`;
     const report = (increment: number) => {
@@ -52,7 +55,7 @@ const exportOne = async (
         });
     };
     report(10);
-    let html = await postPdfTemplateBuilder.build(post);
+    let html = await postPdfTemplateBuilder.build(post, blogApp);
     report(15);
     // Wait for code block highlight finished
     await Promise.all([
@@ -151,21 +154,18 @@ const handlePostInput = (post: Post): Promise<Post[]> => {
 
 const handleUriInput = async (uri: Uri): Promise<Post[]> => {
     const posts: Post[] = [];
-    const postId = PostFileMapManager.getPostId(uri.fsPath);
-    let inputPost: Post | undefined;
-    if (postId && postId > 0) {
-        inputPost = (await postService.fetchPostEditDto(postId))?.post;
-    } else {
-        const { fsPath } = uri;
-        inputPost = Object.assign((await postService.fetchPostEditDto(-1))?.post, {
+    const { fsPath } = uri;
+    const postId = PostFileMapManager.getPostId(fsPath);
+    const { post: inputPost } = (await postService.fetchPostEditDto(postId && postId > 0 ? postId : -1)) ?? {};
+
+    if (!inputPost) {
+        return [];
+    } else if (inputPost.id <= 0) {
+        Object.assign(inputPost, {
             id: -1,
             title: path.basename(fsPath, path.extname(fsPath)),
             postBody: new TextDecoder().decode(await workspace.fs.readFile(uri)),
         } as Post);
-    }
-
-    if (!inputPost) {
-        return [];
     }
 
     posts.push(inputPost);
@@ -186,6 +186,13 @@ const exportPostToPdf = async (input: Post | Uri): Promise<void> => {
     const chromiumPath = await retrieveChromiumPath();
     if (!chromiumPath) {
         return;
+    }
+    const {
+        curUser: { blogApp },
+    } = accountService;
+
+    if (!blogApp) {
+        return AlertService.warning('无法获取到博客地址, 请检查登录状态');
     }
 
     reportErrors(
@@ -216,7 +223,7 @@ const exportPostToPdf = async (input: Post | Uri): Promise<void> => {
                 const { length: total } = selectedPosts;
                 for (const post of selectedPosts) {
                     try {
-                        await exportOne(idx++, total, post, page, dir!, progress);
+                        await exportOne(idx++, total, post, page, dir!, progress, blogApp);
                     } catch (err) {
                         errors.push(`导出"${post.title}失败", ${err}`);
                     }
