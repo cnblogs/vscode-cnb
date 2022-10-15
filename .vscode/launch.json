@@ -13,7 +13,8 @@
             "outFiles": ["${workspaceFolder}/dist/**/*.js"],
             "preLaunchTask": "${defaultBuildTask}",
             "env": {
-                "NODE_ENV": "Development"
+                "NODE_ENV": "Development",
+                "NODE_TLS_REJECT_UNAUTHORIZED": "0"
             }
         },
         {

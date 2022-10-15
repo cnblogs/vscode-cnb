@@ -5,12 +5,14 @@ import { markdownItFactory } from '@cnblogs-gitlab/markdown-it-presets';
 import { blogSettingsService } from '../../services/blog-settings.service';
 import { accountService } from '../../services/account.service';
 import { postCategoryService } from '../../services/post-category.service';
+import { PostCategory } from '../../models/post-category';
 
 export namespace postPdfTemplateBuilder {
     export const highlightedMessage = 'markdown-highlight-finished';
 
-    export const build = async (post: Post): Promise<string> => {
+    export const build = async (post: Post, blogApp: string): Promise<string> => {
         let { postBody, isMarkdown, id: postId } = post;
+
         const localFilePath = PostFileMapManager.getFilePath(postId);
         postBody = localFilePath ? fs.readFileSync(localFilePath).toString('utf-8') : postBody;
 
@@ -26,7 +28,7 @@ export namespace postPdfTemplateBuilder {
         const buildTagHtml = (): Promise<string> => {
             let html =
                 post.tags && post.tags.length > 0
-                    ? post.tags.map(t => `<a href="https://www.cnblogs.com/laggage/tag/linux/">${t}</a>`).join(', ')
+                    ? post.tags.map(t => `<a href="https://www.cnblogs.com/${blogApp}/tag/${t}/">${t}</a>`).join(', ')
                     : '';
             html = html ? `<div id="EntryTag">标签: ${html}</div>` : '';
             return Promise.resolve(html);
@@ -35,13 +37,15 @@ export namespace postPdfTemplateBuilder {
         const buildCategoryHtml = async (): Promise<string> => {
             let categories = await postCategoryService.fetchCategories();
             const postCategories =
-                post.categoryIds?.map(categoryId => categories.find(x => x.categoryId === categoryId)) ?? [];
+                post.categoryIds
+                    ?.map(categoryId => categories.find(x => x.categoryId === categoryId))
+                    .filter((x): x is PostCategory => x != null) ?? [];
             let html =
                 postCategories.length > 0
                     ? postCategories
                           .map(
                               c =>
-                                  `<a href="https://www.cnblogs.com/laggage/category/1565066.html" target="_blank">${c?.title}</a>`
+                                  `<a href="https://www.cnblogs.com/${blogApp}/category/${c.categoryId}.html" target="_blank">${c?.title}</a>`
                           )
                           .join(', ')
                     : '';
@@ -51,7 +55,7 @@ export namespace postPdfTemplateBuilder {
 
         const tagHtml = await buildTagHtml();
         const categoryHtml = await buildCategoryHtml();
-        const { codeHighlightEngine, codeHighlightTheme, enableCodeLineNumber, blogId, application } =
+        const { codeHighlightEngine, codeHighlightTheme, enableCodeLineNumber, blogId } =
             await blogSettingsService.getBlogSettings();
         const { userId } = accountService.curUser;
         return `<html>
@@ -75,7 +79,7 @@ export namespace postPdfTemplateBuilder {
             <link rel="stylesheet" href="https://www.cnblogs.com/css/blog-common.min.css">
             <script>
             var currentBlogId = ${blogId};
-            var currentBlogApp = '${application}';
+            var currentBlogApp = '${blogApp}';
             var cb_enable_mathjax = true;
             var isLogined = true;
             var isBlogOwner = true;

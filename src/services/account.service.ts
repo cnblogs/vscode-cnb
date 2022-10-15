@@ -38,7 +38,10 @@ export class AccountService extends vscode.Disposable {
     }
 
     get curUser(): UserInfo {
-        return this._curUser ? this._curUser : globalState.storage.get('user') ?? new UserInfo();
+        return (
+            this._curUser ||
+            (this._curUser = Object.assign(new UserInfo(), globalState.storage.get('user') ?? new UserInfo()))
+        );
     }
 
     protected constructor() {
@@ -80,6 +83,7 @@ export class AccountService extends vscode.Disposable {
         const token = this.curUser?.authorizationInfo?.accessToken;
 
         await globalState.storage.update('user', {});
+        this._curUser = undefined;
         await this.setIsAuthorized(false);
 
         if (token) {
