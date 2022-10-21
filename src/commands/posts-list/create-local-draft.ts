@@ -1,11 +1,8 @@
 import { homedir } from 'os';
 import path = require('path');
 import { Uri, window, workspace } from 'vscode';
-import { LocalFileService } from '../../services/local-draft.service';
-import { AlertService } from '../../services/alert.service';
 import { Settings } from '../../services/settings.service';
-import { localDraftsTreeItem, postsDataProvider } from '../../tree-view-providers/posts-data-provider';
-import { extensionViews } from '../../tree-view-providers/tree-view-registration';
+import { revealActiveFileInExplorer } from '../../utils/reveal-active-file';
 import { openPostFile } from './open-post-file';
 
 export const createLocalDraft = async () => {
@@ -26,22 +23,33 @@ export const createLocalDraft = async () => {
     const { fsPath: workspacePath } = Settings.workspaceUri;
     title = ['.md', '.html'].some(ext => title!.endsWith(ext)) ? title : `${title}${title.endsWith('.') ? '' : '.'}md`;
     const filePath = path.join(workspacePath, title);
+
     try {
         await workspace.fs.stat(Uri.file(filePath));
-        AlertService.error('已存在同名文件');
-        return;
     } catch (e) {
-        // ignore
+        // 文件不存在
+        await workspace.fs.writeFile(Uri.file(filePath), new TextEncoder().encode(''));
     }
 
-    await workspace.fs.writeFile(Uri.file(filePath), new TextEncoder().encode(''));
     await openPostFile(filePath);
-    postsDataProvider.fireTreeDataChangedEvent(localDraftsTreeItem);
-    const items = (await postsDataProvider.getChildren(localDraftsTreeItem)) as LocalFileService[] | undefined;
-    if (items) {
-        const item = items.find(x => x.filePath === filePath);
-        if (item) {
-            await extensionViews.postsList?.reveal(item);
-        }
+    await revealActiveFileInExplorer();
+    // 设置中关闭了 `autoReveal` 的情况下, 需要两次调用 `workbench.files.action.showActiveFileInExplorer` 命令, 才能正确 `reveal`
+    if (!workspace.getConfiguration('explorer').get<boolean>('autoReveal')) {
+        await revealActiveFileInExplorer();
     }
+
+    const focusEditor = async () => {
+        const { activeTextEditor } = window;
+        if (activeTextEditor) {
+            await window.showTextDocument(activeTextEditor.document, { preview: false, preserveFocus: false });
+        }
+    };
+    await focusEditor();
+    // 确保能 focus 到编辑器(不这么做, 有时会聚焦到 explorer 处)
+    await new Promise<void>(resolve => {
+        const innerTimeout = setTimeout(() => {
+            clearTimeout(innerTimeout);
+            focusEditor().finally(() => resolve());
+        }, 50);
+    });
 };

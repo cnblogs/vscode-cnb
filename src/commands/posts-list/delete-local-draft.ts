@@ -1,6 +1,6 @@
 import { Uri, window, workspace } from 'vscode';
 import { LocalFileService } from '../../services/local-draft.service';
-import { localDraftsTreeItem, postsDataProvider } from '../../tree-view-providers/posts-data-provider';
+import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
 const options = ['确定', '取消'];
@@ -23,7 +23,7 @@ export const deleteLocalDraft = async (targetFile: LocalFileService) => {
     });
     if (picked === options[0]) {
         const deleteTasks: Thenable<unknown>[] = [];
-        void extensionViews.postsList?.reveal(localDraftsTreeItem);
+        void extensionViews.postsList?.reveal();
         files.forEach(f => {
             deleteTasks.push(workspace.fs.delete(Uri.file(f.filePath), { useTrash: true }));
         });

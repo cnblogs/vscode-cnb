@@ -1,15 +1,5 @@
 import { homedir } from 'os';
-import {
-    Event,
-    EventEmitter,
-    MarkdownString,
-    ProviderResult,
-    ThemeIcon,
-    TreeDataProvider,
-    TreeItem,
-    TreeItemCollapsibleState,
-    Uri,
-} from 'vscode';
+import { Event, EventEmitter, MarkdownString, ProviderResult, TreeDataProvider, TreeItem, Uri } from 'vscode';
 import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
 import { Post } from '../models/post';
 import { LocalFileService } from '../services/local-draft.service';
@@ -20,15 +10,7 @@ import { globalState } from '../services/global-state';
 import { PostFileMapManager } from '../services/post-file-map';
 import { Settings } from '../services/settings.service';
 
-export const localDraftsTreeItem: TreeItem = Object.assign(new TreeItem('本地草稿'), {
-    iconPath: new ThemeIcon('folder'),
-    collapsibleState: TreeItemCollapsibleState.Collapsed,
-    contextValue: 'cnb-local-drafts-folder',
-    description: Settings.workspaceUri.fsPath.replace(homedir(), '~'),
-    tooltip: '在本地创建的还未保存到博客园的文章',
-} as TreeItem);
-
-export type PostDataProviderItem = Post | TreeItem | LocalFileService;
+export type PostDataProviderItem = Post | TreeItem;
 
 export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem> {
     private static _instance?: PostsDataProvider;
@@ -50,15 +32,9 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
 
     protected constructor() {}
 
-    getChildren(element?: PostDataProviderItem): ProviderResult<PostDataProviderItem[]> {
+    getChildren(parent?: PostDataProviderItem): ProviderResult<PostDataProviderItem[]> {
         return new Promise<PostDataProviderItem[]>(resolve => {
-            if (element === localDraftsTreeItem) {
-                LocalFileService.readDrafts().then(
-                    v => resolve(v),
-                    () => void 0
-                );
-                return;
-            } else if (!element) {
+            if (!parent) {
                 const pagedPosts = this._pagedPosts;
                 if (!pagedPosts) {
                     void refreshPostsList();
@@ -73,10 +49,7 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
     }
 
     getParent(el: PostDataProviderItem) {
-        if (el instanceof LocalFileService) {
-            return localDraftsTreeItem;
-        }
-        return undefined;
+        return el instanceof Post ? undefined : undefined;
     }
 
     readonly onDidChangeTreeData: Event<PostDataProviderItem | null | undefined> | undefined =
@@ -118,11 +91,11 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
             };
             this._pagedPosts = await postService.fetchPostsList({ pageIndex, pageSize });
             this.fireTreeDataChangedEvent(undefined);
-        } catch (e) {
-            if (e instanceof Error) {
-                AlertService.error(e.message);
+        } catch (ex) {
+            if (ex instanceof Error) {
+                AlertService.error(ex.message);
             } else {
-                AlertService.error(`Failed to fetch posts list\n${JSON.stringify(e)}`);
+                AlertService.error(`Failed to fetch posts list\n${JSON.stringify(ex)}`);
             }
         }
     }
