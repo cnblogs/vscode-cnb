@@ -92,23 +92,10 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.delete-local-draft",
-                "title": "删除",
-                "icon": "$(trash)",
-                "category": "Cnblogs Local Draft"
-            },
-            {
                 "command": "vscode-cnb.create-local-draft",
                 "title": "新建本地草稿",
                 "icon": "$(new-file)",
                 "category": "Cnblogs Local Draft"
-            },
-            {
-                "command": "vscode-cnb.save-local-draft-to-cnblogs",
-                "title": "发布",
-                "icon": "dist/assets/icon-upload.svg",
-                "category": "Cnblogs Local Draft",
-                "enablement": "vscode-cnb.isAuthorized"
             },
             {
                 "command": "vscode-cnb.modify-post-settings",
@@ -388,20 +375,12 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.save-local-draft-to-cnblogs",
-                    "when": "false"
-                },
-                {
                     "command": "vscode-cnb.delete-post",
                     "when": "false"
                 },
                 {
                     "command": "vscode-cnb.save-post-file-to-cnblogs",
                     "when": "true"
-                },
-                {
-                    "command": "vscode-cnb.delete-local-draft",
-                    "when": "false"
                 },
                 {
                     "command": "vscode-cnb.logout",
@@ -482,22 +461,8 @@
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
                 },
                 {
-                    "command": "vscode-cnb.save-local-draft-to-cnblogs",
-                    "when": "viewItem == cnb-local-draft-file",
-                    "group": "inline@1"
-                },
-                {
-                    "command": "vscode-cnb.delete-local-draft",
-                    "when": "viewItem == cnb-local-draft-file",
-                    "group": "inline@2"
-                },
-                {
                     "command": "vscode-cnb.create-local-draft",
                     "when": "viewItem == cnb-local-drafts-folder"
-                },
-                {
-                    "command": "vscode-cnb.delete-local-draft",
-                    "when": "viewItem == cnb-local-draft-file"
                 },
                 {
                     "command": "vscode-cnb.rename-post",

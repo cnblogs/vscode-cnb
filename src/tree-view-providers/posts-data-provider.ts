@@ -2,7 +2,6 @@ import { homedir } from 'os';
 import { Event, EventEmitter, MarkdownString, ProviderResult, TreeDataProvider, TreeItem, Uri } from 'vscode';
 import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
 import { Post } from '../models/post';
-import { LocalFileService } from '../services/local-draft.service';
 import { PageModel } from '../models/page-model';
 import { AlertService } from '../services/alert.service';
 import { postService } from '../services/post.service';
@@ -59,9 +58,7 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
         if (item instanceof TreeItem) {
             return item;
         }
-        if (item instanceof LocalFileService) {
-            return item.toTreeItem();
-        }
+
         const descDatePublished = item.datePublished ? `  \n发布于: ${item.datePublished}` : '';
         const localPath = PostFileMapManager.getFilePath(item.id);
         const localPathForDesc = localPath?.replace(homedir(), '~') || '未关联本地文件';
