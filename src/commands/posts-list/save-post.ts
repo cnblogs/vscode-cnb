@@ -1,6 +1,6 @@
 import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode';
 import { Post } from '../../models/post';
-import { LocalFileService } from '../../services/local-draft.service';
+import { LocalDraft } from '../../services/local-draft.service';
 import { AlertService } from '../../services/alert.service';
 import { postService } from '../../services/post.service';
 import { PostFileMapManager } from '../../services/post-file-map';
@@ -77,13 +77,13 @@ export const savePostFileToCnblogs = async (fileUri: Uri | undefined) => {
                 }
                 break;
             case options[0]:
-                await saveLocalDraftToCnblogs(new LocalFileService(filePath));
+                await saveLocalDraftToCnblogs(new LocalDraft(filePath));
                 break;
         }
     }
 };
 
-export const saveLocalDraftToCnblogs = async (localDraft: LocalFileService) => {
+export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
     if (!localDraft) {
         return;
     }

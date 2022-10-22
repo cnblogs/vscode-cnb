@@ -1,10 +1,10 @@
 import path from 'path';
 import fs from 'fs';
-import { TreeItem, Uri, workspace } from 'vscode';
+import { Uri, workspace } from 'vscode';
 import { PostFileMapManager } from './post-file-map';
 import { Settings } from './settings.service';
 
-export class LocalFileService {
+export class LocalDraft {
     get fileName(): string {
         return path.basename(this.filePath);
     }
@@ -28,22 +28,10 @@ export class LocalFileService {
         return new TextDecoder().decode(binary);
     }
 
-    toTreeItem(): TreeItem {
-        return Object.assign(new TreeItem(this.fileName), {
-            resourceUri: Uri.file(this.filePath),
-            command: {
-                command: `vscode.open`,
-                arguments: [Uri.file(this.filePath), { preview: false }],
-                title: '编辑博文',
-            },
-            contextValue: 'cnb-local-draft-file',
-        } as TreeItem);
-    }
-
-    static async readDrafts(): Promise<LocalFileService[]> {
+    static async readDrafts(): Promise<LocalDraft[]> {
         const files = await workspace.fs.readDirectory(Settings.workspaceUri);
         return files
-            .map(x => Object.assign(new LocalFileService(path.join(`${Settings.workspaceUri.fsPath}`, x[0]))))
+            .map(x => Object.assign(new LocalDraft(path.join(`${Settings.workspaceUri.fsPath}`, x[0]))))
             .filter(
                 x => !PostFileMapManager.getPostId(x.filePath) && ['.md', '.html'].some(ext => x.fileName.endsWith(ext))
             );

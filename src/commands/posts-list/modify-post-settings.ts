@@ -7,7 +7,7 @@ import { revealPostsListItem } from '../../services/posts-list-view';
 import { postConfigurationPanel } from '../../services/post-configuration-panel.service';
 import path from 'path';
 import fs from 'fs';
-import { LocalFileService } from '../../services/local-draft.service';
+import { LocalDraft } from '../../services/local-draft.service';
 import { saveFilePendingChanges } from '../../utils/save-file-pending-changes';
 
 export const modifyPostSettings = async (input: Post | Uri) => {
@@ -49,7 +49,7 @@ export const modifyPostSettings = async (input: Post | Uri) => {
         beforeUpdate: async post => {
             if (localFilePath && fs.existsSync(localFilePath)) {
                 await saveFilePendingChanges(localFilePath);
-                const content = await new LocalFileService(localFilePath).readAllText();
+                const content = await new LocalDraft(localFilePath).readAllText();
                 post.postBody = content;
             }
             return true;
