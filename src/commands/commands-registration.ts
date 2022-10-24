@@ -11,16 +11,15 @@ import {
     refreshPostsList,
     seekPostsList,
 } from './posts-list/refresh-posts-list';
-import { saveLocalDraftToCnblogs, savePostFileToCnblogs, savePostToCnblogs } from './posts-list/save-post';
+import { savePostFileToCnblogs, savePostToCnblogs } from './posts-list/save-post';
 import { createLocalDraft } from './posts-list/create-local-draft';
-import { deleteLocalDraft } from './posts-list/delete-local-draft';
 import { deleteSelectedPosts } from './posts-list/delete-post';
 import { modifyPostSettings } from './posts-list/modify-post-settings';
 import { uploadImage } from './upload-image/upload-image';
 import { revealLocalPostFileInOs } from './reveal-local-post-file-in-os';
 import { showLocalFileToPostInfo } from './show-local-file-to-post-info';
 import { newPostCategory } from './post-category/new-post-category';
-import { deleteSelectedCategories } from './post-category/delete-selected-categoriess';
+import { deleteSelectedCategories } from './post-category/delete-selected-categories';
 import { refreshPostCategoriesList } from './post-category/refresh-post-categories-list';
 import { updatePostCategory } from './post-category/update-post-category';
 import { openPostInVscode } from './posts-list/open-post-in-vscode';
@@ -54,8 +53,6 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.modify-post-settings`, modifyPostSettings),
         commands.registerCommand(`${appName}.delete-post`, deleteSelectedPosts),
         commands.registerCommand(`${appName}.create-local-draft`, createLocalDraft),
-        commands.registerCommand(`${appName}.delete-local-draft`, deleteLocalDraft),
-        commands.registerCommand(`${appName}.save-local-draft-to-cnblogs`, saveLocalDraftToCnblogs),
         commands.registerCommand(`${appName}.save-post-file-to-cnblogs`, savePostFileToCnblogs),
         commands.registerCommand(`${appName}.pull-post-remote-updates`, pullPostRemoteUpdates),
         commands.registerCommand(`${appName}.upload-clipboard-image`, () => uploadImage(true, 'clipboard')),
