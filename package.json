@@ -33,6 +33,50 @@
     ],
     "main": "./dist/extension.js",
     "contributes": {
+        "icons": {
+            "vscode-cnb-date": {
+                "description": "date",
+                "default": {
+                    "fontPath": "dist/assets/icons.woff2",
+                    "fontCharacter": "\\e697"
+                }
+            },
+            "vscode-cnb-image-upload": {
+                "description": "image upload",
+                "default": {
+                    "fontPath": "dist/assets/icons.woff2",
+                    "fontCharacter": "\\e80e"
+                }
+            },
+            "vscode-cnb-cloud-upload": {
+                "description": "cloud upload",
+                "default": {
+                    "fontPath": "dist/assets/icons.woff2",
+                    "fontCharacter": "\\e7d9"
+                }
+            },
+            "vscode-cnb-icon-seek": {
+                "description": "icon seek",
+                "default": {
+                    "fontPath": "dist/assets/icons.woff2",
+                    "fontCharacter": "\\e662"
+                }
+            },
+            "vscode-cnb-folders": {
+                "description": "folders",
+                "default": {
+                    "fontPath": "dist/assets/icons.woff2",
+                    "fontCharacter": "\\e74a"
+                }
+            },
+            "vscode-cnb-folder-close": {
+                "description": "folder close",
+                "default": {
+                    "fontPath": "dist/assets/icons.woff2",
+                    "fontCharacter": "\\e65b"
+                }
+            }
+        },
         "commands": [
             {
                 "title": "登录到博客园",
@@ -56,10 +100,7 @@
             {
                 "command": "vscode-cnb.seek-posts-list",
                 "title": "跳页",
-                "icon": {
-                    "light": "dist/assets/icon-seek.svg",
-                    "dark": "dist/assets/icon-seek-dark.svg"
-                },
+                "icon": "$(vscode-cnb-icon-seek)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.posts-list.refreshing && vscode-cnb.posts-list.pageCount > 0",
                 "category": "Cnblogs Posts List"
             },
@@ -108,10 +149,7 @@
                 "command": "vscode-cnb.upload-image",
                 "title": "上传图片到博客园",
                 "category": "Cnblogs",
-                "icon": {
-                    "light": "dist/assets/icon-image-upload.svg",
-                    "dark": "dist/assets/icon-image-upload-dark.svg"
-                },
+                "icon": "$(vscode-cnb-image-upload)",
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
@@ -134,10 +172,7 @@
             {
                 "command": "vscode-cnb.save-post-file-to-cnblogs",
                 "title": "保存到博客园",
-                "icon": {
-                    "light": "dist/assets/icon-upload.svg",
-                    "dark": "dist/assets/icon-upload-dark.svg"
-                },
+                "icon": "$(vscode-cnb-cloud-upload)",
                 "enablement": "vscode-cnb.isAuthorized",
                 "category": "Cnblogs"
             },
@@ -721,7 +756,8 @@
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
         "format": "prettier --write .",
-        "format-check": "prettier --check ."
+        "format-check": "prettier --check .",
+        "download-icons": "node ./download-iconfont.mjs"
     },
     "devDependencies": {
         "@types/express": "^4.17.1",
@@ -738,6 +774,7 @@
         "@typescript-eslint/eslint-plugin": "^5.1.0",
         "@typescript-eslint/parser": "^5.1.0",
         "@vscode/test-electron": "^1.6.2",
+        "adm-zip": "^0.5.9",
         "autoprefixer": "^10.4.4",
         "babel-plugin-module-resolver": "^4.1.0",
         "clean-webpack-plugin": "^4.0.0",

@@ -17,6 +17,16 @@ export class PostCategoryService {
 
     private constructor() {}
 
+    async findCategories(ids: number[], { useCache = true } = {}): Promise<PostCategories> {
+        ids = ids.filter(x => x > 0);
+        if (ids.length <= 0) {
+            return [];
+        }
+
+        const categories = await this.fetchCategories(!useCache);
+        return categories.filter(({ categoryId }) => ids.includes(categoryId));
+    }
+
     async fetchCategories(forceRefresh = false): Promise<PostCategories> {
         if (this._cached && !forceRefresh) {
             return this._cached;
