@@ -4,35 +4,55 @@ import vscode from 'vscode';
 import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { AlertService } from '../../services/alert.service';
 import { PostsListState } from '../../models/posts-list-state';
-import { PageModel } from '../../models/page-model';
-import { Post } from '../../models/post';
 import { window } from 'vscode';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
-export const refreshPostsList = async () => {
-    if (refreshing) {
+let refreshTask: Promise<any> | null = null;
+
+export const refreshPostsList = ({ queue = false } = {}): Promise<boolean> => {
+    if (refreshing && !queue) {
         alertRefreshing();
-        return;
+        return refreshTask || Promise.resolve(false);
+    } else if (refreshing && refreshTask != null) {
+        return refreshTask.then(() => refreshPostsList());
     }
-    await setRefreshing(true);
-    let pagedPosts: PageModel<Post> | undefined;
-    try {
-        await postsDataProvider.loadPosts();
-        pagedPosts = postsDataProvider.pagedPosts;
-        if (pagedPosts) {
-            await postService.updatePostsListState(pagedPosts);
-            updatePostsListViewTitle();
-        }
-    } catch (e) {
-        console.error('refresh posts list failed', e);
-        AlertService.error('刷新博文列表失败');
-    }
-    await setPostListContext(
-        pagedPosts?.pageCount ?? 0,
-        pagedPosts?.hasPrevious ?? false,
-        pagedPosts?.hasNext ?? false
+
+    refreshTask = new Promise<boolean>(resolve =>
+        setRefreshing(true).finally(() =>
+            postsDataProvider
+                .loadPosts()
+                .then(pagedPosts =>
+                    setPostListContext(
+                        pagedPosts?.pageCount ?? 0,
+                        pagedPosts?.hasPrevious ?? false,
+                        pagedPosts?.hasNext ?? false
+                    ).then(() => pagedPosts)
+                )
+                .then(pagedPosts =>
+                    pagedPosts == null
+                        ? Promise.resolve(false).finally(() => AlertService.error('刷新博文列表失败'))
+                        : postService
+                              .updatePostsListState(pagedPosts)
+                              .then(() => updatePostsListViewTitle())
+                              .then(
+                                  () => true,
+                                  () => true
+                              )
+                )
+                .catch(() => false)
+                .then(x =>
+                    setRefreshing(false).then(
+                        () => x,
+                        () => x
+                    )
+                )
+                .then(undefined, () => false)
+                .then(x => resolve(x))
+                .finally(() => (refreshTask = null))
+        )
     );
-    await setRefreshing(false);
+
+    return refreshTask;
 };
 
 export const gotoNextPostsList = async () => {
@@ -71,7 +91,9 @@ export const seekPostsList = async () => {
 let refreshing = false;
 const setRefreshing = async (value = false) => {
     const extName = globalState.extensionName;
-    await vscode.commands.executeCommand('setContext', `${extName}.posts-list.refreshing`, value);
+    await vscode.commands
+        .executeCommand('setContext', `${extName}.posts-list.refreshing`, value)
+        .then(undefined, () => false);
     refreshing = value;
 };
 
@@ -116,12 +138,14 @@ const updatePostsListViewTitle = () => {
         return;
     }
     const { pageIndex, pageCount } = state;
-    const view = extensionViews.postsList;
-    if (view) {
-        let title = view.title!;
-        const idx = title.indexOf('(');
-        const pager = `第${pageIndex}页,共${pageCount}页`;
-        title = idx >= 0 ? title.substring(0, idx) : title;
-        view.title = `${title}(${pager})`;
+    const views = [extensionViews.postsList, extensionViews.anotherPostsList];
+    for (const view of views) {
+        if (view) {
+            let title = view.title!;
+            const idx = title.indexOf('(');
+            const pager = `第${pageIndex}页,共${pageCount}页`;
+            title = idx >= 0 ? title.substring(0, idx) : title;
+            view.title = `${title}(${pager})`;
+        }
     }
 };

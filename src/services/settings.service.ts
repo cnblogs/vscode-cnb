@@ -2,8 +2,11 @@ import { homedir, platform } from 'os';
 import fs from 'fs';
 import { ConfigurationTarget, Uri, workspace } from 'vscode';
 import { MarkdownImagesExtractor } from './images-extractor.service';
+import { isNumber } from 'lodash';
 
 export class Settings {
+    static readonly postsListPageSizeKey = 'pageSize.postsList';
+
     static get prefix() {
         return `cnblogsClientForVSCode`;
     }
@@ -80,5 +83,10 @@ export class Settings {
         const value =
             this.configuration.get<MarkdownImagesExtractor['imageType']>('automaticallyExtractImages') ?? null;
         return value?.startsWith('---') ? null : value;
+    }
+
+    static get postsListPageSize() {
+        let size = this.configuration.get<number>(this.postsListPageSizeKey);
+        return isNumber(size) ? size : 30;
     }
 }

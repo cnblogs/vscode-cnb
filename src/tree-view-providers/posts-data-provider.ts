@@ -80,20 +80,21 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
         } as TreeItem);
     }
 
-    async loadPosts(): Promise<void> {
+    async loadPosts(): Promise<PageModel<Post> | null> {
         try {
-            const { pageIndex, pageSize } = postService.postsListState ?? {
-                pageIndex: undefined,
-                pageSize: undefined,
-            };
+            const { pageIndex } = postService.postsListState ?? {};
+            const pageSize = Settings.postsListPageSize;
             this._pagedPosts = await postService.fetchPostsList({ pageIndex, pageSize });
             this.fireTreeDataChangedEvent(undefined);
+            return this._pagedPosts;
         } catch (ex) {
             if (ex instanceof Error) {
                 AlertService.error(ex.message);
             } else {
                 AlertService.error(`Failed to fetch posts list\n${JSON.stringify(ex)}`);
             }
+
+            return null;
         }
     }
 
