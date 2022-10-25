@@ -1,5 +1,6 @@
 import { commands, workspace } from 'vscode';
 import { refreshPostCategoriesList } from '../commands/post-category/refresh-post-categories-list';
+import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
 import { globalState } from './global-state';
 import { PostFileMapManager } from './post-file-map';
 import { Settings } from './settings.service';
@@ -19,6 +20,9 @@ export const observeConfigurationChange = () => {
             }
             if (ev.affectsConfiguration(`${Settings.iconThemePrefix}.${Settings.iconThemeKey}`)) {
                 refreshPostCategoriesList();
+            }
+            if (ev.affectsConfiguration(`${Settings.prefix}.${Settings.postsListPageSizeKey}`)) {
+                void refreshPostsList({ queue: true });
             }
         })
     );
