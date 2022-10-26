@@ -1,3 +1,5 @@
+import { parseISO } from 'date-fns';
+
 export class Post {
     id: number = -1;
     author: string = '';
@@ -8,7 +10,20 @@ export class Post {
     categoryIds: number[] | null = [];
     changeCreatedTime: boolean = false;
     changePostType: boolean = false;
-    datePublished?: Date;
+    private _datePublished?: Date | undefined;
+    get datePublished(): Date | undefined {
+        return this._datePublished;
+    }
+    set datePublished(value: Date | string | undefined) {
+        this._datePublished = typeof value === 'string' ? parseISO(value) : value;
+    }
+    private _dateUpdated?: Date | undefined;
+    get dateUpdated(): Date | undefined {
+        return this._dateUpdated;
+    }
+    set dateUpdated(value: Date | string | undefined) {
+        this._dateUpdated = typeof value === 'string' ? parseISO(value) : value;
+    }
     description: string = '';
     featuredImage: string = '';
     displayOnHomePage: boolean = false;

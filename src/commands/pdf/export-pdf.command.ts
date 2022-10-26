@@ -144,7 +144,7 @@ const inputTargetFolder = async (): Promise<Uri | undefined> => {
 
 const handlePostInput = (post: Post): Promise<Post[]> => {
     const posts: Post[] = [post];
-    extensionViews.visiblePostList()?.selection.map(item => {
+    extensionViews.visiblePostsList()?.selection.map(item => {
         if (item instanceof Post && !posts.includes(item)) {
             posts.push(item);
         }

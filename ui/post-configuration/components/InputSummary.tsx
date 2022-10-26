@@ -103,7 +103,6 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
     }
 
     private observerMessage = (ev: MessageEvent<any>) => {
-        console.debug('observerMessage updateImageUploadStatus', ev.data);
         let data = ev.data as webviewMessage.Message;
         const { command } = data;
         switch (command) {

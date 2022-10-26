@@ -1,21 +1,23 @@
 import { globalState } from '../services/global-state';
 import vscode from 'vscode';
 import { accountViewDataProvider } from './account-view-data-provider';
-import { PostDataProviderItem, postsDataProvider } from './posts-data-provider';
+import { PostTreeViewItem, postsDataProvider } from './posts-data-provider';
 import { PostCategory } from '../models/post-category';
 import { postCategoriesDataProvider } from './categories-view-data-provider';
 
 export const extensionViews: {
-    postsList?: vscode.TreeView<PostDataProviderItem>;
-    anotherPostsList?: vscode.TreeView<PostDataProviderItem>;
+    postsList?: vscode.TreeView<PostTreeViewItem>;
+    anotherPostsList?: vscode.TreeView<PostTreeViewItem>;
     account?: vscode.TreeView<vscode.TreeItem>;
     postCategoriesList?: vscode.TreeView<PostCategory>;
-    visiblePostList: () => vscode.TreeView<PostDataProviderItem> | undefined;
+    postsLists: () => vscode.TreeView<PostTreeViewItem>[];
+    visiblePostsList: () => vscode.TreeView<PostTreeViewItem> | undefined;
 } = {
-    visiblePostList: () => {
-        const lists = [extensionViews.postsList, extensionViews.anotherPostsList];
-        return lists.find(x => x && x.visible);
-    },
+    postsLists: () =>
+        [extensionViews.postsList, extensionViews.anotherPostsList].filter(
+            (x): x is vscode.TreeView<PostTreeViewItem> => x != null
+        ),
+    visiblePostsList: () => extensionViews.postsLists().find(x => x.visible),
 };
 
 export const registerTreeViews = () => {
