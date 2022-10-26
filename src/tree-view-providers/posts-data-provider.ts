@@ -165,13 +165,13 @@ class PostUpdatedDate extends PostDateMetadata {
     }
 }
 
-export type PostDataProviderItem = Post | TreeItem | PostMetadata;
+export type PostTreeViewItem = Post | TreeItem | PostMetadata;
 
-export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem> {
+export class PostsDataProvider implements TreeDataProvider<PostTreeViewItem> {
     private static _instance?: PostsDataProvider;
 
     protected _pagedPosts?: PageModel<Post>;
-    protected _onDidChangeTreeData = new EventEmitter<PostDataProviderItem | undefined>();
+    protected _onDidChangeTreeData = new EventEmitter<PostTreeViewItem | undefined>();
 
     static get instance() {
         if (!this._instance) {
@@ -187,8 +187,8 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
 
     protected constructor() {}
 
-    getChildren(parent?: PostDataProviderItem): ProviderResult<PostDataProviderItem[]> {
-        return new Promise<PostDataProviderItem[]>(resolve => {
+    getChildren(parent?: PostTreeViewItem): ProviderResult<PostTreeViewItem[]> {
+        return new Promise<PostTreeViewItem[]>(resolve => {
             if (!parent) {
                 const pagedPosts = this._pagedPosts;
                 if (!pagedPosts) {
@@ -225,14 +225,14 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
         });
     }
 
-    getParent(el: PostDataProviderItem) {
+    getParent(el: PostTreeViewItem) {
         return el instanceof PostMetadata ? el.parent : undefined;
     }
 
-    readonly onDidChangeTreeData: Event<PostDataProviderItem | null | undefined> | undefined =
+    readonly onDidChangeTreeData: Event<PostTreeViewItem | null | undefined> | undefined =
         this._onDidChangeTreeData.event;
 
-    getTreeItem(item: PostDataProviderItem): TreeItem | Thenable<TreeItem> {
+    getTreeItem(item: PostTreeViewItem): TreeItem | Thenable<TreeItem> {
         if (item instanceof TreeItem) {
             return item;
         }
@@ -280,7 +280,7 @@ export class PostsDataProvider implements TreeDataProvider<PostDataProviderItem>
         }
     }
 
-    fireTreeDataChangedEvent(post: PostDataProviderItem | undefined) {
+    fireTreeDataChangedEvent(post: PostTreeViewItem | undefined) {
         this._onDidChangeTreeData.fire(post);
     }
 }
