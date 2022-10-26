@@ -10,11 +10,14 @@ export const extensionViews: {
     anotherPostsList?: vscode.TreeView<PostTreeViewItem>;
     account?: vscode.TreeView<vscode.TreeItem>;
     postCategoriesList?: vscode.TreeView<PostCategory>;
+    postsLists: () => vscode.TreeView<PostTreeViewItem>[];
     visiblePostsList: () => vscode.TreeView<PostTreeViewItem> | undefined;
 } = {
-    visiblePostsList: () => {
-        return [extensionViews.postsList, extensionViews.anotherPostsList].find(x => x && x.visible);
-    },
+    postsLists: () =>
+        [extensionViews.postsList, extensionViews.anotherPostsList].filter(
+            (x): x is vscode.TreeView<PostTreeViewItem> => x != null
+        ),
+    visiblePostsList: () => extensionViews.postsLists().find(x => x.visible),
 };
 
 export const registerTreeViews = () => {

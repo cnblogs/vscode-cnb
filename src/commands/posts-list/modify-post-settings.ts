@@ -9,6 +9,7 @@ import path from 'path';
 import fs from 'fs';
 import { LocalDraft } from '../../services/local-draft.service';
 import { saveFilePendingChanges } from '../../utils/save-file-pending-changes';
+import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 
 export const modifyPostSettings = async (input: Post | Uri) => {
     let post: Post | undefined;
@@ -43,8 +44,9 @@ export const modifyPostSettings = async (input: Post | Uri) => {
         breadcrumbs: ['更新博文设置', editDto.post.title],
         post: postEditDto,
         localFileUri: localFilePath ? Uri.file(localFilePath) : undefined,
-        successCallback: () => {
+        successCallback: ({ id }) => {
             AlertService.info('博文已更新');
+            postsDataProvider.fireTreeDataChangedEvent(id);
         },
         beforeUpdate: async post => {
             if (localFilePath && fs.existsSync(localFilePath)) {

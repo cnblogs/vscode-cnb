@@ -280,8 +280,14 @@ export class PostsDataProvider implements TreeDataProvider<PostTreeViewItem> {
         }
     }
 
-    fireTreeDataChangedEvent(item: PostTreeViewItem | undefined) {
-        this._onDidChangeTreeData.fire(item);
+    fireTreeDataChangedEvent(item: PostTreeViewItem | undefined): void;
+    // eslint-disable-next-line no-dupe-class-members
+    fireTreeDataChangedEvent(id: number): void;
+    // eslint-disable-next-line no-dupe-class-members
+    fireTreeDataChangedEvent(item: PostTreeViewItem | number | undefined): void {
+        this._onDidChangeTreeData.fire(
+            typeof item === 'number' ? this._pagedPosts?.items.find(x => x.id === item) : item
+        );
     }
 }
 
