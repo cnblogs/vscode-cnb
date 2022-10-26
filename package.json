@@ -75,6 +75,20 @@
                     "fontPath": "dist/assets/icons.woff2",
                     "fontCharacter": "\\e65b"
                 }
+            },
+            "vscode-cnb-posts-list-search": {
+                "description": "posts list search",
+                "default": {
+                    "fontPath": "dist/assets/icons.woff2",
+                    "fontCharacter": "\\e610"
+                }
+            },
+            "vscode-cnb-posts-list-search-result-summary": {
+                "description": "posts list search result summary",
+                "default": {
+                    "fontPath": "dist/assets/icons.woff2",
+                    "fontCharacter": "\\e674"
+                }
             }
         },
         "commands": [
@@ -254,6 +268,13 @@
                 "title": "提取图片",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized"
+            },
+            {
+                "command": "vscode-cnb.searchPosts",
+                "title": "搜索博文",
+                "category": "Cnblogs",
+                "icon": "$(vscode-cnb-posts-list-search)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.posts-list.refreshing"
             }
         ],
         "configuration": [
@@ -401,8 +422,13 @@
                     "group": "navigation@4"
                 },
                 {
+                    "command": "vscode-cnb.searchPosts",
+                    "when": "view == cnblogs-posts-list || view == cnblogs-posts-list-another",
+                    "group": "navigation@5"
+                },
+                {
                     "command": "vscode-cnb.create-local-draft",
-                    "group": "navigation@5",
+                    "group": "navigation@6",
                     "when": "view == cnblogs-posts-list || view == cnblogs-posts-list-another"
                 },
                 {
