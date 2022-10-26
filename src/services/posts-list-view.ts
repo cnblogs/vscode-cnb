@@ -9,6 +9,6 @@ export const revealPostsListItem = async (
         return;
     }
 
-    const view = extensionViews.visiblePostList();
+    const view = extensionViews.visiblePostsList();
     await view?.reveal(post, options);
 };

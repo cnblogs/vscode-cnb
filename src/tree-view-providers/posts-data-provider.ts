@@ -280,8 +280,8 @@ export class PostsDataProvider implements TreeDataProvider<PostTreeViewItem> {
         }
     }
 
-    fireTreeDataChangedEvent(post: PostTreeViewItem | undefined) {
-        this._onDidChangeTreeData.fire(post);
+    fireTreeDataChangedEvent(item: PostTreeViewItem | undefined) {
+        this._onDidChangeTreeData.fire(item);
     }
 }
 

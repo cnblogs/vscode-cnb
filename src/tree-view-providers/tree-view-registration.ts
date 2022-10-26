@@ -10,11 +10,10 @@ export const extensionViews: {
     anotherPostsList?: vscode.TreeView<PostTreeViewItem>;
     account?: vscode.TreeView<vscode.TreeItem>;
     postCategoriesList?: vscode.TreeView<PostCategory>;
-    visiblePostList: () => vscode.TreeView<PostTreeViewItem> | undefined;
+    visiblePostsList: () => vscode.TreeView<PostTreeViewItem> | undefined;
 } = {
-    visiblePostList: () => {
-        const lists = [extensionViews.postsList, extensionViews.anotherPostsList];
-        return lists.find(x => x && x.visible);
+    visiblePostsList: () => {
+        return [extensionViews.postsList, extensionViews.anotherPostsList].find(x => x && x.visible);
     },
 };
 
