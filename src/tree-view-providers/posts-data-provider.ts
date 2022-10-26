@@ -198,13 +198,17 @@ export class PostsDataProvider implements TreeDataProvider<PostTreeViewItem> {
                 }
                 resolve([...pagedPosts.items]);
             } else if (parent instanceof Post) {
-                const metadata = [new PostUpdatedDate(parent), new PostCreatedDateMetadata(parent)].filter(
-                    x => x.enabled
-                );
-                Promise.all<PostMetadata[]>([
-                    PostCategoryMetadata.parse(parent).catch((): PostMetadata[] => []),
-                    PostTagMetadata.parse(parent).catch((): PostMetadata[] => []),
-                ])
+                let metadata: PostDateMetadata[] = [];
+                postService
+                    .fetchPostEditDto(parent.id)
+                    .then(v => {
+                        const post = v ? v.post : parent;
+                        metadata = [new PostUpdatedDate(post), new PostCreatedDateMetadata(post)];
+                        return Promise.all<PostMetadata[]>([
+                            PostCategoryMetadata.parse(parent, v).catch((): PostMetadata[] => []),
+                            PostTagMetadata.parse(parent, v).catch((): PostMetadata[] => []),
+                        ]);
+                    })
                     .then(
                         values => flattenDepth(values, 1),
                         (): PostMetadata[] => []
@@ -281,9 +285,7 @@ export class PostsDataProvider implements TreeDataProvider<PostTreeViewItem> {
     }
 
     fireTreeDataChangedEvent(item: PostTreeViewItem | undefined): void;
-    // eslint-disable-next-line no-dupe-class-members
     fireTreeDataChangedEvent(id: number): void;
-    // eslint-disable-next-line no-dupe-class-members
     fireTreeDataChangedEvent(item: PostTreeViewItem | number | undefined): void {
         this._onDidChangeTreeData.fire(
             typeof item === 'number' ? this._pagedPosts?.items.find(x => x.id === item) : item

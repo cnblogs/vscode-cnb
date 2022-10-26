@@ -19,5 +19,13 @@
         "no-undef": "off",
         "@typescript-eslint/no-floating-promises": "warn"
     },
+    "overrides": [
+        {
+            "files": ["*.ts", "*.tsx"],
+            "rules": {
+                "no-dupe-class-members": "off"
+            }
+        }
+    ],
     "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts"]
 }
