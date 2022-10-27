@@ -10,6 +10,7 @@ import { throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
 import { IErrorResponse } from '../models/error-response';
 import { AlertService } from './alert.service';
 import { PostFileMapManager } from './post-file-map';
+import { ZzkSearchResult } from '../models/zzk-search-result';
 
 const defaultPageSize = 30;
 let newPostTemplate: PostEditDto | undefined;
@@ -31,7 +32,11 @@ export class PostService {
 
     protected constructor() {}
 
-    async fetchPostsList({ search = '', pageIndex = 1, pageSize = defaultPageSize }): Promise<PageModel<Post>> {
+    async fetchPostsList({ search = '', pageIndex = 1, pageSize = defaultPageSize }): Promise<
+        PageModel<Post> & {
+            zzkSearchResult?: ZzkSearchResult;
+        }
+    > {
         const s = new URLSearchParams([
             ['t', '1'],
             ['p', `${pageIndex}`],
@@ -45,12 +50,16 @@ export class PostService {
         if (!response.ok) {
             throw Error(`request failed, ${response.status}, ${await response.text()}`);
         }
-        const obj = <PagedBlogPostDto>await response.json();
-        return new PageModel(
-            obj.pageIndex,
-            obj.pageSize,
-            obj.postsCount,
-            obj.postList.map(x => Object.assign(new Post(), x))
+        const obj = <PostListModel>await response.json();
+        const { zzkSearchResult } = obj;
+        return Object.assign(
+            new PageModel(
+                obj.pageIndex,
+                obj.pageSize,
+                obj.postsCount,
+                obj.postList.map(x => Object.assign(new Post(), x))
+            ),
+            { zzkSearchResult: ZzkSearchResult.parse(zzkSearchResult) || undefined }
         );
     }
 
@@ -144,10 +153,11 @@ export class PostService {
 
 export const postService = PostService.instance;
 
-interface PagedBlogPostDto {
+interface PostListModel {
     categoryName: string;
     pageIndex: number;
     pageSize: number;
     postList: [];
     postsCount: number;
+    zzkSearchResult?: ZzkSearchResult;
 }

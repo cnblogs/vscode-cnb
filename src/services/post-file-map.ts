@@ -31,10 +31,7 @@ export class PostFileMapManager {
             maps.push([postId, filePath]);
         }
         await globalState.storage.update(this.storageKey, maps.filter(validatePostFileMap));
-        const treeViewItem = postsDataProvider.pagedPosts?.items.find(x => x.id === postId);
-        if (treeViewItem) {
-            postsDataProvider.fireTreeDataChangedEvent(treeViewItem);
-        }
+        postsDataProvider.fireTreeDataChangedEvent(postId);
     }
 
     static findByPostId(postId: number) {

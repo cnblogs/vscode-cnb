@@ -1,177 +1,34 @@
-import { homedir } from 'os';
-import {
-    Event,
-    EventEmitter,
-    MarkdownString,
-    ProviderResult,
-    ThemeIcon,
-    TreeDataProvider,
-    TreeItem,
-    TreeItemCollapsibleState,
-    Uri,
-} from 'vscode';
+import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
 import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
 import { Post } from '../models/post';
 import { PageModel } from '../models/page-model';
 import { AlertService } from '../services/alert.service';
 import { postService } from '../services/post.service';
-import { globalState } from '../services/global-state';
-import { PostFileMapManager } from '../services/post-file-map';
 import { Settings } from '../services/settings.service';
-import { differenceInSeconds, differenceInYears, format, formatDistanceStrict } from 'date-fns';
-import { zhCN } from 'date-fns/locale';
-import { postCategoryService } from '../services/post-category.service';
-import { PostEditDto } from '../models/post-edit-dto';
 import { flattenDepth } from 'lodash';
+import { toTreeItem } from './converters';
+import {
+    PostCategoryEntryMetadata,
+    PostCategoryMetadata,
+    PostCreatedDateMetadata,
+    PostDateMetadata,
+    PostEntryMetadata,
+    PostMetadata,
+    PostTagEntryMetadata,
+    PostTagMetadata,
+    PostUpdatedDate,
+} from './models/post-metadata';
+import { PostSearchResultEntry } from './models/post-search-result-entry';
+import { PostTreeItem } from './models/post-tree-item';
 
-abstract class PostMetadata {
-    constructor(public parent: Post) {}
+export type PostsListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry;
 
-    abstract toTreeItem(): TreeItem | Promise<TreeItem>;
-}
-
-abstract class PostEntryMetadata<T extends PostMetadata> extends PostMetadata {
-    constructor(parent: Post, public readonly children: T[]) {
-        super(parent);
-    }
-}
-
-class PostCategoryEntryMetadata extends PostEntryMetadata<PostCategoryMetadata> {
-    constructor(parent: Post, children: PostMetadata[]) {
-        super(
-            parent,
-            children.filter((x): x is PostCategoryMetadata => x instanceof PostCategoryMetadata)
-        );
-    }
-
-    toTreeItem = (): TreeItem => ({
-        label: '分类',
-        collapsibleState: TreeItemCollapsibleState.Collapsed,
-        iconPath: new ThemeIcon('vscode-cnb-folders'),
-    });
-}
-
-class PostTagEntryMetadata extends PostEntryMetadata<PostTagMetadata> {
-    constructor(parent: Post, children: PostMetadata[]) {
-        super(
-            parent,
-            children.filter((x): x is PostTagMetadata => x instanceof PostTagMetadata)
-        );
-    }
-
-    toTreeItem = (): TreeItem => ({
-        label: '标签',
-        collapsibleState: TreeItemCollapsibleState.Collapsed,
-        iconPath: new ThemeIcon('tag'),
-    });
-}
-
-class PostCategoryMetadata extends PostMetadata {
-    readonly icon = new ThemeIcon('vscode-cnb-folder-close');
-    constructor(parent: Post, public categoryName: string, public categoryId: number) {
-        super(parent);
-    }
-
-    toTreeItem = (): TreeItem =>
-        Object.assign<TreeItem, TreeItem>(new TreeItem(this.categoryName), {
-            iconPath: this.icon,
-        });
-
-    static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCategoryMetadata[]> {
-        editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id);
-        if (editDto == null) {
-            return [];
-        }
-
-        const {
-            post: { categoryIds },
-        } = editDto;
-        return (await postCategoryService.findCategories(categoryIds ?? [])).map(
-            ({ categoryId, title }) => new PostCategoryMetadata(parent, title, categoryId)
-        );
-    }
-}
-
-class PostTagMetadata extends PostMetadata {
-    readonly icon = undefined;
-    constructor(parent: Post, public tag: string, public tagId?: string) {
-        super(parent);
-    }
-
-    toTreeItem = (): TreeItem =>
-        Object.assign<TreeItem, TreeItem>(new TreeItem(`# ${this.tag}`), {
-            iconPath: this.icon,
-        });
-
-    static async parse(parent: Post, editDto?: PostEditDto): Promise<PostMetadata[]> {
-        editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id);
-        if (editDto == null) {
-            return [];
-        }
-
-        const {
-            post: { tags },
-        } = editDto;
-        return (tags ?? [])?.map(tag => new PostTagMetadata(parent, tag));
-    }
-}
-
-abstract class PostDateMetadata extends PostMetadata {
-    readonly distance: string;
-    constructor(public label: string, parent: Post, public readonly date: Date) {
-        super(parent);
-        this.distance = this.toDistance();
-    }
-
-    get enabled(): boolean {
-        return true;
-    }
-
-    get formattedDate(): string {
-        return format(this.date, 'yyyy MM-dd HH:mm');
-    }
-
-    shouldUseDistance = (): boolean => differenceInYears(new Date(), this.date) < 1;
-    toDistance = () => formatDistanceStrict(this.date, new Date(), { addSuffix: true, locale: zhCN });
-
-    toTreeItem = (): TreeItem =>
-        Object.assign<TreeItem, TreeItem>(
-            new TreeItem(
-                `${this.label}: ${
-                    this.shouldUseDistance() ? this.distance + `(${this.formattedDate})` : this.formattedDate
-                }`
-            ),
-            {
-                iconPath: new ThemeIcon('vscode-cnb-date'),
-            }
-        );
-}
-
-class PostCreatedDateMetadata extends PostDateMetadata {
-    constructor(parent: Post) {
-        super('创建于', parent, parent.datePublished ?? new Date());
-    }
-}
-
-class PostUpdatedDate extends PostDateMetadata {
-    constructor(parent: Post) {
-        super('更新于', parent, parent.dateUpdated ?? new Date());
-    }
-
-    get enabled(): boolean {
-        const { datePublished, dateUpdated } = this.parent;
-        const now = new Date();
-        return differenceInSeconds(dateUpdated ?? now, datePublished ?? now) > 0;
-    }
-}
-
-export type PostTreeViewItem = Post | TreeItem | PostMetadata;
-
-export class PostsDataProvider implements TreeDataProvider<PostTreeViewItem> {
+export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     private static _instance?: PostsDataProvider;
+    private _searchResultEntry: PostSearchResultEntry | null = null;
 
     protected _pagedPosts?: PageModel<Post>;
-    protected _onDidChangeTreeData = new EventEmitter<PostTreeViewItem | undefined>();
+    protected _onDidChangeTreeData = new EventEmitter<PostsListTreeItem | undefined>();
 
     static get instance() {
         if (!this._instance) {
@@ -187,16 +44,17 @@ export class PostsDataProvider implements TreeDataProvider<PostTreeViewItem> {
 
     protected constructor() {}
 
-    getChildren(parent?: PostTreeViewItem): ProviderResult<PostTreeViewItem[]> {
-        return new Promise<PostTreeViewItem[]>(resolve => {
+    getChildren(parent?: PostsListTreeItem): ProviderResult<PostsListTreeItem[]> {
+        return new Promise<PostsListTreeItem[]>(resolve => {
             if (!parent) {
+                const items: PostsListTreeItem[] = this._searchResultEntry == null ? [] : [this._searchResultEntry];
                 const pagedPosts = this._pagedPosts;
                 if (!pagedPosts) {
                     void refreshPostsList();
-                    resolve([]);
+                    resolve(items);
                     return;
                 }
-                resolve([...pagedPosts.items]);
+                resolve(items.concat(...pagedPosts.items));
             } else if (parent instanceof Post) {
                 let metadata: PostDateMetadata[] = [];
                 postService
@@ -221,7 +79,7 @@ export class PostsDataProvider implements TreeDataProvider<PostTreeViewItem> {
                         values => resolve([...metadata, ...values.filter(x => x.children.length > 0)]),
                         () => resolve(metadata)
                     );
-            } else if (parent instanceof PostEntryMetadata) {
+            } else if (parent instanceof PostEntryMetadata || parent instanceof PostSearchResultEntry) {
                 resolve(parent.children);
             } else {
                 resolve([]);
@@ -229,41 +87,15 @@ export class PostsDataProvider implements TreeDataProvider<PostTreeViewItem> {
         });
     }
 
-    getParent(el: PostTreeViewItem) {
+    getParent(el: PostsListTreeItem) {
         return el instanceof PostMetadata ? el.parent : undefined;
     }
 
-    readonly onDidChangeTreeData: Event<PostTreeViewItem | null | undefined> | undefined =
+    readonly onDidChangeTreeData: Event<PostsListTreeItem | null | undefined> | undefined =
         this._onDidChangeTreeData.event;
 
-    getTreeItem(item: PostTreeViewItem): TreeItem | Thenable<TreeItem> {
-        if (item instanceof TreeItem) {
-            return item;
-        }
-
-        if (item instanceof Post) {
-            const descDatePublished = item.datePublished ? `  \n发布于: ${item.datePublished}` : '';
-            const localPath = PostFileMapManager.getFilePath(item.id);
-            const localPathForDesc = localPath?.replace(homedir(), '~') || '未关联本地文件';
-            const descLocalPath = localPath ? `  \n本地路径: ${localPathForDesc}` : '';
-            let url = item.url;
-            url = url.startsWith('//') ? `https:${url}` : url;
-            return Object.assign(new TreeItem(`${item.title}`, TreeItemCollapsibleState.Collapsed), {
-                id: `${item.id}`,
-                tooltip: new MarkdownString(`[${url}](${url})` + descDatePublished + descLocalPath),
-                command: {
-                    command: `${globalState.extensionName}.edit-post`,
-                    arguments: [item.id],
-                    title: '编辑博文',
-                },
-                contextValue: PostFileMapManager.getFilePath(item.id) !== undefined ? 'cnb-post-cached' : 'cnb-post',
-                iconPath: new ThemeIcon(item.isMarkdown ? 'markdown' : 'file-code'),
-                description: localPath ? localPathForDesc : '',
-                resourceUri: Uri.joinPath(Settings.workspaceUri, item.title + (item.isMarkdown ? '.md' : '.html')),
-            } as TreeItem);
-        } else {
-            return item.toTreeItem();
-        }
+    getTreeItem(item: PostsListTreeItem): TreeItem | Thenable<TreeItem> {
+        return toTreeItem(item);
     }
 
     async loadPosts(): Promise<PageModel<Post> | null> {
@@ -284,12 +116,40 @@ export class PostsDataProvider implements TreeDataProvider<PostTreeViewItem> {
         }
     }
 
-    fireTreeDataChangedEvent(item: PostTreeViewItem | undefined): void;
+    fireTreeDataChangedEvent(item: PostsListTreeItem | undefined): void;
     fireTreeDataChangedEvent(id: number): void;
-    fireTreeDataChangedEvent(item: PostTreeViewItem | number | undefined): void {
-        this._onDidChangeTreeData.fire(
-            typeof item === 'number' ? this._pagedPosts?.items.find(x => x.id === item) : item
-        );
+    fireTreeDataChangedEvent(item: PostsListTreeItem | number | undefined): void {
+        return typeof item === 'number'
+            ? [
+                  ...(this._pagedPosts?.items.filter(x => x.id === item) ?? []),
+                  ...(this._searchResultEntry?.children.filter(x => x instanceof PostTreeItem && x.post.id === item) ??
+                      []),
+              ].forEach(data => this._onDidChangeTreeData.fire(data))
+            : this._onDidChangeTreeData.fire(item);
+    }
+
+    async search({ key }: { key: string }): Promise<void> {
+        if (key.length <= 0) {
+            return;
+        }
+        const { items, totalItemsCount, zzkSearchResult } = await postService.fetchPostsList({ search: key });
+
+        this._searchResultEntry = new PostSearchResultEntry(key, items, totalItemsCount, zzkSearchResult);
+        this.fireTreeDataChangedEvent(undefined);
+    }
+
+    clearSearch() {
+        this._searchResultEntry = null;
+        this.fireTreeDataChangedEvent(undefined);
+    }
+
+    async refreshSearch(): Promise<void> {
+        const { _searchResultEntry } = this;
+        if (_searchResultEntry) {
+            const { searchKey } = _searchResultEntry;
+            this._searchResultEntry = null;
+            await this.search({ key: searchKey });
+        }
     }
 }
 

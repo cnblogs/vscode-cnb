@@ -6,6 +6,7 @@ import { PostFileMap, PostFileMapManager } from '../../services/post-file-map';
 import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 import { refreshPostsList } from './refresh-posts-list';
+import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
 
 let deleting = false;
 
@@ -38,9 +39,19 @@ const confirmDelete = async (
     return result;
 };
 
-export const deleteSelectedPosts = async (post: Post) => {
+export const deleteSelectedPosts = async (arg: unknown) => {
+    let post: Post;
+    if (arg instanceof Post) {
+        post = arg;
+    } else if (arg instanceof PostTreeItem) {
+        post = arg.post;
+    } else {
+        return;
+    }
+
     const selectedPosts: Post[] = post ? [post] : [];
-    extensionViews.visiblePostsList()?.selection.map(post => {
+    extensionViews.visiblePostsList()?.selection.map(item => {
+        const post = item instanceof PostTreeItem ? item.post : item;
         if (post instanceof Post && !selectedPosts.includes(post)) {
             postsDataProvider.pagedPosts?.items.find(item => item === post);
             selectedPosts.push(post);
