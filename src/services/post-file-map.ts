@@ -1,3 +1,4 @@
+import { postCategoriesDataProvider } from '../tree-view-providers/post-categories-tree-data-provider';
 import { postsDataProvider } from '../tree-view-providers/posts-data-provider';
 import { globalState } from './global-state';
 
@@ -32,6 +33,7 @@ export class PostFileMapManager {
         }
         await globalState.storage.update(this.storageKey, maps.filter(validatePostFileMap));
         postsDataProvider.fireTreeDataChangedEvent(postId);
+        postCategoriesDataProvider.onPostUpdated({ refreshPosts: false, postIds: [postId] });
     }
 
     static findByPostId(postId: number) {

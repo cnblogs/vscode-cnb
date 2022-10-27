@@ -5,19 +5,8 @@ import { PageModel } from '../models/page-model';
 import { AlertService } from '../services/alert.service';
 import { postService } from '../services/post.service';
 import { Settings } from '../services/settings.service';
-import { flattenDepth } from 'lodash';
 import { toTreeItem } from './converters';
-import {
-    PostCategoryEntryMetadata,
-    PostCategoryMetadata,
-    PostCreatedDateMetadata,
-    PostDateMetadata,
-    PostEntryMetadata,
-    PostMetadata,
-    PostTagEntryMetadata,
-    PostTagMetadata,
-    PostUpdatedDate,
-} from './models/post-metadata';
+import { PostEntryMetadata, PostMetadata } from './models/post-metadata';
 import { PostSearchResultEntry } from './models/post-search-result-entry';
 import { PostTreeItem } from './models/post-tree-item';
 
@@ -45,46 +34,21 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     protected constructor() {}
 
     getChildren(parent?: PostsListTreeItem): ProviderResult<PostsListTreeItem[]> {
-        return new Promise<PostsListTreeItem[]>(resolve => {
-            if (!parent) {
-                const items: PostsListTreeItem[] = this._searchResultEntry == null ? [] : [this._searchResultEntry];
-                const pagedPosts = this._pagedPosts;
-                if (!pagedPosts) {
-                    void refreshPostsList();
-                    resolve(items);
-                    return;
-                }
-                resolve(items.concat(...pagedPosts.items));
-            } else if (parent instanceof Post) {
-                let metadata: PostDateMetadata[] = [];
-                postService
-                    .fetchPostEditDto(parent.id)
-                    .then(v => {
-                        const post = v ? v.post : parent;
-                        metadata = [new PostUpdatedDate(post), new PostCreatedDateMetadata(post)];
-                        return Promise.all<PostMetadata[]>([
-                            PostCategoryMetadata.parse(parent, v).catch((): PostMetadata[] => []),
-                            PostTagMetadata.parse(parent, v).catch((): PostMetadata[] => []),
-                        ]);
-                    })
-                    .then(
-                        values => flattenDepth(values, 1),
-                        (): PostMetadata[] => []
-                    )
-                    .then(values => [
-                        new PostCategoryEntryMetadata(parent, values),
-                        new PostTagEntryMetadata(parent, values),
-                    ])
-                    .then(
-                        values => resolve([...metadata, ...values.filter(x => x.children.length > 0)]),
-                        () => resolve(metadata)
-                    );
-            } else if (parent instanceof PostEntryMetadata || parent instanceof PostSearchResultEntry) {
-                resolve(parent.children);
-            } else {
-                resolve([]);
+        if (!parent) {
+            const items: PostsListTreeItem[] = this._searchResultEntry == null ? [] : [this._searchResultEntry];
+            const pagedPosts = this._pagedPosts;
+            if (!pagedPosts) {
+                void refreshPostsList();
+                return items;
             }
-        });
+            return items.concat(...pagedPosts.items);
+        } else if (parent instanceof Post) {
+            return PostMetadata.parseRoots({ post: parent });
+        } else if (parent instanceof PostEntryMetadata || parent instanceof PostSearchResultEntry) {
+            return parent.getChildrenAsync();
+        } else {
+            return [];
+        }
     }
 
     getParent(el: PostsListTreeItem) {

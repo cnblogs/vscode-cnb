@@ -11,6 +11,7 @@ import { LocalDraft } from '../../services/local-draft.service';
 import { saveFilePendingChanges } from '../../utils/save-file-pending-changes';
 import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
+import { postCategoriesDataProvider } from '../../tree-view-providers/post-categories-tree-data-provider';
 
 export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
     let post: Post | undefined;
@@ -50,6 +51,7 @@ export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
         successCallback: ({ id }) => {
             AlertService.info('博文已更新');
             postsDataProvider.fireTreeDataChangedEvent(id);
+            postCategoriesDataProvider.onPostUpdated({ refreshPosts: false, postIds: [id] });
         },
         beforeUpdate: async post => {
             if (localFilePath && fs.existsSync(localFilePath)) {

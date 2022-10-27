@@ -9,7 +9,7 @@ import RandomString from 'randomstring';
 import fetch from 'node-fetch';
 import { accountViewDataProvider } from '../tree-view-providers/account-view-data-provider';
 import { postsDataProvider } from '../tree-view-providers/posts-data-provider';
-import { postCategoriesDataProvider } from '../tree-view-providers/categories-view-data-provider';
+import { postCategoriesDataProvider } from '../tree-view-providers/post-categories-tree-data-provider';
 import { checkIsAccessTokenExpired } from '../utils/check-access-token-expired';
 
 const isAuthorizedStorageKey = 'isAuthorized';

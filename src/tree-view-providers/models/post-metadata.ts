@@ -5,7 +5,38 @@ import { Post } from '../../models/post';
 import { PostEditDto } from '../../models/post-edit-dto';
 import { postCategoryService } from '../../services/post-category.service';
 import { postService } from '../../services/post.service';
+import { BaseEntryTreeItem } from './base-entry-tree-item';
 import { BaseTreeItemSource } from './base-tree-item-source';
+import { PostTreeItem } from './post-tree-item';
+
+export enum RootPostMetadataType {
+    categoryEntry = 'categoryEntry',
+    tagEntry = 'tagEntry',
+    updateDate = 'updateDate',
+    createDate = 'createDate',
+}
+
+const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto) =>
+    [
+        [RootPostMetadataType.updateDate, () => new PostUpdatedDateMetadata(parsedPost)],
+        [RootPostMetadataType.createDate, () => new PostCreatedDateMetadata(parsedPost)],
+        [
+            RootPostMetadataType.categoryEntry,
+            () =>
+                PostCategoryMetadata.parse(parsedPost, postEditDto).then<PostMetadata | null, null>(
+                    x => (x.length <= 0 ? null : new PostCategoryEntryMetadata(parsedPost, x)),
+                    () => null
+                ),
+        ],
+        [
+            RootPostMetadataType.tagEntry,
+            () =>
+                PostTagMetadata.parse(parsedPost, postEditDto).then<PostMetadata | null, null>(
+                    x => (x.length <= 0 ? null : new PostTagEntryMetadata(parsedPost, x)),
+                    () => null
+                ),
+        ],
+    ] as const;
 
 export abstract class PostMetadata extends BaseTreeItemSource {
     constructor(public parent: Post) {
@@ -13,12 +44,33 @@ export abstract class PostMetadata extends BaseTreeItemSource {
     }
 
     abstract toTreeItem(): TreeItem | Promise<TreeItem>;
+
+    static async parseRoots({
+        exclude = [],
+        post,
+    }: {
+        post: Post | PostTreeItem;
+        exclude?: RootPostMetadataType[];
+    }): Promise<PostMetadata[]> {
+        let parsedPost = post instanceof PostTreeItem ? post.post : post;
+        const postEditDto = await postService.fetchPostEditDto(parsedPost.id);
+        parsedPost = postEditDto?.post || parsedPost;
+        return await Promise.all(
+            rootMetadataMap(parsedPost, postEditDto ?? ({} as any))
+                .filter(([type]) => !exclude.includes(type))
+                .map(([, factory]) => factory())
+                .map(x => (x instanceof Promise ? x : Promise.resolve<PostMetadata>(x)))
+        ).then(v => v.filter((x): x is PostMetadata => x instanceof PostMetadata));
+    }
 }
 
-export abstract class PostEntryMetadata<T extends PostMetadata> extends PostMetadata {
+export abstract class PostEntryMetadata<T extends PostMetadata> extends PostMetadata implements BaseEntryTreeItem<T> {
     constructor(parent: Post, public readonly children: T[]) {
         super(parent);
     }
+
+    readonly getChildren = () => this.children;
+    readonly getChildrenAsync = () => Promise.resolve(this.children);
 }
 
 export class PostCategoryEntryMetadata extends PostEntryMetadata<PostCategoryMetadata> {
@@ -138,7 +190,7 @@ export class PostCreatedDateMetadata extends PostDateMetadata {
     }
 }
 
-export class PostUpdatedDate extends PostDateMetadata {
+export class PostUpdatedDateMetadata extends PostDateMetadata {
     constructor(parent: Post) {
         super('更新于', parent, parent.dateUpdated ?? new Date());
     }

@@ -32,7 +32,12 @@ export class PostService {
 
     protected constructor() {}
 
-    async fetchPostsList({ search = '', pageIndex = 1, pageSize = defaultPageSize }): Promise<
+    async fetchPostsList({
+        search = '',
+        pageIndex = 1,
+        pageSize = defaultPageSize,
+        categoryId = <null | number>null,
+    }): Promise<
         PageModel<Post> & {
             zzkSearchResult?: ZzkSearchResult;
         }
@@ -42,6 +47,7 @@ export class PostService {
             ['p', `${pageIndex}`],
             ['s', `${pageSize}`],
             ['search', search],
+            ['cid', categoryId != null && categoryId > 0 ? `${categoryId}` : ''],
         ]);
         const response = await fetch(`${this._baseUrl}/api/posts/list?${s}`, {
             headers: [accountService.buildBearerAuthorizationHeader()],

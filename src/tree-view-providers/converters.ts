@@ -1,6 +1,7 @@
 import { homedir } from 'os';
 import { MarkdownString, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from 'vscode';
 import { Post } from '../models/post';
+import { PostCategory } from '../models/post-category';
 import { globalState } from '../services/global-state';
 import { PostFileMapManager } from '../services/post-file-map';
 import { Settings } from '../services/settings.service';
@@ -12,7 +13,18 @@ const contextValues = {
     },
 };
 
-export type TreeItemSource = Post | TreeItem | BaseTreeItemSource;
+const categoryIcon = () => {
+    const iconTheme = Settings.iconTheme;
+    let iconId = 'folder';
+    switch (iconTheme) {
+        case 'vs-seti':
+            iconId = 'file-directory';
+            break;
+    }
+    return new ThemeIcon(iconId);
+};
+
+export type TreeItemSource = Post | PostCategory | TreeItem | BaseTreeItemSource;
 
 interface Converter<T> {
     (s: T): TreeItem | Promise<TreeItem>;
@@ -39,12 +51,21 @@ const postConverter: Converter<Post> = obj => {
     });
 };
 
+const categoryConverter: Converter<PostCategory> = ({ title, count }) =>
+    Object.assign<TreeItem, TreeItem>(new TreeItem(title), {
+        collapsibleState: count > 0 ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None,
+        iconPath: categoryIcon(),
+        contextValue: 'cnb-post-category',
+    });
+
 const baseTreeItemSourceConverter: Converter<BaseTreeItemSource> = obj => obj.toTreeItem();
 const converter: Converter<TreeItemSource> = obj => {
     if (obj instanceof TreeItem) {
         return obj;
     } else if (obj instanceof BaseTreeItemSource) {
         return baseTreeItemSourceConverter(obj);
+    } else if (obj instanceof PostCategory) {
+        return categoryConverter(obj);
     } else {
         return postConverter(obj);
     }

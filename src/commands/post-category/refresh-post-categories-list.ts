@@ -1,7 +1,5 @@
-import { postCategoryService } from '../../services/post-category.service';
-import { postCategoriesDataProvider } from '../../tree-view-providers/categories-view-data-provider';
+import { postCategoriesDataProvider } from '../../tree-view-providers/post-categories-tree-data-provider';
 
 export const refreshPostCategoriesList = () => {
-    postCategoryService.clearCache();
-    postCategoriesDataProvider.fireTreeDataChangedEvent();
+    postCategoriesDataProvider.refresh();
 };
