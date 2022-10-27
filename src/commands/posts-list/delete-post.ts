@@ -7,6 +7,7 @@ import { postsDataProvider } from '../../tree-view-providers/posts-data-provider
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 import { refreshPostsList } from './refresh-posts-list';
 import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
+import { postCategoriesDataProvider } from '../../tree-view-providers/post-categories-tree-data-provider';
 
 let deleting = false;
 
@@ -22,7 +23,6 @@ const confirmDelete = async (
         '确定要删除吗?',
         {
             detail: `确认后将会删除 ${selectedPosts.map(x => x.title).join(', ')} 这${selectedPosts.length}篇博文吗?`,
-
             modal: true,
         } as MessageOptions,
         ...items
@@ -90,6 +90,10 @@ export const deleteSelectedPosts = async (arg: unknown) => {
             }
             await PostFileMapManager.updateOrCreateMany(...selectedPosts.map<PostFileMap>(p => [p.id, '']));
             await refreshPostsList();
+            postCategoriesDataProvider.onPostUpdated({
+                refreshPosts: true,
+                postIds: selectedPosts.map(({ id }) => id),
+            });
         } catch (err) {
             void window.showErrorMessage('删除博文失败', {
                 detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,

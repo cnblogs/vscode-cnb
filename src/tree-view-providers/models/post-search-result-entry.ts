@@ -1,10 +1,11 @@
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { Post } from '../../models/post';
 import { ZzkSearchResult } from '../../models/zzk-search-result';
+import { BaseEntryTreeItem } from './base-entry-tree-item';
 import { BaseTreeItemSource } from './base-tree-item-source';
 import { PostTreeItem } from './post-tree-item';
 
-export class PostSearchResultEntry extends BaseTreeItemSource {
+export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEntryTreeItem<PostTreeItem | TreeItem> {
     readonly children: (PostTreeItem | TreeItem)[];
 
     constructor(
@@ -30,6 +31,9 @@ export class PostSearchResultEntry extends BaseTreeItemSource {
             collapsibleState: TreeItemCollapsibleState.Expanded,
             contextValue: 'cnblogs-posts-search-results-entry',
         });
+
+    getChildren = () => this.children;
+    getChildrenAsync = () => Promise.resolve(this.children);
 
     private readonly parseChildren = () => [
         this.buildSummaryTreeItem(),

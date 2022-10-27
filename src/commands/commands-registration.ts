@@ -19,9 +19,8 @@ import { uploadImage } from './upload-image/upload-image';
 import { revealLocalPostFileInOs } from './reveal-local-post-file-in-os';
 import { showLocalFileToPostInfo } from './show-local-file-to-post-info';
 import { newPostCategory } from './post-category/new-post-category';
-import { deleteSelectedCategories } from './post-category/delete-selected-categories';
 import { refreshPostCategoriesList } from './post-category/refresh-post-categories-list';
-import { updatePostCategory } from './post-category/update-post-category';
+import { handleUpdatePostCategory } from './post-category/update-post-category';
 import { openPostInVscode } from './posts-list/open-post-in-vscode';
 import { deletePostToLocalFileMap } from './posts-list/delete-post-to-local-file-map';
 import { renamePost } from './posts-list/rename-post';
@@ -34,6 +33,7 @@ import { exportPostToPdf } from './pdf/export-pdf.command';
 import { pullPostRemoteUpdates } from './pull-post-remote-updates';
 import { extractImages } from './extract-images';
 import { clearPostsSearchResults, refreshPostsSearchResults, searchPosts } from './posts-list/search';
+import { handleDeletePostCategories } from './post-category/delete-selected-categories';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -62,9 +62,9 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.reveal-local-post-file-in-os`, revealLocalPostFileInOs),
         commands.registerCommand(`${appName}.show-post-to-local-file-info`, showLocalFileToPostInfo),
         commands.registerCommand(`${appName}.new-post-category`, newPostCategory),
-        commands.registerCommand(`${appName}.delete-selected-post-categories`, deleteSelectedCategories),
+        commands.registerCommand(`${appName}.delete-selected-post-categories`, handleDeletePostCategories),
         commands.registerCommand(`${appName}.refresh-post-categories-list`, refreshPostCategoriesList),
-        commands.registerCommand(`${appName}.update-post-category`, updatePostCategory),
+        commands.registerCommand(`${appName}.update-post-category`, handleUpdatePostCategory),
         commands.registerCommand(`${appName}.delete-post-to-local-file-map`, deletePostToLocalFileMap),
         commands.registerCommand(`${appName}.rename-post`, renamePost),
         commands.registerCommand(`${appName}.open-post-in-blog-admin`, openPostInBlogAdmin),

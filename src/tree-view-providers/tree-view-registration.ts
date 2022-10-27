@@ -2,14 +2,14 @@ import { globalState } from '../services/global-state';
 import vscode from 'vscode';
 import { accountViewDataProvider } from './account-view-data-provider';
 import { PostsListTreeItem, postsDataProvider } from './posts-data-provider';
-import { PostCategory } from '../models/post-category';
-import { postCategoriesDataProvider } from './categories-view-data-provider';
+import { postCategoriesDataProvider } from './post-categories-tree-data-provider';
+import { PostCategoriesListTreeItem } from './models/categories-list-tree-item';
 
 export const extensionViews: {
     postsList?: vscode.TreeView<PostsListTreeItem>;
     anotherPostsList?: vscode.TreeView<PostsListTreeItem>;
     account?: vscode.TreeView<vscode.TreeItem>;
-    postCategoriesList?: vscode.TreeView<PostCategory>;
+    postCategoriesList?: vscode.TreeView<PostCategoriesListTreeItem>;
     postsLists: () => vscode.TreeView<PostsListTreeItem>[];
     visiblePostsList: () => vscode.TreeView<PostsListTreeItem> | undefined;
 } = {
