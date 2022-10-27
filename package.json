@@ -270,10 +270,17 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.searchPosts",
+                "command": "vscode-cnb.search-posts",
                 "title": "搜索博文",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-posts-list-search)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.posts-list.refreshing"
+            },
+            {
+                "command": "vscode-cnb.clear-posts-search-results",
+                "title": "清除搜索结果",
+                "category": "Cnblogs",
+                "icon": "$(clear-all)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.posts-list.refreshing"
             }
         ],
@@ -422,7 +429,7 @@
                     "group": "navigation@4"
                 },
                 {
-                    "command": "vscode-cnb.searchPosts",
+                    "command": "vscode-cnb.search-posts",
                     "when": "view == cnblogs-posts-list || view == cnblogs-posts-list-another",
                     "group": "navigation@5"
                 },
@@ -607,6 +614,16 @@
                 {
                     "command": "vscode-cnb.update-post-category",
                     "when": "viewItem == cnb-post-category"
+                },
+                {
+                    "command": "vscode-cnb.clear-posts-search-results",
+                    "when": "viewItem == cnblogs-posts-search-results-entry",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "vscode-cnb.clear-posts-search-results",
+                    "when": "viewItem == cnblogs-posts-search-results-entry",
+                    "group": "cnblogs-posts-search-results-entry@1"
                 }
             ],
             "editor/context": [

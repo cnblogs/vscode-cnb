@@ -28,6 +28,7 @@ export class PostSearchResultEntry extends BaseTreeItemSource {
         Object.assign<TreeItem, TreeItem>(new TreeItem(`搜索结果: "${this.searchKey}"`), {
             iconPath: new ThemeIcon('vscode-cnb-posts-list-search'),
             collapsibleState: TreeItemCollapsibleState.Expanded,
+            contextValue: 'cnblogs-posts-search-results-entry',
         });
 
     private readonly parseChildren = () => [

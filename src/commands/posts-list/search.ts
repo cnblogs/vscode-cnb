@@ -15,3 +15,5 @@ export const searchPosts = async () => {
 
     await postsDataProvider.search({ key: searchKey });
 };
+
+export const clearPostsSearchResults = () => postsDataProvider.clearSearch();

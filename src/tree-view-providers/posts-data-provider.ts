@@ -25,7 +25,7 @@ export type PostsListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | 
 
 export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     private static _instance?: PostsDataProvider;
-    private searchResultEntry: PostSearchResultEntry | null = null;
+    private _searchResultEntry: PostSearchResultEntry | null = null;
 
     protected _pagedPosts?: PageModel<Post>;
     protected _onDidChangeTreeData = new EventEmitter<PostsListTreeItem | undefined>();
@@ -47,7 +47,7 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     getChildren(parent?: PostsListTreeItem): ProviderResult<PostsListTreeItem[]> {
         return new Promise<PostsListTreeItem[]>(resolve => {
             if (!parent) {
-                const items: PostsListTreeItem[] = this.searchResultEntry == null ? [] : [this.searchResultEntry];
+                const items: PostsListTreeItem[] = this._searchResultEntry == null ? [] : [this._searchResultEntry];
                 const pagedPosts = this._pagedPosts;
                 if (!pagedPosts) {
                     void refreshPostsList();
@@ -122,7 +122,7 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
         return typeof item === 'number'
             ? [
                   ...(this._pagedPosts?.items.filter(x => x.id === item) ?? []),
-                  ...(this.searchResultEntry?.children.filter(x => x instanceof PostTreeItem && x.post.id === item) ??
+                  ...(this._searchResultEntry?.children.filter(x => x instanceof PostTreeItem && x.post.id === item) ??
                       []),
               ].forEach(data => this._onDidChangeTreeData.fire(data))
             : this._onDidChangeTreeData.fire(item);
@@ -134,7 +134,12 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
         }
         const { items, totalItemsCount, zzkSearchResult } = await postService.fetchPostsList({ search: key });
 
-        this.searchResultEntry = new PostSearchResultEntry(key, items, totalItemsCount, zzkSearchResult);
+        this._searchResultEntry = new PostSearchResultEntry(key, items, totalItemsCount, zzkSearchResult);
+        this.fireTreeDataChangedEvent(undefined);
+    }
+
+    clearSearch() {
+        this._searchResultEntry = null;
         this.fireTreeDataChangedEvent(undefined);
     }
 }

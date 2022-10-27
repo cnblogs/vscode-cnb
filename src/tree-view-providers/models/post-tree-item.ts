@@ -13,7 +13,7 @@ export class PostTreeItem extends BaseTreeItemSource {
         return value instanceof Promise ? value.then(this.assign) : this.assign(value);
     }
 
-    readonly assign = (treeItem: TreeItem) =>
+    private readonly assign = (treeItem: TreeItem) =>
         Object.assign<TreeItem, TreeItem>(
             treeItem,
             this.showMetadata
