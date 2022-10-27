@@ -33,7 +33,7 @@ import { viewPostOnline } from './view-post-online';
 import { exportPostToPdf } from './pdf/export-pdf.command';
 import { pullPostRemoteUpdates } from './pull-post-remote-updates';
 import { extractImages } from './extract-images';
-import { clearPostsSearchResults, searchPosts } from './posts-list/search';
+import { clearPostsSearchResults, refreshPostsSearchResults, searchPosts } from './posts-list/search';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -76,6 +76,7 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.extract-images`, extractImages),
         commands.registerCommand(`${appName}.search-posts`, searchPosts),
         commands.registerCommand(`${appName}.clear-posts-search-results`, clearPostsSearchResults),
+        commands.registerCommand(`${appName}.refresh-posts-search-results`, refreshPostsSearchResults),
     ];
     context?.subscriptions.push(...disposables);
 };

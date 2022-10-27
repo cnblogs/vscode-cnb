@@ -17,3 +17,5 @@ export const searchPosts = async () => {
 };
 
 export const clearPostsSearchResults = () => postsDataProvider.clearSearch();
+
+export const refreshPostsSearchResults = () => postsDataProvider.refreshSearch();

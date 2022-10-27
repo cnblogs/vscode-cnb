@@ -142,6 +142,15 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
         this._searchResultEntry = null;
         this.fireTreeDataChangedEvent(undefined);
     }
+
+    async refreshSearch(): Promise<void> {
+        const { _searchResultEntry } = this;
+        if (_searchResultEntry) {
+            const { searchKey } = _searchResultEntry;
+            this._searchResultEntry = null;
+            await this.search({ key: searchKey });
+        }
+    }
 }
 
 export const postsDataProvider = PostsDataProvider.instance;
