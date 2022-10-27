@@ -2,6 +2,7 @@ import { MessageOptions, window } from 'vscode';
 import { Post } from '../../models/post';
 import { PostFileMap, PostFileMapManager } from '../../services/post-file-map';
 import { revealPostsListItem } from '../../services/posts-list-view';
+import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
 const confirm = async (posts: Post[]): Promise<boolean> => {
@@ -17,9 +18,12 @@ const confirm = async (posts: Post[]): Promise<boolean> => {
     return input === options[0];
 };
 
-export const deletePostToLocalFileMap = async (post: Post) => {
+export const deletePostToLocalFileMap = async (post: Post | PostTreeItem) => {
+    post = post instanceof PostTreeItem ? post.post : post;
     const view = extensionViews.postsList!;
-    let selectedPosts = view.selection.filter(x => x instanceof Post).map(x => x as Post);
+    let selectedPosts = view.selection
+        .map(x => (x instanceof Post ? x : x instanceof PostTreeItem ? x.post : null))
+        .filter((x): x is Post => x != null);
     if (!selectedPosts.includes(post)) {
         await revealPostsListItem(post);
         selectedPosts = post ? [post] : [];

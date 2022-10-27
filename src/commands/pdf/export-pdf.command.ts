@@ -12,6 +12,7 @@ import { chromiumPathProvider } from '../../utils/chromium-path-provider';
 import { Settings } from '../../services/settings.service';
 import { accountService } from '../../services/account.service';
 import { AlertService } from '../../services/alert.service';
+import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
 
 const launchBrowser = async (
     chromiumPath: string
@@ -142,9 +143,10 @@ const inputTargetFolder = async (): Promise<Uri | undefined> => {
     })) ?? [])[0];
 };
 
-const handlePostInput = (post: Post): Promise<Post[]> => {
-    const posts: Post[] = [post];
+const handlePostInput = (post: Post | PostTreeItem): Promise<Post[]> => {
+    const posts: Post[] = [post instanceof PostTreeItem ? post.post : post];
     extensionViews.visiblePostsList()?.selection.map(item => {
+        item = item instanceof PostTreeItem ? item.post : item;
         if (item instanceof Post && !posts.includes(item)) {
             posts.push(item);
         }
@@ -182,7 +184,7 @@ const reportErrors = (errors: string[] | undefined) => {
     }
 };
 
-const exportPostToPdf = async (input: Post | Uri): Promise<void> => {
+const exportPostToPdf = async (input: Post | PostTreeItem | Uri): Promise<void> => {
     const chromiumPath = await retrieveChromiumPath();
     if (!chromiumPath) {
         return;
@@ -203,7 +205,9 @@ const exportPostToPdf = async (input: Post | Uri): Promise<void> => {
             async progress => {
                 const errors: string[] = [];
                 progress.report({ message: '导出pdf - 处理博文数据' });
-                let selectedPosts = await (input instanceof Post ? handlePostInput(input) : handleUriInput(input));
+                let selectedPosts = await (input instanceof Post || input instanceof PostTreeItem
+                    ? handlePostInput(input)
+                    : handleUriInput(input));
                 if (selectedPosts.length <= 0) {
                     return;
                 }

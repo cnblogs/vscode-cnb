@@ -10,10 +10,13 @@ import fs from 'fs';
 import { LocalDraft } from '../../services/local-draft.service';
 import { saveFilePendingChanges } from '../../utils/save-file-pending-changes';
 import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
+import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
 
-export const modifyPostSettings = async (input: Post | Uri) => {
+export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
     let post: Post | undefined;
     let postId = -1;
+    input = input instanceof PostTreeItem ? input.post : input;
+
     if (input instanceof Post) {
         post = input;
         postId = input.id;

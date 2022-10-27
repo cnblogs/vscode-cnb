@@ -7,10 +7,12 @@ import { postService } from '../services/post.service';
 import { AlertService } from '../services/alert.service';
 import path from 'path';
 import { revealPostsListItem } from '../services/posts-list-view';
+import { PostTreeItem } from '../tree-view-providers/models/post-tree-item';
 
-const pullPostRemoteUpdates = async (input: Post | Uri | undefined | null): Promise<void> => {
+const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefined | null): Promise<void> => {
     let ctxs: CommandContext[] = [];
     let uri: Uri | undefined;
+    input = input instanceof PostTreeItem ? input.post : input;
     if (parsePostInput(input) && input.id > 0) {
         await handlePostInput(input, ctxs);
     } else if ((uri = parseUriInput(input))) {

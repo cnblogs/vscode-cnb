@@ -6,6 +6,7 @@ import { postService } from '../../services/post.service';
 import { PostFileMapManager } from '../../services/post-file-map';
 import { postsDataProvider } from '../../tree-view-providers/posts-data-provider';
 import { revealPostsListItem } from '../../services/posts-list-view';
+import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
 
 const renameLinkedFile = async (post: Post): Promise<void> => {
     const filePath = PostFileMapManager.getFilePath(post.id);
@@ -33,7 +34,8 @@ const renameLinkedFile = async (post: Post): Promise<void> => {
     }
 };
 
-export const renamePost = async (post: Post) => {
+export const renamePost = async (arg: Post | PostTreeItem) => {
+    const post = arg instanceof PostTreeItem ? arg.post : arg;
     if (!post) {
         return;
     }

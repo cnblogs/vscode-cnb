@@ -16,6 +16,7 @@ import { postConfigurationPanel } from '../../services/post-configuration-panel.
 import { saveFilePendingChanges } from '../../utils/save-file-pending-changes';
 import { extractImages } from '../extract-images';
 import { Settings } from '../../services/settings.service';
+import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
 
 const parseFileUri = async (fileUri: Uri | undefined): Promise<Uri | undefined> => {
     if (fileUri && fileUri.scheme !== 'file') {
@@ -129,7 +130,8 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
     });
 };
 
-export const savePostToCnblogs = async (input: Post | PostEditDto | undefined, isNewPost = false) => {
+export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto | undefined, isNewPost = false) => {
+    input = input instanceof PostTreeItem ? input.post : input;
     const post =
         input instanceof PostEditDto
             ? input.post
