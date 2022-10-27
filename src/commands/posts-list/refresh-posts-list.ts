@@ -41,6 +41,12 @@ export const refreshPostsList = ({ queue = false } = {}): Promise<boolean> => {
                 )
                 .catch(() => false)
                 .then(x =>
+                    postsDataProvider.refreshSearch().then(
+                        () => x,
+                        () => x
+                    )
+                )
+                .then(x =>
                     setRefreshing(false).then(
                         () => x,
                         () => x
