@@ -6,9 +6,8 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     protected _onDidChangeTreeData = new EventEmitter<null | undefined>();
 
     static get instance() {
-        if (!this._instance) {
-            this._instance = new AccountViewDataProvider();
-        }
+        if (!this._instance) this._instance = new AccountViewDataProvider();
+
         return this._instance;
     }
 
@@ -21,9 +20,8 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     }
 
     getChildren(element?: TreeItem): ProviderResult<TreeItem[]> {
-        if (!accountService.isAuthorized || element) {
-            return [];
-        }
+        if (!accountService.isAuthorized || element) return [];
+
         const u = accountService.curUser;
         return [
             { label: u.name, tooltip: '用户名', iconPath: new ThemeIcon('account') },

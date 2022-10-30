@@ -13,9 +13,7 @@ export abstract class MultiSelectableTreeViewCommandHandler<TArgument, TData>
     constructor(public readonly input: TArgument) {}
 
     get selections(): TData[] {
-        if (this._selections == null) {
-            this._selections = this.parseSelections();
-        }
+        if (this._selections == null) this._selections = this.parseSelections();
 
         return this._selections;
     }

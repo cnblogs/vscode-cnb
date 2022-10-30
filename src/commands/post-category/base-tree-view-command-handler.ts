@@ -5,7 +5,7 @@ import { extensionViews } from '../../tree-view-providers/tree-view-registration
 import { MultiSelectableTreeViewCommandHandler, TreeViewCommandHandler } from '../command-handler';
 
 export abstract class BasePostCategoryTreeViewCommandHandler implements TreeViewCommandHandler<PostCategory> {
-    protected readonly view = extensionViews.postCategoriesList!;
+    protected readonly view = extensionViews.postCategoriesList;
 
     constructor(public readonly input: unknown) {}
 
@@ -42,9 +42,9 @@ export abstract class BaseMultiSelectablePostCategoryTreeViewCommandHandler exte
                 : this.input instanceof PostCategory
                 ? this.input
                 : null;
-        if (inputCategory && !categories.find(x => x.categoryId === inputCategory.categoryId)) {
+        if (inputCategory && !categories.find(x => x.categoryId === inputCategory.categoryId))
             categories.unshift(inputCategory);
-        }
+
         return categories;
     }
 }

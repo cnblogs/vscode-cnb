@@ -29,9 +29,7 @@ export const showUploadSuccessModel = async (imgLink: string): Promise<void> => 
             formattedImageLink = formatImageLink(imgLink, 'html');
             break;
     }
-    if (formattedImageLink) {
-        await env.clipboard.writeText(formattedImageLink);
-    }
+    if (formattedImageLink) await env.clipboard.writeText(formattedImageLink);
 };
 
 export const insertImageLinkToActiveEditor = async (imageLink: string): Promise<boolean> => {

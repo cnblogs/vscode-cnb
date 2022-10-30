@@ -11,11 +11,10 @@ export const uploadLocalDiskImage = async () => {
             images: ['png', 'jpg', 'bmp', 'jpeg', 'webp', 'svg', 'gif'],
         },
     })) ?? [])[0];
-    if (!imageFileUri) {
-        return;
-    }
+    if (!imageFileUri) return;
+
     const imageFilePath = imageFileUri.fsPath;
-    return await window.withProgress(
+    return window.withProgress(
         {
             title: '正在上传图片',
             location: ProgressLocation.Notification,

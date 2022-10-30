@@ -1,5 +1,5 @@
-import path = require('path');
-import sanitize = require('sanitize-filename');
+import path from 'path';
+import sanitize from 'sanitize-filename';
 import { Post } from '../models/post';
 import { globalState } from './global-state';
 import { PostFileMapManager } from './post-file-map';
@@ -18,11 +18,8 @@ class InvalidPostTitleStore {
     store(map: InvalidPostFileNameMap): Thenable<void> {
         const [postId, invalidName] = map;
         const key = buildStorageKey(postId);
-        if (invalidName) {
-            return globalState.storage.update(key, invalidName);
-        } else {
-            return globalState.storage.update(key, undefined);
-        }
+        if (invalidName) return globalState.storage.update(key, invalidName);
+        else return globalState.storage.update(key, undefined);
     }
 
     get(postId: number): string | undefined {
@@ -38,15 +35,11 @@ class PostTitleSanitizer {
         const { id: postId } = post;
         const localFilePath = PostFileMapManager.getFilePath(postId);
         const { title: postTitle } = post;
-        if (!localFilePath) {
-            return postTitle;
-        }
+        if (!localFilePath) return postTitle;
 
         const localFilename = path.basename(localFilePath, path.extname(localFilePath));
         const { text: sanitizedTitle } = await this.sanitize(post);
-        if (sanitizedTitle === localFilename) {
-            return postTitle;
-        }
+        if (sanitizedTitle === localFilename) return postTitle;
 
         // the blogger have already changed the filename after post opened in the vscode,
         // so this changed filename should be the expected post title now
@@ -57,9 +50,7 @@ class PostTitleSanitizer {
     static async sanitize(post: Post): Promise<SanitizeResult> {
         const sanitizedTitle = sanitize(post.title);
         const isSanitized = sanitizedTitle !== post.title;
-        if (isSanitized) {
-            await invalidPostTitleStore.store([post.id, post.title]);
-        }
+        if (isSanitized) await invalidPostTitleStore.store([post.id, post.title]);
 
         return {
             text: sanitizedTitle,

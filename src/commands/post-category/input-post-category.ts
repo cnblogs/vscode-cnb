@@ -3,7 +3,7 @@ import { PostCategory, PostCategoryAddDto } from '../../models/post-category';
 import { InputStep, MultiStepInput } from '../../services/multi-step-input';
 
 class InputOption {
-    title: string = '编辑分类';
+    title = '编辑分类';
     category?: PostCategory;
     steps: PostCategoryInputStep[] = defaultSteps;
 }
@@ -12,7 +12,7 @@ const defaultSteps: PostCategoryInputStep[] = ['title', 'description', 'visible'
 
 export type PostCategoryInputStep = keyof PostCategoryAddDto;
 
-export const inputPostCategory = async ({
+export const inputPostCategory = ({
     title,
     category,
     steps = defaultSteps,
@@ -27,8 +27,8 @@ export const inputPostCategory = async ({
         totalSteps: steps.length,
         step: 1,
     };
-    const calculateNextStep = (): void | InputStep =>
-        state.step > steps.length ? undefined : inputStepToActionDict.find(x => x[0] === steps[state.step - 1])![1];
+    const calculateNextStep = () =>
+        state.step > steps.length ? undefined : inputStepToActionDict.find(x => x[0] === steps[state.step - 1])?.[1];
     const calculateStepNumber = (type: PostCategoryInputStep) => {
         state.step = steps.findIndex(x => x === type) + 1;
     };
@@ -41,9 +41,7 @@ export const inputPostCategory = async ({
             step: state.step++,
             totalSteps: state.totalSteps,
             placeHolder: '<必填>请输入分类标题',
-            validateInput: value => {
-                return Promise.resolve(value ? undefined : '请输入分类标题');
-            },
+            validateInput: value => Promise.resolve(value ? undefined : '请输入分类标题'),
             shouldResume: () => Promise.resolve(false),
         });
         result.title = categoryTitle ?? '';
@@ -98,7 +96,8 @@ export const inputPostCategory = async ({
         ['visible', inputCategoryVisible],
     ];
 
-    await MultiStepInput.run(calculateNextStep()!);
-
-    return state.step - 1 === state.totalSteps ? result : undefined;
+    return Promise.resolve(calculateNextStep())
+        .then(nextStep => (nextStep ? MultiStepInput.run(nextStep) : Promise.reject()))
+        .catch()
+        .then(() => (state.step - 1 === state.totalSteps ? result : undefined));
 };

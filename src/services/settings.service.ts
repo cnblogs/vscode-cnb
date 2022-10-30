@@ -20,9 +20,7 @@ export class Settings {
     }
 
     static get iconTheme() {
-        return <'vs-seti' | 'vs-minimal' | undefined | string>(
-            workspace.getConfiguration(this.iconThemePrefix).get<string>(this.iconThemeKey)
-        );
+        return workspace.getConfiguration(this.iconThemePrefix).get<string>(this.iconThemeKey);
     }
 
     static get configuration() {
@@ -37,25 +35,19 @@ export class Settings {
     }
 
     static async setWorkspaceUri(value: Uri) {
-        if (!value.fsPath || !(value.scheme === 'file')) {
-            throw Error('Invalid uri');
-        }
-        if (!fs.existsSync(value.fsPath)) {
-            throw Error(`Folder "${value.fsPath}" not exist`);
-        }
+        if (!value.fsPath || !(value.scheme === 'file')) throw Error('Invalid uri');
+
+        if (!fs.existsSync(value.fsPath)) throw Error(`Folder "${value.fsPath}" not exist`);
+
         await this.configuration.update('workspace', value.fsPath, ConfigurationTarget.Global);
     }
 
     static get chromiumPathConfigurationKey() {
         let key = '';
         const p = platform();
-        if (p === 'darwin') {
-            key = `macos.chromiumPath`;
-        }
+        if (p === 'darwin') key = `macos.chromiumPath`;
 
-        if (p === 'win32') {
-            key = `windows.chromiumPath`;
-        }
+        if (p === 'win32') key = `windows.chromiumPath`;
 
         return key;
     }
@@ -65,9 +57,8 @@ export class Settings {
     }
 
     static async setChromiumPath(value: string) {
-        if (!value) {
-            return;
-        }
+        if (!value) return;
+
         await this.configuration.update(this.chromiumPathConfigurationKey, value, ConfigurationTarget.Global);
     }
 
@@ -86,7 +77,7 @@ export class Settings {
     }
 
     static get postsListPageSize() {
-        let size = this.configuration.get<number>(this.postsListPageSizeKey);
+        const size = this.configuration.get<number>(this.postsListPageSizeKey);
         return isNumber(size) ? size : 30;
     }
 }

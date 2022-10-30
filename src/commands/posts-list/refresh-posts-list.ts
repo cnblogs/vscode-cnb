@@ -7,56 +7,52 @@ import { PostsListState } from '../../models/posts-list-state';
 import { window } from 'vscode';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
 
-let refreshTask: Promise<any> | null = null;
+let refreshTask: Promise<boolean> | null = null;
 
 export const refreshPostsList = ({ queue = false } = {}): Promise<boolean> => {
-    if (refreshing && !queue) {
+    if (isRefreshing && !queue) {
         alertRefreshing();
         return refreshTask || Promise.resolve(false);
-    } else if (refreshing && refreshTask != null) {
+    } else if (isRefreshing && refreshTask != null) {
         return refreshTask.then(() => refreshPostsList());
     }
 
-    refreshTask = new Promise<boolean>(resolve =>
-        setRefreshing(true).finally(() =>
+    refreshTask = setRefreshing(true)
+        .catch()
+        .then(() =>
             postsDataProvider
                 .loadPosts()
+                .catch()
                 .then(pagedPosts =>
                     setPostListContext(
                         pagedPosts?.pageCount ?? 0,
                         pagedPosts?.hasPrevious ?? false,
                         pagedPosts?.hasNext ?? false
-                    ).then(() => pagedPosts)
+                    )
+                        .catch()
+                        .then(() => pagedPosts)
                 )
                 .then(pagedPosts =>
                     pagedPosts == null
                         ? Promise.resolve(false).finally(() => AlertService.error('刷新博文列表失败'))
                         : postService
                               .updatePostsListState(pagedPosts)
+                              .catch()
                               .then(() => updatePostsListViewTitle())
-                              .then(
-                                  () => true,
-                                  () => true
-                              )
+                              .catch()
+                              .then(() => true)
                 )
                 .catch(() => false)
                 .then(x =>
-                    postsDataProvider.refreshSearch().then(
-                        () => x,
-                        () => x
-                    )
+                    postsDataProvider
+                        .refreshSearch()
+                        .catch()
+                        .then(() => x)
                 )
-                .then(x =>
-                    setRefreshing(false).then(
-                        () => x,
-                        () => x
-                    )
-                )
-                .then(undefined, () => false)
-                .then(x => resolve(x))
+                .then(x => setRefreshing(false).then(() => x))
+                .catch(() => false)
                 .finally(() => (refreshTask = null))
-        )
-    );
+        );
 
     return refreshTask;
 };
@@ -74,33 +70,27 @@ export const seekPostsList = async () => {
         placeHolder: '请输入页码',
         validateInput: i => {
             const n = Number.parseInt(i);
-            if (isNaN(n) || !n) {
-                return '请输入正确格式的页码';
-            }
+            if (isNaN(n) || !n) return '请输入正确格式的页码';
+
             const state = postService.postsListState;
-            if (!state) {
-                return '博文列表尚未加载';
-            }
-            if (isPageIndexInRange(n, state)) {
-                return undefined;
-            }
+            if (!state) return '博文列表尚未加载';
+
+            if (isPageIndexInRange(n, state)) return undefined;
 
             return `页码超出范围, 页码范围: 1-${state.pageCount}`;
         },
     });
     const pageIndex = Number.parseInt(input ?? '-1');
-    if (pageIndex > 0 && !isNaN(pageIndex)) {
-        await gotoPage(() => pageIndex);
-    }
+    if (pageIndex > 0 && !isNaN(pageIndex)) await gotoPage(() => pageIndex);
 };
 
-let refreshing = false;
+let isRefreshing = false;
 const setRefreshing = async (value = false) => {
     const extName = globalState.extensionName;
     await vscode.commands
         .executeCommand('setContext', `${extName}.posts-list.refreshing`, value)
         .then(undefined, () => false);
-    refreshing = value;
+    isRefreshing = value;
 };
 
 const setPostListContext = async (pageCount: number, hasPrevious: boolean, hasNext: boolean) => {
@@ -115,7 +105,7 @@ const alertRefreshing = () => {
 };
 
 const gotoPage = async (pageIndex: (currentIndex: number) => number) => {
-    if (refreshing) {
+    if (isRefreshing) {
         alertRefreshing();
         return;
     }
@@ -127,7 +117,7 @@ const gotoPage = async (pageIndex: (currentIndex: number) => number) => {
     const idx = pageIndex(state.pageIndex);
     if (!isPageIndexInRange(idx, state)) {
         console.warn(
-            'Cannot goto page posts list, page index out of range, max value of page index is ' + state.pageCount
+            `Cannot goto page posts list, page index out of range, max value of page index is ${state.pageCount}`
         );
         return;
     }
@@ -140,18 +130,15 @@ const isPageIndexInRange = (pageIndex: number, state: PostsListState) => pageInd
 
 const updatePostsListViewTitle = () => {
     const state = postService.postsListState;
-    if (!state) {
-        return;
-    }
+    if (!state) return;
+
     const { pageIndex, pageCount } = state;
     const views = [extensionViews.postsList, extensionViews.anotherPostsList];
     for (const view of views) {
-        if (view) {
-            let title = view.title!;
-            const idx = title.indexOf('(');
-            const pager = `第${pageIndex}页,共${pageCount}页`;
-            title = idx >= 0 ? title.substring(0, idx) : title;
-            view.title = `${title}(${pager})`;
-        }
+        let title = view.title ?? '';
+        const idx = title.indexOf('(');
+        const pager = `第${pageIndex}页,共${pageCount}页`;
+        title = idx >= 0 ? title.substring(0, idx) : title;
+        view.title = `${title}(${pager})`;
     }
 };

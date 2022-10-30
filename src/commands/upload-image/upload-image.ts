@@ -30,10 +30,8 @@ export const uploadImage = async (autoInsertToActiveEditor = true, from?: 'local
             break;
     }
 
-    if (imageUrl && autoInsertToActiveEditor) {
-        if (!(await insertImageLinkToActiveEditor(imageUrl))) {
-            await showUploadSuccessModel(imageUrl);
-        }
-    }
+    if (imageUrl && autoInsertToActiveEditor)
+        if (!(await insertImageLinkToActiveEditor(imageUrl))) await showUploadSuccessModel(imageUrl);
+
     return imageUrl;
 };

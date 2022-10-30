@@ -1,10 +1,10 @@
 export class PostCategory {
-    categoryId: number = -1;
-    title: string = '';
-    visible: boolean = true;
-    description: string = '';
+    categoryId = -1;
+    title = '';
+    visible = true;
+    description = '';
     updateTime: Date = new Date();
-    count: number = 0;
+    count = 0;
     order?: number;
 }
 

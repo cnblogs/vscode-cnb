@@ -16,7 +16,7 @@ export enum RootPostMetadataType {
     createDate = 'createDate',
 }
 
-const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto) =>
+const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto | undefined) =>
     [
         [RootPostMetadataType.updateDate, () => new PostUpdatedDateMetadata(parsedPost)],
         [RootPostMetadataType.createDate, () => new PostCreatedDateMetadata(parsedPost)],
@@ -55,8 +55,8 @@ export abstract class PostMetadata extends BaseTreeItemSource {
         let parsedPost = post instanceof PostTreeItem ? post.post : post;
         const postEditDto = await postService.fetchPostEditDto(parsedPost.id);
         parsedPost = postEditDto?.post || parsedPost;
-        return await Promise.all(
-            rootMetadataMap(parsedPost, postEditDto ?? ({} as any))
+        return Promise.all(
+            rootMetadataMap(parsedPost, postEditDto)
                 .filter(([type]) => !exclude.includes(type))
                 .map(([, factory]) => factory())
                 .map(x => (x instanceof Promise ? x : Promise.resolve<PostMetadata>(x)))
@@ -116,9 +116,7 @@ export class PostCategoryMetadata extends PostMetadata {
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCategoryMetadata[]> {
         editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id);
-        if (editDto == null) {
-            return [];
-        }
+        if (editDto == null) return [];
 
         const {
             post: { categoryIds },
@@ -142,9 +140,7 @@ export class PostTagMetadata extends PostMetadata {
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostMetadata[]> {
         editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id);
-        if (editDto == null) {
-            return [];
-        }
+        if (editDto == null) return [];
 
         const {
             post: { tags },

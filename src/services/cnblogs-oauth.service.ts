@@ -19,9 +19,7 @@ export class CnblogsOAuthService extends Disposable {
 
     constructor() {
         super(() => {
-            if (this._server && this._server.listening) {
-                this._server?.close();
-            }
+            if (this._server && this._server.listening) this._server?.close();
         });
         this._app = express();
     }
@@ -30,19 +28,19 @@ export class CnblogsOAuthService extends Disposable {
         codeVerifier: string,
         callback: (authorizationInfo?: UserAuthorizationInfo, error?: any) => void | Promise<void>
     ) {
-        if (this._server) {
-            this._server.close();
-        }
+        if (this._server) this._server.close();
+
         this._server = this._app.listen(this.listenPort);
         this._codeVerifier = codeVerifier;
-        this._app.get(['/', '/callback'], async (req, res) => {
-            const authorizationInfo = await this.handleOAuthRedirect(req, res);
-            if (authorizationInfo instanceof UserAuthorizationInfo) {
-                await callback(authorizationInfo);
-            } else {
-                await callback(undefined, authorizationInfo);
-            }
-        });
+        this._app.get(
+            ['/', '/callback'],
+            (req, res) =>
+                void this.handleOAuthRedirect(req, res).then(authorizationInfo =>
+                    authorizationInfo instanceof UserAuthorizationInfo
+                        ? callback(authorizationInfo)
+                        : callback(undefined, authorizationInfo)
+                )
+        );
     }
 
     async getAuthorizationInfo(authorizationCode: string, codeVerifier: string): Promise<UserAuthorizationInfo> {
@@ -63,18 +61,18 @@ export class CnblogsOAuthService extends Disposable {
             headers: [['Content-Type', 'application/x-www-form-urlencoded']],
         });
         if (res.status === 200) {
-            const tokenObj = (await res.json()) as any;
-            convertObjectKeysToCamelCase(tokenObj);
-            return Object.assign(new UserAuthorizationInfo('', '', 0, ''), tokenObj);
+            return Object.assign(
+                new UserAuthorizationInfo('', '', 0, ''),
+                convertObjectKeysToCamelCase((await res.json()) as object)
+            );
         }
         throw Error(`Request access token failed, ${res.status}, ${res.statusText}, ${await res.text()}`);
     }
 
     resolveAuthorizationCode(callbackUrl: string): string | undefined {
         const splitted = callbackUrl.split('?');
-        if (splitted.length < 2) {
-            return undefined;
-        }
+        if (splitted.length < 2) return undefined;
+
         const s = new URLSearchParams(splitted[1]);
         const code = s.get('code');
         return code ? code : undefined;
@@ -83,14 +81,12 @@ export class CnblogsOAuthService extends Disposable {
     private handleOAuthRedirect = async (
         req: express.Request,
         res: express.Response
-    ): Promise<UserAuthorizationInfo | any> => {
-        let error = undefined;
+    ): Promise<UserAuthorizationInfo | { error: object }> => {
         let authorizationInfo: UserAuthorizationInfo | undefined = undefined;
         try {
             const code = this.resolveAuthorizationCode(req.originalUrl);
-            if (!code) {
-                throw Error(`Unable to resolve authorization code from callback url, ${req.originalUrl}`);
-            }
+            if (!code) throw Error(`Unable to resolve authorization code from callback url, ${req.originalUrl}`);
+
             authorizationInfo = await this.getAuthorizationInfo(code, this._codeVerifier);
             res.send(
                 `<p>授权成功, 您现在可以关闭此页面, 返回vscode.</p>
@@ -100,14 +96,12 @@ export class CnblogsOAuthService extends Disposable {
                 el.click();
                 </script>`
             );
+            return authorizationInfo;
         } catch (err) {
-            error = err;
-            const stringifiedError = JSON.stringify(err, undefined, 4);
-            res.send('发生了错误!' + (stringifiedError === '{}' ? err : stringifiedError));
+            res.send('发生了错误!' + JSON.stringify(err, undefined, 4));
+            return { error: err as object };
         } finally {
             this._server?.close();
         }
-
-        return error ? error : authorizationInfo;
     };
 }

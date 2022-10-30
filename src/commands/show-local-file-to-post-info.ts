@@ -6,6 +6,7 @@ import { postCategoryService } from '../services/post-category.service';
 import { PostFileMapManager } from '../services/post-file-map';
 import { searchPostsByTitle } from '../services/search-post-by-title';
 import { viewPostOnline } from './view-post-online';
+import { format } from 'date-fns';
 
 /**
  * 本地文件所关联的博文信息
@@ -46,14 +47,11 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
         postId = input;
     }
 
-    if (!filePath || !postId || !(postId >= 0)) {
-        return;
-    }
+    if (!filePath || !postId || !(postId >= 0)) return;
 
     const post = (await postService.fetchPostEditDto(postId))?.post;
-    if (!post) {
-        return;
-    }
+    if (!post) return;
+
     let categories = await postCategoryService.fetchCategories();
     categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
     const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : '';
@@ -64,9 +62,12 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
         `关联博文 - ${post.title}(Id: ${post.id})`,
         {
             modal: true,
-            detail: `🔗博文链接: ${postUrl}\n博文发布时间: ${post.datePublished}\n博文发布状态: ${
-                post.isPublished ? '已发布' : '未发布'
-            }\n博文访问权限: ${post.accessPermissionDesc}\n${categoryDesc}${tagsDesc}`.replace(/\n$/, ''),
+            detail: `🔗博文链接: ${postUrl}\n博文发布时间: ${format(
+                post.datePublished ?? new Date(),
+                'yyyy-MM-dd HH:mm'
+            )}\n博文发布状态: ${post.isPublished ? '已发布' : '未发布'}\n博文访问权限: ${
+                post.accessPermissionDesc
+            }\n${categoryDesc}${tagsDesc}`.replace(/\n$/, ''),
         } as MessageOptions,
         ...options
     );

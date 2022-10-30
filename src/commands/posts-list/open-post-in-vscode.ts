@@ -12,11 +12,11 @@ import { postCategoryService } from '../../services/post-category.service';
 
 const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise<Uri> => {
     const workspaceUri = Settings.workspaceUri;
-    const createLocalPostFileWithCategory = Settings.createLocalPostFileWithCategory;
+    const shouldCreateLocalPostFileWithCategory = Settings.createLocalPostFileWithCategory;
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`;
     const postIdSegment = includePostId ? `.${post.id}` : '';
     const { text: postTitle } = await PostTitleSanitizer.sanitize(post);
-    if (createLocalPostFileWithCategory) {
+    if (shouldCreateLocalPostFileWithCategory) {
         let categories = await postCategoryService.fetchCategories();
         categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
         const categoryTitle = categories[0]?.title ?? '';
@@ -28,10 +28,10 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
 
 export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> => {
     let mappedPostFilePath = PostFileMapManager.getFilePath(postId);
-    const isFileExist = mappedPostFilePath ? fs.existsSync(mappedPostFilePath) : false;
-    if (isFileExist && !forceUpdateLocalPostFile) {
-        await openPostFile(mappedPostFilePath!);
-        return Uri.file(mappedPostFilePath!);
+    const isFileExist = !!mappedPostFilePath && fs.existsSync(mappedPostFilePath);
+    if (mappedPostFilePath && isFileExist && !forceUpdateLocalPostFile) {
+        await openPostFile(mappedPostFilePath);
+        return Uri.file(mappedPostFilePath);
     }
     // 本地文件已经被删除了, 确保重新生成博文与本地文件的关联
     if (mappedPostFilePath && !isFileExist) {
@@ -40,9 +40,8 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
     }
 
     const postEditDto = await postService.fetchPostEditDto(postId);
-    if (!postEditDto) {
-        return false;
-    }
+    if (!postEditDto) return false;
+
     const post = postEditDto.post;
 
     const workspaceUri = Settings.workspaceUri;
@@ -53,7 +52,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
     if (!mappedPostFilePath) {
         // 本地存在和博文同名的文件, 询问用户是要覆盖还是同时保留两者
         if (fs.existsSync(fileUri.fsPath)) {
-            let conflictOptions = [
+            const conflictOptions = [
                 '保留本地文件(这会新建另一个文件名中包含博文id的文件)',
                 '覆盖本地文件(会导致本地文件中内容丢失)',
             ];
@@ -84,9 +83,8 @@ const createDirectoryIfNotExist = async (uri: Uri) => {
     try {
         await workspace.fs.readDirectory(uri);
     } catch (err) {
-        if (err instanceof FileSystemError) {
-            await workspace.fs.createDirectory(uri);
-        }
+        if (err instanceof FileSystemError) await workspace.fs.createDirectory(uri);
+
         AlertService.error('create workspace directory failed');
         console.error(err);
     }

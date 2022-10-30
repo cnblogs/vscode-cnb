@@ -12,9 +12,7 @@ export class UserInfo {
     }
 
     get blogApp(): string | null {
-        if (this._blogApp == null) {
-            this._blogApp = this.parseBlogApp();
-        }
+        if (this._blogApp == null) this._blogApp = this.parseBlogApp();
 
         return this._blogApp;
     }

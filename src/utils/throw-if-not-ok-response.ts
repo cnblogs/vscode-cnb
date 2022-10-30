@@ -4,7 +4,7 @@ import { IErrorResponse, isErrorResponse } from '../models/error-response';
 const throwIfNotOkResponse = async (response: Response) => {
     if (!response.ok) {
         const responseText = await response.text();
-        let responseJson = {};
+        let responseJson: unknown;
         try {
             responseJson = JSON.parse(responseText);
         } catch {

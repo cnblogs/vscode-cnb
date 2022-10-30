@@ -15,9 +15,7 @@ export interface IConfig {
     apiBaseUrl: string;
 }
 
-export const isDev = () => {
-    return process.env.NODE_ENV === 'Development';
-};
+export const isDev = () => process.env.NODE_ENV === 'Development';
 
 export const defaultConfig: IConfig = {
     oauth: {

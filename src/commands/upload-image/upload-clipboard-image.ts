@@ -14,16 +14,11 @@ export const uploadImageFromClipboard = async () => {
     }
 
     try {
-        return await window.withProgress(
-            { title: '正在上传图片', location: ProgressLocation.Notification },
-            async p => {
-                p.report({ increment: 10 });
-                return await imageService.upload(fs.createReadStream(clipboardImage.imgPath));
-            }
-        );
+        return await window.withProgress({ title: '正在上传图片', location: ProgressLocation.Notification }, p => {
+            p.report({ increment: 10 });
+            return imageService.upload(fs.createReadStream(clipboardImage.imgPath));
+        });
     } finally {
-        if (!clipboardImage.shouldKeepAfterUploading) {
-            await workspace.fs.delete(Uri.file(clipboardImage.imgPath));
-        }
+        if (!clipboardImage.shouldKeepAfterUploading) await workspace.fs.delete(Uri.file(clipboardImage.imgPath));
     }
 };

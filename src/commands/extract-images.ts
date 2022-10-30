@@ -14,16 +14,15 @@ export const extractImages = async (
     inputImageType: MarkdownImagesExtractor['imageType'] | null | undefined
 ): Promise<void> => {
     if (arg instanceof Uri && arg.scheme === 'file') {
-        const ignoreWarnings = inputImageType != null;
+        const shouldIgnoreWarnings = inputImageType != null;
         const markdown = new TextDecoder().decode(await workspace.fs.readFile(arg));
         const extractor = new MarkdownImagesExtractor(markdown, arg);
         const images = extractor.findImages();
         const availableWebImagesCount = images.filter(extractor.createImageTypeFilter('web')).length;
         const availableLocalImagesCount = images.filter(extractor.createImageTypeFilter('local')).length;
-        const warnNoImages = (): void => void (ignoreWarnings ? null : window.showWarningMessage('没有可以提取的图片'));
-        if (images.length <= 0) {
-            return warnNoImages();
-        }
+        const warnNoImages = (): void =>
+            void (shouldIgnoreWarnings ? null : window.showWarningMessage('没有可以提取的图片'));
+        if (images.length <= 0) return warnNoImages();
 
         let result = extractOptions.find(x => inputImageType != null && x.imageType === inputImageType);
         result = result
@@ -42,9 +41,8 @@ export const extractImages = async (
 
         if (result && result.imageType && editor) {
             extractor.imageType = result.imageType;
-            if (extractor.findImages().length <= 0) {
-                return warnNoImages();
-            }
+            if (extractor.findImages().length <= 0) return warnNoImages();
+
             const document = editor.document;
             await document.save();
             const failedImages = await window.withProgress(
@@ -59,10 +57,10 @@ export const extractImages = async (
                         });
                     };
                     const extractResults = await extractor.extract();
-                    let idx = 0;
+                    const idx = 0;
                     const total = extractResults.length;
                     await editor.edit(editBuilder => {
-                        for (let [range, , extractedImage] of extractResults
+                        for (const [range, , extractedImage] of extractResults
                             .filter((x): x is [source: MarkdownImage, result: MarkdownImage] => x[1] != null)
                             .map(
                                 ([sourceImage, result]): [
@@ -70,9 +68,7 @@ export const extractImages = async (
                                     sourceImage: MarkdownImage,
                                     extractedImage: MarkdownImage
                                 ] => {
-                                    if (sourceImage.index == null) {
-                                        return [null, sourceImage, result];
-                                    }
+                                    if (sourceImage.index == null) return [null, sourceImage, result];
 
                                     const endPos = document.positionAt(
                                         sourceImage.index + sourceImage.symbol.length - 1
@@ -87,9 +83,8 @@ export const extractImages = async (
                                     ];
                                 }
                             )) {
-                            if (range == null) {
-                                continue;
-                            }
+                            if (range == null) continue;
+
                             progress.report({
                                 increment: (idx / total) * 20 + 80,
                                 message: `[${idx + 1} / ${total}] 执行替换 ${extractedImage.symbol}`,

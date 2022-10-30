@@ -9,28 +9,28 @@ import mime from 'mime';
 export class ImageService {
     private static _instance: ImageService;
     static get instance() {
-        if (!this._instance) {
-            this._instance = new ImageService();
-        }
+        if (!this._instance) this._instance = new ImageService();
 
         return this._instance;
     }
 
     private constructor() {}
 
-    async upload(file: any): Promise<string> {
+    async upload<T extends object>(file: T): Promise<string> {
         const form = new FormData();
+        let { name: filename } = <{ name?: string }>file;
+        filename ??= 'image.png';
         form.append('image', file, {
-            filename: file.name ?? 'image.png',
+            filename,
             contentType: 'image/png',
         });
         const response = await fetch(`${globalState.config.apiBaseUrl}/api/posts/body/images`, {
             method: 'POST',
             headers: [accountService.buildBearerAuthorizationHeader()],
-            body: <any>form,
+            body: form,
         });
         await throwIfNotOkResponse(response);
-        return await response.text();
+        return response.text();
     }
 
     async download(
@@ -44,7 +44,7 @@ export class ImageService {
         fileNameWithoutExtension = !fileNameWithoutExtension ? 'image' : fileNameWithoutExtension;
         return response.ok && response.body != null
             ? Object.assign(Stream.Readable.from(await response.buffer()), {
-                  path: fileNameWithoutExtension + '.' + mime.extension(contentType),
+                  path: fileNameWithoutExtension + '.' + (mime.extension(contentType) ?? ''),
               })
             : [response.status, response.statusText, await response.text()];
     }

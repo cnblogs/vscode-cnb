@@ -27,7 +27,7 @@ export namespace postConfigurationPanel {
         beforeUpdate?: (postToUpdate: Post, panel: vscode.WebviewPanel) => Promise<boolean>;
     }
     const resourceRootUri = () =>
-        vscode.Uri.file(path.join(globalState.extensionContext!.extensionPath, 'dist', 'assets'));
+        vscode.Uri.file(path.join(globalState.extensionContext.extensionPath, 'dist', 'assets'));
 
     const setHtml = async (webview: vscode.Webview): Promise<void> => {
         const webviewBaseUri = webview.asWebviewUri(resourceRootUri());
@@ -41,17 +41,16 @@ export namespace postConfigurationPanel {
     export const buildPanelId = (postId: number, postTitle: string): string => `${postId}-${postTitle}`;
     export const findPanelById = (panelId: string) => panels.get(panelId);
     export const open = async (option: PostConfigurationPanelOpenOption) => {
-        let { post, panelTitle, breadcrumbs } = option;
-        panelTitle = panelTitle ? panelTitle : `博文设置 - ${post.title}`;
+        const { post, breadcrumbs } = option;
+        const panelTitle = option.panelTitle ? option.panelTitle : `博文设置 - ${post.title}`;
         await openPostFile(post, {
             viewColumn: vscode.ViewColumn.One,
         });
         const panelId = buildPanelId(post.id, post.title);
         let panel = tryRevealPanel(panelId, option);
-        if (panel) {
-            return;
-        }
-        let disposables: (vscode.Disposable | undefined)[] = [];
+        if (panel) return;
+
+        const disposables: (vscode.Disposable | undefined)[] = [];
         panel = await createPanel(panelTitle, post);
         const { webview } = panel;
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -80,13 +79,11 @@ export namespace postConfigurationPanel {
         panelId: string | undefined,
         options: PostConfigurationPanelOpenOption
     ): vscode.WebviewPanel | undefined => {
-        if (!panelId) {
-            return;
-        }
+        if (!panelId) return;
+
         const panel = findPanelById(panelId);
-        if (!panel) {
-            return;
-        }
+        if (!panel) return;
+
         try {
             const { breadcrumbs } = options;
             const { webview } = panel;
@@ -110,7 +107,7 @@ export namespace postConfigurationPanel {
         });
         const { webview } = panel;
         await setHtml(webview);
-        panel.iconPath = Uri.joinPath(globalState.extensionContext!.extensionUri, 'dist', 'assets', 'favicon.svg');
+        panel.iconPath = Uri.joinPath(globalState.extensionContext.extensionUri, 'dist', 'assets', 'favicon.svg');
         panels.set(panelId, panel);
         return panel;
     };
@@ -154,9 +151,8 @@ export namespace postConfigurationPanel {
     };
 
     const observeActiveColorSchemaChange = (panel: vscode.WebviewPanel | undefined): vscode.Disposable | undefined => {
-        if (!panel) {
-            return;
-        }
+        if (!panel) return;
+
         const { webview } = panel;
         return vscode.window.onDidChangeActiveColorTheme(async theme => {
             await webview.postMessage({
@@ -170,9 +166,8 @@ export namespace postConfigurationPanel {
         panel: vscode.WebviewPanel | undefined,
         options: PostConfigurationPanelOpenOption
     ): vscode.Disposable | undefined => {
-        if (!panel) {
-            return;
-        }
+        if (!panel) return;
+
         const { webview } = panel;
         const { beforeUpdate, successCallback } = options;
         return webview.onDidReceiveMessage(async message => {
@@ -180,9 +175,8 @@ export namespace postConfigurationPanel {
             switch (command) {
                 case webviewCommand.ExtensionCommands.savePost:
                     try {
-                        if (!panel) {
-                            return;
-                        }
+                        if (!panel) return;
+
                         const { post: postToUpdate } = message as webviewMessage.SavePostMessage;
                         if (beforeUpdate) {
                             if (!(await beforeUpdate(postToUpdate, panel))) {
@@ -208,7 +202,7 @@ export namespace postConfigurationPanel {
                     panel?.dispose();
                     break;
                 case webviewCommand.ExtensionCommands.uploadImage:
-                    await onUploadImageCommand(panel, message as any);
+                    await onUploadImageCommand(panel, <webviewMessage.UploadImageMessage>message);
                     break;
             }
         });
@@ -218,16 +212,14 @@ export namespace postConfigurationPanel {
         panel: vscode.WebviewPanel | undefined,
         disposables: (vscode.Disposable | undefined)[]
     ): vscode.Disposable | undefined => {
-        if (!panel) {
-            return;
-        }
+        if (!panel) return;
 
         return panel.onDidDispose(() => {
             if (panel) {
                 const panelId = panel.viewType;
                 panels.delete(panelId);
                 panel = undefined;
-                disposables.forEach(disposable => disposable?.dispose());
+                disposables.forEach(disposable => void disposable?.dispose());
             }
         });
     };

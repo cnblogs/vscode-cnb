@@ -7,9 +7,7 @@ export class EditPostUriHandler implements UriHandler {
         const splits = path.split('/');
         if (splits.length >= 3 && splits[1] === 'edit-post') {
             const postId = parseInt(splits[2]);
-            if (postId > 0) {
-                openPostInVscode(postId).then(undefined, () => void 0);
-            }
+            if (postId > 0) openPostInVscode(postId).then(undefined, () => void 0);
         }
     }
 }

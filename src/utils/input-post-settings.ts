@@ -16,7 +16,7 @@ class CategoryPickItem implements QuickPickItem {
         this.label = name;
     }
 
-    static fromPostCategory(category: PostCategory): CategoryPickItem {
+    static fromPostCategory(this: void, category: PostCategory): CategoryPickItem {
         return new CategoryPickItem(category.title, category.categoryId);
     }
 
@@ -46,11 +46,9 @@ const defaultSteps: PostSettingsType[] = [
     'isPublished',
 ];
 
-const parseTagNames = (value: string) => {
-    return value.split(/[,，]/).filter(t => !!t);
-};
+const parseTagNames = (value: string) => value.split(/[,，]/).filter(({ length }) => length > 0);
 
-export const inputPostSettings = async (
+export const inputPostSettings = (
     postTitle: string,
     source: PostSettingsDto,
     steps: PostSettingsType[] = []
@@ -62,9 +60,9 @@ export const inputPostSettings = async (
         totalSteps: steps.length,
         step: 1,
     };
-    let map: [PostSettingsType, (input: MultiStepInput) => Promise<any>][] = [];
-    const calculateNextStep = (): void | InputStep =>
-        state.step > steps.length ? undefined : map.find(x => x[0] === steps[state.step - 1])![1];
+    let map: [PostSettingsType, (input: MultiStepInput) => Promise<InputStep | undefined>][] = [];
+    const calculateNextStep = (): undefined | InputStep =>
+        state.step > steps.length ? undefined : map.find(x => x[0] === steps[state.step - 1])?.[1];
     const calculateStepNumber = (type: PostSettingsType) => {
         state.step = steps.findIndex(x => x === type) + 1;
     };
@@ -93,9 +91,7 @@ export const inputPostSettings = async (
             canSelectMany: false,
             shouldResume: () => Promise.resolve(false),
         });
-        if (items.includes(picked)) {
-            configuredPost.accessPermission = picked.id;
-        }
+        if (items.includes(picked)) configuredPost.accessPermission = picked.id;
 
         return calculateNextStep();
     };
@@ -122,20 +118,18 @@ export const inputPostSettings = async (
             canSelectMany: true,
             shouldResume: () => Promise.resolve(false),
         });
-        if (picked instanceof Array) {
-            configuredPost.categoryIds = picked.map(p => (p as CategoryPickItem).id);
-        }
+        if (Array.isArray(picked)) configuredPost.categoryIds = picked.map(p => (p as CategoryPickItem).id);
+
         return calculateNextStep();
     };
     // 标签
     const inputTags = async (input: MultiStepInput) => {
         calculateStepNumber('tags');
-        let value = await input.showInputBox({
+        const value = await input.showInputBox({
             title: state.title,
             step: state.step++,
             totalSteps: state.totalSteps,
             placeHolder: '<非必填>请输入博文标签, 以 ","分隔',
-            buttons: [],
             shouldResume: () => Promise.resolve(false),
             prompt: '请输入博文标签, 以 ","分隔',
             validateInput: () => Promise.resolve(undefined),
@@ -147,12 +141,12 @@ export const inputPostSettings = async (
     // 摘要
     const inputDescription = async (input: MultiStepInput) => {
         calculateStepNumber('description');
-        let value = await input.showInputBox({
+        const value = await input.showInputBox({
             title: state.title,
             step: state.step++,
             totalSteps: state.totalSteps,
             placeHolder: '<非必填>请输入博文摘要',
-            buttons: [],
+            buttons: undefined,
             shouldResume: () => Promise.resolve(false),
             prompt: '请输入博文摘要',
             validateInput: () => Promise.resolve(undefined),
@@ -164,12 +158,11 @@ export const inputPostSettings = async (
     // 密码保护
     const inputPassword = async (input: MultiStepInput) => {
         calculateStepNumber('password');
-        let value = await input.showInputBox({
+        const value = await input.showInputBox({
             title: state.title,
             step: state.step++,
             totalSteps: state.totalSteps,
             placeHolder: '<非必填>设置博文访问密码',
-            buttons: [],
             shouldResume: () => Promise.resolve(false),
             prompt: '设置博文访问密码',
             validateInput: () => Promise.resolve(undefined),
@@ -194,9 +187,7 @@ export const inputPostSettings = async (
             canSelectMany: false,
             shouldResume: () => Promise.resolve(false),
         });
-        if (picked) {
-            configuredPost.isPublished = picked === items[0];
-        }
+        if (picked) configuredPost.isPublished = picked === items[0];
 
         return calculateNextStep();
     };
@@ -209,6 +200,8 @@ export const inputPostSettings = async (
         ['isPublished', inputIsPublished],
     ];
 
-    await MultiStepInput.run(calculateNextStep()!);
-    return state.step - 1 === state.totalSteps ? configuredPost : undefined;
+    const nextStep = calculateNextStep();
+    return nextStep
+        ? MultiStepInput.run(nextStep).then(() => (state.step - 1 === state.totalSteps ? configuredPost : undefined))
+        : Promise.resolve(undefined);
 };
