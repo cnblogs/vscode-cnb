@@ -32,5 +32,5 @@ export const deletePostToLocalFileMap = async (post: Post | PostTreeItem) => {
 
     if (!(await confirm(selectedPosts))) return;
 
-    await PostFileMapManager.updateOrCreateMany(...selectedPosts.map(p => [p.id, ''] as PostFileMap));
+    await PostFileMapManager.updateOrCreateMany(selectedPosts.map(p => [p.id, ''] as PostFileMap));
 };

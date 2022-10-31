@@ -81,8 +81,11 @@ export const deleteSelectedPosts = async (arg: unknown) => {
                         workspace.fs.delete(Uri.file(path)).then(undefined, ex => console.error(ex));
                     });
             }
-            await PostFileMapManager.updateOrCreateMany(...selectedPosts.map<PostFileMap>(p => [p.id, '']));
-            await refreshPostsList();
+            await PostFileMapManager.updateOrCreateMany({
+                emitEvent: false,
+                maps: selectedPosts.map<PostFileMap>(p => [p.id, '']),
+            });
+            await refreshPostsList().catch();
             postCategoriesDataProvider.onPostUpdated({
                 refreshPosts: true,
                 postIds: selectedPosts.map(({ id }) => id),
