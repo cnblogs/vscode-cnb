@@ -76,4 +76,5 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
     }
 }
 
-export const handleDeletePostCategories = (arg: PostCategoriesListTreeItem) => new DeletePostCategoriesHandler(arg);
+export const handleDeletePostCategories = (arg: PostCategoriesListTreeItem) =>
+    new DeletePostCategoriesHandler(arg).handle();
