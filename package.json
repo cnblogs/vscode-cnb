@@ -809,7 +809,7 @@
         "watch": "webpack --watch",
         "ui:watch": "webpack watch -c ./ui/webpack.config.mjs",
         "package": "webpack --mode production --devtool hidden-source-map && npm run ui:package",
-        "ui:package": "webpack --mode production --devtool hidden-source-map -c ./ui/webpack.config.js",
+        "ui:package": "webpack --mode production --devtool hidden-source-map -c ./ui/webpack.config.mjs",
         "compile-tests": "tsc -p . --outDir out",
         "watch-tests": "tsc -p . -w --outDir out",
         "pretest": "npm run compile-tests && npm run compile && npm run lint",
