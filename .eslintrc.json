@@ -9,5 +9,13 @@
         "project": ["./tsconfig.json", "./ui/tsconfig.json"]
     },
     "rules": {},
-    "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts"]
+    "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts"],
+    "overrides": [
+        {
+            "files": ["*.config.js"],
+            "env": {
+                "node": true
+            }
+        }
+    ]
 }

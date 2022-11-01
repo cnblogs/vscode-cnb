@@ -15,8 +15,9 @@
         "paths": {
             "@models/*": ["../src/models/*"]
         },
-        "lib": ["DOM", "ES2020"]
+        "lib": ["DOM", "ES2020"],
+        "strictBindCallApply": true
     },
-    "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "./**/*.js", "../src/models/*.ts"],
+    "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "./**/*.js", "*.mjs", "../src/models/*.ts"],
     "exclude": ["./dist"]
 }
