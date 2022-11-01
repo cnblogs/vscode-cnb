@@ -2,9 +2,7 @@ import base64url from 'base64url';
 import crypto from 'crypto';
 import RandomString from 'randomstring';
 
-export const generateCodeVerifier = () => {
-    return RandomString.generate(128);
-};
+export const generateCodeVerifier = () => RandomString.generate(128);
 
 export const generateCodeChallenge = (codeVerifier?: string): { codeVerifier: string; codeChallenge: string } => {
     codeVerifier ??= generateCodeVerifier();

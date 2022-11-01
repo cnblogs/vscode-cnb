@@ -7,18 +7,6 @@ export class UserAuthorizationInfo {
 export class UserInfo {
     private _blogApp?: string | null;
 
-    get userId() {
-        return this.sub;
-    }
-
-    get blogApp(): string | null {
-        if (this._blogApp == null) {
-            this._blogApp = this.parseBlogApp();
-        }
-
-        return this._blogApp;
-    }
-
     /**
      * Creates an instance of UserInfo.
      * @param {UserAuthorizationInfo} [authorizationInfo]
@@ -38,6 +26,16 @@ export class UserInfo {
         public sub: string = '',
         public accountId: number = -1
     ) {}
+
+    get userId() {
+        return this.sub;
+    }
+
+    get blogApp(): string | null {
+        if (this._blogApp == null) this._blogApp = this.parseBlogApp();
+
+        return this._blogApp;
+    }
 
     private parseBlogApp(): string | null {
         return (

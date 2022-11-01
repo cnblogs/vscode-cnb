@@ -11,9 +11,7 @@ export const setWorkspace = async () => {
         defaultUri: Settings.workspaceUri,
     })) ?? [])[0];
 
-    if (!input) {
-        return;
-    }
+    if (!input) return;
 
     await Settings.setWorkspaceUri(input);
     AlertService.info(`工作空间成功修改为: "${Settings.workspaceUri.fsPath}"`);

@@ -14,16 +14,12 @@ export type Platform = 'darwin' | 'win32' | 'win10' | 'linux' | 'wsl';
 
 const getCurrentPlatform = (): Platform => {
     const platform = process.platform;
-    if (isWsl) {
-        return 'wsl';
-    }
+    if (isWsl) return 'wsl';
+
     if (platform === 'win32') {
         const currentOS = os.release().split('.')[0];
-        if (currentOS === '10') {
-            return 'win10';
-        } else {
-            return 'win32';
-        }
+        if (currentOS === '10') return 'win10';
+        else return 'win32';
     } else if (platform === 'darwin') {
         return 'darwin';
     } else {
@@ -34,10 +30,8 @@ const getCurrentPlatform = (): Platform => {
 const readClipboardScript = (
     scriptName: 'mac.applescript' | 'linux.sh' | 'windows.ps1' | 'windows10.ps1' | 'wsl.sh'
 ) => {
-    const buffer = fs.readFileSync(
-        globalState.extensionContext!.asAbsolutePath(`dist/assets/scripts/clipboard/${scriptName}`)
-    );
-    return new TextDecoder().decode(buffer);
+    const filePath = globalState.extensionContext.asAbsolutePath(`dist/assets/scripts/clipboard/${scriptName}`);
+    return new TextDecoder().decode(fs.readFileSync(filePath));
 };
 
 const platform2ScriptContent = (): {
@@ -63,18 +57,17 @@ const platform2ScriptFilename: {
     wsl: 'wsl.sh',
 };
 
-const getClipboardImage = async (): Promise<IClipboardImage> => {
+const getClipboardImage = (): Promise<IClipboardImage> => {
     const imagePath = path.join(
-        globalState.extensionContext!.asAbsolutePath('./'),
+        globalState.extensionContext?.asAbsolutePath('./') ?? '',
         `${format(new Date(), 'yyyyMMddHHmmss')}.png`
     );
-    return await new Promise<IClipboardImage>((resolve: Function, reject: Function): void => {
+    return new Promise<IClipboardImage>((resolve, reject): void => {
         const platform = getCurrentPlatform();
         const scriptPath = path.join(__dirname, platform2ScriptFilename[platform]);
         // If the script does not exist yet, we need to write the content to the script file
-        if (!fs.existsSync(scriptPath)) {
-            fs.writeFileSync(scriptPath, platform2ScriptContent()[platform], 'utf8');
-        }
+        if (!fs.existsSync(scriptPath)) fs.writeFileSync(scriptPath, platform2ScriptContent()[platform], 'utf8');
+
         let execution;
         if (platform === 'darwin') {
             execution = spawn('osascript', [scriptPath, imagePath]);
@@ -115,14 +108,10 @@ const getClipboardImage = async (): Promise<IClipboardImage> => {
             if (path.basename(imgPath) !== path.basename(imagePath)) {
                 // if the path is not generate by picgo
                 // but the path exists, we should keep it
-                if (fs.existsSync(imgPath)) {
-                    shouldKeepAfterUploading = true;
-                }
+                if (fs.existsSync(imgPath)) shouldKeepAfterUploading = true;
             }
             // if the imgPath is invalid
-            if (imgPath !== 'no image' && !fs.existsSync(imgPath)) {
-                return reject(new Error(`Can't find ${imgPath}`));
-            }
+            if (imgPath !== 'no image' && !fs.existsSync(imgPath)) return reject(new Error(`Can't find ${imgPath}`));
 
             resolve({
                 imgPath,

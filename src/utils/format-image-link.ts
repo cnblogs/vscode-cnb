@@ -1,7 +1,5 @@
 export const formatImageLink = (link: string, format: 'html' | 'markdown' | 'raw'): string => {
-    if (!link) {
-        return '';
-    }
+    if (!link) return '';
 
     let formatted = link;
     switch (format) {

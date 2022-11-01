@@ -13,27 +13,36 @@ export class PostFileMapManager {
         return globalState.storage.get<PostFileMap[]>(this.storageKey) ?? [];
     }
 
-    static async updateOrCreateMany(...maps: PostFileMap[]): Promise<void> {
-        for (const map of maps) {
-            await this.updateOrCreate(map[0], map[1]);
+    static updateOrCreateMany(maps: PostFileMap[]): Promise<void>;
+    static updateOrCreateMany(options: { emitEvent?: boolean; maps: PostFileMap[] }): Promise<void>;
+    static async updateOrCreateMany(arg: { emitEvent?: boolean; maps: PostFileMap[] } | PostFileMap[]): Promise<void> {
+        let maps: PostFileMap[] = [];
+        let shouldEmitEvent = true;
+        if (Array.isArray(arg)) {
+            maps = arg;
+        } else {
+            maps = arg.maps;
+            shouldEmitEvent = arg.emitEvent ?? true;
         }
+
+        for (const map of maps) await this.updateOrCreate(map[0], map[1], { emitEvent: shouldEmitEvent });
     }
 
-    static async updateOrCreate(postId: number, filePath: string): Promise<void> {
+    static async updateOrCreate(postId: number, filePath: string, { emitEvent = true } = {}): Promise<void> {
         const validFileExt = ['.md', '.html'];
-        if (filePath && !validFileExt.some(x => filePath.endsWith(x))) {
+        if (filePath && !validFileExt.some(x => filePath.endsWith(x)))
             throw Error('Invalid filepath, file must have type markdown or html');
-        }
+
         const maps = this.maps;
         const exist = maps.find(p => p[0] === postId);
-        if (exist) {
-            exist[1] = filePath;
-        } else {
-            maps.push([postId, filePath]);
-        }
+        if (exist) exist[1] = filePath;
+        else maps.push([postId, filePath]);
+
         await globalState.storage.update(this.storageKey, maps.filter(validatePostFileMap));
-        postsDataProvider.fireTreeDataChangedEvent(postId);
-        postCategoriesDataProvider.onPostUpdated({ refreshPosts: false, postIds: [postId] });
+        if (emitEvent) {
+            postsDataProvider.fireTreeDataChangedEvent(postId);
+            postCategoriesDataProvider.onPostUpdated({ refreshPosts: false, postIds: [postId] });
+        }
     }
 
     static findByPostId(postId: number) {

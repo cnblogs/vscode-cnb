@@ -28,31 +28,17 @@ export interface IPostFormState extends PostConfiguration {}
 
 export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
     static contextType?: React.Context<IPostFormContext> | undefined = PostFormContext;
+    declare context: React.ContextType<typeof PostFormContext>;
+
     constructor(props: IPostFormProps) {
         super(props);
-        this.state = {};
-        Object.assign(this.state, props.post);
+        this.state = Object.assign({}, props.post ?? new Post());
     }
 
-    private onConfirm() {
-        this.context.set({ disabled: true, status: 'submitting' });
-        vsCodeApi.getInstance().postMessage({
-            command: webviewCommand.ExtensionCommands.savePost,
-            post: Object.assign({}, this.props.post, this.state),
-        } as webviewMessage.SavePostMessage);
-    }
+    render() {
+        if (!this.props.post) return <></>;
 
-    private onCancel() {
-        vsCodeApi
-            .getInstance()
-            .postMessage({ command: webviewCommand.ExtensionCommands.disposePanel } as webviewMessage.Message);
-    }
-
-    public render() {
-        if (!this.props.post) {
-            return <></>;
-        }
-        const { disabled, status } = this.context as IPostFormContext;
+        const { disabled: isDisabled, status } = this.context;
         return (
             <form>
                 <Stack tokens={{ childrenGap: 16 }}>
@@ -76,25 +62,21 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                     />
                     <CommonOptions
                         options={{
-                            isPublished: { label: '发布', checked: this.state.isPublished! },
+                            isPublished: { label: '发布', checked: this.state.isPublished },
                             displayOnHomePage: {
                                 label: '显示在我的博客首页',
-                                checked: this.state.displayOnHomePage!,
+                                checked: this.state.displayOnHomePage,
                             },
                             isAllowComments: {
                                 label: '允许评论',
-                                checked: this.state.isAllowComments!,
+                                checked: this.state.isAllowComments,
                             },
                             isPinned: {
                                 label: '置顶',
-                                checked: this.state.isPinned!,
+                                checked: this.state.isPinned,
                             },
                         }}
-                        onChange={(key, checked) => {
-                            const obj = {} as any;
-                            obj[key] = checked;
-                            this.setState(obj);
-                        }}
+                        onChange={(_, __, stateObj) => this.setState(stateObj)}
                     />
                     <PasswordInput
                         onChange={value => this.setState({ password: value })}
@@ -116,8 +98,8 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                                 inSiteCandidate: v ? false : this.state.inSiteCandidate,
                             })
                         }
-                        inSiteCandidate={this.state.inSiteCandidate!}
-                        inSiteHome={this.state.inSiteHome!}
+                        inSiteCandidate={this.state.inSiteCandidate}
+                        inSiteHome={this.state.inSiteHome}
                     />
                     <SiteCategoriesSelector
                         categoryIds={this.state.siteCategoryId ? [this.state.siteCategoryId] : []}
@@ -130,16 +112,31 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                     <ErrorResponse />
                     <Stack horizontal tokens={{ childrenGap: 8 }}>
                         <PrimaryButton
-                            text='确定'
-                            disabled={disabled}
+                            text="确定"
+                            disabled={isDisabled}
                             onClick={() => this.onConfirm()}
                             allowDisabledFocus
                         />
-                        <DefaultButton disabled={disabled} text='取消' onClick={() => this.onCancel()} />
-                        {status === 'submitting' ? <Spinner label='正在提交' labelPosition='right' /> : <></>}
+                        <DefaultButton disabled={isDisabled} text="取消" onClick={() => this.onCancel()} />
+                        {status === 'submitting' ? <Spinner label="正在提交" labelPosition="right" /> : <></>}
                     </Stack>
                 </Stack>
             </form>
         );
+    }
+
+    private onConfirm() {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        this.context.set({ disabled: true, status: 'submitting' });
+        vsCodeApi.getInstance().postMessage({
+            command: webviewCommand.ExtensionCommands.savePost,
+            post: Object.assign({}, this.props.post, this.state),
+        } as webviewMessage.SavePostMessage);
+    }
+
+    private onCancel() {
+        vsCodeApi
+            .getInstance()
+            .postMessage({ command: webviewCommand.ExtensionCommands.disposePanel } as webviewMessage.Message);
     }
 }

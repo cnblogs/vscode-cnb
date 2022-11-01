@@ -13,18 +13,16 @@ export abstract class MultiSelectableTreeViewCommandHandler<TArgument, TData>
     constructor(public readonly input: TArgument) {}
 
     get selections(): TData[] {
-        if (this._selections == null) {
-            this._selections = this.parseSelections();
-        }
+        if (this._selections == null) this._selections = this.parseSelections();
 
         return this._selections;
     }
 
-    protected abstract parseSelections(): TData[];
-
-    abstract handle(): void | Promise<void>;
-
     parseInput(): TData[] | null {
         return this.parseSelections();
     }
+
+    abstract handle(): void | Promise<void>;
+
+    protected abstract parseSelections(): TData[];
 }

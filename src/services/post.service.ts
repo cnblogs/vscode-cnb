@@ -18,6 +18,8 @@ let newPostTemplate: PostEditDto | undefined;
 export class PostService {
     private static _instance = new PostService();
 
+    protected constructor() {}
+
     protected get _baseUrl() {
         return globalState.config.apiBaseUrl;
     }
@@ -29,8 +31,6 @@ export class PostService {
     get postsListState(): PostsListState | undefined {
         return globalState.storage.get<PostsListState>('postsListState');
     }
-
-    protected constructor() {}
 
     async fetchPostsList({
         search = '',
@@ -49,13 +49,12 @@ export class PostService {
             ['search', search],
             ['cid', categoryId != null && categoryId > 0 ? `${categoryId}` : ''],
         ]);
-        const response = await fetch(`${this._baseUrl}/api/posts/list?${s}`, {
+        const response = await fetch(`${this._baseUrl}/api/posts/list?${s.toString()}`, {
             headers: [accountService.buildBearerAuthorizationHeader()],
             method: 'GET',
         });
-        if (!response.ok) {
-            throw Error(`request failed, ${response.status}, ${await response.text()}`);
-        }
+        if (!response.ok) throw Error(`request failed, ${response.status}, ${await response.text()}`);
+
         const obj = <PostListModel>await response.json();
         const { zzkSearchResult } = obj;
         return Object.assign(
@@ -82,17 +81,15 @@ export class PostService {
                 if (statusCode === 404) {
                     AlertService.error('博文不存在');
                     const postFilePath = PostFileMapManager.getFilePath(postId);
-                    if (postFilePath) {
-                        await PostFileMapManager.updateOrCreate(postId, '');
-                    }
+                    if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '');
                 } else {
                     AlertService.error(errors.join('\n'));
                 }
             }
             return undefined;
         }
-        const obj = (await response.json()) as any;
-        return new PostEditDto(Object.assign(new Post(), obj.blogPost), obj.myConfig);
+        const { blogPost, myConfig } = (await response.json()) as { blogPost?: Post; myConfig?: unknown };
+        return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined;
     }
 
     async deletePost(postId: number) {
@@ -100,20 +97,16 @@ export class PostService {
             method: 'DELETE',
             headers: [accountService.buildBearerAuthorizationHeader()],
         });
-        if (!res.ok) {
-            throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`);
-        }
+        if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`);
     }
 
     async deletePosts(postIds: number[]) {
-        const s = new URLSearchParams(postIds.map(id => ['postIds', `${id}`]));
-        const res = await fetch(`${this._baseUrl}/api/bulk-operation/post?${s}`, {
+        const searchParams = new URLSearchParams(postIds.map(id => ['postIds', `${id}`]));
+        const res = await fetch(`${this._baseUrl}/api/bulk-operation/post?${searchParams.toString()}`, {
             method: 'DELETE',
             headers: [accountService.buildBearerAuthorizationHeader()],
         });
-        if (!res.ok) {
-            throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`);
-        }
+        if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`);
     }
 
     async updatePost(post: Post): Promise<PostUpdatedResponse> {
@@ -144,9 +137,7 @@ export class PostService {
     }
 
     async fetchPostEditDtoTemplate(): Promise<PostEditDto | undefined> {
-        if (!newPostTemplate) {
-            newPostTemplate = await this.fetchPostEditDto(-1);
-        }
+        if (!newPostTemplate) newPostTemplate = await this.fetchPostEditDto(-1);
 
         return newPostTemplate
             ? new PostEditDto(

@@ -30,17 +30,13 @@ export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
         }
     }
 
-    if (!(postId >= 0)) {
-        return;
-    }
+    if (!(postId >= 0)) return;
 
-    if (post) {
-        await revealPostsListItem(post);
-    }
+    if (post) await revealPostsListItem(post);
+
     const editDto = await postService.fetchPostEditDto(postId);
-    if (!editDto) {
-        return;
-    }
+    if (!editDto) return;
+
     const postEditDto = editDto.post;
     const localFilePath = PostFileMapManager.getFilePath(postId);
     await postConfigurationPanel.open({

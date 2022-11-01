@@ -16,7 +16,7 @@ export enum RootPostMetadataType {
     createDate = 'createDate',
 }
 
-const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto) =>
+const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto | undefined) =>
     [
         [RootPostMetadataType.updateDate, () => new PostUpdatedDateMetadata(parsedPost)],
         [RootPostMetadataType.createDate, () => new PostCreatedDateMetadata(parsedPost)],
@@ -43,8 +43,6 @@ export abstract class PostMetadata extends BaseTreeItemSource {
         super();
     }
 
-    abstract toTreeItem(): TreeItem | Promise<TreeItem>;
-
     static async parseRoots({
         exclude = [],
         post,
@@ -55,16 +53,21 @@ export abstract class PostMetadata extends BaseTreeItemSource {
         let parsedPost = post instanceof PostTreeItem ? post.post : post;
         const postEditDto = await postService.fetchPostEditDto(parsedPost.id);
         parsedPost = postEditDto?.post || parsedPost;
-        return await Promise.all(
-            rootMetadataMap(parsedPost, postEditDto ?? ({} as any))
+        return Promise.all(
+            rootMetadataMap(parsedPost, postEditDto)
                 .filter(([type]) => !exclude.includes(type))
                 .map(([, factory]) => factory())
                 .map(x => (x instanceof Promise ? x : Promise.resolve<PostMetadata>(x)))
         ).then(v => v.filter((x): x is PostMetadata => x instanceof PostMetadata));
     }
+
+    abstract toTreeItem(): TreeItem | Promise<TreeItem>;
 }
 
-export abstract class PostEntryMetadata<T extends PostMetadata> extends PostMetadata implements BaseEntryTreeItem<T> {
+export abstract class PostEntryMetadata<T extends PostMetadata = PostMetadata>
+    extends PostMetadata
+    implements BaseEntryTreeItem<T>
+{
     constructor(parent: Post, public readonly children: T[]) {
         super(parent);
     }
@@ -109,16 +112,9 @@ export class PostCategoryMetadata extends PostMetadata {
         super(parent);
     }
 
-    toTreeItem = (): TreeItem =>
-        Object.assign<TreeItem, TreeItem>(new TreeItem(this.categoryName), {
-            iconPath: this.icon,
-        });
-
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCategoryMetadata[]> {
         editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id);
-        if (editDto == null) {
-            return [];
-        }
+        if (editDto == null) return [];
 
         const {
             post: { categoryIds },
@@ -127,6 +123,11 @@ export class PostCategoryMetadata extends PostMetadata {
             ({ categoryId, title }) => new PostCategoryMetadata(parent, title, categoryId)
         );
     }
+
+    toTreeItem = (): TreeItem =>
+        Object.assign<TreeItem, TreeItem>(new TreeItem(this.categoryName), {
+            iconPath: this.icon,
+        });
 }
 
 export class PostTagMetadata extends PostMetadata {
@@ -135,22 +136,20 @@ export class PostTagMetadata extends PostMetadata {
         super(parent);
     }
 
-    toTreeItem = (): TreeItem =>
-        Object.assign<TreeItem, TreeItem>(new TreeItem(`# ${this.tag}`), {
-            iconPath: this.icon,
-        });
-
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostMetadata[]> {
         editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id);
-        if (editDto == null) {
-            return [];
-        }
+        if (editDto == null) return [];
 
         const {
             post: { tags },
         } = editDto;
         return (tags ?? [])?.map(tag => new PostTagMetadata(parent, tag));
     }
+
+    toTreeItem = (): TreeItem =>
+        Object.assign<TreeItem, TreeItem>(new TreeItem(`# ${this.tag}`), {
+            iconPath: this.icon,
+        });
 }
 
 export abstract class PostDateMetadata extends PostMetadata {

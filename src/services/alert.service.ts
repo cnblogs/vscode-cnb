@@ -6,10 +6,10 @@ export class AlertService {
     }
 
     static info(message: string) {
-        void vscode.window.showInformationMessage(message);
+        vscode.window.showInformationMessage(message).then(undefined, undefined);
     }
 
     static warning(message: string) {
-        void vscode.window.showWarningMessage(message);
+        vscode.window.showWarningMessage(message).then(undefined, undefined);
     }
 }

@@ -6,19 +6,14 @@ import { PostTreeItem } from '../tree-view-providers/models/post-tree-item';
 
 export const viewPostOnline = async (input?: Post | PostTreeItem | Uri) => {
     let post: Post | undefined = input instanceof Post ? input : input instanceof PostTreeItem ? input.post : undefined;
-    if (!input) {
-        input = window.activeTextEditor?.document.uri;
-    }
+    if (!input) input = window.activeTextEditor?.document.uri;
+
     if (input instanceof Uri) {
         const postId = PostFileMapManager.getPostId(input.fsPath);
-        if (postId) {
-            post = (await postService.fetchPostEditDto(postId))?.post;
-        }
+        if (postId) post = (await postService.fetchPostEditDto(postId))?.post;
     }
 
-    if (!post) {
-        return;
-    }
+    if (!post) return;
 
     const url = post.url.startsWith('//') ? `https:${post.url}` : post.url;
     await commands.executeCommand('vscode.open', Uri.parse(url));

@@ -10,22 +10,16 @@ import { BasePostCategoryTreeViewCommandHandler } from './base-tree-view-command
 class UpdatePostCategoryTreeViewCommandHandler extends BasePostCategoryTreeViewCommandHandler {
     async handle(): Promise<void> {
         const category = this.parseInput();
-        if (category == null) {
-            return;
-        }
+        if (category == null) return;
 
         const addDto = await inputPostCategory({
             title: '编辑博文分类',
             category,
         });
-        if (!addDto) {
-            return;
-        }
+        if (!addDto) return;
 
         const updateDto = Object.assign(new PostCategory(), category, addDto);
-        if (!updateDto) {
-            return;
-        }
+        if (!updateDto) return;
 
         await window.withProgress(
             {
@@ -39,10 +33,10 @@ class UpdatePostCategoryTreeViewCommandHandler extends BasePostCategoryTreeViewC
                     refreshPostCategoriesList();
                     // 如果选择了createLocalPostFileWithCategory模式且本地有该目录,则重命名该目录
                     const workspaceUri = Settings.workspaceUri;
-                    const createLocalPostFileWithCategory = Settings.createLocalPostFileWithCategory;
+                    const shouldCreateLocalPostFileWithCategory = Settings.createLocalPostFileWithCategory;
                     const uri = Uri.joinPath(workspaceUri, category.title).fsPath;
                     const isFileExist = fs.existsSync(uri);
-                    if (createLocalPostFileWithCategory && isFileExist) {
+                    if (shouldCreateLocalPostFileWithCategory && isFileExist) {
                         const oldUri = Uri.joinPath(workspaceUri, category.title);
                         const newUri = Uri.joinPath(workspaceUri, addDto.title);
                         await workspace.fs.rename(oldUri, newUri);

@@ -9,9 +9,7 @@ export const searchPosts = async () => {
         placeHolder: '在此输入关键词',
         validateInput: value => (value.length <= 30 ? null : '最多输入30个字符'),
     });
-    if (!searchKey) {
-        return;
-    }
+    if (!searchKey) return;
 
     await postsDataProvider.search({ key: searchKey });
 };

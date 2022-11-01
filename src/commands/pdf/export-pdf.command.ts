@@ -13,6 +13,7 @@ import { Settings } from '../../services/settings.service';
 import { accountService } from '../../services/account.service';
 import { AlertService } from '../../services/alert.service';
 import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
+import { PostEditDto } from '@/models/post-edit-dto';
 
 const launchBrowser = async (
     chromiumPath: string
@@ -48,7 +49,7 @@ const exportOne = async (
     progress: Progress<{ message: string; increment: number }>,
     blogApp: string
 ) => {
-    let message = `[${idx + 1}/${total}]正在导出 - ${post.title}`;
+    const message = `[${idx + 1}/${total}]正在导出 - ${post.title}`;
     const report = (increment: number) => {
         progress.report({
             increment: increment,
@@ -56,15 +57,13 @@ const exportOne = async (
         });
     };
     report(10);
-    let html = await postPdfTemplateBuilder.build(post, blogApp);
+    const html = await postPdfTemplateBuilder.build(post, blogApp);
     report(15);
     // Wait for code block highlight finished
     await Promise.all([
         new Promise<void>(resolve => {
             page.on('console', ev => {
-                if (ev.text() === postPdfTemplateBuilder.highlightedMessage) {
-                    resolve();
-                }
+                if (ev.text() === postPdfTemplateBuilder.HighlightedMessage) resolve();
             });
         }),
         page.setContent(html, {
@@ -72,9 +71,9 @@ const exportOne = async (
         }),
     ]);
     report(40);
-    let pdfBuffer = await createPdfBuffer(page);
+    const pdfBuffer = await createPdfBuffer(page);
     report(90);
-    await writePdfToFile(targetFileUri!, post, pdfBuffer);
+    await writePdfToFile(targetFileUri, post, pdfBuffer);
     report(-100);
 };
 
@@ -92,16 +91,14 @@ const createPdfBuffer = (page: puppeteer.Page) =>
 
 const writePdfToFile = (dir: Uri, post: Post, buffer: Buffer) =>
     new Promise<void>(resolve => {
-        fs.writeFile(path.join(dir!.fsPath, `${post.title}.pdf`), buffer, () => {
+        fs.writeFile(path.join(dir.fsPath, `${post.title}.pdf`), buffer, () => {
             resolve();
         });
     });
 
 const retrieveChromiumPath = async (): Promise<string | undefined> => {
     let path: string | undefined = chromiumPathProvider.lookupExecutableFromMacApp(Settings.chromiumPath);
-    if (path && fs.existsSync(path)) {
-        return path;
-    }
+    if (path && fs.existsSync(path)) return path;
 
     const platform = os.platform();
     const { defaultChromiumPath } = chromiumPathProvider;
@@ -115,7 +112,7 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
     }
 
     if (!path) {
-        const { options } = chromiumPathProvider;
+        const { Options: options } = chromiumPathProvider;
         const input = await window.showWarningMessage(
             '未找到Chromium可执行文件',
             {
@@ -127,29 +124,24 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
         path = op ? await op[1]() : undefined;
     }
 
-    if (path && path !== Settings.chromiumPath) {
-        await Settings.setChromiumPath(path);
-    }
+    if (path && path !== Settings.chromiumPath) await Settings.setChromiumPath(path);
 
     return path;
 };
 
-const inputTargetFolder = async (): Promise<Uri | undefined> => {
-    return ((await window.showOpenDialog({
+const inputTargetFolder = async (): Promise<Uri | undefined> =>
+    ((await window.showOpenDialog({
         canSelectFiles: false,
         canSelectFolders: true,
         canSelectMany: false,
         title: '请选择用于保存pdf的目录',
     })) ?? [])[0];
-};
 
 const handlePostInput = (post: Post | PostTreeItem): Promise<Post[]> => {
     const posts: Post[] = [post instanceof PostTreeItem ? post.post : post];
     extensionViews.visiblePostsList()?.selection.map(item => {
         item = item instanceof PostTreeItem ? item.post : item;
-        if (item instanceof Post && !posts.includes(item)) {
-            posts.push(item);
-        }
+        if (item instanceof Post && !posts.includes(item)) posts.push(item);
     });
     return Promise.resolve(posts);
 };
@@ -176,26 +168,24 @@ const handleUriInput = async (uri: Uri): Promise<Post[]> => {
 };
 
 const mapToPostEditDto = async (posts: Post[]) =>
-    (await Promise.all(posts.map(p => postService.fetchPostEditDto(p.id)))).filter(x => !!x).map(x => x!.post);
+    (await Promise.all(posts.map(p => postService.fetchPostEditDto(p.id))))
+        .filter((x): x is PostEditDto => x != null)
+        .map(x => x?.post);
 
 const reportErrors = (errors: string[] | undefined) => {
-    if (errors && errors.length > 0) {
+    if (errors && errors.length > 0)
         void window.showErrorMessage('导出pdf时遇到错误', { modal: true, detail: errors.join('\n') } as MessageOptions);
-    }
 };
 
 const exportPostToPdf = async (input: Post | PostTreeItem | Uri): Promise<void> => {
     const chromiumPath = await retrieveChromiumPath();
-    if (!chromiumPath) {
-        return;
-    }
+    if (!chromiumPath) return;
+
     const {
         curUser: { blogApp },
     } = accountService;
 
-    if (!blogApp) {
-        return AlertService.warning('无法获取到博客地址, 请检查登录状态');
-    }
+    if (!blogApp) return AlertService.warning('无法获取到博客地址, 请检查登录状态');
 
     reportErrors(
         await window.withProgress<string[] | undefined>(
@@ -208,28 +198,24 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri): Promise<void> 
                 let selectedPosts = await (input instanceof Post || input instanceof PostTreeItem
                     ? handlePostInput(input)
                     : handleUriInput(input));
-                if (selectedPosts.length <= 0) {
-                    return;
-                }
+                if (selectedPosts.length <= 0) return;
+
                 selectedPosts = input instanceof Post ? await mapToPostEditDto(selectedPosts) : selectedPosts;
                 progress.report({ message: '选择输出文件夹' });
-                let dir = await inputTargetFolder();
-                if (!dir || !chromiumPath) {
-                    return;
-                }
+                const dir = await inputTargetFolder();
+                if (!dir || !chromiumPath) return;
 
                 progress.report({ message: '启动Chromium' });
                 const { browser, page } = (await launchBrowser(chromiumPath)) ?? {};
-                if (!browser || !page) {
-                    return ['启动Chromium失败'];
-                }
+                if (!browser || !page) return ['启动Chromium失败'];
+
                 let idx = 0;
                 const { length: total } = selectedPosts;
                 for (const post of selectedPosts) {
                     try {
-                        await exportOne(idx++, total, post, page, dir!, progress, blogApp);
+                        await exportOne(idx++, total, post, page, dir, progress, blogApp);
                     } catch (err) {
-                        errors.push(`导出"${post.title}失败", ${err}`);
+                        errors.push(`导出"${post.title}失败", ${JSON.stringify(err)}`);
                     }
                 }
                 await page.close();

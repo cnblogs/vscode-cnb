@@ -1,7 +1,7 @@
 class SiteCategory {
-    id: number = -1;
-    title: string = '';
-    parentId: number = -1;
+    id = -1;
+    title = '';
+    parentId = -1;
     children: SiteCategory[] = [];
 }
 

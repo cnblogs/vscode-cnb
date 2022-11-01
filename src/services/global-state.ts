@@ -8,34 +8,37 @@ export class GlobalState {
     private _config: IConfig = defaultConfig;
     private _devConfig: IConfig = devConfig;
 
+    protected constructor() {}
+
     static get instance() {
         return this._instance;
     }
 
     get secretsStorage() {
-        return this._extensionContext?.secrets!;
+        return this.extensionContext.secrets;
     }
 
     get storage() {
-        return this._extensionContext?.globalState!;
+        return this.extensionContext.globalState;
     }
 
     get config(): IConfig {
         return isDev() ? this._devConfig : this._config;
     }
 
-    get extensionContext(): ExtensionContext | undefined {
+    get extensionContext(): ExtensionContext {
+        if (this._extensionContext == null) throw Error('extension context not exist');
         return this._extensionContext;
     }
+
     set extensionContext(v: ExtensionContext | undefined) {
         this._extensionContext = v;
     }
 
     get extensionName(): string {
-        return this.extensionContext?.extension.packageJSON['name'] ?? '';
+        const { name } = <{ name?: string }>this.extensionContext.extension.packageJSON;
+        return name ?? '';
     }
-
-    protected constructor() {}
 }
 
 export const globalState = GlobalState.instance;

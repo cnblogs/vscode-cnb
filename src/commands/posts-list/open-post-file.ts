@@ -5,16 +5,12 @@ import { PostFileMapManager } from '../../services/post-file-map';
 
 export const openPostFile = async (post: LocalDraft | Post | string, options?: TextDocumentShowOptions) => {
     let filePath = '';
-    if (post instanceof LocalDraft) {
-        filePath = post.filePath;
-    } else if (post instanceof Post) {
-        filePath = PostFileMapManager.getFilePath(post.id) ?? '';
-    } else {
-        filePath = post;
-    }
-    if (!filePath) {
-        return;
-    }
+    if (post instanceof LocalDraft) filePath = post.filePath;
+    else if (post instanceof Post) filePath = PostFileMapManager.getFilePath(post.id) ?? '';
+    else filePath = post;
+
+    if (!filePath) return;
+
     await commands.executeCommand(
         'vscode.open',
         Uri.file(filePath),

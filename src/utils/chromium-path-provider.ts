@@ -2,7 +2,9 @@ import { window, ProgressLocation } from 'vscode';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-const download = require('download-chromium');
+import { AlertService } from '@/services/alert.service';
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
+const download: (arg: Record<string, unknown>) => Promise<string> = require('download-chromium');
 
 namespace chromiumPathProvider {
     export const defaultChromiumPath = {
@@ -14,14 +16,11 @@ namespace chromiumPathProvider {
     export const lookupExecutableFromMacApp = (path?: string) => {
         if (path?.endsWith('.app')) {
             path = `${path}/Contents/MacOS`;
-            if (!fs.existsSync(path)) {
-                return undefined;
-            }
-            for (let item of fs.readdirSync(path)) {
+            if (!fs.existsSync(path)) return undefined;
+
+            for (const item of fs.readdirSync(path)) {
                 path = `${path}/${item}`;
-                if (fs.statSync(path).mode & fs.constants.S_IXUSR) {
-                    return path;
-                }
+                if (fs.statSync(path).mode & fs.constants.S_IXUSR) return path;
             }
         }
 
@@ -29,7 +28,7 @@ namespace chromiumPathProvider {
     };
     export const selectFromLocal: ChromiumProviderFunc = async (): Promise<string | undefined> => {
         const platform = os.platform();
-        let path = (
+        const path = (
             await window.showOpenDialog({
                 canSelectMany: false,
                 title: selectFromLocalTitle,
@@ -56,12 +55,11 @@ namespace chromiumPathProvider {
                 progress.report({ increment: 0 });
                 try {
                     let percentCache = 0;
-                    return <string>await download({
+                    return await download({
                         log: false,
                         revision: 983122,
                         installPath,
-                        onProgress: (arg: any) => {
-                            let { percent } = arg;
+                        onProgress: ({ percent }: { percent: number }) => {
                             percent *= 100;
                             percent = Math.floor(percent);
                             progress.report({
@@ -76,13 +74,12 @@ namespace chromiumPathProvider {
                 }
             }
         );
-        if (chromiumPath) {
-            void window.showInformationMessage(`Chromium已下载至${chromiumPath}`);
-        }
+        if (chromiumPath) AlertService.info(`Chromium已下载至${chromiumPath}`);
 
         return chromiumPath;
     };
-    export const options: [string, chromiumPathProvider.ChromiumProviderFunc][] = [
+
+    export const Options: [string, chromiumPathProvider.ChromiumProviderFunc][] = [
         [selectFromLocalTitle, chromiumPathProvider.selectFromLocal],
         [downloadFromInternetTitle, chromiumPathProvider.downloadFromInternet],
     ];

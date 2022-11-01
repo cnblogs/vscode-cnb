@@ -36,12 +36,6 @@ const createImageTypeFilter = (type: MarkdownImagesExtractor['imageType']) => {
 };
 
 export class MarkdownImagesExtractor {
-    get status() {
-        return this._status;
-    }
-    get errors() {
-        return this._errors;
-    }
     imageType: 'web' | 'local' | 'all' = 'all';
     readonly markdownImageRegex = markdownImageRegex;
     readonly createImageTypeFilter = createImageTypeFilter;
@@ -56,18 +50,25 @@ export class MarkdownImagesExtractor {
         public onProgress?: (index: number, images: MarkdownImages) => void
     ) {}
 
+    get status() {
+        return this._status;
+    }
+    get errors() {
+        return this._errors;
+    }
+
     async extract(): Promise<[source: MarkdownImage, result: MarkdownImage | null][]> {
         this._status = 'extracting';
         const sourceImages = this.findImages();
         let idx = 0;
-        let result: ReturnType<MarkdownImagesExtractor['extract']> extends Promise<infer U> ? U : never = [];
-        for (let image of sourceImages) {
+        const result: ReturnType<MarkdownImagesExtractor['extract']> extends Promise<infer U> ? U : never = [];
+        for (const image of sourceImages) {
             this.onProgress?.call(this, idx++, sourceImages);
-            let newImageLink = result.find(x => x[1] != null && x[0].link === image.link)?.[1]?.link ?? '';
-            const imageFile = newImageLink ? false : await this.resolveImageFile(image);
-            if (imageFile !== false || newImageLink.length > 0) {
+            let newImageLink = result.find(x => x[1] != null && x[0].link === image.link)?.[1]?.link;
+            const imageFile = newImageLink ? newImageLink : await this.resolveImageFile(image);
+            if (imageFile !== false) {
                 try {
-                    newImageLink = newImageLink ? newImageLink : await imageService.upload(imageFile);
+                    newImageLink = typeof imageFile === 'string' ? imageFile : await imageService.upload(imageFile);
                 } catch (ex) {
                     this._errors.push([
                         image.symbol,
@@ -110,7 +111,7 @@ export class MarkdownImagesExtractor {
     private async resolveImageFile(image: MarkdownImage) {
         const { link, symbol, alt, title } = image;
         if (webImageFilter(image)) {
-            let imageStream = await imageService.download(link, alt ?? title);
+            const imageStream = await imageService.download(link, alt ?? title);
             if (!(imageStream instanceof Array)) {
                 return imageStream;
             } else {
@@ -127,9 +128,7 @@ export class MarkdownImagesExtractor {
 
             stream =
                 stream === false ? createReadStream(path.resolve(path.dirname(this.filePath.fsPath), link)) : stream;
-            if (stream === false) {
-                this._errors.push([symbol, `本地图片文件不存在(${triedPathed.join(', ')})`]);
-            }
+            if (stream === false) this._errors.push([symbol, `本地图片文件不存在(${triedPathed.join(', ')})`]);
 
             return stream;
         }

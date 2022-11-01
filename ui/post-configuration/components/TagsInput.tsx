@@ -43,34 +43,14 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
         };
     }
 
-    private toITag(tag: PostTag): ITag {
-        return { name: tag.name, key: tag.id };
-    }
-
-    private filterSuggestedTags(filterText: string, selectedTags?: ITag[]): ITag[] {
-        filterText = filterText?.trim() ?? '';
-        const { tags } = this.state;
-        const filteredTags = tags
-            .filter(
-                tag =>
-                    (!filterText || tag.name.indexOf(filterText) >= 0) &&
-                    (!selectedTags || selectedTags.findIndex(st => st.name === tag.name) < 0)
-            )
-            .map(x => ({ name: x.name, key: x.id } as ITag));
-        if (filteredTags.length <= 0 || tags.findIndex(t => t.name.toLowerCase() === filterText.toLowerCase()) < 0) {
-            filteredTags.push({ name: filterText, key: filterText, isNew: true } as INewTag);
-        }
-        return filteredTags;
-    }
-
-    public render() {
+    render() {
         return this.state ? (
             <Stack tokens={{ childrenGap: 8 }}>
                 <Label>Tag标签</Label>
                 <Stack>
                     <TagPicker
-                        removeButtonAriaLabel='Remove'
-                        selectionAriaLabel='Selected tags'
+                        removeButtonAriaLabel="Remove"
+                        selectionAriaLabel="Selected tags"
                         itemLimit={10}
                         onResolveSuggestions={(text, selectedItems) => this.filterSuggestedTags(text, selectedItems)}
                         pickerSuggestionsProps={{
@@ -80,13 +60,13 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
                         onRenderSuggestionsItem={tag => {
                             const isNewTag = (tag as INewTag).isNew === true;
                             const tagEl = (
-                                <Stack horizontal verticalAlign='center' tokens={{ childrenGap: 8 }}>
-                                    <Icon iconName='Tag' />
+                                <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
+                                    <Icon iconName="Tag" />
                                     <Text>{tag.name}</Text>
                                 </Stack>
                             );
                             const el = isNewTag ? (
-                                <Stack horizontal verticalAlign='center' tokens={{ childrenGap: 8 }}>
+                                <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
                                     <Text>新建标签:&nbsp;</Text>"{tagEl}"
                                 </Stack>
                             ) : (
@@ -102,8 +82,8 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
                             const { item: tag } = props;
                             return (
                                 <TagItem {...props}>
-                                    <Stack horizontal verticalAlign='center' tokens={{ childrenGap: 8 }}>
-                                        <Icon iconName='Tag' />
+                                    <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
+                                        <Icon iconName="Tag" />
                                         <Text>{tag.name}</Text>
                                     </Stack>
                                 </TagItem>
@@ -129,5 +109,25 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
         ) : (
             <></>
         );
+    }
+
+    private toITag(this: void, tag: PostTag): ITag {
+        return { name: tag.name, key: tag.id };
+    }
+
+    private filterSuggestedTags(filterText: string, selectedTags?: ITag[]): ITag[] {
+        filterText = filterText?.trim() ?? '';
+        const { tags } = this.state;
+        const filteredTags = tags
+            .filter(
+                tag =>
+                    (!filterText || tag.name.indexOf(filterText) >= 0) &&
+                    (!selectedTags || selectedTags.findIndex(st => st.name === tag.name) < 0)
+            )
+            .map(x => ({ name: x.name, key: x.id } as ITag));
+        if (filteredTags.length <= 0 || tags.findIndex(t => t.name.toLowerCase() === filterText.toLowerCase()) < 0)
+            filteredTags.push({ name: filterText, key: filterText, isNew: true } as INewTag);
+
+        return filteredTags;
     }
 }

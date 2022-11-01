@@ -4,8 +4,6 @@ interface IErrorResponse {
     statusCode: number;
 }
 
-const isErrorResponse = (obj: any): obj is IErrorResponse => {
-    return obj.type >= -1 && obj.errors && obj.errors.length > 0;
-};
+const isErrorResponse = (obj: any): obj is IErrorResponse => obj.type >= -1 && !!obj.errors && obj.errors.length > 0;
 
 export { IErrorResponse, isErrorResponse };

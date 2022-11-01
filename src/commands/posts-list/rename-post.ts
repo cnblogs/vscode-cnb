@@ -11,9 +11,8 @@ import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
 const renameLinkedFile = async (post: Post): Promise<void> => {
     const filePath = PostFileMapManager.getFilePath(post.id);
 
-    if (!filePath) {
-        return;
-    }
+    if (!filePath) return;
+
     const fileUri = Uri.file(filePath);
 
     const options = ['是'];
@@ -36,59 +35,57 @@ const renameLinkedFile = async (post: Post): Promise<void> => {
 
 export const renamePost = async (arg: Post | PostTreeItem) => {
     const post = arg instanceof PostTreeItem ? arg.post : arg;
-    if (!post) {
-        return;
-    }
+    if (!post) return;
 
     await revealPostsListItem(post);
 
     const input = await window.showInputBox({
         title: '请输入新的博文标题',
-        validateInput: v => {
-            return v ? undefined : '请输入一个标题';
-        },
+        validateInput: v => (v ? undefined : '请输入一个标题'),
         value: post.title,
     });
 
-    if (!input) {
-        return;
-    }
+    if (!input) return;
 
-    const success = await window.withProgress(
-        {
-            location: ProgressLocation.Notification,
-            title: '正在更新博文',
-        },
-        async progress => {
-            progress.report({ increment: 10 });
-            const editDto = await postService.fetchPostEditDto(post.id);
-            if (!editDto) {
-                return false;
+    return window
+        .withProgress(
+            {
+                location: ProgressLocation.Notification,
+                title: '正在更新博文',
+            },
+            async progress => {
+                progress.report({ increment: 10 });
+                const editDto = await postService.fetchPostEditDto(post.id);
+                if (!editDto) return false;
+
+                progress.report({ increment: 60 });
+
+                const editingPost = editDto.post;
+                editingPost.title = input;
+                let hasUpdated = false;
+                try {
+                    await postService.updatePost(editingPost);
+                    post.title = input;
+                    postsDataProvider.fireTreeDataChangedEvent(post);
+                    hasUpdated = true;
+                } catch (err) {
+                    void window.showInformationMessage('更新博文失败', {
+                        modal: true,
+                        detail: err instanceof Error ? err.message : '服务器返回了异常',
+                    } as MessageOptions);
+                } finally {
+                    progress.report({ increment: 100 });
+                }
+
+                return hasUpdated;
             }
-            progress.report({ increment: 60 });
-
-            const editingPost = editDto.post;
-            editingPost.title = input;
-            let success = false;
-            try {
-                await postService.updatePost(editingPost);
-                post.title = input;
-                postsDataProvider.fireTreeDataChangedEvent(post);
-                success = true;
-            } catch (err) {
-                void window.showInformationMessage('更新博文失败', {
-                    modal: true,
-                    detail: err instanceof Error ? err.message : '服务器返回了异常',
-                } as MessageOptions);
-            } finally {
-                progress.report({ increment: 100 });
-            }
-
-            return success;
-        }
-    );
-
-    if (success) {
-        await renameLinkedFile(post);
-    }
+        )
+        .then(x =>
+            x
+                ? renameLinkedFile(post).then(
+                      () => x,
+                      () => false
+                  )
+                : false
+        );
 };

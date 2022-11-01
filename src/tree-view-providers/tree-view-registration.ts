@@ -4,8 +4,9 @@ import { accountViewDataProvider } from './account-view-data-provider';
 import { PostsListTreeItem, postsDataProvider } from './posts-data-provider';
 import { postCategoriesDataProvider } from './post-categories-tree-data-provider';
 import { PostCategoriesListTreeItem } from './models/categories-list-tree-item';
+import { IDisposable } from '@fluentui/react';
 
-export const extensionViews: {
+const _views: {
     postsList?: vscode.TreeView<PostsListTreeItem>;
     anotherPostsList?: vscode.TreeView<PostsListTreeItem>;
     account?: vscode.TreeView<vscode.TreeItem>;
@@ -14,32 +15,71 @@ export const extensionViews: {
     visiblePostsList: () => vscode.TreeView<PostsListTreeItem> | undefined;
 } = {
     postsLists: () =>
-        [extensionViews.postsList, extensionViews.anotherPostsList].filter(
-            (x): x is vscode.TreeView<PostsListTreeItem> => x != null
-        ),
-    visiblePostsList: () => extensionViews.postsLists().find(x => x.visible),
+        [_views.postsList, _views.anotherPostsList].filter((x): x is vscode.TreeView<PostsListTreeItem> => x != null),
+    visiblePostsList: () => _views.postsLists().find(x => x.visible),
 };
+let _hasRegistered = false;
 
 export const registerTreeViews = () => {
-    extensionViews.account = vscode.window.createTreeView('cnblogs-account', {
+    if (_hasRegistered) return extensionViews;
+
+    _views.account = vscode.window.createTreeView('cnblogs-account', {
         treeDataProvider: accountViewDataProvider,
         canSelectMany: false,
     });
-    extensionViews.postsList = vscode.window.createTreeView('cnblogs-posts-list', {
+    _views.postsList = vscode.window.createTreeView('cnblogs-posts-list', {
         treeDataProvider: postsDataProvider,
         canSelectMany: true,
     });
-    extensionViews.anotherPostsList = vscode.window.createTreeView('cnblogs-posts-list-another', {
+    _views.anotherPostsList = vscode.window.createTreeView('cnblogs-posts-list-another', {
         treeDataProvider: postsDataProvider,
         canSelectMany: true,
     });
-    extensionViews.postCategoriesList = vscode.window.createTreeView('cnblogs-post-categories-list', {
-        treeDataProvider: postCategoriesDataProvider,
-        canSelectMany: true,
-    });
-    const disposables = [];
-    for (const key in extensionViews) {
-        disposables.push((extensionViews as any)[key]);
-    }
-    globalState.extensionContext?.subscriptions.push(...disposables);
+    _views.postCategoriesList = vscode.window.createTreeView<PostCategoriesListTreeItem>(
+        'cnblogs-post-categories-list',
+        {
+            treeDataProvider: postCategoriesDataProvider,
+            canSelectMany: true,
+        }
+    );
+
+    _hasRegistered = true;
+
+    const disposables: IDisposable[] = [];
+    for (const [, item] of Object.entries(_views)) typeof item === 'function' ? undefined : disposables.push(item);
+
+    globalState.extensionContext.subscriptions.push(...disposables);
+
+    return extensionViews;
 };
+
+class ExtensionViews implements Required<typeof _views> {
+    postsLists = _views.postsLists;
+    visiblePostsList = _views.visiblePostsList;
+
+    get postsList(): vscode.TreeView<PostsListTreeItem> {
+        return this.getTreeView('postsList');
+    }
+
+    get anotherPostsList() {
+        return this.getTreeView('anotherPostsList');
+    }
+
+    get account() {
+        return this.getTreeView('account');
+    }
+
+    get postCategoriesList() {
+        return this.getTreeView('postCategoriesList');
+    }
+
+    private getTreeView<TKey extends keyof Omit<typeof _views, 'postsLists' | 'visiblePostsList'>>(
+        name: TKey
+    ): NonNullable<typeof _views[TKey]> {
+        const value = _views[name];
+        if (!value) throw Error(`tree view ${name} not registered yet`);
+        return value;
+    }
+}
+
+export const extensionViews = new ExtensionViews();

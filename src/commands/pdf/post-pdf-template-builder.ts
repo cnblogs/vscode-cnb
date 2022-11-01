@@ -8,10 +8,11 @@ import { postCategoryService } from '../../services/post-category.service';
 import { PostCategory } from '../../models/post-category';
 
 export namespace postPdfTemplateBuilder {
-    export const highlightedMessage = 'markdown-highlight-finished';
+    export const HighlightedMessage = 'markdown-highlight-finished';
 
     export const build = async (post: Post, blogApp: string): Promise<string> => {
-        let { postBody, isMarkdown, id: postId } = post;
+        let { postBody } = post;
+        const { isMarkdown, id: postId } = post;
 
         const localFilePath = PostFileMapManager.getFilePath(postId);
         postBody = localFilePath ? fs.readFileSync(localFilePath).toString('utf-8') : postBody;
@@ -23,7 +24,7 @@ export namespace postPdfTemplateBuilder {
             html: true,
         });
 
-        let html = isMarkdown ? md.render(postBody) : postBody;
+        const html = isMarkdown ? md.render(postBody) : postBody;
 
         const buildTagHtml = (): Promise<string> => {
             let html =
@@ -35,7 +36,7 @@ export namespace postPdfTemplateBuilder {
         };
 
         const buildCategoryHtml = async (): Promise<string> => {
-            let categories = await postCategoryService.fetchCategories();
+            const categories = await postCategoryService.fetchCategories();
             const postCategories =
                 post.categoryIds
                     ?.map(categoryId => categories.find(x => x.categoryId === categoryId))
@@ -55,8 +56,12 @@ export namespace postPdfTemplateBuilder {
 
         const tagHtml = await buildTagHtml();
         const categoryHtml = await buildCategoryHtml();
-        const { codeHighlightEngine, codeHighlightTheme, enableCodeLineNumber, blogId } =
-            await blogSettingsService.getBlogSettings();
+        const {
+            codeHighlightEngine,
+            codeHighlightTheme,
+            enableCodeLineNumber: isCodeLineNumberEnabled,
+            blogId,
+        } = await blogSettingsService.getBlogSettings();
         const { userId } = accountService.curUser;
         return `<html>
         <head>
@@ -93,7 +98,7 @@ export namespace postPdfTemplateBuilder {
                 }
             } catch(error) { }
             window.codeHighlightEngine = ${codeHighlightEngine};
-            window.enableCodeLineNumber = ${enableCodeLineNumber};
+            window.enableCodeLineNumber = ${isCodeLineNumberEnabled};
             window.codeHighlightTheme = '${codeHighlightTheme}';
             </script>
             <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
@@ -116,7 +121,7 @@ export namespace postPdfTemplateBuilder {
             <script type="text/javascript">
                 console.log('Begin highlight code block');
                 markdown_highlight().finally(() => {
-                    console.log('${highlightedMessage}');
+                    console.log('${HighlightedMessage}');
                 });
             </script>
         </body>

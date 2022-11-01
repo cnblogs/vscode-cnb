@@ -23,15 +23,14 @@ export class SiteCategoriesSelector extends React.Component<
         super(props);
 
         const siteCategories = siteCategoriesStore.get();
-        let categoryExpandState = {} as any;
+        const categoryExpandState: { selectedParentCategoryId?: boolean } = {};
         let selectedParentCategoryId = -1;
         if (props.categoryIds && props.categoryIds.length > 0) {
             selectedParentCategoryId =
-                siteCategories.find(x => x.children.find(child => child.id === props.categoryIds![0]))?.id ?? -1;
+                siteCategories.find(x => x.children.find(child => child.id === props.categoryIds?.[0]))?.id ?? -1;
         }
-        if (selectedParentCategoryId > 0) {
-            categoryExpandState[selectedParentCategoryId] = true;
-        }
+        if (selectedParentCategoryId > 0) categoryExpandState.selectedParentCategoryId = true;
+
         this.state = {
             siteCategories: siteCategories,
             isCollapsed: true,
@@ -40,17 +39,12 @@ export class SiteCategoriesSelector extends React.Component<
         };
     }
 
-    private onCheckboxChange(categoryId: number, checked?: boolean) {
-        this.setState({ categoryIds: checked ? [categoryId] : [] });
-        this.props.onChange?.apply(this, [categoryId]);
-    }
-
-    public render() {
+    render() {
         const { siteCategories, categoryIds } = this.state;
         const group = siteCategories.map(parent => {
             const { children, id: parentId } = parent;
             const { categoryExpandState } = this.state;
-            const parentExpanded = !!categoryExpandState[parentId];
+            const isParentExpanded = !!categoryExpandState[parentId];
             const groupItems = children.map(child => (
                 <Checkbox
                     key={child.id.toString()}
@@ -63,17 +57,17 @@ export class SiteCategoriesSelector extends React.Component<
                 <Stack key={parentId} tokens={{ childrenGap: 12, padding: ' 0 0 0 8px' }}>
                     <Stack
                         onClick={() => {
-                            categoryExpandState[parentId] = !parentExpanded;
+                            categoryExpandState[parentId] = !isParentExpanded;
                             this.setState({ categoryExpandState });
                         }}
                         horizontal
-                        verticalAlign='center'
+                        verticalAlign="center"
                     >
                         <ActionButton styles={{ root: { height: 'auto', border: 0 } }}>
                             {parent.title}
                             <ActionButton
                                 styles={{ root: { height: 'auto', border: 0 } }}
-                                iconProps={{ iconName: parentExpanded ? 'SkypeCircleMinus' : 'CirclePlus' }}
+                                iconProps={{ iconName: isParentExpanded ? 'SkypeCircleMinus' : 'CirclePlus' }}
                             ></ActionButton>
                         </ActionButton>
                     </Stack>
@@ -100,7 +94,7 @@ export class SiteCategoriesSelector extends React.Component<
                         }}
                         onClick={() => this.setState({ isCollapsed: !this.state.isCollapsed })}
                     >
-                        <Stack horizontal tokens={{ childrenGap: 2 }} verticalAlign='center'>
+                        <Stack horizontal tokens={{ childrenGap: 2 }} verticalAlign="center">
                             <Label
                                 styles={{
                                     root: {
@@ -125,5 +119,10 @@ export class SiteCategoriesSelector extends React.Component<
                 {this.state.isCollapsed ? <></> : <Stack tokens={{ childrenGap: 12 }}>{group}</Stack>}
             </Stack>
         );
+    }
+
+    private onCheckboxChange(categoryId: number, checked?: boolean) {
+        this.setState({ categoryIds: checked ? [categoryId] : [] });
+        this.props.onChange?.apply(this, [categoryId]);
     }
 }

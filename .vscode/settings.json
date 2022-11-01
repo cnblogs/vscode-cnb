@@ -17,5 +17,8 @@
     "eslint.lintTask.enable": true,
     "eslint.run": "onType",
     "eslint.debug": false,
-    "eslint.format.enable": true
+    "eslint.format.enable": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    }
 }

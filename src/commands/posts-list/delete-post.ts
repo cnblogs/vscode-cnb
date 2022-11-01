@@ -9,15 +9,14 @@ import { refreshPostsList } from './refresh-posts-list';
 import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
 import { postCategoriesDataProvider } from '../../tree-view-providers/post-categories-tree-data-provider';
 
-let deleting = false;
+let isDeleting = false;
 
 const confirmDelete = async (
     selectedPosts: Post[]
 ): Promise<{ confirmed: boolean; deleteLocalFileAtSameTime: boolean }> => {
     const result = { confirmed: false, deleteLocalFileAtSameTime: false };
-    if (!selectedPosts || selectedPosts.length <= 0) {
-        return result;
-    }
+    if (!selectedPosts || selectedPosts.length <= 0) return result;
+
     const items = ['确定(保留本地文件)', '确定(同时删除本地文件)'];
     const clicked = await window.showWarningMessage(
         '确定要删除吗?',
@@ -41,13 +40,9 @@ const confirmDelete = async (
 
 export const deleteSelectedPosts = async (arg: unknown) => {
     let post: Post;
-    if (arg instanceof Post) {
-        post = arg;
-    } else if (arg instanceof PostTreeItem) {
-        post = arg.post;
-    } else {
-        return;
-    }
+    if (arg instanceof Post) post = arg;
+    else if (arg instanceof PostTreeItem) post = arg.post;
+    else return;
 
     const selectedPosts: Post[] = post ? [post] : [];
     extensionViews.visiblePostsList()?.selection.map(item => {
@@ -57,21 +52,19 @@ export const deleteSelectedPosts = async (arg: unknown) => {
             selectedPosts.push(post);
         }
     });
-    if (selectedPosts.length <= 0) {
-        return;
-    }
+    if (selectedPosts.length <= 0) return;
 
-    if (deleting) {
+    if (isDeleting) {
         AlertService.warning('休息会儿再点吧~');
         return;
     }
 
-    const { confirmed, deleteLocalFileAtSameTime: isToDeleteLocalFile } = await confirmDelete(selectedPosts);
-    if (!confirmed) {
-        return;
-    }
+    const { confirmed: hasConfirmed, deleteLocalFileAtSameTime: isToDeleteLocalFile } = await confirmDelete(
+        selectedPosts
+    );
+    if (!hasConfirmed) return;
 
-    deleting = true;
+    isDeleting = true;
 
     await window.withProgress({ location: ProgressLocation.Notification }, async progress => {
         progress.report({
@@ -88,8 +81,11 @@ export const deleteSelectedPosts = async (arg: unknown) => {
                         workspace.fs.delete(Uri.file(path)).then(undefined, ex => console.error(ex));
                     });
             }
-            await PostFileMapManager.updateOrCreateMany(...selectedPosts.map<PostFileMap>(p => [p.id, '']));
-            await refreshPostsList();
+            await PostFileMapManager.updateOrCreateMany({
+                emitEvent: false,
+                maps: selectedPosts.map<PostFileMap>(p => [p.id, '']),
+            });
+            await refreshPostsList().catch();
             postCategoriesDataProvider.onPostUpdated({
                 refreshPosts: true,
                 postIds: selectedPosts.map(({ id }) => id),
@@ -105,5 +101,5 @@ export const deleteSelectedPosts = async (arg: unknown) => {
         }
     });
 
-    deleting = false;
+    isDeleting = false;
 };

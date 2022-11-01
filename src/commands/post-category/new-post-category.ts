@@ -8,9 +8,8 @@ export const newPostCategory = async () => {
     const input = await inputPostCategory({
         title: '新建分类',
     });
-    if (!input) {
-        return;
-    }
+    if (!input) return;
+
     await window.withProgress(
         {
             title: '正在新建博文分类',
@@ -27,9 +26,7 @@ export const newPostCategory = async () => {
                 });
                 refreshPostCategoriesList();
                 const newCategory = (await postCategoryService.fetchCategories()).find(x => x.title === input.title);
-                if (newCategory) {
-                    await extensionViews.postCategoriesList?.reveal(newCategory);
-                }
+                if (newCategory) await extensionViews.postCategoriesList.reveal(newCategory);
             } catch (err) {
                 void window.showErrorMessage('新建博文分类时遇到了错误', {
                     modal: true,

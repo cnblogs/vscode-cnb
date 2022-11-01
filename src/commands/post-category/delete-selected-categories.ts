@@ -15,9 +15,7 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
             selections: { length },
         } = this;
 
-        if (length <= 0 || !(await this.confirm())) {
-            return;
-        }
+        if (length <= 0 || !(await this.confirm())) return;
 
         await this.delete();
     }
@@ -57,9 +55,7 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
                             .join('\n'),
                     } as MessageOptions);
                 }
-                if (errs.length < selectedCategories.length) {
-                    refreshPostCategoriesList();
-                }
+                if (errs.length < selectedCategories.length) refreshPostCategoriesList();
             }
         );
     }
@@ -74,12 +70,11 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
             } as MessageOptions,
             ...options
         );
-        if (clicked === options[0]) {
-            return true;
-        }
+        if (clicked === options[0]) return true;
 
         return false;
     }
 }
 
-export const handleDeletePostCategories = (arg: any) => new DeletePostCategoriesHandler(arg);
+export const handleDeletePostCategories = (arg: PostCategoriesListTreeItem) =>
+    new DeletePostCategoriesHandler(arg).handle();

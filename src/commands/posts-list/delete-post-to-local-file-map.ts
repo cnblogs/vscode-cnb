@@ -20,7 +20,7 @@ const confirm = async (posts: Post[]): Promise<boolean> => {
 
 export const deletePostToLocalFileMap = async (post: Post | PostTreeItem) => {
     post = post instanceof PostTreeItem ? post.post : post;
-    const view = extensionViews.postsList!;
+    const view = extensionViews.postsList;
     let selectedPosts = view.selection
         .map(x => (x instanceof Post ? x : x instanceof PostTreeItem ? x.post : null))
         .filter((x): x is Post => x != null);
@@ -28,12 +28,9 @@ export const deletePostToLocalFileMap = async (post: Post | PostTreeItem) => {
         await revealPostsListItem(post);
         selectedPosts = post ? [post] : [];
     }
-    if (selectedPosts.length <= 0) {
-        return;
-    }
-    if (!(await confirm(selectedPosts))) {
-        return;
-    }
+    if (selectedPosts.length <= 0) return;
 
-    await PostFileMapManager.updateOrCreateMany(...selectedPosts.map(p => [p.id, ''] as PostFileMap));
+    if (!(await confirm(selectedPosts))) return;
+
+    await PostFileMapManager.updateOrCreateMany(selectedPosts.map(p => [p.id, ''] as PostFileMap));
 };

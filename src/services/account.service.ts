@@ -17,17 +17,12 @@ const isAuthorizedStorageKey = 'isAuthorized';
 export class AccountService extends vscode.Disposable {
     private static _instance: AccountService = new AccountService();
 
-    buildBearerAuthorizationHeader(accessToken?: string): [string, string] {
-        accessToken ??= this.curUser.authorizationInfo?.accessToken;
-        let expired = checkIsAccessTokenExpired(accessToken!);
-        if (expired) {
-            void Promise.all([this.logout(), this.alertLoginStatusExpired()]);
-        }
-        return ['Authorization', `Bearer ${expired ? '' : accessToken}`];
-    }
-
     private _curUser?: UserInfo;
     private _oauthServ = new CnblogsOAuthService();
+
+    protected constructor() {
+        super((): void => this._oauthServ.dispose());
+    }
 
     static get instance() {
         return this._instance;
@@ -44,16 +39,18 @@ export class AccountService extends vscode.Disposable {
         );
     }
 
-    protected constructor() {
-        super(() => this._oauthServ.dispose());
+    buildBearerAuthorizationHeader(accessToken?: string): [string, string] {
+        accessToken ??= this.curUser.authorizationInfo?.accessToken ?? '';
+        const hasExpired = checkIsAccessTokenExpired(accessToken);
+        if (hasExpired) void Promise.all([this.logout(), this.alertLoginStatusExpired()]);
+
+        return ['Authorization', `Bearer ${hasExpired ? '' : accessToken}`];
     }
 
     async login() {
         const { codeVerifier, codeChallenge } = generateCodeChallenge();
         this._oauthServ.startListenAuthorizationCodeCallback(codeVerifier, (authorizationInfo, err) => {
-            if (authorizationInfo && !err) {
-                return this.handleAuthorized(authorizationInfo);
-            }
+            if (authorizationInfo && !err) return this.handleAuthorized(authorizationInfo);
         });
         const { clientId, responseType, scope, authorizeEndpoint, authority, clientSecret } = globalState.config.oauth;
         let url = `${authority}${authorizeEndpoint}`;
@@ -67,7 +64,7 @@ export class AccountService extends vscode.Disposable {
             ['scope', scope],
             ['client_secret', clientSecret],
         ]);
-        url = `${url}?${search}`;
+        url = `${url}?${search.toString()}`;
         await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(url));
         accountViewDataProvider.fireTreeDataChangedEvent();
         postsDataProvider.fireTreeDataChangedEvent(undefined);
@@ -75,9 +72,7 @@ export class AccountService extends vscode.Disposable {
     }
 
     async logout() {
-        if (!this.isAuthorized) {
-            return;
-        }
+        if (!this.isAuthorized) return;
 
         const { clientId, revocationEndpoint, authority } = globalState.config.oauth;
         const token = this.curUser?.authorizationInfo?.accessToken;
@@ -92,7 +87,7 @@ export class AccountService extends vscode.Disposable {
                 ['token', token],
                 ['token_type_hint', 'access_token'],
             ]);
-            let url = `${authority}${revocationEndpoint}`;
+            const url = `${authority}${revocationEndpoint}`;
             const res = await fetch(url, {
                 method: 'POST',
                 body: body,
@@ -101,16 +96,13 @@ export class AccountService extends vscode.Disposable {
                     ['Content-Type', 'application/x-www-form-urlencoded'],
                 ],
             });
-            if (!res.ok) {
-                console.warn('Revocation failed', res);
-            }
+            if (!res.ok) console.warn('Revocation failed', res);
         }
     }
 
     async refreshUserInfo() {
-        if (this.curUser && this.curUser.authorizationInfo) {
+        if (this.curUser && this.curUser.authorizationInfo)
             await this.fetchAndStoreUserInfo(this.curUser.authorizationInfo);
-        }
     }
 
     async setIsAuthorizedToContext() {
@@ -149,10 +141,8 @@ export class AccountService extends vscode.Disposable {
             method: 'GET',
             headers: [this.buildBearerAuthorizationHeader(authorizationInfo.accessToken)],
         });
-        const obj = convertObjectKeysToCamelCase((await res.json()) as any);
-        obj.avatar = obj.picture;
-        delete obj.picture;
-        return Object.assign(new UserInfo(authorizationInfo), obj, { avatar: obj.picture });
+        const obj = convertObjectKeysToCamelCase((await res.json()) as Record<string, unknown>);
+        return Object.assign(new UserInfo(authorizationInfo), { ...obj, avatar: obj.picture });
     }
 
     private async alertLoginStatusExpired() {
@@ -162,9 +152,7 @@ export class AccountService extends vscode.Disposable {
             { modal: true } as vscode.MessageOptions,
             ...options
         );
-        if (input === options[0]) {
-            await this.login();
-        }
+        if (input === options[0]) await this.login();
     }
 }
 

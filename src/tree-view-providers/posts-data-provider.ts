@@ -1,4 +1,4 @@
-import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
+import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
 import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
 import { Post } from '../models/post';
 import { PageModel } from '../models/page-model';
@@ -14,24 +14,25 @@ export type PostsListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | 
 
 export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     private static _instance?: PostsDataProvider;
-    private _searchResultEntry: PostSearchResultEntry | null = null;
 
     protected _pagedPosts?: PageModel<Post>;
     protected _onDidChangeTreeData = new EventEmitter<PostsListTreeItem | undefined>();
 
-    static get instance() {
-        if (!this._instance) {
-            this._instance = new PostsDataProvider();
-        }
+    private _searchResultEntry: PostSearchResultEntry | null = null;
 
-        return this._instance;
+    protected constructor() {}
+
+    static get instance() {
+        return (this._instance ??= new PostsDataProvider());
+    }
+
+    get onDidChangeTreeData() {
+        return this._onDidChangeTreeData.event;
     }
 
     get pagedPosts() {
         return this._pagedPosts;
     }
-
-    protected constructor() {}
 
     getChildren(parent?: PostsListTreeItem): ProviderResult<PostsListTreeItem[]> {
         if (!parent) {
@@ -55,29 +56,20 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
         return el instanceof PostMetadata ? el.parent : undefined;
     }
 
-    readonly onDidChangeTreeData: Event<PostsListTreeItem | null | undefined> | undefined =
-        this._onDidChangeTreeData.event;
-
     getTreeItem(item: PostsListTreeItem): TreeItem | Thenable<TreeItem> {
         return toTreeItem(item);
     }
 
     async loadPosts(): Promise<PageModel<Post> | null> {
-        try {
-            const { pageIndex } = postService.postsListState ?? {};
-            const pageSize = Settings.postsListPageSize;
-            this._pagedPosts = await postService.fetchPostsList({ pageIndex, pageSize });
-            this.fireTreeDataChangedEvent(undefined);
-            return this._pagedPosts;
-        } catch (ex) {
-            if (ex instanceof Error) {
-                AlertService.error(ex.message);
-            } else {
-                AlertService.error(`Failed to fetch posts list\n${JSON.stringify(ex)}`);
-            }
-
-            return null;
-        }
+        const { pageIndex } = postService.postsListState ?? {};
+        const pageSize = Settings.postsListPageSize;
+        this._pagedPosts = await postService.fetchPostsList({ pageIndex, pageSize }).catch(ex => {
+            if (ex instanceof Error) AlertService.error(ex.message);
+            else AlertService.error(`加载博文失败\n${JSON.stringify(ex)}`);
+            return undefined;
+        });
+        this.fireTreeDataChangedEvent(undefined);
+        return this._pagedPosts ?? null;
     }
 
     fireTreeDataChangedEvent(item: PostsListTreeItem | undefined): void;
@@ -93,9 +85,8 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     }
 
     async search({ key }: { key: string }): Promise<void> {
-        if (key.length <= 0) {
-            return;
-        }
+        if (key.length <= 0) return;
+
         const { items, totalItemsCount, zzkSearchResult } = await postService.fetchPostsList({ search: key });
 
         this._searchResultEntry = new PostSearchResultEntry(key, items, totalItemsCount, zzkSearchResult);

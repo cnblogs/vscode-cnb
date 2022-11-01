@@ -14,9 +14,8 @@ export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEnt
         public readonly totalCount: number,
         public readonly zzkSearchResult?: ZzkSearchResult
     ) {
-        if (searchKey.length <= 0) {
-            throw Error('Empty search key is not allowed');
-        }
+        if (searchKey.length <= 0) throw Error('Empty search key is not allowed');
+
         super();
         this.children = this.parseChildren();
     }

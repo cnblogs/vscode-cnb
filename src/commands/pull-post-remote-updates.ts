@@ -10,18 +10,13 @@ import { revealPostsListItem } from '../services/posts-list-view';
 import { PostTreeItem } from '../tree-view-providers/models/post-tree-item';
 
 const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefined | null): Promise<void> => {
-    let ctxs: CommandContext[] = [];
+    const ctxs: CommandContext[] = [];
     let uri: Uri | undefined;
     input = input instanceof PostTreeItem ? input.post : input;
-    if (parsePostInput(input) && input.id > 0) {
-        await handlePostInput(input, ctxs);
-    } else if ((uri = parseUriInput(input))) {
-        await handleUriInput(uri, ctxs);
-    }
+    if (parsePostInput(input) && input.id > 0) await handlePostInput(input, ctxs);
+    else if ((uri = parseUriInput(input))) await handleUriInput(uri, ctxs);
 
-    if (ctxs.length <= 0 || !(await confirmOperation(ctxs))) {
-        return;
-    }
+    if (ctxs.length <= 0 || !(await confirmOperation(ctxs))) return;
 
     await update(ctxs);
 
@@ -54,13 +49,10 @@ const handlePostInput = async (post: Post, contexts: CommandContext[]) => {
 };
 
 const parseUriInput = (input: InputType): Uri | undefined => {
-    if (input instanceof Uri) {
-        return input;
-    }
+    if (input instanceof Uri) return input;
+
     const { document } = window.activeTextEditor ?? {};
-    if (document && !document.isUntitled) {
-        return document.uri;
-    }
+    if (document && !document.isUntitled) return document.uri;
 };
 
 const handleUriInput = (fileUri: Uri, contexts: CommandContext[]): Promise<void> => {

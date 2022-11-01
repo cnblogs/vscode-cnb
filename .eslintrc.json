@@ -1,31 +1,21 @@
 {
+    "$schema": "https://json.schemastore.org/eslintrc.json",
     "root": true,
+    "extends": ["@cnblogs/typescript"],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
         "project": ["./tsconfig.json", "./ui/tsconfig.json"]
     },
-    "plugins": ["@typescript-eslint"],
-    "extends": "eslint:recommended",
-    "rules": {
-        "@typescript-eslint/naming-convention": "warn",
-        "@typescript-eslint/semi": "warn",
-        "curly": "warn",
-        "eqeqeq": ["warn", "smart"],
-        "no-throw-literal": "warn",
-        "semi": "warn",
-        "require-await": "warn",
-        "no-undef": "off",
-        "@typescript-eslint/no-floating-promises": "warn"
-    },
+    "rules": {},
+    "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts"],
     "overrides": [
         {
-            "files": ["*.ts", "*.tsx"],
-            "rules": {
-                "no-dupe-class-members": "off"
+            "files": ["*.config.js"],
+            "env": {
+                "node": true
             }
         }
-    ],
-    "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts"]
+    ]
 }

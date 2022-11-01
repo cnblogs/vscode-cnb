@@ -37,9 +37,8 @@ const parseFileUri = async (fileUri: Uri | undefined): Promise<Uri | undefined> 
 
 export const savePostFileToCnblogs = async (fileUri: Uri | undefined) => {
     fileUri = await parseFileUri(fileUri);
-    if (!fileUri) {
-        return;
-    }
+    if (!fileUri) return;
+
     const { fsPath: filePath } = fileUri;
     const postId = PostFileMapManager.getPostId(filePath);
     if (postId && postId >= 0) {
@@ -85,18 +84,16 @@ export const savePostFileToCnblogs = async (fileUri: Uri | undefined) => {
 };
 
 export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
-    if (!localDraft) {
-        return;
-    }
+    if (!localDraft) return;
+
     // check format
     if (!['.md'].some(x => localDraft.fileExt === x)) {
         AlertService.warning('不受支持的文件格式! 只支持markdown格式');
         return;
     }
     const editDto = await postService.fetchPostEditDtoTemplate();
-    if (!editDto) {
-        return;
-    }
+    if (!editDto) return;
+
     const { post } = editDto;
     post.title = localDraft.fileNameWithoutExt;
     post.isMarkdown = true;
@@ -108,9 +105,9 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
         successCallback: async savedPost => {
             await refreshPostsList();
             await openPostFile(localDraft);
-            if (Settings.automaticallyExtractImagesType) {
+            if (Settings.automaticallyExtractImagesType)
                 await extractImages(localDraft.filePathUri, Settings.automaticallyExtractImagesType);
-            }
+
             await PostFileMapManager.updateOrCreate(savedPost.id, localDraft.filePath);
             await openPostFile(localDraft);
             postsDataProvider.fireTreeDataChangedEvent(undefined);
@@ -138,10 +135,9 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
             : input
             ? (await postService.fetchPostEditDto(input.id))?.post
             : undefined;
-    if (!post) {
-        return;
-    }
-    let { id: postId } = post;
+    if (!post) return;
+
+    const { id: postId } = post;
     const localFilePath = PostFileMapManager.getFilePath(postId);
     await saveFilePendingChanges(localFilePath);
     if (!isNewPost) {
@@ -154,11 +150,9 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
         post.title = await PostTitleSanitizer.unSanitize(post);
     }
 
-    if (!validatePost(post)) {
-        return false;
-    }
+    if (!validatePost(post)) return false;
 
-    return await window.withProgress(
+    return window.withProgress(
         {
             location: ProgressLocation.Notification,
             title: '正在保存博文',
@@ -168,18 +162,16 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
             progress.report({
                 increment: 10,
             });
-            let success = false;
+            let hasSaved = false;
             try {
-                if (Settings.automaticallyExtractImagesType && localFilePath) {
+                if (Settings.automaticallyExtractImagesType && localFilePath)
                     await extractImages(Uri.file(localFilePath), Settings.automaticallyExtractImagesType);
-                }
-                let { id: postId } = await postService.updatePost(post);
-                if (!isNewPost) {
-                    await openPostInVscode(postId);
-                } else {
-                    post.id = postId;
-                }
-                success = true;
+
+                const { id: postId } = await postService.updatePost(post);
+                if (!isNewPost) await openPostInVscode(postId);
+                else post.id = postId;
+
+                hasSaved = true;
                 progress.report({ increment: 100 });
                 AlertService.info('保存成功');
                 await refreshPostsList();
@@ -188,7 +180,7 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
                 AlertService.error(`保存失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`);
                 console.error(err);
             }
-            return success;
+            return hasSaved;
         }
     );
 };

@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { homedir } from 'os';
 import { MarkdownString, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from 'vscode';
 import { Post } from '../models/post';
@@ -31,7 +32,7 @@ interface Converter<T> {
 }
 
 const postConverter: Converter<Post> = obj => {
-    const descDatePublished = obj.datePublished ? `  \n发布于: ${obj.datePublished}` : '';
+    const descDatePublished = obj.datePublished ? `  \n发布于: ${format(obj.datePublished, 'yyyy-MM-dd HH:mm')}` : '';
     const localPath = PostFileMapManager.getFilePath(obj.id);
     const localPathForDesc = localPath?.replace(homedir(), '~') || '未关联本地文件';
     const descLocalPath = localPath ? `  \n本地路径: ${localPathForDesc}` : '';
@@ -60,15 +61,10 @@ const categoryConverter: Converter<PostCategory> = ({ title, count }) =>
 
 const baseTreeItemSourceConverter: Converter<BaseTreeItemSource> = obj => obj.toTreeItem();
 const converter: Converter<TreeItemSource> = obj => {
-    if (obj instanceof TreeItem) {
-        return obj;
-    } else if (obj instanceof BaseTreeItemSource) {
-        return baseTreeItemSourceConverter(obj);
-    } else if (obj instanceof PostCategory) {
-        return categoryConverter(obj);
-    } else {
-        return postConverter(obj);
-    }
+    if (obj instanceof TreeItem) return obj;
+    else if (obj instanceof BaseTreeItemSource) return baseTreeItemSourceConverter(obj);
+    else if (obj instanceof PostCategory) return categoryConverter(obj);
+    else return postConverter(obj);
 };
 
 export const toTreeItem = <T extends TreeItemSource>(obj: T) => converter(obj);
