@@ -1,5 +1,5 @@
 import { flattenDepth, take } from 'lodash';
-import { commands, EventEmitter, MessageOptions, TreeDataProvider, TreeItem, window } from 'vscode';
+import { commands, EventEmitter, MessageOptions, ProviderResult, TreeDataProvider, TreeItem, window } from 'vscode';
 import { PostCategories } from '../models/post-category';
 import { globalState } from '../services/global-state';
 import { postCategoryService } from '../services/post-category.service';
@@ -16,7 +16,7 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
     private _isRefreshing = false;
     private _roots: PostCategoryTreeItem[] | null = null;
 
-    onDidChangeTreeData = this._treeDataChanged.event;
+    private constructor() {}
 
     static get instance() {
         return (this._instance ??= new PostCategoriesTreeDataProvider());
@@ -38,6 +38,9 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
             ) ?? []
         );
     }
+    get onDidChangeTreeData() {
+        return this._treeDataChanged.event;
+    }
 
     async setIsRefreshing(value: boolean) {
         await commands.executeCommand(
@@ -48,13 +51,11 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
         this._isRefreshing = value;
     }
 
-    private constructor() {}
-
     getTreeItem(element: PostCategoriesListTreeItem): TreeItem | Thenable<TreeItem> {
         return toTreeItem(element);
     }
 
-    getChildren(parent?: PostCategoriesListTreeItem): Promise<PostCategoriesListTreeItem[]> {
+    getChildren(parent?: PostCategoriesListTreeItem): ProviderResult<PostCategoriesListTreeItem[]> {
         if (!this.isRefreshing) {
             if (parent == null) return this.getRootChildren();
             else if (parent instanceof PostCategoryTreeItem) return this.getPostChildren(parent);

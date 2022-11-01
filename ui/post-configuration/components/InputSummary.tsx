@@ -19,7 +19,7 @@ export interface IInputSummaryState {
 }
 
 export class InputSummary extends React.Component<IInputSummaryProps, IInputSummaryState> {
-    private uploadingImageId: string = '';
+    private uploadingImageId = '';
     constructor(props: IInputSummaryProps) {
         super(props);
         const { featureImageUrl, summary } = props;
@@ -28,12 +28,12 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
         window.addEventListener('message', this.observerMessage);
     }
 
-    public render() {
+    render() {
         const { isCollapse } = this.state;
         const { featureImageUrl } = this.props;
         return (
             <Stack tokens={{ childrenGap: 16 }}>
-                <Stack horizontal horizontalAlign='space-between'>
+                <Stack horizontal horizontalAlign="space-between">
                     <ActionButton
                         onClick={() => this.setState({ isCollapse: !isCollapse })}
                         styles={{ root: { height: 'auto', paddingLeft: 0 } }}
@@ -46,10 +46,10 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
                     </ActionButton>
                     {!isCollapse && featureImageUrl ? (
                         <ActionButton
-                            onClick={() => this.props.onFeatureImageChange?.apply(this, [''])}
+                            onClick={() => void this.props.onFeatureImageChange?.apply(this, [''])}
                             styles={{ root: { height: 'auto', paddingLeft: 0 } }}
                         >
-                            <Text variant='smallPlus'>删除题图</Text>
+                            <Text variant="smallPlus">删除题图</Text>
                             <ActionButton
                                 iconProps={{ iconName: 'Clear' }}
                                 styles={{ root: { height: 'auto' }, icon: { fontSize: 12 } }}
@@ -66,24 +66,23 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
     }
 
     private renderContent() {
-        if (this.state.isCollapse) {
-            return <></>;
-        }
+        if (this.state.isCollapse) return <></>;
+
         return (
             <Stack tokens={{ childrenGap: 8 }}>
-                <Stack horizontal horizontalAlign='stretch' tokens={{ childrenGap: 8 }} verticalAlign='stretch'>
-                    <Stack.Item grow={true} align='stretch'>
+                <Stack horizontal horizontalAlign="stretch" tokens={{ childrenGap: 8 }} verticalAlign="stretch">
+                    <Stack.Item grow={true} align="stretch">
                         <TextField
                             disabled={this.state.disabled}
                             styles={{ field: { height: 70 } }}
-                            onChange={(_, value) => this.props.onChange?.apply(this, [value])}
+                            onChange={(_, value) => void this.props.onChange?.apply(this, [value])}
                             multiline
-                            placeholder='输入摘要'
+                            placeholder="输入摘要"
                             value={this.props.summary}
                             resizable={false}
                         />
                     </Stack.Item>
-                    <Stack.Item align='stretch'>{this.renderFeatureImage()}</Stack.Item>
+                    <Stack.Item align="stretch">{this.renderFeatureImage()}</Stack.Item>
                 </Stack>
 
                 {this.state.errors ? (
@@ -103,7 +102,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
     }
 
     private observerMessage = (ev: MessageEvent<any>) => {
-        let data = ev.data as webviewMessage.Message;
+        const data = ev.data as webviewMessage.Message;
         const { command } = data;
         switch (command) {
             case webviewCommand.UiCommands.updateImageUploadStatus:
@@ -111,9 +110,8 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
                     const { imageId, status } = data as webviewMessage.UpdateImageUpdateStatusMessage;
                     if (imageId === this.uploadingImageId) {
                         this.setState({ disabled: status.id === ImageUploadStatusId.uploading });
-                        if (status.id === ImageUploadStatusId.uploaded) {
+                        if (status.id === ImageUploadStatusId.uploaded)
                             this.props.onFeatureImageChange?.apply(this, [status.imageUrl ?? '']);
-                        }
                     }
                 }
                 break;
@@ -121,7 +119,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
     };
 
     private uploadFeatureImage() {
-        this.uploadingImageId = Date.now() + '';
+        this.uploadingImageId = `${Date.now()}`;
         vsCodeApi.getInstance().postMessage({
             command: webviewCommand.ExtensionCommands.uploadImage,
             imageId: this.uploadingImageId,
@@ -145,7 +143,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
         }
         return (
             <span>
-                <img style={{ width: 135, height: 70 }} src={featureImageUrl} alt='题图' />
+                <img style={{ width: 135, height: 70 }} src={featureImageUrl} alt="题图" />
             </span>
         );
     }

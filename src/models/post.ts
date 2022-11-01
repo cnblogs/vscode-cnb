@@ -10,20 +10,7 @@ export class Post {
     categoryIds: number[] | null = [];
     changeCreatedTime = false;
     changePostType = false;
-    private _datePublished?: Date | undefined;
-    get datePublished(): Date | undefined {
-        return this._datePublished;
-    }
-    set datePublished(value: Date | string | undefined) {
-        this._datePublished = typeof value === 'string' ? parseISO(value) : value;
-    }
-    private _dateUpdated?: Date | undefined;
-    get dateUpdated(): Date | undefined {
-        return this._dateUpdated;
-    }
-    set dateUpdated(value: Date | string | undefined) {
-        this._dateUpdated = typeof value === 'string' ? parseISO(value) : value;
-    }
+
     description = '';
     featuredImage = '';
     displayOnHomePage = false;
@@ -48,6 +35,23 @@ export class Post {
     tags?: string[];
     title = '';
     url = '';
+
+    private _dateUpdated?: Date | undefined;
+    private _datePublished = new Date();
+
+    get datePublished(): Date {
+        return this._datePublished;
+    }
+    set datePublished(value: Date | string | undefined) {
+        this._datePublished = typeof value === 'string' ? parseISO(value) : value ?? new Date();
+    }
+
+    get dateUpdated(): Date | undefined {
+        return this._dateUpdated;
+    }
+    set dateUpdated(value: Date | string | undefined) {
+        this._dateUpdated = typeof value === 'string' ? parseISO(value) : value;
+    }
 
     get accessPermissionDesc(): string {
         switch (this.accessPermission) {

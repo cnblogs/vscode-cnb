@@ -18,7 +18,7 @@ interface AppState {
     breadcrumbs?: string[];
 }
 
-export interface AppProps {}
+export interface AppProps extends Record<string, never> {}
 
 const resolveTheme = (colorThemeKind?: number | undefined | null) => {
     const isDark = colorThemeKind === 2 || activeThemeProvider.getActiveTheme() === 'dark';
@@ -53,23 +53,23 @@ class App extends Component<AppProps, AppState> {
 
     private renderSpinner() {
         return (
-            <Stack styles={{ root: { minHeight: '70vh' } }} verticalAlign='center'>
-                <Spinner label='别着急, 数据加载中~' labelPosition='bottom' />
+            <Stack styles={{ root: { minHeight: '70vh' } }} verticalAlign="center">
+                <Spinner label="别着急, 数据加载中~" labelPosition="bottom" />
             </Stack>
         );
     }
 
     private renderBreadcrumbs() {
         const { breadcrumbs } = this.state;
-        if (!breadcrumbs || breadcrumbs.length <= 0) {
-            return <></>;
-        }
+        if (!breadcrumbs || breadcrumbs.length <= 0) return <></>;
+
         const items = breadcrumbs.map(breadcrumb => ({ text: breadcrumb, key: breadcrumb } as IBreadcrumbItem));
         return <Breadcrumb styles={{ item: { fontSize: 12 } }} items={items}></Breadcrumb>;
     }
 
     private observerMessages() {
         window.addEventListener('message', ev => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const message: webviewMessage.Message = ev.data ?? {};
             const { command } = message;
             if (command === webviewCommand.UiCommands.editPostConfiguration) {

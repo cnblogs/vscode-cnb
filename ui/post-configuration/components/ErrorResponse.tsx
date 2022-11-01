@@ -3,19 +3,22 @@ import { webviewCommand } from '@models/webview-command';
 import { webviewMessage } from '@models/webview-message';
 import React from 'react';
 import { Optional } from 'utility-types';
-import { IPostFormContext, PostFormContext } from './PostFormContext';
+import { PostFormContext } from './PostFormContext';
 
-export interface IErrorResponseProps {}
+export interface IErrorResponseProps extends Record<string, never> {}
 
 export interface IErrorResponseState {
     errors: string[];
 }
 
 export class ErrorResponse extends React.Component<IErrorResponseProps, IErrorResponseState> {
-    static contextType?: React.Context<IPostFormContext> | undefined = PostFormContext;
-    private elementId: string = '';
-    constructor(props: IErrorResponseProps) {
-        super(props);
+    static contextType = PostFormContext;
+    declare context: React.ContextType<typeof PostFormContext>;
+
+    private elementId = '';
+
+    constructor() {
+        super({});
 
         this.state = { errors: [] };
         window.addEventListener('message', msg => {
@@ -25,7 +28,7 @@ export class ErrorResponse extends React.Component<IErrorResponseProps, IErrorRe
             >;
             if (command === webviewCommand.UiCommands.showErrorResponse) {
                 this.setState({ errors: errorResponse.errors ?? [] }, () => this.reveal());
-                this.context.set({ disabled: false, status: '' } as IPostFormContext);
+                this.context.set({ disabled: false, status: '' });
             }
         });
     }
@@ -34,12 +37,11 @@ export class ErrorResponse extends React.Component<IErrorResponseProps, IErrorRe
         document.querySelector(`#${this.elementId}`)?.scrollIntoView();
     }
 
-    public render() {
+    render() {
         const { errors } = this.state;
-        if (errors.length <= 0) {
-            return <></>;
-        }
-        this.elementId = 'errorResponse' + Date.now();
+        if (errors.length <= 0) return <></>;
+
+        this.elementId = `errorResponse ${Date.now()}`;
         return (
             <MessageBar
                 onDismiss={() => this.setState({ errors: [] })}

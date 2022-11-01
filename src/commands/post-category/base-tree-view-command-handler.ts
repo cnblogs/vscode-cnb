@@ -9,8 +9,6 @@ export abstract class BasePostCategoryTreeViewCommandHandler implements TreeView
 
     constructor(public readonly input: unknown) {}
 
-    abstract handle(): void | Promise<void>;
-
     parseInput(): PostCategory | null {
         const { input } = this;
         if (input instanceof PostCategory || input instanceof PostCategoryTreeItem) {
@@ -21,6 +19,8 @@ export abstract class BasePostCategoryTreeViewCommandHandler implements TreeView
 
         return null;
     }
+
+    abstract handle(): void | Promise<void>;
 }
 
 export abstract class BaseMultiSelectablePostCategoryTreeViewCommandHandler extends MultiSelectableTreeViewCommandHandler<

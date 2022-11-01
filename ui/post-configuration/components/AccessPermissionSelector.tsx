@@ -7,7 +7,7 @@ export interface IAccessPermissionSelectorProps {
     onChange?: (accessPermission: AccessPermission) => void;
 }
 
-export interface IAccessPermissionSelectorState {}
+export interface IAccessPermissionSelectorState extends Record<string, never> {}
 
 export class AccessPermissionSelector extends React.Component<
     IAccessPermissionSelectorProps,
@@ -30,6 +30,7 @@ export class AccessPermissionSelector extends React.Component<
             key: AccessPermission.owner.toString(),
         },
     ];
+
     constructor(props: IAccessPermissionSelectorProps) {
         props.accessPermission ??= AccessPermission.undeclared;
         super(props);
@@ -37,7 +38,7 @@ export class AccessPermissionSelector extends React.Component<
         this.state = {};
     }
 
-    public render() {
+    render() {
         return (
             <Stack>
                 <Label>谁能访问这篇博文</Label>

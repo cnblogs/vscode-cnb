@@ -1,4 +1,6 @@
 export class PageModel<T> {
+    constructor(public pageIndex = 1, public pageSize = 0, public totalItemsCount = 0, public items: T[] = []) {}
+
     get hasPrevious() {
         return this.pageIndex > 1;
     }
@@ -10,6 +12,4 @@ export class PageModel<T> {
     get pageCount() {
         return Math.floor(this.totalItemsCount / this.pageSize) + (this.totalItemsCount % this.pageSize > 0 ? 1 : 0);
     }
-
-    constructor(public pageIndex = 1, public pageSize = 0, public totalItemsCount = 0, public items: T[] = []) {}
 }

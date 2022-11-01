@@ -5,15 +5,16 @@ import { globalState } from './global-state';
 
 export class PostCategoryService {
     private static _instance: PostCategoryService;
+
+    private _cached?: PostCategories;
+
+    private constructor() {}
+
     static get instance(): PostCategoryService {
         if (!this._instance) this._instance = new PostCategoryService();
 
         return this._instance;
     }
-
-    private _cached?: PostCategories;
-
-    private constructor() {}
 
     async findCategories(ids: number[], { useCache = true } = {}): Promise<PostCategories> {
         ids = ids.filter(x => x > 0);

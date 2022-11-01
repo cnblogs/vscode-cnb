@@ -17,16 +17,12 @@ const isAuthorizedStorageKey = 'isAuthorized';
 export class AccountService extends vscode.Disposable {
     private static _instance: AccountService = new AccountService();
 
-    buildBearerAuthorizationHeader(accessToken?: string): [string, string] {
-        accessToken ??= this.curUser.authorizationInfo?.accessToken ?? '';
-        const hasExpired = checkIsAccessTokenExpired(accessToken);
-        if (hasExpired) void Promise.all([this.logout(), this.alertLoginStatusExpired()]);
-
-        return ['Authorization', `Bearer ${hasExpired ? '' : accessToken}`];
-    }
-
     private _curUser?: UserInfo;
     private _oauthServ = new CnblogsOAuthService();
+
+    protected constructor() {
+        super((): void => this._oauthServ.dispose());
+    }
 
     static get instance() {
         return this._instance;
@@ -43,8 +39,12 @@ export class AccountService extends vscode.Disposable {
         );
     }
 
-    protected constructor() {
-        super((): void => this._oauthServ.dispose());
+    buildBearerAuthorizationHeader(accessToken?: string): [string, string] {
+        accessToken ??= this.curUser.authorizationInfo?.accessToken ?? '';
+        const hasExpired = checkIsAccessTokenExpired(accessToken);
+        if (hasExpired) void Promise.all([this.logout(), this.alertLoginStatusExpired()]);
+
+        return ['Authorization', `Bearer ${hasExpired ? '' : accessToken}`];
     }
 
     async login() {

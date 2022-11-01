@@ -18,11 +18,11 @@ export abstract class MultiSelectableTreeViewCommandHandler<TArgument, TData>
         return this._selections;
     }
 
-    protected abstract parseSelections(): TData[];
-
-    abstract handle(): void | Promise<void>;
-
     parseInput(): TData[] | null {
         return this.parseSelections();
     }
+
+    abstract handle(): void | Promise<void>;
+
+    protected abstract parseSelections(): TData[];
 }

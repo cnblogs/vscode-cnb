@@ -8,6 +8,8 @@ export class GlobalState {
     private _config: IConfig = defaultConfig;
     private _devConfig: IConfig = devConfig;
 
+    protected constructor() {}
+
     static get instance() {
         return this._instance;
     }
@@ -37,8 +39,6 @@ export class GlobalState {
         const { name } = <{ name?: string }>this.extensionContext.extension.packageJSON;
         return name ?? '';
     }
-
-    protected constructor() {}
 }
 
 export const globalState = GlobalState.instance;

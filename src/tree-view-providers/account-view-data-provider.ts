@@ -1,9 +1,11 @@
 import { accountService } from '../services/account.service';
-import { Event, EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode';
+import { EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode';
 
 export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     private static _instance?: AccountViewDataProvider;
     protected _onDidChangeTreeData = new EventEmitter<null | undefined>();
+
+    protected constructor() {}
 
     static get instance() {
         if (!this._instance) this._instance = new AccountViewDataProvider();
@@ -11,9 +13,9 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
         return this._instance;
     }
 
-    protected constructor() {}
-
-    onDidChangeTreeData: Event<void | TreeItem | null | undefined> | undefined = this._onDidChangeTreeData.event;
+    get onDidChangeTreeData() {
+        return this._onDidChangeTreeData.event;
+    }
 
     getTreeItem(element: TreeItem): TreeItem | Thenable<TreeItem> {
         return element;

@@ -5,15 +5,16 @@ import { globalState } from './global-state';
 
 export class PostTagService {
     private static _instance: PostTagService;
+
+    private _cachedTags?: PostTag[];
+
+    private constructor() {}
+
     static get instance() {
         if (!this._instance) this._instance = new PostTagService();
 
         return this._instance;
     }
-
-    private _cachedTags?: PostTag[];
-
-    private constructor() {}
 
     async fetchTags(forceRefresh = false): Promise<PostTag[]> {
         if (this._cachedTags && !forceRefresh) return this._cachedTags;

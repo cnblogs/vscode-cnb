@@ -18,6 +18,8 @@ let newPostTemplate: PostEditDto | undefined;
 export class PostService {
     private static _instance = new PostService();
 
+    protected constructor() {}
+
     protected get _baseUrl() {
         return globalState.config.apiBaseUrl;
     }
@@ -29,8 +31,6 @@ export class PostService {
     get postsListState(): PostsListState | undefined {
         return globalState.storage.get<PostsListState>('postsListState');
     }
-
-    protected constructor() {}
 
     async fetchPostsList({
         search = '',

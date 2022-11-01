@@ -3,6 +3,8 @@ import fs from 'fs';
 import { Uri, workspace } from 'vscode';
 
 export class LocalDraft {
+    constructor(public filePath: string) {}
+
     get fileName(): string {
         return path.basename(this.filePath);
     }
@@ -18,8 +20,6 @@ export class LocalDraft {
     get exist() {
         return fs.existsSync(this.filePath);
     }
-
-    constructor(public filePath: string) {}
 
     async readAllText(): Promise<string> {
         const binary = await workspace.fs.readFile(this.filePathUri);

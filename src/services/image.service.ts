@@ -8,13 +8,14 @@ import mime from 'mime';
 
 export class ImageService {
     private static _instance: ImageService;
+
+    private constructor() {}
+
     static get instance() {
         if (!this._instance) this._instance = new ImageService();
 
         return this._instance;
     }
-
-    private constructor() {}
 
     async upload<T extends object>(file: T): Promise<string> {
         const form = new FormData();

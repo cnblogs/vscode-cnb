@@ -20,7 +20,7 @@ export default class PostEntryNameInput extends React.Component<IPostEntryNameIn
         };
     }
 
-    public render() {
+    render() {
         return (
             <Stack tokens={{ childrenGap: 16 }}>
                 <ActionButton
@@ -33,7 +33,7 @@ export default class PostEntryNameInput extends React.Component<IPostEntryNameIn
                     }}
                     onClick={() => this.setState({ isCollapsed: !this.state.isCollapsed })}
                 >
-                    <Stack horizontal tokens={{ childrenGap: 2 }} verticalAlign='center'>
+                    <Stack horizontal tokens={{ childrenGap: 2 }} verticalAlign="center">
                         <Label
                             styles={{
                                 root: {
@@ -61,13 +61,11 @@ export default class PostEntryNameInput extends React.Component<IPostEntryNameIn
                         <TextField
                             componentRef={input => {
                                 this.textFieldComp = input;
-                                if (this.state.isCollapsed === false) {
-                                    this.textFieldComp?.focus();
-                                }
+                                if (this.state.isCollapsed === false) this.textFieldComp?.focus();
                             }}
                             value={this.props.entryName}
                             onChange={(_, value) => this.props.onChange?.call(this, value)}
-                            description='友好地址名，只能使用字母、数字、-连字符、_下划线，不超过150个字符'
+                            description="友好地址名，只能使用字母、数字、-连字符、_下划线，不超过150个字符"
                         ></TextField>
                     </Stack>
                 )}

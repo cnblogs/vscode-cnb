@@ -6,14 +6,14 @@ import { globalState } from './global-state';
 export class BlogSettingsService {
     private static _instance?: BlogSettingsService;
 
+    private _settings?: BlogSettings;
+
+    protected constructor() {}
+
     static get instance() {
         if (!this._instance) this._instance = new BlogSettingsService();
         return this._instance;
     }
-
-    private _settings?: BlogSettings;
-
-    protected constructor() {}
 
     async getBlogSettings(forceRefresh = false): Promise<BlogSettings> {
         if (this._settings && !forceRefresh) return this._settings;

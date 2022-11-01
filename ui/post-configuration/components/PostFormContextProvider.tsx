@@ -23,7 +23,7 @@ export class PostFormContextProvider extends React.Component<
         };
     }
 
-    public render() {
+    render() {
         const { children } = this.props;
         return <PostFormContext.Provider value={this.state.value}>{children}</PostFormContext.Provider>;
     }

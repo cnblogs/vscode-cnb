@@ -13,15 +13,15 @@ export class CnblogsOAuthService extends Disposable {
     private _server?: Server;
     private _codeVerifier = '';
 
-    get listenUrl() {
-        return `http://localhost:${this.listenPort}`;
-    }
-
     constructor() {
         super(() => {
             if (this._server && this._server.listening) this._server?.close();
         });
         this._app = express();
+    }
+
+    get listenUrl() {
+        return `http://localhost:${this.listenPort}`;
     }
 
     startListenAuthorizationCodeCallback(

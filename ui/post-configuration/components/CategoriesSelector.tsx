@@ -19,25 +19,6 @@ class CategoriesSelector extends Component<CategoriesSelectorProps, CategoriesSe
         this.state = { categories: personalCategoriesStore.get(), categoryIds: props.categoryIds ?? [] };
     }
 
-    private onCheckboxChanged(categoryId: number, isChecked?: boolean) {
-        const { categoryIds } = this.state;
-
-        const position = categoryIds.findIndex(x => x === categoryId);
-        const isInclude = position >= 0;
-        switch (isChecked) {
-            case true:
-                if (!isInclude) {
-                    categoryIds.push(categoryId);
-                }
-                break;
-            default:
-                if (isInclude) {
-                    categoryIds.splice(position, 1);
-                }
-        }
-        this.props.onChange?.apply(this, [categoryIds]);
-    }
-
     render() {
         const { categories, categoryIds } = this.state;
         const items = categories.map(category => (
@@ -53,6 +34,22 @@ class CategoriesSelector extends Component<CategoriesSelectorProps, CategoriesSe
                 {items}
             </Stack>
         );
+    }
+
+    private onCheckboxChanged(categoryId: number, isChecked?: boolean) {
+        const { categoryIds } = this.state;
+
+        const position = categoryIds.findIndex(x => x === categoryId);
+        const isInclude = position >= 0;
+        switch (isChecked) {
+            case true:
+                if (!isInclude) categoryIds.push(categoryId);
+
+                break;
+            default:
+                if (isInclude) categoryIds.splice(position, 1);
+        }
+        this.props.onChange?.apply(this, [categoryIds]);
     }
 }
 

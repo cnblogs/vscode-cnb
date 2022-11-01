@@ -1,9 +1,4 @@
 export class BlogSettings implements BlogSiteDto, BlogSiteExtendDto {
-    constructor(blogSite: BlogSiteDto, extend: BlogSiteExtendDto) {
-        Object.assign(this, blogSite);
-        Object.assign(this, extend);
-    }
-
     blogId = -1;
     blogNews = '';
     secondaryCss = '';
@@ -28,6 +23,11 @@ export class BlogSettings implements BlogSiteDto, BlogSiteExtendDto {
     codeHighlightEngine: CodeHighlightEngineEnum = -1;
     enableCodeLineNumber = false;
     blogNewsUseMarkdown = false;
+
+    constructor(blogSite: BlogSiteDto, extend: BlogSiteExtendDto) {
+        Object.assign(this, blogSite);
+        Object.assign(this, extend);
+    }
 }
 
 export enum CodeHighlightEngineEnum {

@@ -1,4 +1,4 @@
-import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
+import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
 import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
 import { Post } from '../models/post';
 import { PageModel } from '../models/page-model';
@@ -14,20 +14,25 @@ export type PostsListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | 
 
 export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     private static _instance?: PostsDataProvider;
-    private _searchResultEntry: PostSearchResultEntry | null = null;
 
     protected _pagedPosts?: PageModel<Post>;
     protected _onDidChangeTreeData = new EventEmitter<PostsListTreeItem | undefined>();
+
+    private _searchResultEntry: PostSearchResultEntry | null = null;
+
+    protected constructor() {}
 
     static get instance() {
         return (this._instance ??= new PostsDataProvider());
     }
 
+    get onDidChangeTreeData() {
+        return this._onDidChangeTreeData.event;
+    }
+
     get pagedPosts() {
         return this._pagedPosts;
     }
-
-    protected constructor() {}
 
     getChildren(parent?: PostsListTreeItem): ProviderResult<PostsListTreeItem[]> {
         if (!parent) {
@@ -50,9 +55,6 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     getParent(el: PostsListTreeItem) {
         return el instanceof PostMetadata ? el.parent : undefined;
     }
-
-    readonly onDidChangeTreeData: Event<PostsListTreeItem | null | undefined> | undefined =
-        this._onDidChangeTreeData.event;
 
     getTreeItem(item: PostsListTreeItem): TreeItem | Thenable<TreeItem> {
         return toTreeItem(item);

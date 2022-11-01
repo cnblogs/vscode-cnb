@@ -36,12 +36,6 @@ const createImageTypeFilter = (type: MarkdownImagesExtractor['imageType']) => {
 };
 
 export class MarkdownImagesExtractor {
-    get status() {
-        return this._status;
-    }
-    get errors() {
-        return this._errors;
-    }
     imageType: 'web' | 'local' | 'all' = 'all';
     readonly markdownImageRegex = markdownImageRegex;
     readonly createImageTypeFilter = createImageTypeFilter;
@@ -55,6 +49,13 @@ export class MarkdownImagesExtractor {
         private filePath: Uri,
         public onProgress?: (index: number, images: MarkdownImages) => void
     ) {}
+
+    get status() {
+        return this._status;
+    }
+    get errors() {
+        return this._errors;
+    }
 
     async extract(): Promise<[source: MarkdownImage, result: MarkdownImage | null][]> {
         this._status = 'extracting';

@@ -3,16 +3,16 @@ import { Post } from '../models/post';
 import { postService } from './post.service';
 
 class PostPickItem implements QuickPickItem {
-    constructor(public post: Post) {
-        this.label = post.title;
-        this.description = post.description;
-    }
-
     label: string;
     description?: string | undefined;
     detail?: string | undefined;
     picked?: boolean | undefined;
     alwaysShow?: boolean | undefined;
+
+    constructor(public post: Post) {
+        this.label = post.title;
+        this.description = post.description;
+    }
 }
 
 export const searchPostsByTitle = ({ postTitle = '', quickPickTitle = '按标题搜索博文' }): Promise<Post | undefined> =>

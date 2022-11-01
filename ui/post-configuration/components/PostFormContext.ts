@@ -3,7 +3,7 @@ import React from 'react';
 export interface IPostFormContext {
     disabled: boolean;
     status: 'loading' | 'submitting' | '';
-    set(v: IPostFormContext): void;
+    set(v: Omit<IPostFormContext, 'set'>): void;
 }
 export const defaultPostFormContext: IPostFormContext = { disabled: false, status: '', set: () => void 0 };
 // eslint-disable-next-line @typescript-eslint/naming-convention

@@ -45,38 +45,12 @@ interface InputBoxParameters extends InputBoxOptions {
 }
 
 export class MultiStepInput {
-    static run(this: void, start: InputStep) {
-        const input = new MultiStepInput();
-        return input.stepThrough(start);
-    }
-
     private current?: QuickInput;
     private steps: InputStep[] = [];
 
-    private async stepThrough(start: InputStep) {
-        let step: InputStep | void = start;
-        while (step) {
-            this.steps.push(step);
-            if (this.current) {
-                this.current.enabled = false;
-                this.current.busy = true;
-            }
-            try {
-                step = await step(this);
-            } catch (err) {
-                if (err === InputFlowAction.back) {
-                    this.steps.pop();
-                    step = this.steps.pop();
-                } else if (err === InputFlowAction.resume) {
-                    step = this.steps.pop();
-                } else if (err === InputFlowAction.cancel) {
-                    step = undefined;
-                } else {
-                    throw err;
-                }
-            }
-        }
-        if (this.current) this.current.dispose();
+    static run(this: void, start: InputStep) {
+        const input = new MultiStepInput();
+        return input.stepThrough(start);
     }
 
     async showQuickPick<T extends QuickPickItem, TParameters extends QuickPickParameters<T>>({
@@ -203,5 +177,31 @@ export class MultiStepInput {
         } finally {
             disposables.forEach(d => void d.dispose());
         }
+    }
+
+    private async stepThrough(start: InputStep) {
+        let step: InputStep | void = start;
+        while (step) {
+            this.steps.push(step);
+            if (this.current) {
+                this.current.enabled = false;
+                this.current.busy = true;
+            }
+            try {
+                step = await step(this);
+            } catch (err) {
+                if (err === InputFlowAction.back) {
+                    this.steps.pop();
+                    step = this.steps.pop();
+                } else if (err === InputFlowAction.resume) {
+                    step = this.steps.pop();
+                } else if (err === InputFlowAction.cancel) {
+                    step = undefined;
+                } else {
+                    throw err;
+                }
+            }
+        }
+        if (this.current) this.current.dispose();
     }
 }
