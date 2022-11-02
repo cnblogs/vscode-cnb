@@ -1,4 +1,4 @@
-import { flattenDepth, take } from 'lodash';
+import { flattenDepth, take } from 'lodash-es';
 import { commands, EventEmitter, MessageOptions, ProviderResult, TreeDataProvider, TreeItem, window } from 'vscode';
 import { PostCategories } from '../models/post-category';
 import { globalState } from '../services/global-state';

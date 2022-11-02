@@ -1,4 +1,4 @@
-import { escapeRegExp } from 'lodash';
+import { escapeRegExp } from 'lodash-es';
 import path = require('path');
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode';
 import { Post } from '../../models/post';

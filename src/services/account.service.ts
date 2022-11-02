@@ -53,7 +53,6 @@ export class AccountService extends vscode.Disposable {
             if (authorizationInfo && !err) return this.handleAuthorized(authorizationInfo);
         });
         const { clientId, responseType, scope, authorizeEndpoint, authority, clientSecret } = globalState.config.oauth;
-        let url = `${authority}${authorizeEndpoint}`;
         const search = new URLSearchParams([
             ['client_id', clientId],
             ['response_type', responseType],
@@ -64,8 +63,10 @@ export class AccountService extends vscode.Disposable {
             ['scope', scope],
             ['client_secret', clientSecret],
         ]);
-        url = `${url}?${search.toString()}`;
-        await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(url));
+        await vscode.commands.executeCommand(
+            'vscode.open',
+            vscode.Uri.parse(`${authority}${authorizeEndpoint}?${search.toString()}`)
+        );
         accountViewDataProvider.fireTreeDataChangedEvent();
         postsDataProvider.fireTreeDataChangedEvent(undefined);
         postCategoriesDataProvider.fireTreeDataChangedEvent();

@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import vscode, { Uri } from 'vscode';
 import path from 'path';
 import { Post } from '../models/post';

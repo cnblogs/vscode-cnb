@@ -44,7 +44,7 @@ export class CnblogsOAuthService extends Disposable {
     }
 
     async getAuthorizationInfo(authorizationCode: string, codeVerifier: string): Promise<UserAuthorizationInfo> {
-        let url = globalState.config.oauth.authority + globalState.config.oauth.tokenEndpoint;
+        const url = globalState.config.oauth.authority + globalState.config.oauth.tokenEndpoint;
         const { clientId, clientSecret } = globalState.config.oauth;
         const s = new URLSearchParams([
             ['code', authorizationCode],
@@ -54,7 +54,6 @@ export class CnblogsOAuthService extends Disposable {
             ['client_secret', clientSecret],
             ['redirect_uri', this.listenUrl],
         ]);
-        url = `${url}`;
         const res = await fetch(url, {
             method: 'POST',
             body: s,
