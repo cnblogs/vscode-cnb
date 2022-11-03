@@ -1,4 +1,4 @@
-import { trim } from 'lodash';
+import { trim } from 'lodash-es';
 
 export class UserAuthorizationInfo {
     constructor(public idToken: string, public accessToken: string, expiresIn: number, public tokenType: string) {}

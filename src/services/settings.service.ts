@@ -2,7 +2,7 @@ import { homedir, platform } from 'os';
 import fs from 'fs';
 import { ConfigurationTarget, Uri, workspace } from 'vscode';
 import { MarkdownImagesExtractor } from './images-extractor.service';
-import { isNumber } from 'lodash';
+import { isNumber } from 'lodash-es';
 
 export class Settings {
     static readonly postsListPageSizeKey = 'pageSize.postsList';
