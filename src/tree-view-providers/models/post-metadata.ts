@@ -18,7 +18,10 @@ export enum RootPostMetadataType {
 
 const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto | undefined) =>
     [
-        [RootPostMetadataType.updateDate, () => new PostUpdatedDateMetadata(parsedPost)],
+        [
+            RootPostMetadataType.updateDate,
+            () => (parsedPost.hasUpdates ? new PostUpdatedDateMetadata(parsedPost) : null),
+        ],
         [RootPostMetadataType.createDate, () => new PostCreatedDateMetadata(parsedPost)],
         [
             RootPostMetadataType.categoryEntry,
@@ -57,7 +60,7 @@ export abstract class PostMetadata extends BaseTreeItemSource {
             rootMetadataMap(parsedPost, postEditDto)
                 .filter(([type]) => !exclude.includes(type))
                 .map(([, factory]) => factory())
-                .map(x => (x instanceof Promise ? x : Promise.resolve<PostMetadata>(x)))
+                .map(x => (x instanceof Promise ? x : Promise.resolve(x)))
         ).then(v => v.filter((x): x is PostMetadata => x instanceof PostMetadata));
     }
 

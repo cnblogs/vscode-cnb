@@ -1,4 +1,4 @@
-import { parseISO } from 'date-fns';
+import { differenceInSeconds, parseISO } from 'date-fns';
 
 export class Post {
     id = -1;
@@ -62,6 +62,10 @@ export class Post {
             default:
                 return '公开';
         }
+    }
+
+    get hasUpdates(): boolean {
+        return this.dateUpdated != null && differenceInSeconds(this.dateUpdated, this.datePublished) > 0;
     }
 }
 
