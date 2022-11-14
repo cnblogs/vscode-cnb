@@ -1,7 +1,9 @@
-export abstract class TreeViewCommandHandler<TData> {
-    readonly input: unknown;
-
+export abstract class CommandHandler {
     abstract handle(): Promise<void> | void;
+}
+
+export abstract class TreeViewCommandHandler<TData> extends CommandHandler {
+    readonly input: unknown;
 
     abstract parseInput(): TData | null;
 }

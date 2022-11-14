@@ -13,6 +13,8 @@ export interface IConfig {
         revocationEndpoint: string;
     };
     apiBaseUrl: string;
+    ingSite: string;
+    cnblogsOpenApiUrl: string;
 }
 
 export const isDev = () => process.env.NODE_ENV === 'Development';
@@ -30,6 +32,8 @@ export const defaultConfig: IConfig = {
         revocationEndpoint: '/connection/revocation',
     },
     apiBaseUrl: 'https://i.cnblogs.com',
+    ingSite: 'https://ing.cnblogs.com',
+    cnblogsOpenApiUrl: 'https://api.cnblogs.com',
 };
 
 export const devConfig = Object.assign({}, defaultConfig, {
@@ -39,4 +43,6 @@ export const devConfig = Object.assign({}, defaultConfig, {
         clientSecret: env.ClientSecret ? env.ClientSecret : '',
     }),
     apiBaseUrl: 'https://admin.cnblogs.com',
+    ingSite: 'https://my-ing.cnblogs.com',
+    cnblogsOpenApiUrl: 'https://my-api.cnblogs.com',
 });

@@ -34,6 +34,7 @@ import { pullPostRemoteUpdates } from './pull-post-remote-updates';
 import { extractImages } from './extract-images';
 import { clearPostsSearchResults, refreshPostsSearchResults, searchPosts } from './posts-list/search';
 import { handleDeletePostCategories } from './post-category/delete-selected-categories';
+import { PublishIngCommandHandler } from '@/commands/ing/publish-ing';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -77,6 +78,10 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.search-posts`, searchPosts),
         commands.registerCommand(`${appName}.clear-posts-search-results`, clearPostsSearchResults),
         commands.registerCommand(`${appName}.refresh-posts-search-results`, refreshPostsSearchResults),
+        commands.registerCommand(`${appName}.ing.publish`, () => new PublishIngCommandHandler('input').handle()),
+        commands.registerCommand(`${appName}.ing.publish-selection`, () =>
+            new PublishIngCommandHandler('selection').handle()
+        ),
     ];
     context?.subscriptions.push(...disposables);
 };
