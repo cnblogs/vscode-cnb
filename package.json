@@ -29,7 +29,8 @@
         "onView:vscode-cnb-workspace",
         "onCommand:vscode-cnb.open-workspace",
         "onCommand:vscode-cnb.login",
-        "onCommand:vscode-cnb.logout"
+        "onCommand:vscode-cnb.logout",
+        "onCommand:vscode-cnb.ing-publish-selection"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -289,6 +290,18 @@
                 "category": "Cnblogs",
                 "icon": "$(refresh)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.posts-list-refreshing"
+            },
+            {
+                "command": "vscode-cnb.ing.publish",
+                "title": "发闪存",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized"
+            },
+            {
+                "command": "vscode-cnb.ing.publish-selection",
+                "title": "将选中内容发到闪存",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized && editorHasSelection == true && isInDiffEditor == false && isInEmbeddedEditor == false"
             }
         ],
         "configuration": [
@@ -532,6 +545,10 @@
                 {
                     "command": "vscode-cnb.export-post-to-pdf",
                     "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.ing.publish-selection",
+                    "when": "false"
                 }
             ],
             "view/item/context": [
@@ -693,6 +710,10 @@
                     "command": "vscode-cnb.extract-images",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@9"
+                },
+                {
+                    "command": "vscode-cnb.ing.publish-selection",
+                    "group": "cnblogs@10"
                 }
             ],
             "editor/title": [
@@ -757,6 +778,11 @@
                 "key": "ctrl+alt+f",
                 "mac": "cmd+alt+f",
                 "when": "editorTextFocus && resourceLangId == markdown"
+            },
+            {
+                "command": "vscode-cnb.ing.publish",
+                "key": "ctrl+s ctrl+c",
+                "mac": "cmd+s cmd+c"
             }
         ],
         "viewsContainers": {
@@ -780,6 +806,11 @@
             {
                 "view": "cnblogs-navigation",
                 "contents": "[首页](https://www.cnblogs.com)\n[新闻](https://news.cnblogs.com/)\n[博问](https://q.cnblogs.com/)\n[闪存](https://ing.cnblogs.com/)"
+            },
+            {
+                "view": "cnblogs-navigation",
+                "contents": "[发闪存](command:vscode-cnb.ing.publish)",
+                "when": "vscode-cnb.isAuthorized"
             },
             {
                 "view": "vscode-cnb-workspace",
