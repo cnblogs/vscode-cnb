@@ -778,11 +778,6 @@
                 "key": "ctrl+alt+f",
                 "mac": "cmd+alt+f",
                 "when": "editorTextFocus && resourceLangId == markdown"
-            },
-            {
-                "command": "vscode-cnb.ing.publish",
-                "key": "ctrl+s ctrl+c",
-                "mac": "cmd+s cmd+c"
             }
         ],
         "viewsContainers": {
