@@ -13,4 +13,9 @@ export namespace webviewCommand {
         disposePanel = 'disposePanel',
         uploadImage = 'uploadImage',
     }
+
+    export const ingCommands = {
+        extensionCommands: { listIngs: 'listIngs' },
+        uiCommands: { updateIngsList: 'updateIngsList' },
+    };
 }

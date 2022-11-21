@@ -416,8 +416,15 @@
                     "when": "vscode-cnb.isAuthorized"
                 },
                 {
+                    "id": "vscode-cnb.ing-webview",
+                    "type": "webview",
+                    "name": "闪存",
+                    "when": "vscode-cnb.isAuthorized"
+                },
+                {
                     "id": "cnblogs-navigation",
-                    "name": "博客园导航"
+                    "name": "博客园导航",
+                    "when": "vscode-cnb.isAuthorized"
                 }
             ]
         },

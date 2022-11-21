@@ -10,6 +10,7 @@ import {
     observeWorkspaceFolderAndFileChange as observeWorkspaceFolderChange,
 } from '@/services/check-workspace';
 import { EditPostUriHandler } from '@/services/edit-post-uri-handler';
+import { IngWebviewProvider } from '@/services/ing-webview-provider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -20,6 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     registerCommands();
     registerTreeViews();
+    IngWebviewProvider.ensureRegistered();
     observeConfigurationChange();
     observeWorkspaceFolderChange();
     vscode.window.registerUriHandler(new EditPostUriHandler());

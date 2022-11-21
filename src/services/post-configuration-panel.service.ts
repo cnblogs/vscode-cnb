@@ -1,6 +1,5 @@
 import { cloneDeep } from 'lodash-es';
 import vscode, { Uri } from 'vscode';
-import path from 'path';
 import { Post } from '../models/post';
 import { globalState } from './global-state';
 import { postCategoryService } from './post-category.service';
@@ -13,11 +12,13 @@ import { webviewCommand } from '../models/webview-command';
 import { uploadImage } from '../commands/upload-image/upload-image';
 import { ImageUploadStatusId } from '../models/image-upload-status';
 import { openPostFile } from '../commands/posts-list/open-post-file';
+import { parseWebviewHtml } from 'src/services/parse-webview-html';
 
 const panels: Map<string, vscode.WebviewPanel> = new Map();
 
 export namespace postConfigurationPanel {
     const uiName = 'post-configuration';
+
     interface PostConfigurationPanelOpenOption {
         post: Post;
         panelTitle?: string;
@@ -26,16 +27,11 @@ export namespace postConfigurationPanel {
         successCallback: (post: Post) => any;
         beforeUpdate?: (postToUpdate: Post, panel: vscode.WebviewPanel) => Promise<boolean>;
     }
-    const resourceRootUri = () =>
-        vscode.Uri.file(path.join(globalState.extensionContext.extensionPath, 'dist', 'assets'));
+
+    const resourceRootUri = () => globalState.assetsUri;
 
     const setHtml = async (webview: vscode.Webview): Promise<void> => {
-        const webviewBaseUri = webview.asWebviewUri(resourceRootUri());
-        webview.html = (
-            await vscode.workspace.fs.readFile(vscode.Uri.joinPath(resourceRootUri(), 'ui', uiName, 'index.html'))
-        )
-            .toString()
-            .replace(/@PWD/g, webviewBaseUri.toString());
+        webview.html = await parseWebviewHtml('post-configuration', webview);
     };
 
     export const buildPanelId = (postId: number, postTitle: string): string => `${postId}-${postTitle}`;
