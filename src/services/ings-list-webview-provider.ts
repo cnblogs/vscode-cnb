@@ -16,10 +16,10 @@ import { IngAppState } from 'src/models/ing-view';
 import { IngType } from 'src/models/ing';
 import { isNumber } from 'lodash-es';
 
-export class IngWebviewProvider implements WebviewViewProvider {
-    private static _instance?: IngWebviewProvider;
+export class IngsListWebviewProvider implements WebviewViewProvider {
+    private static _instance?: IngsListWebviewProvider;
 
-    readonly viewId = `${globalState.extensionName}.ing-webview`;
+    readonly viewId = `${globalState.extensionName}.ings-list-webview`;
     private _view?: WebviewView;
     private _observer?: IngWebviewMessageObserver;
     private _ingApi?: IngApi;
@@ -56,7 +56,7 @@ export class IngWebviewProvider implements WebviewViewProvider {
 
     static ensureRegistered() {
         if (!this._instance) {
-            this._instance = new IngWebviewProvider();
+            this._instance = new IngsListWebviewProvider();
             globalState.extensionContext.subscriptions.push(
                 window.registerWebviewViewProvider(this._instance.viewId, this._instance)
             );
@@ -138,7 +138,7 @@ export class IngWebviewProvider implements WebviewViewProvider {
 }
 
 class IngWebviewMessageObserver {
-    constructor(private _provider: IngWebviewProvider) {}
+    constructor(private _provider: IngsListWebviewProvider) {}
 
     observer = ({ command, payload }: IngWebviewHostCommand) => {
         switch (command) {

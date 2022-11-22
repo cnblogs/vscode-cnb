@@ -35,7 +35,7 @@ import { extractImages } from './extract-images';
 import { clearPostsSearchResults, refreshPostsSearchResults, searchPosts } from './posts-list/search';
 import { handleDeletePostCategories } from './post-category/delete-selected-categories';
 import { PublishIngCommandHandler } from '@/commands/ing/publish-ing';
-import { RefreshIngsList } from 'src/commands/ing/refresh-ings-list';
+import { registerCommandsForIngsList } from 'src/commands/ing/ings-list-commands-registration';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -83,7 +83,7 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.ing.publish-selection`, () =>
             new PublishIngCommandHandler('selection').handle()
         ),
-        commands.registerCommand(`${appName}.ingsList.refresh`, () => new RefreshIngsList().handle()),
     ];
+    registerCommandsForIngsList(disposables);
     context?.subscriptions.push(...disposables);
 };

@@ -304,11 +304,25 @@
                 "enablement": "vscode-cnb.isAuthorized && editorHasSelection == true && isInDiffEditor == false && isInEmbeddedEditor == false"
             },
             {
-                "command": "vscode-cnb.ingsList.refresh",
+                "command": "vscode-cnb.ings-list.refresh",
                 "title": "刷新闪存列表",
                 "category": "Cnblogs",
                 "icon": "$(refresh)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing"
+            },
+            {
+                "command": "vscode-cnb.ings-list.previous",
+                "title": "上一页",
+                "category": "Cnblogs",
+                "icon": "$(chevron-left)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing && vscode-cnb.ingsList.pageIndex > 1"
+            },
+            {
+                "command": "vscode-cnb.ings-list.next",
+                "title": "下一页",
+                "category": "Cnblogs",
+                "icon": "$(chevron-right)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing && vscode-cnb.ingsList.pageIndex < 500"
             }
         ],
         "configuration": [
@@ -423,15 +437,16 @@
                     "when": "vscode-cnb.isAuthorized"
                 },
                 {
-                    "id": "vscode-cnb.ing-webview",
-                    "type": "webview",
-                    "name": "闪存",
-                    "when": "vscode-cnb.isAuthorized"
-                },
-                {
                     "id": "cnblogs-navigation",
                     "name": "博客园导航",
                     "when": "vscode-cnb.isAuthorized"
+                },
+                {
+                    "id": "vscode-cnb.ings-list-webview",
+                    "type": "webview",
+                    "name": "闪存",
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 }
             ]
         },
@@ -483,9 +498,19 @@
                     "group": "navigation@2"
                 },
                 {
-                    "command": "vscode-cnb.ingsList.refresh",
-                    "when": "view == vscode-cnb.ing-webview",
+                    "command": "vscode-cnb.ings-list.previous",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.next",
+                    "when": "view == vscode-cnb.ings-list-webview",
                     "group": "navigation@2"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.refresh",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@3"
                 }
             ],
             "commandPalette": [
@@ -570,7 +595,11 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.ingsList.refresh",
+                    "command": "vscode-cnb.ings-list.refresh",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.next",
                     "when": "false"
                 }
             ],
