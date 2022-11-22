@@ -302,7 +302,8 @@
                 "command": "vscode-cnb.ing.publish",
                 "title": "发闪存",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthorized",
+                "icon": "$(add)"
             },
             {
                 "command": "vscode-cnb.ing.publish-selection",
@@ -542,6 +543,11 @@
                     "command": "vscode-cnb.ings-list.refresh",
                     "when": "view == vscode-cnb.ings-list-webview",
                     "group": "navigation@4"
+                },
+                {
+                    "command": "vscode-cnb.ing.publish",
+                    "when": "view == vscode-cnb.ings-list-webview && !vscode-cnb.ingsList.isRefreshing",
+                    "group": "navigation@5"
                 }
             ],
             "commandPalette": [

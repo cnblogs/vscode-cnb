@@ -1,8 +1,9 @@
 import { CommandHandler } from '@/commands/command-handler';
-import { IngPublishModel } from '@/models/ing';
+import { IngPublishModel, IngType } from '@/models/ing';
 import { AlertService } from '@/services/alert.service';
 import { globalState } from '@/services/global-state';
 import { IngApi } from '@/services/ing.api';
+import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider';
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input';
 import { commands, MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode';
 
@@ -149,7 +150,10 @@ export class PublishIngCommandHandler extends CommandHandler {
     }
 
     private async onPublished(isPublished: boolean): Promise<void> {
+        const ingsListProvider = IngsListWebviewProvider.instance;
         if (isPublished) {
+            if (ingsListProvider) return ingsListProvider.refreshIngsList({ ingType: IngType.all, pageIndex: 1 });
+
             const options = [
                 [
                     '打开闪存',

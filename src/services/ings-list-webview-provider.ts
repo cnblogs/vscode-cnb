@@ -28,6 +28,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     private _pageIndex = 1;
     private _isRefreshing = false;
     private _ingType = IngType.all;
+    private _show?: WebviewView['show'];
 
     private constructor() {}
 
@@ -46,6 +47,14 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
     get ingType(): IngType {
         return this._ingType;
+    }
+
+    get show() {
+        return (this._show ??= this._view ? this._view.show.bind(this._view) : undefined);
+    }
+
+    static get instance(): IngsListWebviewProvider | undefined {
+        return this._instance;
     }
 
     private get assetsUri() {
@@ -70,6 +79,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async resolveWebviewView(webviewView: WebviewView, context: WebviewViewResolveContext, token: CancellationToken) {
         if (this._view) return;
+
         this._view = webviewView;
         webviewView.webview.options = {
             enableScripts: true,
@@ -85,28 +95,36 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         webviewView.onDidDispose(() => disposables.forEach(d => void d.dispose()), disposables);
     }
 
-    async refreshIngsList({ ingType = this.ingType, pageIndex = 1 } = {}) {
-        if (this.isRefreshing) return;
-        await this.setIsRefreshing(true);
+    async refreshIngsList({ ingType = this.ingType, pageIndex = this.pageIndex } = {}) {
+        if (!this._view || !this.show) return;
 
-        if (!this._view?.visible) this._view?.show();
+        if (this._view.visible) {
+            if (this.isRefreshing) return;
+            await this.setIsRefreshing(true);
 
-        await this._view?.webview.postMessage({
-            payload: { isRefreshing: true },
-            command: webviewCommands.ingCommands.UiCommands.setAppState,
-        } as IngWebviewUiCommand<Partial<IngAppState>>);
-        const ings = await this.ingApi.list({
-            type: ingType,
-            pageIndex,
-            pageSize: 30,
-        });
-        await this._view?.webview.postMessage({
-            command: webviewCommands.ingCommands.UiCommands.setAppState,
-            payload: {
-                ings,
-                isRefreshing: false,
-            },
-        } as IngWebviewUiCommand<Omit<IngAppState, ''>>);
+            await this._view.webview
+                .postMessage({
+                    payload: { isRefreshing: true },
+                    command: webviewCommands.ingCommands.UiCommands.setAppState,
+                } as IngWebviewUiCommand<Partial<IngAppState>>)
+                .then(undefined, () => undefined);
+            const ings = await this.ingApi.list({
+                type: ingType,
+                pageIndex,
+                pageSize: 30,
+            });
+            await this._view.webview
+                .postMessage({
+                    command: webviewCommands.ingCommands.UiCommands.setAppState,
+                    payload: {
+                        ings,
+                        isRefreshing: false,
+                    },
+                } as IngWebviewUiCommand<Omit<IngAppState, ''>>)
+                .then(undefined, () => undefined);
+        } else {
+            this.show();
+        }
 
         await this.setIngType(ingType);
         await this.setPageIndex(pageIndex);
