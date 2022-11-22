@@ -39,11 +39,17 @@ export class Ing {
 
 export enum IngType {
     following = 1,
-    mu = 4,
+    my = 4,
     all = 5,
     mycomment = 7,
     comment = 13,
     mention = 14,
 }
+
+export const IngTypesMetadata = [
+    [IngType.all, { displayName: '全站', description: '全站闪存' }],
+    [IngType.my, { displayName: '我的', description: '我的闪存' }],
+    [IngType.following, { displayName: '关注的人', description: '关注的人的闪存' }],
+] as const;
 
 export type IngPublishModel = Pick<Ing, 'content' | 'isPrivate'>;

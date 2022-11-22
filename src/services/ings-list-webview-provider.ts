@@ -13,13 +13,15 @@ import { parseWebviewHtml } from 'src/services/parse-webview-html';
 import { IngWebviewHostCommand, IngWebviewUiCommand, webviewCommands } from 'src/models/webview-commands';
 import { IngApi } from 'src/services/ing.api';
 import { IngAppState } from 'src/models/ing-view';
-import { IngType } from 'src/models/ing';
+import { IngType, IngTypesMetadata } from 'src/models/ing';
 import { isNumber } from 'lodash-es';
 
 export class IngsListWebviewProvider implements WebviewViewProvider {
     private static _instance?: IngsListWebviewProvider;
 
     readonly viewId = `${globalState.extensionName}.ings-list-webview`;
+
+    private readonly _baseTitle = '闪存';
     private _view?: WebviewView;
     private _observer?: IngWebviewMessageObserver;
     private _ingApi?: IngApi;
@@ -106,6 +108,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
             },
         } as IngWebviewUiCommand<Omit<IngAppState, ''>>);
 
+        await this.setIngType(ingType);
         await this.setPageIndex(pageIndex);
         await this.setIsRefreshing(false);
     }
@@ -134,6 +137,13 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
             )
             .then(undefined, () => undefined);
         this._pageIndex = value;
+    }
+
+    private setIngType(value: IngType) {
+        this._ingType = value;
+        const suffix = IngTypesMetadata.find(([x]) => x === value)?.[1].displayName;
+        if (suffix && this._view) this._view.title = `${this._baseTitle} - ${suffix}`;
+        return Promise.resolve();
     }
 }
 

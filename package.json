@@ -337,6 +337,13 @@
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-first-page)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing && vscode-cnb.ingsList.pageIndex < 500"
+            },
+            {
+                "command": "vscode-cnb.ings-list.select-type",
+                "title": "选择闪存列表",
+                "category": "Cnblogs",
+                "icon": "$(list-filter)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing"
             }
         ],
         "configuration": [
@@ -527,9 +534,14 @@
                     "group": "navigation@2"
                 },
                 {
-                    "command": "vscode-cnb.ings-list.refresh",
+                    "command": "vscode-cnb.ings-list.select-type",
                     "when": "view == vscode-cnb.ings-list-webview",
                     "group": "navigation@3"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.refresh",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@4"
                 }
             ],
             "commandPalette": [
@@ -623,6 +635,10 @@
                 },
                 {
                     "command": "vscode-cnb.ings-list.first",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.select-type",
                     "when": "false"
                 }
             ],
