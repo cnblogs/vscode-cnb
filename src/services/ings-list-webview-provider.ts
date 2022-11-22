@@ -113,12 +113,14 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
                 pageIndex,
                 pageSize: 30,
             });
+            const comments = await this.ingApi.listComments(ings?.map(x => x.id) ?? []);
             await this._view.webview
                 .postMessage({
                     command: webviewCommands.ingCommands.UiCommands.setAppState,
                     payload: {
                         ings,
                         isRefreshing: false,
+                        comments,
                     },
                 } as IngWebviewUiCommand<Omit<IngAppState, ''>>)
                 .then(undefined, () => undefined);

@@ -3,10 +3,11 @@ import { IngWebviewUiCommand, webviewCommands } from '@models/webview-commands';
 import { IngList } from 'ing/IngList';
 import { vsCodeApi } from 'share/vscode-api';
 import { IngAppState } from '@models/ing-view';
-import { Ing } from '@models/ing';
+import { Ing, IngComment } from '@models/ing';
 import { activeThemeProvider } from 'share/active-theme-provider';
 import { ThemeProvider } from '@fluentui/react/lib/Theme';
 import { Spinner, Stack } from '@fluentui/react';
+import { cloneWith } from 'lodash';
 
 export class App extends Component<unknown, IngAppState> {
     constructor(props: unknown) {
@@ -27,7 +28,7 @@ export class App extends Component<unknown, IngAppState> {
     }
 
     render(): ReactNode {
-        const { ings, isRefreshing, theme } = this.state;
+        const { ings, isRefreshing, theme, comments } = this.state;
         return (
             <React.StrictMode>
                 <ThemeProvider theme={theme} style={{ fontSize: 'var(--vscode-font-size)' }}>
@@ -38,7 +39,7 @@ export class App extends Component<unknown, IngAppState> {
                             </Stack.Item>
                         </Stack>
                     ) : (
-                        <IngList ings={ings ?? []} />
+                        <IngList ings={ings ?? []} comments={comments ?? {}} />
                     )}
                 </ThemeProvider>
             </React.StrictMode>
@@ -49,10 +50,16 @@ export class App extends Component<unknown, IngAppState> {
         window.addEventListener('message', ({ data: { command, payload } }: { data: IngWebviewUiCommand }) => {
             switch (command) {
                 case webviewCommands.ingCommands.UiCommands.setAppState: {
-                    const { ings, isRefreshing } = payload as Partial<IngAppState>;
+                    const { ings, isRefreshing, comments } = payload as Partial<IngAppState>;
                     this.setState({
                         ings: ings?.map(Ing.parse) ?? this.state.ings,
                         isRefreshing: isRefreshing ?? this.state.isRefreshing,
+                        comments: comments
+                            ? cloneWith(comments, v => {
+                                  for (const key in v) v[key] = v[key].map(IngComment.parse);
+                                  return v;
+                              })
+                            : this.state.comments,
                     });
                     break;
                 }

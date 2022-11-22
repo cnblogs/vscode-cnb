@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Ing } from '@models/ing';
+import { Ing, IngComment } from '@models/ing';
 import { IngItem } from 'ing/IngItem';
 import { Stack } from '@fluentui/react';
 
 interface IngListProps {
     ings: Ing[];
+    comments: Record<number, IngComment[]>;
 }
 
 class IngList extends Component<IngListProps> {
@@ -23,9 +24,10 @@ class IngList extends Component<IngListProps> {
     }
 
     private renderItems() {
+        const { comments } = this.props;
         return this.props.ings.map(ing => (
             <Stack.Item>
-                <IngItem ing={ing} />
+                <IngItem ing={ing} comments={comments[ing.id]} />
             </Stack.Item>
         ));
     }

@@ -1,10 +1,10 @@
-import { Ing, IngPublishModel, IngType } from '@/models/ing';
+import { Ing, IngComment, IngPublishModel, IngType } from '@/models/ing';
 import { accountService } from '@/services/account.service';
 import { AlertService } from '@/services/alert.service';
 import { globalState } from '@/services/global-state';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
-import { isArray, isObject } from 'lodash-es';
+import { isArray, isNumber, isObject } from 'lodash-es';
 
 export class IngApi {
     async publishIng(ing: IngPublishModel): Promise<boolean> {
@@ -48,5 +48,27 @@ export class IngApi {
                 AlertService.error(JSON.stringify(reason));
                 return null;
             });
+    }
+
+    listComments(ingIds: number | number[]): Promise<Record<number, IngComment[]>> {
+        const arr = isNumber(ingIds) ? [ingIds] : ingIds;
+        return Promise.all(
+            arr.map(id =>
+                fetch(`${globalState.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`, {
+                    method: 'GET',
+                    headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
+                }).then(
+                    resp =>
+                        resp?.json().then(obj => [id, obj as IngComment[] | null | undefined] as const) ??
+                        Promise.resolve(undefined),
+                    reason => void AlertService.warning(JSON.stringify(reason))
+                )
+            )
+        ).then(results =>
+            results.reduce<Record<number, IngComment[]>>((p, v) => {
+                if (v && v[1]) p[v[0]] = v[1].map(IngComment.parse);
+                return p;
+            }, {})
+        );
     }
 }

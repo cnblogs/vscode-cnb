@@ -1,5 +1,5 @@
 import { parseISO } from 'date-fns';
-import { camelCase, mapKeys } from 'lodash-es';
+import { camelCase, isObject, mapKeys } from 'lodash-es';
 
 export class Ing {
     id = -1;
@@ -34,6 +34,30 @@ export class Ing {
 
     static parse(this: void, value: unknown): Ing {
         return Object.assign(new Ing(), typeof value === 'object' ? mapKeys(value, (_, k) => camelCase(k)) : {});
+    }
+}
+
+export class IngComment {
+    id = -1;
+    content = '';
+    statusId = -1;
+    userAlias = '';
+    userDisplayName = '';
+    userIconUrl = '';
+    userId = -1;
+
+    private _dateAdded: Date | string = new Date();
+
+    get dateAdded(): Date {
+        return (this._dateAdded = typeof this._dateAdded === 'string' ? parseISO(this._dateAdded) : this._dateAdded);
+    }
+
+    set dateAdded(value: Date) {
+        this._dateAdded = value;
+    }
+
+    static parse(this: void, obj: unknown): IngComment {
+        return Object.assign(new IngComment(), isObject(obj) ? mapKeys(obj, (_, k) => camelCase(k)) : {});
     }
 }
 

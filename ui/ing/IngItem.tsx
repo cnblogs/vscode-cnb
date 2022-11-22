@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Ing } from '@models/ing';
+import { Ing, IngComment } from '@models/ing';
 import { IngItemState } from '@models/ing-view';
 import { take } from 'lodash-es';
 import { ActivityItem, IPersonaProps, Link, Text } from '@fluentui/react';
@@ -8,6 +8,7 @@ import { zhCN } from 'date-fns/locale';
 
 interface IngItemProps {
     ing: Ing;
+    comments?: IngComment[];
 }
 
 class IngItem extends Component<IngItemProps, IngItemState> {
@@ -23,10 +24,10 @@ class IngItem extends Component<IngItemProps, IngItemState> {
     render() {
         const {
             ing: { id, content, userDisplayName, dateAdded },
+            comments,
         } = this.props;
-        const { comments } = this.state;
         const { persons } = this;
-        console.debug(id);
+        console.debug(comments);
         return (
             <div>
                 <div>
@@ -58,15 +59,15 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                         }}
                     />
                 </div>
-                {comments ? <div className="mr-16px">{comments.map(this.renderComment)}</div> : <></>}
+                {comments ? <div className="pl-[40px] text-[12px]">{comments.map(this.renderComment)}</div> : <></>}
             </div>
         );
     }
 
-    private renderComment = ({ userDisplayName, content }: Ing) => (
+    private renderComment = ({ userDisplayName, content }: IngComment) => (
         <div>
             <Link>{userDisplayName}</Link>
-            <Text>:&nbsp;{content}</Text>
+            <Text styles={{ root: { fontSize: 'inherit' } }}>:&nbsp;{content}</Text>
         </div>
     );
 }
