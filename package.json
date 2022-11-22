@@ -345,6 +345,12 @@
                 "category": "Cnblogs",
                 "icon": "$(list-filter)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing"
+            },
+            {
+                "command": "vscode-cnb.ings-list.open-in-browser",
+                "title": "在浏览器中打开闪存",
+                "icon": "$(globe)",
+                "enablement": "vscode-cnb.isAuthorized"
             }
         ],
         "configuration": [
@@ -545,9 +551,14 @@
                     "group": "navigation@4"
                 },
                 {
+                    "command": "vscode-cnb.ings-list.open-in-browser",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@5"
+                },
+                {
                     "command": "vscode-cnb.ing.publish",
                     "when": "view == vscode-cnb.ings-list-webview && !vscode-cnb.ingsList.isRefreshing",
-                    "group": "navigation@5"
+                    "group": "navigation@6"
                 }
             ],
             "commandPalette": [
@@ -645,6 +656,10 @@
                 },
                 {
                     "command": "vscode-cnb.ings-list.select-type",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.open-in-browser",
                     "when": "false"
                 }
             ],

@@ -8,6 +8,7 @@ import {
     GotoIngsListPreviousPage,
 } from 'src/commands/ing/goto-ings-list-page';
 import { SelectIngType } from '@/commands/ing/select-ing-type';
+import { OpenIngInBrowser } from '@/commands/ing/open-ing-in-browser';
 
 export const registerCommandsForIngsList = (disposables: IDisposable[]) => {
     const appName = globalState.extensionName;
@@ -19,6 +20,7 @@ export const registerCommandsForIngsList = (disposables: IDisposable[]) => {
             commands.registerCommand(`${appName}.ings-list.previous`, () => new GotoIngsListPreviousPage().handle()),
             commands.registerCommand(`${appName}.ings-list.first`, () => new GotoIngsListFirstPage().handle()),
             commands.registerCommand(`${appName}.ings-list.select-type`, () => new SelectIngType().handle()),
+            commands.registerCommand(`${appName}.ings-list.open-in-browser`, () => new OpenIngInBrowser().handle()),
         ]
     );
 };
