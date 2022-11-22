@@ -13,7 +13,7 @@ import { AccessPermissionSelector } from './AccessPermissionSelector';
 import { PasswordInput } from './PasswordInput';
 import { vsCodeApi } from '../../share/vscode-api';
 import { ErrorResponse } from './ErrorResponse';
-import { webviewCommand } from '@models/webview-command';
+import { webviewCommands } from '@models/webview-commands';
 import { webviewMessage } from '@models/webview-message';
 import { InputSummary } from './InputSummary';
 import { IPostFormContext, PostFormContext } from './PostFormContext';
@@ -129,7 +129,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         this.context.set({ disabled: true, status: 'submitting' });
         vsCodeApi.getInstance().postMessage({
-            command: webviewCommand.ExtensionCommands.savePost,
+            command: webviewCommands.ExtensionCommands.savePost,
             post: Object.assign({}, this.props.post, this.state),
         } as webviewMessage.SavePostMessage);
     }
@@ -137,6 +137,6 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
     private onCancel() {
         vsCodeApi
             .getInstance()
-            .postMessage({ command: webviewCommand.ExtensionCommands.disposePanel } as webviewMessage.Message);
+            .postMessage({ command: webviewCommands.ExtensionCommands.disposePanel } as webviewMessage.Message);
     }
 }

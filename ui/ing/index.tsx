@@ -1,3 +1,4 @@
+import './index.less';
 import { App } from 'ing/App';
 import ReactDOM from 'react-dom';
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Ing } from '@models/ing';
 import { IngItem } from 'ing/IngItem';
+import { Stack } from '@fluentui/react';
 
 interface IngListProps {
     ings: Ing[];
@@ -14,14 +15,19 @@ class IngList extends Component<IngListProps> {
     render() {
         return (
             <div className="ing-list">
-                <div></div>
-                <div className="ing-list__items">{this.renderItems()}</div>
+                <Stack horizontal={false} className="ing-list__items" tokens={{ childrenGap: 4 }}>
+                    {this.renderItems()}
+                </Stack>
             </div>
         );
     }
 
     private renderItems() {
-        return this.props.ings.map(ing => <IngItem ing={ing} />);
+        return this.props.ings.map(ing => (
+            <Stack.Item>
+                <IngItem ing={ing} />
+            </Stack.Item>
+        ));
     }
 }
 

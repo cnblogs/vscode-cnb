@@ -1,5 +1,5 @@
 import { MessageBar, MessageBarType } from '@fluentui/react';
-import { webviewCommand } from '@models/webview-command';
+import { webviewCommands } from '@models/webview-commands';
 import { webviewMessage } from '@models/webview-message';
 import React from 'react';
 import { Optional } from 'utility-types';
@@ -26,7 +26,7 @@ export class ErrorResponse extends React.Component<IErrorResponseProps, IErrorRe
                 webviewMessage.ShowErrorResponseMessage,
                 'command'
             >;
-            if (command === webviewCommand.UiCommands.showErrorResponse) {
+            if (command === webviewCommands.UiCommands.showErrorResponse) {
                 this.setState({ errors: errorResponse.errors ?? [] }, () => this.reveal());
                 this.context.set({ disabled: false, status: '' });
             }

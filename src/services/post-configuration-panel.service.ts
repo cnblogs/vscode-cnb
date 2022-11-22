@@ -8,7 +8,7 @@ import { postTagService } from './post-tag.service';
 import { postService } from './post.service';
 import { isErrorResponse } from '../models/error-response';
 import { webviewMessage } from '../models/webview-message';
-import { webviewCommand } from '../models/webview-command';
+import { webviewCommands } from 'src/models/webview-commands';
 import { uploadImage } from '../commands/upload-image/upload-image';
 import { ImageUploadStatusId } from '../models/image-upload-status';
 import { openPostFile } from '../commands/posts-list/open-post-file';
@@ -17,8 +17,6 @@ import { parseWebviewHtml } from 'src/services/parse-webview-html';
 const panels: Map<string, vscode.WebviewPanel> = new Map();
 
 export namespace postConfigurationPanel {
-    const uiName = 'post-configuration';
-
     interface PostConfigurationPanelOpenOption {
         post: Post;
         panelTitle?: string;
@@ -51,12 +49,12 @@ export namespace postConfigurationPanel {
         const { webview } = panel;
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         webview.postMessage({
-            command: webviewCommand.UiCommands.setFluentIconBaseUrl,
+            command: webviewCommands.UiCommands.setFluentIconBaseUrl,
             baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
         } as webviewMessage.SetFluentIconBaseUrlMessage);
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         webview.postMessage({
-            command: webviewCommand.UiCommands.editPostConfiguration,
+            command: webviewCommands.UiCommands.editPostConfiguration,
             post: cloneDeep(post),
             activeTheme: vscode.window.activeColorTheme.kind,
             personalCategories: cloneDeep(await postCategoryService.fetchCategories()),
@@ -84,7 +82,7 @@ export namespace postConfigurationPanel {
             const { breadcrumbs } = options;
             const { webview } = panel;
             void webview.postMessage({
-                command: webviewCommand.UiCommands.updateBreadcrumbs,
+                command: webviewCommands.UiCommands.updateBreadcrumbs,
                 breadcrumbs,
             } as webviewMessage.UpdateBreadcrumbsMessage);
             panel.reveal();
@@ -115,7 +113,7 @@ export namespace postConfigurationPanel {
         if (panel) {
             const { webview } = panel;
             await webview.postMessage({
-                command: webviewCommand.UiCommands.updateImageUploadStatus,
+                command: webviewCommands.UiCommands.updateImageUploadStatus,
                 status: {
                     id: ImageUploadStatusId.uploading,
                 },
@@ -124,7 +122,7 @@ export namespace postConfigurationPanel {
             try {
                 const imageUrl = await uploadImage(false);
                 await webview.postMessage({
-                    command: webviewCommand.UiCommands.updateImageUploadStatus,
+                    command: webviewCommands.UiCommands.updateImageUploadStatus,
                     status: {
                         imageUrl,
                         id: ImageUploadStatusId.uploaded,
@@ -134,7 +132,7 @@ export namespace postConfigurationPanel {
             } catch (err) {
                 if (isErrorResponse(err)) {
                     await webview.postMessage({
-                        command: webviewCommand.UiCommands.updateImageUploadStatus,
+                        command: webviewCommands.UiCommands.updateImageUploadStatus,
                         status: {
                             id: ImageUploadStatusId.failed,
                             errors: err.errors,
@@ -152,7 +150,7 @@ export namespace postConfigurationPanel {
         const { webview } = panel;
         return vscode.window.onDidChangeActiveColorTheme(async theme => {
             await webview.postMessage({
-                command: webviewCommand.UiCommands.changeTheme,
+                command: webviewCommands.UiCommands.updateTheme,
                 colorThemeKind: theme.kind,
             } as webviewMessage.ChangeThemeMessage);
         });
@@ -169,7 +167,7 @@ export namespace postConfigurationPanel {
         return webview.onDidReceiveMessage(async message => {
             const { command } = (message ?? {}) as webviewMessage.Message;
             switch (command) {
-                case webviewCommand.ExtensionCommands.savePost:
+                case webviewCommands.ExtensionCommands.savePost:
                     try {
                         if (!panel) return;
 
@@ -186,7 +184,7 @@ export namespace postConfigurationPanel {
                     } catch (err) {
                         if (isErrorResponse(err)) {
                             await webview.postMessage({
-                                command: webviewCommand.UiCommands.showErrorResponse,
+                                command: webviewCommands.UiCommands.showErrorResponse,
                                 errorResponse: err,
                             } as webviewMessage.ShowErrorResponseMessage);
                         } else {
@@ -194,10 +192,10 @@ export namespace postConfigurationPanel {
                         }
                     }
                     break;
-                case webviewCommand.ExtensionCommands.disposePanel:
+                case webviewCommands.ExtensionCommands.disposePanel:
                     panel?.dispose();
                     break;
-                case webviewCommand.ExtensionCommands.uploadImage:
+                case webviewCommands.ExtensionCommands.uploadImage:
                     await onUploadImageCommand(panel, <webviewMessage.UploadImageMessage>message);
                     break;
             }

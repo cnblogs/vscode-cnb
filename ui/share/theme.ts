@@ -16,7 +16,8 @@ const accent: PartialTheme = {
     },
     defaultFontStyle: { fontFamily: 'var(--vscode-font-family)' },
     semanticColors: {
-        bodyBackground: 'var(--vscode-editor-background)',
+        bodyBackground: 'inherit',
+        bodyText: 'var(--vscode-foreground)',
         primaryButtonText: 'var(--vscode-button-foreground)',
         primaryButtonTextHovered: 'var(--vscode-button-foreground)',
         primaryButtonTextDisabled: 'var(--vscode-button-foreground)',

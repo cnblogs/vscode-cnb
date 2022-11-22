@@ -302,6 +302,13 @@
                 "title": "将选中内容发到闪存",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized && editorHasSelection == true && isInDiffEditor == false && isInEmbeddedEditor == false"
+            },
+            {
+                "command": "vscode-cnb.ingsList.refresh",
+                "title": "刷新闪存列表",
+                "category": "Cnblogs",
+                "icon": "$(refresh)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing"
             }
         ],
         "configuration": [
@@ -474,6 +481,11 @@
                     "command": "vscode-cnb.refresh-post-categories-list",
                     "when": "view == cnblogs-post-categories-list",
                     "group": "navigation@2"
+                },
+                {
+                    "command": "vscode-cnb.ingsList.refresh",
+                    "when": "view == vscode-cnb.ing-webview",
+                    "group": "navigation@2"
                 }
             ],
             "commandPalette": [
@@ -555,6 +567,10 @@
                 },
                 {
                     "command": "vscode-cnb.ing.publish-selection",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.ingsList.refresh",
                     "when": "false"
                 }
             ],

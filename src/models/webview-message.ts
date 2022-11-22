@@ -1,5 +1,5 @@
 import { Post } from './post';
-import { webviewCommand } from './webview-command';
+import { webviewCommands } from './webview-commands';
 import { ColorThemeKind } from 'vscode';
 import { PostCategories } from './post-category';
 import { SiteCategories } from './site-category';
@@ -9,7 +9,7 @@ import { ImageUploadStatus } from './image-upload-status';
 
 export namespace webviewMessage {
     export interface Message {
-        command: webviewCommand.UiCommands | webviewCommand.ExtensionCommands;
+        command: webviewCommands.UiCommands | webviewCommands.ExtensionCommands;
     }
 
     export interface EditPostConfigurationMessage extends Message {
