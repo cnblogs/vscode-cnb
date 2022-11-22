@@ -3,7 +3,7 @@ import { Ing, IngComment } from '@models/ing';
 import { IngItemState } from '@models/ing-view';
 import { take } from 'lodash-es';
 import { ActivityItem, IPersonaProps, Link, Text } from '@fluentui/react';
-import { formatDistanceStrict } from 'date-fns';
+import { format, formatDistanceStrict } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
 interface IngItemProps {
@@ -64,10 +64,16 @@ class IngItem extends Component<IngItemProps, IngItemState> {
         );
     }
 
-    private renderComment = ({ userDisplayName, content }: IngComment) => (
+    private renderComment = ({ userDisplayName, content, dateAdded }: IngComment) => (
         <div>
             <Link>{userDisplayName}</Link>
             <Text styles={{ root: { fontSize: 'inherit' } }}>:&nbsp;{content}</Text>
+            <Text
+                styles={{ root: { fontSize: 'inherit', color: 'var(--vscode-disabledForeground)' } }}
+                title={format(dateAdded, 'yyyy-MM-dd HH:mm')}
+            >
+                &nbsp;&nbsp;{formatDistanceStrict(dateAdded, new Date(), { locale: zhCN, addSuffix: true })}
+            </Text>
         </div>
     );
 }
