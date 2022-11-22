@@ -129,6 +129,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         await this.setIngType(ingType);
         await this.setPageIndex(pageIndex);
         await this.setIsRefreshing(false);
+        this.setTitle();
     }
 
     private provideHtml(webview: Webview) {
@@ -159,9 +160,14 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
     private setIngType(value: IngType) {
         this._ingType = value;
-        const suffix = IngTypesMetadata.find(([x]) => x === value)?.[1].displayName;
-        if (suffix && this._view) this._view.title = `${this._baseTitle} - ${suffix}`;
         return Promise.resolve();
+    }
+
+    private setTitle() {
+        if (!this._view) return;
+        const ingTypeSuffix = IngTypesMetadata.find(([x]) => x === this.ingType)?.[1].displayName ?? '';
+        const pageIndexSuffix = this.pageIndex > 1 ? `(第${this.pageIndex}页)` : '';
+        this._view.title = `${this._baseTitle}${ingTypeSuffix ? ' - ' + ingTypeSuffix : ''}${pageIndexSuffix}`;
     }
 }
 
