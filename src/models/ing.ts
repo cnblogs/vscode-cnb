@@ -1,6 +1,12 @@
 import { parseISO } from 'date-fns';
 import { camelCase, isObject, mapKeys } from 'lodash-es';
 
+export enum IngSendFromType {
+    cellPhone = 6,
+    web = 8,
+    code = 9,
+}
+
 export class Ing {
     id = -1;
     content = '';
@@ -11,6 +17,7 @@ export class Ing {
     commentCount = '';
     userId = -1;
     userGuid = '';
+    sendFrom = IngSendFromType.web;
     private _dateAdded: Date | string = new Date();
     private _userIconUrl = '';
 
