@@ -108,14 +108,16 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                             activityText: {
                                 color: 'inherit',
                                 fontFamily: 'inherit',
-                                lineHeight: 16,
+                                lineHeight: '1.5',
+                                minHeight: 16,
                             },
                             commentText: {
                                 color: 'inherit',
                                 fontFamily: 'inherit',
-                                lineHeight: 16,
+                                lineHeight: '1.5',
                                 display: 'flex',
                                 alignItems: 'center',
+                                minHeight: 16,
                             },
                             root: {
                                 color: 'inherit',
