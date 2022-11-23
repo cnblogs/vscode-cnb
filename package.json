@@ -90,6 +90,13 @@
                     "fontPath": "dist/assets/icons.woff2",
                     "fontCharacter": "\\e674"
                 }
+            },
+            "vscode-cnb-first-page": {
+                "description": "first page",
+                "default": {
+                    "fontPath": "dist/assets/icons.woff2",
+                    "fontCharacter": "\\e87a"
+                }
             }
         },
         "commands": [
@@ -295,13 +302,55 @@
                 "command": "vscode-cnb.ing.publish",
                 "title": "发闪存",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing",
+                "icon": "$(add)"
             },
             {
                 "command": "vscode-cnb.ing.publish-selection",
                 "title": "将选中内容发到闪存",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized && editorHasSelection == true && isInDiffEditor == false && isInEmbeddedEditor == false"
+            },
+            {
+                "command": "vscode-cnb.ings-list.refresh",
+                "title": "刷新闪存列表",
+                "category": "Cnblogs",
+                "icon": "$(refresh)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing"
+            },
+            {
+                "command": "vscode-cnb.ings-list.previous",
+                "title": "上一页",
+                "category": "Cnblogs",
+                "icon": "$(chevron-left)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing && vscode-cnb.ingsList.pageIndex > 1"
+            },
+            {
+                "command": "vscode-cnb.ings-list.next",
+                "title": "下一页",
+                "category": "Cnblogs",
+                "icon": "$(chevron-right)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing && vscode-cnb.ingsList.pageIndex < 500"
+            },
+            {
+                "command": "vscode-cnb.ings-list.first",
+                "title": "第一页",
+                "category": "Cnblogs",
+                "icon": "$(vscode-cnb-first-page)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing && vscode-cnb.ingsList.pageIndex < 500"
+            },
+            {
+                "command": "vscode-cnb.ings-list.select-type",
+                "title": "选择闪存列表",
+                "category": "Cnblogs",
+                "icon": "$(list-filter)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing"
+            },
+            {
+                "command": "vscode-cnb.ings-list.open-in-browser",
+                "title": "在浏览器中打开闪存",
+                "icon": "$(globe)",
+                "enablement": "vscode-cnb.isAuthorized"
             }
         ],
         "configuration": [
@@ -393,31 +442,45 @@
                 {
                     "id": "cnblogs-authorize",
                     "name": "登录/授权",
-                    "when": "!vscode-cnb.isAuthorized"
+                    "when": "!vscode-cnb.isAuthorized",
+                    "visibility": "visible"
                 },
                 {
                     "id": "vscode-cnb-workspace",
                     "name": "工作空间",
-                    "when": "vscode-cnb.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-posts-list-another",
                     "name": "博客园 - 随笔列表",
-                    "when": "vscode-cnb.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-post-categories-list",
                     "name": "分类列表",
-                    "when": "vscode-cnb.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-account",
                     "name": "账户信息",
-                    "when": "vscode-cnb.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-navigation",
-                    "name": "博客园导航"
+                    "name": "博客园导航",
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
+                },
+                {
+                    "id": "vscode-cnb.ings-list-webview",
+                    "type": "webview",
+                    "name": "闪存",
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 }
             ]
         },
@@ -467,6 +530,41 @@
                     "command": "vscode-cnb.refresh-post-categories-list",
                     "when": "view == cnblogs-post-categories-list",
                     "group": "navigation@2"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.open-in-browser",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@0"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.first",
+                    "when": "view == vscode-cnb.ings-list-webview && vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing && vscode-cnb.ingsList.pageIndex > 2",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.previous",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.next",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@3"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.select-type",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@4"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.refresh",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@5"
+                },
+                {
+                    "command": "vscode-cnb.ing.publish",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@6"
                 }
             ],
             "commandPalette": [
@@ -548,6 +646,26 @@
                 },
                 {
                     "command": "vscode-cnb.ing.publish-selection",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.refresh",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.next",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.first",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.select-type",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.ings-list.open-in-browser",
                     "when": "false"
                 }
             ],
@@ -803,11 +921,6 @@
                 "contents": "[首页](https://www.cnblogs.com)\n[新闻](https://news.cnblogs.com/)\n[博问](https://q.cnblogs.com/)\n[闪存](https://ing.cnblogs.com/)"
             },
             {
-                "view": "cnblogs-navigation",
-                "contents": "[发闪存](command:vscode-cnb.ing.publish)",
-                "when": "vscode-cnb.isAuthorized"
-            },
-            {
                 "view": "vscode-cnb-workspace",
                 "contents": "[在vscode中打开工作空间](command:vscode-cnb.open-workspace)",
                 "when": "!vscode-cnb.isTargetWorkspace"
@@ -885,6 +998,7 @@
         "prettier": "^2.5.0",
         "style-loader": "^3.3.1",
         "tailwindcss": "^3.0.23",
+        "terser-webpack-plugin": "^5.3.6",
         "ts-loader": "^9.2.5",
         "tsconfig-paths-webpack-plugin": "^3.5.2",
         "typescript": "^4.8.4",

@@ -1,4 +1,7 @@
 declare interface VsCodeApi {
-    postMessage(message: Object): any;
+    postMessage<T extends Record<string, unknown>>(
+        message: Object | import('@models/webview-commands').IngWebviewHostCommand<T>
+    ): any;
 }
+
 declare function acquireVsCodeApi(): VsCodeApi;

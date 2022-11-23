@@ -1,5 +1,6 @@
-import { ExtensionContext } from 'vscode';
+import { ExtensionContext, Uri } from 'vscode';
 import { defaultConfig, devConfig, IConfig, isDev } from '../models/config';
+import path from 'path';
 
 export class GlobalState {
     private static _instance = new GlobalState();
@@ -38,6 +39,10 @@ export class GlobalState {
     get extensionName(): string {
         const { name } = <{ name?: string }>this.extensionContext.extension.packageJSON;
         return name ?? '';
+    }
+
+    get assetsUri() {
+        return Uri.file(path.join(globalState.extensionContext.extensionPath, 'dist', 'assets'));
     }
 }
 

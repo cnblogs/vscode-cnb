@@ -35,6 +35,7 @@ import { extractImages } from './extract-images';
 import { clearPostsSearchResults, refreshPostsSearchResults, searchPosts } from './posts-list/search';
 import { handleDeletePostCategories } from './post-category/delete-selected-categories';
 import { PublishIngCommandHandler } from '@/commands/ing/publish-ing';
+import { registerCommandsForIngsList } from 'src/commands/ing/ings-list-commands-registration';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -83,5 +84,6 @@ export const registerCommands = () => {
             new PublishIngCommandHandler('selection').handle()
         ),
     ];
+    registerCommandsForIngsList(disposables);
     context?.subscriptions.push(...disposables);
 };
