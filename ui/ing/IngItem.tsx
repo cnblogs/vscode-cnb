@@ -24,7 +24,14 @@ class IngItem extends Component<IngItemProps, IngItemState> {
             </svg>
         ),
         mobile: (
-            <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+            <svg
+                viewBox="0 0 1024 1024"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                fill="currentColor"
+            >
                 <path
                     d="M700.8 976H307.2c-36.8 0-67.2-30.4-67.2-67.2V147.2C240 110.4 270.4 80 307.2 80h393.6C737.6 80 768 110.4 768 147.2v761.6c0 36.8-30.4 67.2-67.2 67.2zM307.2 112C288 112 272 128 272 147.2v761.6c0 19.2 16 35.2 35.2 35.2h393.6c19.2 0 35.2-16 35.2-35.2V147.2C736 128 720 112 700.8 112H307.2z"
                     fill=""
