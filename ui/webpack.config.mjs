@@ -6,6 +6,7 @@ import { rmSync, readdirSync, cpSync, existsSync } from 'fs';
 import { resolve } from 'path';
 import tailwindConfig from './tailwind.config.js';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 
 const isDev = process.env.ASPNETCORE_ENVIRONMENT === 'Development' || process.env.NODE_ENV === 'development';
 
@@ -112,6 +113,18 @@ const config = {
             },
         },
     ],
+    optimization: {
+        minimize: !isDev,
+        minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    compress: {
+                        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+                    },
+                },
+            }),
+        ],
+    },
 };
 
 export default [config];
