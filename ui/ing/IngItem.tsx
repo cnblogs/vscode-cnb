@@ -131,12 +131,12 @@ class IngItem extends Component<IngItemProps, IngItemState> {
 
     private renderComment = ({ userDisplayName, content, dateAdded, statusId, userId, id }: IngComment) => (
         <div>
-            <div className="inline-block">
+            <div className="inline">
                 <span className="whitespace-nowrap	">
                     <Link>{userDisplayName}</Link>&nbsp;:&nbsp;
                 </span>
                 {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
-                <div className="inline-block" dangerouslySetInnerHTML={{ __html: content }}></div>
+                <div className="ing-comment__content inline" dangerouslySetInnerHTML={{ __html: content }}></div>
             </div>
             <Text
                 nowrap={true}

@@ -77,12 +77,14 @@ export class IngApi {
             method: 'POST',
             headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
             body: JSON.stringify(data),
-        }).then(
-            resp => resp.ok,
-            reason => {
+        })
+            .then(async resp => {
+                if (!resp.ok) throw Error(await resp.text());
+                return resp.ok;
+            })
+            .catch(reason => {
                 AlertService.warning(`发表评论失败, ${reason}`);
                 return false;
-            }
-        );
+            });
     }
 }

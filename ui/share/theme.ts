@@ -22,6 +22,7 @@ const accent: PartialTheme = {
         primaryButtonTextHovered: 'var(--vscode-button-foreground)',
         primaryButtonTextDisabled: 'var(--vscode-disabledForeground)',
         primaryButtonBackgroundPressed: 'var(--vscode-button-foreground)',
+        link: 'var(--vscode-textLink-foreground)',
     },
 };
 
