@@ -20,7 +20,6 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                 <path
                     d="M746.222933 102.239573l-359.799466 330.820267L185.347413 281.4976 102.2464 329.864533l198.20544 182.132054-198.20544 182.132053 83.101013 48.510293 201.076054-151.558826 359.799466 330.676906 175.527254-85.251413V187.4944z m0 217.57952v384.341334l-255.040853-192.177494z"
                     fill="#2196F3"
-                    p-id="1931"
                 ></path>
             </svg>
         ),
@@ -29,12 +28,10 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                 <path
                     d="M700.8 976H307.2c-36.8 0-67.2-30.4-67.2-67.2V147.2C240 110.4 270.4 80 307.2 80h393.6C737.6 80 768 110.4 768 147.2v761.6c0 36.8-30.4 67.2-67.2 67.2zM307.2 112C288 112 272 128 272 147.2v761.6c0 19.2 16 35.2 35.2 35.2h393.6c19.2 0 35.2-16 35.2-35.2V147.2C736 128 720 112 700.8 112H307.2z"
                     fill=""
-                    p-id="5062"
                 ></path>
                 <path
                     d="M752 240H272c-9.6 0-16-6.4-16-16s6.4-16 16-16h480c9.6 0 16 6.4 16 16s-6.4 16-16 16zM752 848H272c-9.6 0-16-6.4-16-16s6.4-16 16-16h480c9.6 0 16 6.4 16 16s-6.4 16-16 16zM544 912h-64c-9.6 0-16-6.4-16-16s6.4-16 16-16h64c9.6 0 16 6.4 16 16s-6.4 16-16 16zM480 144h128v32h-128zM416 144h32v32h-32z"
                     fill=""
-                    p-id="5063"
                 ></path>
             </svg>
         ),
@@ -56,6 +53,7 @@ class IngItem extends Component<IngItemProps, IngItemState> {
         } = this.props;
         const { persons } = this;
         console.debug(comments);
+        /* eslint-disable-next-line @typescript-eslint/naming-convention */
         return (
             <div>
                 <div>
@@ -65,15 +63,25 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                         comments={[
                             content,
                             icons ? (
-                                // eslint-disable-next-line @typescript-eslint/naming-convention
-                                <span className="ml-[5px]" dangerouslySetInnerHTML={{ __html: icons }}></span>
+                                <span /* eslint-disable-next-line @typescript-eslint/naming-convention */
+                                    dangerouslySetInnerHTML={{ __html: icons }}
+                                    className="ml-[5px] inline-flex items-center scale-[85] ing-content__icons"
+                                />
                             ) : (
                                 <></>
                             ),
                         ]}
                         activityDescription={[
                             <Link key={1}>{userDisplayName}</Link>,
-                            <Link key={2} onClick={() => this.comment({ ingId: id, ingContent: content })}>
+                            <Link
+                                key={2}
+                                onClick={() =>
+                                    this.comment({
+                                        ingId: id,
+                                        ingContent: content,
+                                    })
+                                }
+                            >
                                 &nbsp;&nbsp;回应&nbsp;
                             </Link>,
                         ]}
@@ -91,7 +99,12 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                             ),
                         ]}
                         styles={{
-                            timeStamp: { fontFamily: 'inherit', lineHeight: 16, display: 'flex', alignItems: 'center' },
+                            timeStamp: {
+                                fontFamily: 'inherit',
+                                lineHeight: 16,
+                                display: 'flex',
+                                alignItems: 'center',
+                            },
                             activityText: {
                                 color: 'inherit',
                                 fontFamily: 'inherit',
@@ -101,6 +114,8 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                                 color: 'inherit',
                                 fontFamily: 'inherit',
                                 lineHeight: 16,
+                                display: 'flex',
+                                alignItems: 'center',
                             },
                             root: {
                                 color: 'inherit',
@@ -126,17 +141,27 @@ class IngItem extends Component<IngItemProps, IngItemState> {
             <Text
                 nowrap={true}
                 styles={{
-                    root: { fontSize: 'inherit', color: 'var(--vscode-disabledForeground)' },
+                    root: {
+                        fontSize: 'inherit',
+                        color: 'var(--vscode-disabledForeground)',
+                    },
                 }}
                 title={format(dateAdded, 'yyyy-MM-dd HH:mm')}
             >
-                &nbsp;&nbsp;{formatDistanceStrict(dateAdded, new Date(), { locale: zhCN, addSuffix: true })}
+                &nbsp;&nbsp;
+                {formatDistanceStrict(dateAdded, new Date(), {
+                    locale: zhCN,
+                    addSuffix: true,
+                })}
                 <Link
                     onClick={() =>
                         this.comment({
                             ingId: statusId,
                             ingContent: content,
-                            atUser: { id: userId, displayName: userDisplayName },
+                            atUser: {
+                                id: userId,
+                                displayName: userDisplayName,
+                            },
                             parentCommentId: id,
                         })
                     }
