@@ -68,7 +68,8 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                         key={id}
                         activityPersonas={persons.map<IPersonaProps>(imageUrl => ({ imageUrl }))}
                         comments={[
-                            content,
+                            // eslint-disable-next-line @typescript-eslint/naming-convention
+                            <div dangerouslySetInnerHTML={{ __html: content }}></div>,
                             icons ? (
                                 <span /* eslint-disable-next-line @typescript-eslint/naming-convention */
                                     dangerouslySetInnerHTML={{ __html: icons }}
@@ -93,10 +94,12 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                             </Link>,
                         ]}
                         timeStamp={[
-                            formatDistanceStrict(dateAdded, new Date(), {
-                                locale: zhCN,
-                                addSuffix: true,
-                            }),
+                            <span title={format(dateAdded, 'yyyy-MM-dd HH:mm')}>
+                                {formatDistanceStrict(dateAdded, new Date(), {
+                                    locale: zhCN,
+                                    addSuffix: true,
+                                })}
+                            </span>,
                             sendFrom > 0 ? (
                                 <span className="ml-[3px] inline-flex items-center">
                                     {this.renderSendFromIcon(sendFrom)}
@@ -111,6 +114,7 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                                 lineHeight: 16,
                                 display: 'flex',
                                 alignItems: 'center',
+                                fontSize: 'inherit',
                             },
                             activityText: {
                                 color: 'inherit',
@@ -138,10 +142,13 @@ class IngItem extends Component<IngItemProps, IngItemState> {
         );
     }
 
-    private renderComment = ({ userDisplayName, content, dateAdded, statusId, userId, id }: IngComment) => (
-        <div>
+    private renderComment = (
+        { userDisplayName, content, dateAdded, statusId, userId, id }: IngComment,
+        index: number
+    ) => (
+        <div className={`${index > 0 ? 'mt-[3px]' : ''} leading-[1.5]`}>
             <div className="inline">
-                <span className="whitespace-nowrap	">
+                <span className="whitespace-nowrap">
                     <Link>{userDisplayName}</Link>&nbsp;:&nbsp;
                 </span>
                 {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
