@@ -22,7 +22,15 @@ export namespace webviewCommands {
 
         export enum ExtensionCommands {
             refreshIngsList = 'refreshIngsList',
+            comment = 'comment',
         }
+
+        export type CommentCommandPayload = {
+            ingId: number;
+            atUser?: { id: number; displayName: string };
+            parentCommentId?: number;
+            ingContent: string;
+        };
     }
 }
 

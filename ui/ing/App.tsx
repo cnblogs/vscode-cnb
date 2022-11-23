@@ -55,10 +55,14 @@ export class App extends Component<unknown, IngAppState> {
                         ings: ings?.map(Ing.parse) ?? this.state.ings,
                         isRefreshing: isRefreshing ?? this.state.isRefreshing,
                         comments: comments
-                            ? cloneWith(comments, v => {
-                                  for (const key in v) v[key] = v[key].map(IngComment.parse);
-                                  return v;
-                              })
+                            ? Object.assign(
+                                  {},
+                                  this.state.comments ?? {},
+                                  cloneWith(comments, v => {
+                                      for (const key in v) v[key] = v[key].map(IngComment.parse);
+                                      return v;
+                                  })
+                              )
                             : this.state.comments,
                     });
                     break;

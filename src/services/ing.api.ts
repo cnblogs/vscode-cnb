@@ -66,9 +66,23 @@ export class IngApi {
             )
         ).then(results =>
             results.reduce<Record<number, IngComment[]>>((p, v) => {
-                if (v && v[1]) p[v[0]] = v[1].map(IngComment.parse);
+                if (v) p[v[0]] = (v[1] ?? []).map(IngComment.parse);
                 return p;
             }, {})
+        );
+    }
+
+    comment(ingId: number, data: { replyTo?: number; parentCommentId?: number; content: string }) {
+        return fetch(`${globalState.config.cnblogsOpenApiUrl}/api/statuses/${ingId}/comments`, {
+            method: 'POST',
+            headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
+            body: JSON.stringify(data),
+        }).then(
+            resp => resp.ok,
+            reason => {
+                AlertService.warning(`发表评论失败, ${reason}`);
+                return false;
+            }
         );
     }
 }

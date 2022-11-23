@@ -15,6 +15,7 @@ import { IngApi } from 'src/services/ing.api';
 import { IngAppState } from 'src/models/ing-view';
 import { IngType, IngTypesMetadata } from 'src/models/ing';
 import { isNumber } from 'lodash-es';
+import { CommentIngCommandHandler } from '@/commands/ing/comment-ing';
 
 export class IngsListWebviewProvider implements WebviewViewProvider {
     private static _instance?: IngsListWebviewProvider;
@@ -134,6 +135,17 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         this.setTitle();
     }
 
+    async updateComments(ingIds: number[]) {
+        if (!this._view || !this._view.visible) return;
+        const comments = await this.ingApi.listComments(ingIds);
+        await this._view.webview.postMessage({
+            command: webviewCommands.ingCommands.UiCommands.setAppState,
+            payload: {
+                comments,
+            },
+        } as IngWebviewUiCommand<Omit<IngAppState, ''>>);
+    }
+
     private provideHtml(webview: Webview) {
         return parseWebviewHtml('ing', webview);
     }
@@ -187,6 +199,11 @@ class IngWebviewMessageObserver {
                             : undefined,
                     pageIndex: isNumber(pageIndex) ? pageIndex : undefined,
                 });
+            }
+            case webviewCommands.ingCommands.ExtensionCommands.comment: {
+                const { atUser, ingId, ingContent, parentCommentId } =
+                    payload as webviewCommands.ingCommands.CommentCommandPayload;
+                return new CommentIngCommandHandler(ingId, ingContent, parentCommentId, atUser).handle();
             }
         }
     };

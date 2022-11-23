@@ -5,6 +5,8 @@ import { take } from 'lodash-es';
 import { ActivityItem, IPersonaProps, Link, Text } from '@fluentui/react';
 import { format, formatDistanceStrict } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
+import { vsCodeApi } from 'share/vscode-api';
+import { IngWebviewHostCommand, webviewCommands } from '@models/webview-commands';
 
 interface IngItemProps {
     ing: Ing;
@@ -35,7 +37,12 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                         key={id}
                         activityPersonas={persons.map<IPersonaProps>(imageUrl => ({ imageUrl }))}
                         comments={content}
-                        activityDescription={[<Link key={1}>{userDisplayName}</Link>]}
+                        activityDescription={[
+                            <Link key={1}>{userDisplayName}</Link>,
+                            <Link key={2} onClick={() => this.comment({ ingId: id, ingContent: content })}>
+                                &nbsp;&nbsp;回应&nbsp;
+                            </Link>,
+                        ]}
                         timeStamp={formatDistanceStrict(dateAdded, new Date(), {
                             locale: zhCN,
                             addSuffix: true,
@@ -64,18 +71,41 @@ class IngItem extends Component<IngItemProps, IngItemState> {
         );
     }
 
-    private renderComment = ({ userDisplayName, content, dateAdded }: IngComment) => (
+    private renderComment = ({ userDisplayName, content, dateAdded, statusId, userId, id }: IngComment) => (
         <div>
             <Link>{userDisplayName}</Link>
-            <Text styles={{ root: { fontSize: 'inherit' } }}>:&nbsp;{content}</Text>
+            <div className="inline-block">
+                <span>&nbsp;:&nbsp;</span>
+                {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
+                <div className="inline-block" dangerouslySetInnerHTML={{ __html: content }}></div>
+            </div>
             <Text
                 styles={{ root: { fontSize: 'inherit', color: 'var(--vscode-disabledForeground)' } }}
                 title={format(dateAdded, 'yyyy-MM-dd HH:mm')}
             >
                 &nbsp;&nbsp;{formatDistanceStrict(dateAdded, new Date(), { locale: zhCN, addSuffix: true })}
             </Text>
+            <Link
+                onClick={() =>
+                    this.comment({
+                        ingId: statusId,
+                        ingContent: content,
+                        atUser: { id: userId, displayName: userDisplayName },
+                        parentCommentId: id,
+                    })
+                }
+            >
+                &nbsp;回复
+            </Link>
         </div>
     );
+
+    private comment(payload: webviewCommands.ingCommands.CommentCommandPayload) {
+        vsCodeApi.getInstance().postMessage({
+            command: webviewCommands.ingCommands.ExtensionCommands.comment,
+            payload,
+        } as IngWebviewHostCommand<webviewCommands.ingCommands.CommentCommandPayload>);
+    }
 }
 
 export { IngItem };
