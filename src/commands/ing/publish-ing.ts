@@ -23,7 +23,6 @@ export class PublishIngCommandHandler extends CommandHandler {
                 validateInput: v => Promise.resolve(v.length > 2000 ? '最多输入2000个字符' : undefined),
                 shouldResume: () => Promise.resolve(false),
             });
-            return this.inputContent ? this.inputStep.access : undefined;
         },
         access: async input => {
             this.currentStep = 2;
@@ -45,10 +44,7 @@ export class PublishIngCommandHandler extends CommandHandler {
                 canSelectMany: false,
                 shouldResume: () => Promise.resolve(false),
             });
-            if (result && result.value != null) {
-                this.inputIsPrivate = result.value;
-                return this.inputStep.tags;
-            }
+            if (result && result.value != null) this.inputIsPrivate = result.value;
         },
         tags: async input => {
             this.currentStep = 3;
@@ -81,14 +77,18 @@ export class PublishIngCommandHandler extends CommandHandler {
         return `${this.inputTags.map(x => `[${x}]`).join('')}${this.inputContent}`;
     }
 
-    async handle() {
+    async handle(): Promise<void> {
         const content = await this.getContent();
-        if (!content) return;
+        return content ? this.publish(content) : Promise.resolve();
+    }
+
+    private async publish(model: IngPublishModel): Promise<void> {
         const api = new IngApi();
-        await this.onPublished(
+
+        return this.onPublished(
             await window.withProgress({ location: ProgressLocation.Notification, title: '正在发闪, 请稍候...' }, p => {
                 p.report({ increment: 30 });
-                return api.publishIng(content).then(isPublished => {
+                return api.publishIng(model).then(isPublished => {
                     p.report({ increment: 70 });
                     return isPublished;
                 });
@@ -117,9 +117,7 @@ export class PublishIngCommandHandler extends CommandHandler {
 
     private async acquireInputContent(step = this.inputStep.content): Promise<IngPublishModel | false> {
         await MultiStepInput.run(step);
-        return this.inputContent &&
-            this.currentStep === Object.keys(this.inputStep).length &&
-            (await this.confirmPublish())
+        return this.inputContent && (await this.confirmPublish())
             ? {
                   content: this.formattedIngContent,
                   isPrivate: this.inputIsPrivate,
@@ -152,7 +150,12 @@ export class PublishIngCommandHandler extends CommandHandler {
     private async onPublished(isPublished: boolean): Promise<void> {
         const ingsListProvider = IngsListWebviewProvider.instance;
         if (isPublished) {
-            if (ingsListProvider) return ingsListProvider.refreshIngsList({ ingType: IngType.all, pageIndex: 1 });
+            if (ingsListProvider) {
+                return ingsListProvider.refreshIngsList({
+                    ingType: this.inputIsPrivate ? IngType.my : IngType.all,
+                    pageIndex: 1,
+                });
+            }
 
             const options = [
                 [
