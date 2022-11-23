@@ -442,32 +442,38 @@
                 {
                     "id": "cnblogs-authorize",
                     "name": "登录/授权",
-                    "when": "!vscode-cnb.isAuthorized"
+                    "when": "!vscode-cnb.isAuthorized",
+                    "visibility": "visible"
                 },
                 {
                     "id": "vscode-cnb-workspace",
                     "name": "工作空间",
-                    "when": "vscode-cnb.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-posts-list-another",
                     "name": "博客园 - 随笔列表",
-                    "when": "vscode-cnb.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-post-categories-list",
                     "name": "分类列表",
-                    "when": "vscode-cnb.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-account",
                     "name": "账户信息",
-                    "when": "vscode-cnb.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-navigation",
                     "name": "博客园导航",
-                    "when": "vscode-cnb.isAuthorized"
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
                 },
                 {
                     "id": "vscode-cnb.ings-list-webview",
