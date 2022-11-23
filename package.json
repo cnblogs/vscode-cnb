@@ -302,7 +302,7 @@
                 "command": "vscode-cnb.ing.publish",
                 "title": "发闪存",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing",
                 "icon": "$(add)"
             },
             {
@@ -557,7 +557,7 @@
                 },
                 {
                     "command": "vscode-cnb.ing.publish",
-                    "when": "view == vscode-cnb.ings-list-webview && !vscode-cnb.ingsList.isRefreshing",
+                    "when": "view == vscode-cnb.ings-list-webview",
                     "group": "navigation@6"
                 }
             ],
@@ -913,11 +913,6 @@
             {
                 "view": "cnblogs-navigation",
                 "contents": "[首页](https://www.cnblogs.com)\n[新闻](https://news.cnblogs.com/)\n[博问](https://q.cnblogs.com/)\n[闪存](https://ing.cnblogs.com/)"
-            },
-            {
-                "view": "cnblogs-navigation",
-                "contents": "[发闪存](command:vscode-cnb.ing.publish)",
-                "when": "vscode-cnb.isAuthorized"
             },
             {
                 "view": "vscode-cnb-workspace",
