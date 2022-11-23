@@ -526,32 +526,32 @@
                     "group": "navigation@2"
                 },
                 {
+                    "command": "vscode-cnb.ings-list.open-in-browser",
+                    "when": "view == vscode-cnb.ings-list-webview",
+                    "group": "navigation@0"
+                },
+                {
                     "command": "vscode-cnb.ings-list.first",
                     "when": "view == vscode-cnb.ings-list-webview && vscode-cnb.isAuthorized && !vscode-cnb.ingsList.isRefreshing && vscode-cnb.ingsList.pageIndex > 2",
-                    "group": "navigation@0"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "vscode-cnb.ings-list.previous",
                     "when": "view == vscode-cnb.ings-list-webview",
-                    "group": "navigation@1"
+                    "group": "navigation@2"
                 },
                 {
                     "command": "vscode-cnb.ings-list.next",
                     "when": "view == vscode-cnb.ings-list-webview",
-                    "group": "navigation@2"
+                    "group": "navigation@3"
                 },
                 {
                     "command": "vscode-cnb.ings-list.select-type",
                     "when": "view == vscode-cnb.ings-list-webview",
-                    "group": "navigation@3"
-                },
-                {
-                    "command": "vscode-cnb.ings-list.refresh",
-                    "when": "view == vscode-cnb.ings-list-webview",
                     "group": "navigation@4"
                 },
                 {
-                    "command": "vscode-cnb.ings-list.open-in-browser",
+                    "command": "vscode-cnb.ings-list.refresh",
                     "when": "view == vscode-cnb.ings-list-webview",
                     "group": "navigation@5"
                 },
