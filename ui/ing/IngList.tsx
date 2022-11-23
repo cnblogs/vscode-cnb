@@ -16,7 +16,7 @@ class IngList extends Component<IngListProps> {
     render() {
         return (
             <div className="ing-list">
-                <Stack horizontal={false} className="ing-list__items" tokens={{ childrenGap: 4 }}>
+                <Stack horizontal={false} className="ing-list__items" tokens={{ childrenGap: 8 }}>
                     {this.renderItems()}
                 </Stack>
             </div>

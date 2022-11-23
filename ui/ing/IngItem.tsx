@@ -116,30 +116,34 @@ class IngItem extends Component<IngItemProps, IngItemState> {
 
     private renderComment = ({ userDisplayName, content, dateAdded, statusId, userId, id }: IngComment) => (
         <div>
-            <Link>{userDisplayName}</Link>
             <div className="inline-block">
-                <span>&nbsp;:&nbsp;</span>
+                <span className="whitespace-nowrap	">
+                    <Link>{userDisplayName}</Link>&nbsp;:&nbsp;
+                </span>
                 {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
                 <div className="inline-block" dangerouslySetInnerHTML={{ __html: content }}></div>
             </div>
             <Text
-                styles={{ root: { fontSize: 'inherit', color: 'var(--vscode-disabledForeground)' } }}
+                nowrap={true}
+                styles={{
+                    root: { fontSize: 'inherit', color: 'var(--vscode-disabledForeground)' },
+                }}
                 title={format(dateAdded, 'yyyy-MM-dd HH:mm')}
             >
                 &nbsp;&nbsp;{formatDistanceStrict(dateAdded, new Date(), { locale: zhCN, addSuffix: true })}
+                <Link
+                    onClick={() =>
+                        this.comment({
+                            ingId: statusId,
+                            ingContent: content,
+                            atUser: { id: userId, displayName: userDisplayName },
+                            parentCommentId: id,
+                        })
+                    }
+                >
+                    &nbsp;回复
+                </Link>
             </Text>
-            <Link
-                onClick={() =>
-                    this.comment({
-                        ingId: statusId,
-                        ingContent: content,
-                        atUser: { id: userId, displayName: userDisplayName },
-                        parentCommentId: id,
-                    })
-                }
-            >
-                &nbsp;回复
-            </Link>
         </div>
     );
 

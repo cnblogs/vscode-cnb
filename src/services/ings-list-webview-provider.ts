@@ -79,7 +79,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async resolveWebviewView(webviewView: WebviewView, context: WebviewViewResolveContext, token: CancellationToken) {
-        if (this._view) return;
+        if (this._view && this._view === webviewView) return;
 
         this._view = webviewView;
         webviewView.webview.options = {
@@ -93,7 +93,11 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
             () => webviewView.webview.postMessage(webviewCommands.UiCommands.updateTheme),
             disposables
         );
-        webviewView.onDidDispose(() => disposables.forEach(d => void d.dispose()), disposables);
+        webviewView.onDidDispose(() => {
+            disposables.forEach(d => void d.dispose());
+            this._view = undefined;
+            this.setIsRefreshing(false).catch(() => undefined);
+        }, disposables);
     }
 
     async refreshIngsList({ ingType = this.ingType, pageIndex = this.pageIndex } = {}) {
