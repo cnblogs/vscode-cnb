@@ -1,7 +1,7 @@
 import { Post } from '../../models/post';
 import { PostFileMapManager } from '../../services/post-file-map';
 import fs from 'fs';
-import { markdownItFactory } from '@cnblogs-gitlab/markdown-it-presets';
+import { markdownItFactory } from '@cnblogs/markdown-it-presets';
 import { blogSettingsService } from '../../services/blog-settings.service';
 import { accountService } from '../../services/account.service';
 import { postCategoryService } from '../../services/post-category.service';
@@ -17,14 +17,14 @@ export namespace postPdfTemplateBuilder {
         const localFilePath = PostFileMapManager.getFilePath(postId);
         postBody = localFilePath ? fs.readFileSync(localFilePath).toString('utf-8') : postBody;
 
-        const md = markdownItFactory({
-            codeHighlight: false,
-            math: true,
-            disableRules: [],
-            html: true,
-        });
-
-        const html = isMarkdown ? md.render(postBody) : postBody;
+        const html = isMarkdown
+            ? markdownItFactory({
+                  codeHighlight: false,
+                  math: true,
+                  disableRules: [],
+                  html: true,
+              }).render(postBody)
+            : postBody;
 
         const buildTagHtml = (): Promise<string> => {
             let html =
