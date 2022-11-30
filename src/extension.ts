@@ -11,6 +11,7 @@ import {
 } from '@/services/check-workspace';
 import { EditPostUriHandler } from '@/services/edit-post-uri-handler';
 import { IngsListWebviewProvider } from 'src/services/ings-list-webview-provider';
+import { extendMarkdownIt } from '@/markdown/extend-markdownIt';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -27,6 +28,9 @@ export function activate(context: vscode.ExtensionContext) {
     observeConfigurationChange();
     observeWorkspaceFolderChange();
     vscode.window.registerUriHandler(new EditPostUriHandler());
+    return {
+        extendMarkdownIt,
+    };
 }
 
 // this method is called when your extension is deactivated

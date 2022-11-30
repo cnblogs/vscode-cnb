@@ -34,6 +34,13 @@
     ],
     "main": "./dist/extension.js",
     "contributes": {
+        "markdown.markdownItPlugins": true,
+        "markdown.previewScripts": [
+            "./dist/markdown.js"
+        ],
+        "markdown.previewStyles": [
+            "./dist/assets/styles/highlight-code-lines.css"
+        ],
         "icons": {
             "vscode-cnb-date": {
                 "description": "date",
@@ -426,6 +433,28 @@
                             90,
                             100
                         ]
+                    },
+                    "cnblogsClientForVSCode.markdown.enableEnhancement": {
+                        "order": 6,
+                        "markdownDescription": "启用博客园markdown语法扩展",
+                        "default": true,
+                        "type": "boolean",
+                        "scope": "application"
+                    },
+                    "cnblogsClientForVSCode.markdown.enableFenceQuote": {
+                        "order": 7,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": true,
+                        "markdownDescription": "博客园markdown语法扩展: 三箭头(`<<<`)栅栏引用\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n<<<\n一段引用文字\n\n一段引用文字\n<<<\n\n```"
+                    },
+                    "cnblogsClientForVSCode.markdown.enableHighlightCodeLines": {
+                        "order": 8,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": true,
+                        "editPresentation": "singlelineText",
+                        "markdownDescription": "博客园markdown语法扩展: 代码块指定行高亮\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n```typescript {1, 3-4}\nconsole.log(1)\nconsole.log(2)\nconsole.log(3)\nconsole.log(4)\nconsole.log(5)\n```\n\n```"
                     }
                 }
             }
@@ -1006,8 +1035,9 @@
         "webpack-cli": "^4.8.0"
     },
     "dependencies": {
-        "@cnblogs-gitlab/markdown-it-presets": "^1.3.1",
+        "@cnblogs/code-highlight-adapter": "^1.7.1",
         "@cnblogs/code-quality": "^2.0.2",
+        "@cnblogs/markdown-it-presets": "^1.6.1",
         "@fluentui/react": "^8.62.4",
         "base64url": "^3.0.1",
         "blob": "^0.1.0",

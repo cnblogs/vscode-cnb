@@ -21,7 +21,10 @@ export const observeConfigurationChange = () => {
                 refreshPostCategoriesList();
 
             if (ev.affectsConfiguration(`${Settings.prefix}.${Settings.postsListPageSizeKey}`))
-                void refreshPostsList({ queue: true });
+                refreshPostsList({ queue: true }).catch(() => undefined);
+
+            if (ev.affectsConfiguration(`${Settings.prefix}.markdown`))
+                commands.executeCommand('markdown.preview.refresh').then(undefined, () => undefined);
         })
     );
     isTargetWorkspace();

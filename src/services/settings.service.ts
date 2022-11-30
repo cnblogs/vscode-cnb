@@ -63,6 +63,18 @@ export class Settings {
         return isNumber(size) ? size : 30;
     }
 
+    static get isEnableMarkdownEnhancement() {
+        return this.configuration.get<boolean>('markdown.enableEnhancement') ?? true;
+    }
+
+    static get isEnableMarkdownFenceBlockquote() {
+        return this.configuration.get<boolean>('markdown.enableFenceQuote') ?? true;
+    }
+
+    static get isEnableMarkdownHighlightCodeLines() {
+        return this.configuration.get<boolean>('markdown.enableHighlightCodeLines');
+    }
+
     static async setWorkspaceUri(value: Uri) {
         if (!value.fsPath || !(value.scheme === 'file')) throw Error('Invalid uri');
 

@@ -20,6 +20,7 @@
 	- [提取图片](#提取图片)
 	- [博文设置面板](#博文设置面板)
 	- [闪存](#闪存)
+	- [markdown语法扩展](#markdown语法扩展)
 - [vscode 版本要求](#vscode-版本要求)
 - [插件设置](#插件设置)
 
@@ -166,6 +167,16 @@
 <kbd><img src="https://img2022.cnblogs.com/blog/35695/202211/35695-20221115144307251-1543702626.png" height="550"></kbd>
 
 通过本插件发布的闪存, 在尾部会显示一个vscode图标
+
+### markdown语法扩展
+
+本插件可以让vscode中的markdown预览支持博客园中扩展的markdown语法, 您可以通过设置来控制是否要启用此功能
+
+<kbd><img height="550" src="https://img2023.cnblogs.com/blog/35695/202211/35695-20221129171437084-1034144030.png"></kbd>
+
+使用示例:
+
+<kbd><img height="550" src="https://img2023.cnblogs.com/blog/35695/202211/35695-20221129171115024-35740390.png"></kbd>
 
 ## vscode 版本要求
 
