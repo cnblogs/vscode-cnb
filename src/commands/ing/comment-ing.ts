@@ -30,6 +30,7 @@ export class CommentIngCommandHandler extends CommandHandler {
                 this._ingContent.length > maxIngContentLength ? '...' : ''
             }`,
             prompt: this._atUser ? `@${this._atUser.displayName}` : '',
+            ignoreFocusOut: true,
         });
         this._content = input || '';
         const { id: atUserId, displayName: atUserAlias } = this._atUser ?? {};
