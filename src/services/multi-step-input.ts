@@ -31,6 +31,7 @@ export interface QuickPickParameters<T extends QuickPickItem> {
     placeholder: string;
     buttons?: QuickInputButton[];
     canSelectMany: boolean;
+    ignoreFocusOut?: boolean;
     shouldResume: () => Thenable<boolean>;
     onValueChange?: (input: QuickPick<T>) => Thenable<void>;
     onSelectionChange?: (input: QuickPick<T>) => Thenable<void>;
@@ -65,6 +66,7 @@ export class MultiStepInput {
         shouldResume,
         onValueChange,
         onSelectionChange,
+        ignoreFocusOut: ignoreFocusout,
     }: TParameters) {
         const disposables: Disposable[] = [];
         try {
@@ -83,6 +85,7 @@ export class MultiStepInput {
                     input.selectedItems = activeItems;
                 }
                 input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])];
+                input.ignoreFocusOut = ignoreFocusout ?? false;
                 disposables.push(
                     input.onDidTriggerButton(item => {
                         if (item === QuickInputButtons.Back) reject(InputFlowAction.back);
@@ -126,6 +129,7 @@ export class MultiStepInput {
         shouldResume,
         placeHolder,
         password,
+        ignoreFocusOut,
     }: TParameters): Promise<string | (TParameters extends { buttons: any[] } ? QuickInputButton : string)> {
         const disposables: Disposable[] = [];
         try {
@@ -138,6 +142,7 @@ export class MultiStepInput {
                 input.totalSteps = totalSteps;
                 input.value = value || '';
                 input.prompt = prompt;
+                input.ignoreFocusOut = ignoreFocusOut ?? false;
                 input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])];
                 let validating = validateInput('');
                 disposables.push(

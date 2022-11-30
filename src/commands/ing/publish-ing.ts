@@ -20,6 +20,7 @@ export class PublishIngCommandHandler extends CommandHandler {
                 prompt: '你在做什么? 你在想什么?',
                 totalSteps: Object.keys(this.inputStep).length,
                 step: this.currentStep,
+                ignoreFocusOut: true,
                 validateInput: v => Promise.resolve(v.length > 2000 ? '最多输入2000个字符' : undefined),
                 shouldResume: () => Promise.resolve(false),
             });
@@ -42,6 +43,7 @@ export class PublishIngCommandHandler extends CommandHandler {
                 items: items,
                 activeItems: activeItem,
                 canSelectMany: false,
+                ignoreFocusOut: true,
                 shouldResume: () => Promise.resolve(false),
             });
             if (result && result.value != null) this.inputIsPrivate = result.value;
@@ -57,6 +59,7 @@ export class PublishIngCommandHandler extends CommandHandler {
                 prompt: '输入标签, 以 "," 分隔',
                 validateInput: () => Promise.resolve(undefined),
                 value: this.inputTags.join(', '),
+                ignoreFocusOut: true,
             });
             this.inputTags = value
                 .split(/, ?/)
