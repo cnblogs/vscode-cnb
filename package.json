@@ -455,6 +455,13 @@
                         "default": true,
                         "editPresentation": "singlelineText",
                         "markdownDescription": "博客园markdown语法扩展: 代码块指定行高亮\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n```typescript {1, 3-4}\nconsole.log(1)\nconsole.log(2)\nconsole.log(3)\nconsole.log(4)\nconsole.log(5)\n```\n\n```"
+                    },
+                    "cnblogsClientForVSCode.ing.enablePublishSelectionToIng": {
+                        "order": 9,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": false,
+                        "markdownDescription": "是否允许将选中内容发到闪存\n\n启用后, 编辑上下文菜单将包含\"将选中内容发到闪存\""
                     }
                 }
             }
@@ -860,7 +867,8 @@
                 },
                 {
                     "command": "vscode-cnb.ing.publish-selection",
-                    "group": "cnblogs@10"
+                    "group": "cnblogs@10",
+                    "when": "config.cnblogsClientForVSCode.ing.enablePublishSelectionToIng"
                 }
             ],
             "editor/title": [
