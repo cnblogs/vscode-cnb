@@ -9,6 +9,7 @@ import { Settings } from '../../services/settings.service';
 import { openPostFile } from './open-post-file';
 import { PostTitleSanitizer } from '../../services/post-title-sanitizer.service';
 import { postCategoryService } from '../../services/post-category.service';
+import sanitizeFileName from 'sanitize-filename';
 
 const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise<Uri> => {
     const workspaceUri = Settings.workspaceUri;
@@ -19,7 +20,9 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
     if (shouldCreateLocalPostFileWithCategory) {
         let categories = await postCategoryService.fetchCategories();
         categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
-        const categoryTitle = categories[0]?.title ?? '';
+        const categoryTitle = sanitizeFileName(categories[0]?.title ?? '', {
+            replacement: invalidChar => (invalidChar === '/' ? '_' : ''),
+        });
         return Uri.joinPath(workspaceUri, categoryTitle, `${postTitle}${postIdSegment}${ext}`);
     } else {
         return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`);
