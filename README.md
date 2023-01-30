@@ -1,6 +1,8 @@
-[![Current Version](https://vsmarketplacebadge.apphb.com/version-short/cnblogs.vscode-cnb.svg)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
-[![](https://vsmarketplacebadge.apphb.com/downloads-short/cnblogs.vscode-cnb.svg)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
-[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/cnblogs/vscode-cnb/Build%20and%20check%20the%20code%20format/main)](https://github.com/cnblogs/vscode-cnb)
+[![Current Version](https://vsmarketplacebadges.dev/version-short/cnblogs.vscode-cnb.svg)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
+[![](https://vsmarketplacebadges.dev/installs-short/cnblogs.vscode-cnb.svg)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
+[![](https://vsmarketplacebadges.dev/rating-short/cnblogs.vscode-cnb.svg
+)]((https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview))
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/cnblogs/vscode-cnb/build-check.yml)](https://github.com/cnblogs/vscode-cnb)
 [![GitHub](https://img.shields.io/github/license/cnblogs/vscode-cnb)](https://github.com/cnblogs/vscode-cnb/blob/main/LICENSE.txt)
 [![GitHub issues](https://img.shields.io/github/issues-raw/cnblogs/vscode-cnb)](https://github.com/cnblogs/vscode-cnb/issues)
 
@@ -21,6 +23,7 @@
 	- [博文设置面板](#博文设置面板)
 	- [闪存](#闪存)
 	- [markdown语法扩展](#markdown语法扩展)
+	- [复制博文链接](#复制博文链接)
 - [vscode 版本要求](#vscode-版本要求)
 - [插件设置](#插件设置)
 
@@ -180,6 +183,18 @@
 使用示例:
 
 <kbd><img height="550" src="https://img2023.cnblogs.com/blog/35695/202211/35695-20221129171115024-35740390.png"></kbd>
+
+### 复制博文链接
+
+文件浏览器和随笔列表中的上下文菜单里有`复制博文链接`选项, 点击后可以复制不同格式的博文链接
+
+<kbd><img height="500" alt="https://img2023.cnblogs.com/blog/35695/202301/35695-20230130155516202-1979736560.png" src="https://img2023.cnblogs.com/blog/35695/202301/35695-20230130155516202-1979736560.png"><kbd>
+
+
+默认的的链接形如: `https://www.cnblogs.com/cmt/p/47365.html`
+markdown格式链接形如: `[博文标题](https://www.cnblogs.com/cmt/p/47365.html)`
+也可以选择仅复制博文的Id
+
 
 ## vscode 版本要求
 

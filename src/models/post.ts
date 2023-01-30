@@ -34,8 +34,8 @@ export class Post {
     siteCategoryId?: number;
     tags?: string[];
     title = '';
-    url = '';
 
+    private _url = '';
     private _dateUpdated?: Date | undefined;
     private _datePublished = new Date();
 
@@ -51,6 +51,14 @@ export class Post {
     }
     set dateUpdated(value: Date | string | undefined) {
         this._dateUpdated = typeof value === 'string' ? parseISO(value) : value;
+    }
+
+    get url() {
+        const { _url } = this;
+        return _url.startsWith('//') ? (this._url = `https:${_url}`) : _url;
+    }
+    set url(value) {
+        this._url = value;
     }
 
     get accessPermissionDesc(): string {

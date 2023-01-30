@@ -5,7 +5,6 @@ import { postService } from '../../services/post.service';
 import { PostFileMapManager } from '../../services/post-file-map';
 import { revealPostsListItem } from '../../services/posts-list-view';
 import { postConfigurationPanel } from '../../services/post-configuration-panel.service';
-import path from 'path';
 import fs from 'fs';
 import { LocalDraft } from '../../services/local-draft.service';
 import { saveFilePendingChanges } from '../../utils/save-file-pending-changes';
@@ -23,11 +22,7 @@ export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
         postId = input.id;
     } else if (input instanceof Uri) {
         postId = PostFileMapManager.getPostId(input.fsPath) ?? -1;
-        const filename = path.basename(input.fsPath, path.extname(input.fsPath));
-        if (postId < 0) {
-            AlertService.warning(`本地文件 "${filename}" 未关联博客园博文`);
-            return;
-        }
+        if (postId < 0) return AlertService.fileNotLinkedToPost(input);
     }
 
     if (!(postId >= 0)) return;
