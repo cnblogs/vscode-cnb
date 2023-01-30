@@ -57,12 +57,8 @@ const parseUriInput = (input: InputType): Uri | undefined => {
 
 const handleUriInput = (fileUri: Uri, contexts: CommandContext[]): Promise<void> => {
     const postId = PostFileMapManager.getPostId(fileUri.fsPath);
-    if (!postId) {
-        AlertService.warning(
-            `本地文件"${path.basename(fileUri.fsPath, path.extname(fileUri.fsPath))}"未关联博客园博文`
-        );
-        return Promise.resolve();
-    }
+    if (!postId) return Promise.resolve().then(() => AlertService.fileNotLinkedToPost(fileUri));
+
     contexts.push({ postId, fileUri });
     return Promise.resolve();
 };

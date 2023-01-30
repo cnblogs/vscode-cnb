@@ -36,6 +36,7 @@ import { clearPostsSearchResults, refreshPostsSearchResults, searchPosts } from 
 import { handleDeletePostCategories } from './post-category/delete-selected-categories';
 import { PublishIngCommandHandler } from '@/commands/ing/publish-ing';
 import { registerCommandsForIngsList } from 'src/commands/ing/ings-list-commands-registration';
+import { CopyPostLinkCommandHandler } from '@/commands/posts-list/copy-link';
 
 export const registerCommands = () => {
     const context = globalState.extensionContext;
@@ -79,6 +80,7 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.search-posts`, searchPosts),
         commands.registerCommand(`${appName}.clear-posts-search-results`, clearPostsSearchResults),
         commands.registerCommand(`${appName}.refresh-posts-search-results`, refreshPostsSearchResults),
+        commands.registerCommand(`${appName}.copy-post-link`, input => new CopyPostLinkCommandHandler(input).handle()),
         commands.registerCommand(`${appName}.ing.publish`, () => new PublishIngCommandHandler('input').handle()),
         commands.registerCommand(`${appName}.ing.publish-selection`, () =>
             new PublishIngCommandHandler('selection').handle()

@@ -358,6 +358,12 @@
                 "title": "在浏览器中打开闪存",
                 "icon": "$(globe)",
                 "enablement": "vscode-cnb.isAuthorized"
+            },
+            {
+                "command": "vscode-cnb.copy-post-link",
+                "title": "复制博文链接",
+                "icon": "$(link)",
+                "enablement": "vscode-cnb.isAuthorized"
             }
         ],
         "configuration": [
@@ -703,6 +709,10 @@
                 {
                     "command": "vscode-cnb.ings-list.open-in-browser",
                     "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.copy-post-link",
+                    "when": "false"
                 }
             ],
             "view/item/context": [
@@ -774,6 +784,11 @@
                     "command": "vscode-cnb.export-post-to-pdf",
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
                     "group": "0@5"
+                },
+                {
+                    "command": "vscode-cnb.copy-post-link",
+                    "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
+                    "group": "0@6"
                 },
                 {
                     "command": "vscode-cnb.delete-selected-post-categories",
@@ -918,6 +933,11 @@
                     "command": "vscode-cnb.export-post-to-pdf",
                     "when": "resourceLangId == markdown",
                     "group": "cnblogs@7"
+                },
+                {
+                    "command": "vscode-cnb.copy-post-link",
+                    "when": "resourceLangId == markdown",
+                    "group": "cnblogs@8"
                 }
             ]
         },

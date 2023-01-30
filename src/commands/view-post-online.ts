@@ -15,6 +15,5 @@ export const viewPostOnline = async (input?: Post | PostTreeItem | Uri) => {
 
     if (!post) return;
 
-    const url = post.url.startsWith('//') ? `https:${post.url}` : post.url;
-    await commands.executeCommand('vscode.open', Uri.parse(url));
+    await commands.executeCommand('vscode.open', Uri.parse(post.url));
 };

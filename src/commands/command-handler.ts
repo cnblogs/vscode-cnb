@@ -5,7 +5,7 @@ export abstract class CommandHandler {
 export abstract class TreeViewCommandHandler<TData> extends CommandHandler {
     readonly input: unknown;
 
-    abstract parseInput(): TData | null;
+    abstract parseInput(): TData | null | undefined;
 }
 
 export abstract class MultiSelectableTreeViewCommandHandler<TArgument, TData>
