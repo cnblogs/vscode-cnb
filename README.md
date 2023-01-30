@@ -1,7 +1,6 @@
-[![Current Version](https://vsmarketplacebadges.dev/version-short/cnblogs.vscode-cnb.svg)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
-[![](https://vsmarketplacebadges.dev/installs-short/cnblogs.vscode-cnb.svg)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
-[![](https://vsmarketplacebadges.dev/rating-short/cnblogs.vscode-cnb.svg
-)]((https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview))
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/cnblogs.vscode-cnb)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
+[![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/cnblogs.vscode-cnb)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
+[![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/cnblogs.vscode-cnb)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb&ssr=false#overview)
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/cnblogs/vscode-cnb/build-check.yml)](https://github.com/cnblogs/vscode-cnb)
 [![GitHub](https://img.shields.io/github/license/cnblogs/vscode-cnb)](https://github.com/cnblogs/vscode-cnb/blob/main/LICENSE.txt)
 [![GitHub issues](https://img.shields.io/github/issues-raw/cnblogs/vscode-cnb)](https://github.com/cnblogs/vscode-cnb/issues)
