@@ -22,7 +22,6 @@ export class LocalDraft {
     }
 
     async readAllText(): Promise<string> {
-        const binary = await workspace.fs.readFile(this.filePathUri);
-        return new TextDecoder().decode(binary);
+        return Buffer.from(await workspace.fs.readFile(this.filePathUri)).toString();
     }
 }

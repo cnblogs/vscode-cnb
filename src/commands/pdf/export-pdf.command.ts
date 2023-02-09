@@ -10,7 +10,7 @@ import { extensionViews } from '../../tree-view-providers/tree-view-registration
 import { postPdfTemplateBuilder } from './post-pdf-template-builder';
 import { chromiumPathProvider } from '../../utils/chromium-path-provider';
 import { Settings } from '../../services/settings.service';
-import { accountService } from '../../services/account.service';
+import { accountManager } from '../../authentication/account-manager';
 import { AlertService } from '../../services/alert.service';
 import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
 import { PostEditDto } from '@/models/post-edit-dto';
@@ -158,7 +158,7 @@ const handleUriInput = async (uri: Uri): Promise<Post[]> => {
         Object.assign(inputPost, {
             id: -1,
             title: path.basename(fsPath, path.extname(fsPath)),
-            postBody: new TextDecoder().decode(await workspace.fs.readFile(uri)),
+            postBody: Buffer.from(await workspace.fs.readFile(uri)).toString(),
         } as Post);
     }
 
@@ -183,7 +183,7 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri): Promise<void> 
 
     const {
         curUser: { blogApp },
-    } = accountService;
+    } = accountManager;
 
     if (!blogApp) return AlertService.warning('无法获取到博客地址, 请检查登录状态');
 

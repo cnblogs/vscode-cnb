@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 import { HighlightersFactory, HljsHighlighter } from '@cnblogs/code-highlight-adapter';
 
 HighlightersFactory.configCodeHighlightOptions({ enableCodeLineNumber: false });

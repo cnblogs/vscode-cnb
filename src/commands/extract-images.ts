@@ -1,5 +1,5 @@
 import { Uri, workspace, window, MessageOptions, MessageItem, ProgressLocation, Range } from 'vscode';
-import { MarkdownImage, MarkdownImagesExtractor } from '../services/images-extractor.service';
+import { ImageInformation, MarkdownImagesExtractor } from '../services/images-extractor.service';
 
 type ExtractOption = MessageItem & Partial<Pick<MarkdownImagesExtractor, 'imageType'>>;
 const extractOptions: readonly ExtractOption[] = [
@@ -15,7 +15,7 @@ export const extractImages = async (
 ): Promise<void> => {
     if (arg instanceof Uri && arg.scheme === 'file') {
         const shouldIgnoreWarnings = inputImageType != null;
-        const markdown = new TextDecoder().decode(await workspace.fs.readFile(arg));
+        const markdown = (await workspace.fs.readFile(arg)).toString();
         const extractor = new MarkdownImagesExtractor(markdown, arg);
         const images = extractor.findImages();
         const availableWebImagesCount = images.filter(extractor.createImageTypeFilter('web')).length;
@@ -61,12 +61,12 @@ export const extractImages = async (
                     const total = extractResults.length;
                     await editor.edit(editBuilder => {
                         for (const [range, , extractedImage] of extractResults
-                            .filter((x): x is [source: MarkdownImage, result: MarkdownImage] => x[1] != null)
+                            .filter((x): x is [source: ImageInformation, result: ImageInformation] => x[1] != null)
                             .map(
                                 ([sourceImage, result]): [
                                     range: Range | null,
-                                    sourceImage: MarkdownImage,
-                                    extractedImage: MarkdownImage
+                                    sourceImage: ImageInformation,
+                                    extractedImage: ImageInformation
                                 ] => {
                                     if (sourceImage.index == null) return [null, sourceImage, result];
 

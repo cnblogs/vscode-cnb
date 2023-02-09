@@ -1,17 +1,16 @@
 import { Ing, IngComment, IngPublishModel, IngType } from '@/models/ing';
-import { accountService } from '@/services/account.service';
 import { AlertService } from '@/services/alert.service';
-import { globalState } from '@/services/global-state';
-import fetch from 'node-fetch';
+import { globalContext } from '@/services/global-state';
+import fetch from '@/utils/fetch-client';
 import { URLSearchParams } from 'url';
 import { isArray, isNumber, isObject } from 'lodash-es';
 
 export class IngApi {
     async publishIng(ing: IngPublishModel): Promise<boolean> {
-        const resp = await fetch(`${globalState.config.cnblogsOpenApiUrl}/api/statuses`, {
+        const resp = await fetch(`${globalContext.config.cnblogsOpenApiUrl}/api/statuses`, {
             method: 'POST',
             body: JSON.stringify(ing),
-            headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
+            headers: [['Content-Type', 'application/json']],
         }).catch(reason => void AlertService.warning(JSON.stringify(reason)));
         if (!resp || !resp.ok)
             AlertService.error(`闪存发布失败, ${resp?.statusText ?? ''} ${JSON.stringify((await resp?.text()) ?? '')}`);
@@ -21,13 +20,13 @@ export class IngApi {
 
     async list({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}): Promise<Ing[] | null> {
         const resp = await fetch(
-            `${globalState.config.cnblogsOpenApiUrl}/api/statuses/@${type}?${new URLSearchParams({
+            `${globalContext.config.cnblogsOpenApiUrl}/api/statuses/@${type}?${new URLSearchParams({
                 pageIndex: `${pageIndex}`,
                 pageSize: `${pageSize}`,
             }).toString()}`,
             {
                 method: 'GET',
-                headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
+                headers: [['Content-Type', 'application/json']],
             }
         ).catch(reason => void AlertService.warning(JSON.stringify(reason)));
         if (!resp || !resp.ok) {
@@ -54,9 +53,9 @@ export class IngApi {
         const arr = isNumber(ingIds) ? [ingIds] : ingIds;
         return Promise.all(
             arr.map(id =>
-                fetch(`${globalState.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`, {
+                fetch(`${globalContext.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`, {
                     method: 'GET',
-                    headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
+                    headers: [['Content-Type', 'application/json']],
                 }).then(
                     resp =>
                         resp?.json().then(obj => [id, obj as IngComment[] | null | undefined] as const) ??
@@ -73,9 +72,9 @@ export class IngApi {
     }
 
     comment(ingId: number, data: { replyTo?: number; parentCommentId?: number; content: string }) {
-        return fetch(`${globalState.config.cnblogsOpenApiUrl}/api/statuses/${ingId}/comments`, {
+        return fetch(`${globalContext.config.cnblogsOpenApiUrl}/api/statuses/${ingId}/comments`, {
             method: 'POST',
-            headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
+            headers: [['Content-Type', 'application/json']],
             body: JSON.stringify(data),
         })
             .then(async resp => {

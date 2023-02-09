@@ -4,7 +4,7 @@ import { openMyWebBlogConsole } from './open-my-blog-management-background';
 import { openMyHomePage } from './open-my-home-page';
 import { login, logout } from './login';
 import { openMyBlog } from './open-my-blog';
-import { globalState } from '../services/global-state';
+import { globalContext } from '../services/global-state';
 import {
     gotoNextPostsList,
     gotoPreviousPostsList,
@@ -39,8 +39,8 @@ import { registerCommandsForIngsList } from 'src/commands/ing/ings-list-commands
 import { CopyPostLinkCommandHandler } from '@/commands/posts-list/copy-link';
 
 export const registerCommands = () => {
-    const context = globalState.extensionContext;
-    const appName = globalState.extensionName;
+    const context = globalContext.extensionContext;
+    const appName = globalContext.extensionName;
     const disposables = [
         commands.registerCommand(`${appName}.login`, login),
         commands.registerCommand(`${appName}.open-my-blog`, openMyBlog),

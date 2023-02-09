@@ -1,9 +1,8 @@
-import fetch from 'node-fetch';
+import fetch from '@/utils/fetch-client';
 import { Post } from '../models/post';
-import { globalState } from './global-state';
+import { globalContext } from './global-state';
 import { PageModel } from '../models/page-model';
 import { PostsListState } from '../models/posts-list-state';
-import { accountService } from './account.service';
 import { PostEditDto } from '../models/post-edit-dto';
 import { PostUpdatedResponse } from '../models/post-updated-response';
 import { throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
@@ -11,6 +10,8 @@ import { IErrorResponse } from '../models/error-response';
 import { AlertService } from './alert.service';
 import { PostFileMapManager } from './post-file-map';
 import { ZzkSearchResult } from '../models/zzk-search-result';
+import got from '@/utils/http-client';
+import { keys, merge, omit } from 'lodash-es';
 
 const defaultPageSize = 30;
 let newPostTemplate: PostEditDto | undefined;
@@ -21,7 +22,7 @@ export class PostService {
     protected constructor() {}
 
     protected get _baseUrl() {
-        return globalState.config.apiBaseUrl;
+        return globalContext.config.apiBaseUrl;
     }
 
     static get instance() {
@@ -29,7 +30,7 @@ export class PostService {
     }
 
     get postsListState(): PostsListState | undefined {
-        return globalState.storage.get<PostsListState>('postsListState');
+        return globalContext.storage.get<PostsListState>('postsListState');
     }
 
     async fetchPostsList({
@@ -50,7 +51,6 @@ export class PostService {
             ['cid', categoryId != null && categoryId > 0 ? `${categoryId}` : ''],
         ]);
         const response = await fetch(`${this._baseUrl}/api/posts/list?${s.toString()}`, {
-            headers: [accountService.buildBearerAuthorizationHeader()],
             method: 'GET',
         });
         if (!response.ok) throw Error(`request failed, ${response.status}, ${await response.text()}`);
@@ -70,7 +70,6 @@ export class PostService {
 
     async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
         const response = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
-            headers: [accountService.buildBearerAuthorizationHeader()],
             method: 'GET',
         });
         try {
@@ -95,28 +94,29 @@ export class PostService {
     async deletePost(postId: number) {
         const res = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
             method: 'DELETE',
-            headers: [accountService.buildBearerAuthorizationHeader()],
         });
         if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`);
     }
 
     async deletePosts(postIds: number[]) {
-        const searchParams = new URLSearchParams(postIds.map(id => ['postIds', `${id}`]));
+        const searchParams = new URLSearchParams(postIds.map<[string, string]>(id => ['postIds', `${id}`]));
         const res = await fetch(`${this._baseUrl}/api/bulk-operation/post?${searchParams.toString()}`, {
             method: 'DELETE',
-            headers: [accountService.buildBearerAuthorizationHeader()],
         });
         if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`);
     }
 
     async updatePost(post: Post): Promise<PostUpdatedResponse> {
-        const response = await fetch(`${this._baseUrl}/api/posts`, {
-            headers: [accountService.buildBearerAuthorizationHeader(), ['Content-Type', 'application/json']],
-            method: 'POST',
-            body: JSON.stringify(post),
-        });
-        await throwIfNotOkResponse(response);
-        return Object.assign(new PostUpdatedResponse(), await response.json());
+        const {
+            ok: isOk,
+            url,
+            method,
+            body,
+            statusCode,
+            statusMessage,
+        } = await got.post<PostUpdatedResponse>(`${this._baseUrl}/api/posts`, { json: post, responseType: 'json' });
+        if (!isOk) throw new Error(`Failed to ${method} ${url}, ${statusCode} - ${statusMessage}`);
+        return PostUpdatedResponse.parse(body);
     }
 
     async updatePostsListState(state: PostsListState | undefined | PageModel<Post>) {
@@ -133,10 +133,10 @@ export class PostService {
                       pageCount: state.pageCount,
                   }
                 : state;
-        await globalState.storage.update('postsListState', finalState);
+        await globalContext.storage.update('postsListState', finalState);
     }
 
-    async fetchPostEditDtoTemplate(): Promise<PostEditDto | undefined> {
+    async fetchPostEditTemplate(): Promise<PostEditDto | undefined> {
         if (!newPostTemplate) newPostTemplate = await this.fetchPostEditDto(-1);
 
         return newPostTemplate

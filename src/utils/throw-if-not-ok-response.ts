@@ -1,7 +1,7 @@
-import { Response } from 'node-fetch';
+import { GotFetchResponse } from 'got-fetch/out/lib/response';
 import { IErrorResponse, isErrorResponse } from '../models/error-response';
 
-const throwIfNotOkResponse = async (response: Response) => {
+const throwIfNotOkResponse = async (response: GotFetchResponse) => {
     if (!response.ok) {
         const responseText = await response.text();
         let responseJson: unknown;

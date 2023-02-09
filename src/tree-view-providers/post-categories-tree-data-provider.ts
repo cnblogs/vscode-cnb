@@ -1,7 +1,7 @@
 import { flattenDepth, take } from 'lodash-es';
 import { commands, EventEmitter, MessageOptions, ProviderResult, TreeDataProvider, TreeItem, window } from 'vscode';
 import { PostCategories } from '../models/post-category';
-import { globalState } from '../services/global-state';
+import { globalContext } from '../services/global-state';
 import { postCategoryService } from '../services/post-category.service';
 import { postService } from '../services/post.service';
 import { toTreeItem } from './converters';
@@ -45,7 +45,7 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
     async setIsRefreshing(value: boolean) {
         await commands.executeCommand(
             'setContext',
-            `${globalState.extensionName}.postCategoriesList.isRefreshing`,
+            `${globalContext.extensionName}.postCategoriesList.isRefreshing`,
             value
         );
         this._isRefreshing = value;
