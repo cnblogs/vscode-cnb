@@ -1,5 +1,5 @@
-import { accountService } from '../services/account.service';
+import { accountManager } from '../authentication/account-manager';
 
-export const login = () => accountService.login();
+export const login = () => accountManager.login();
 
-export const logout = () => accountService.logout();
+export const logout = () => accountManager.logout();

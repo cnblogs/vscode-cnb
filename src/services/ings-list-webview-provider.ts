@@ -1,4 +1,4 @@
-import { globalState } from 'src/services/global-state';
+import { globalContext } from 'src/services/global-state';
 import {
     CancellationToken,
     commands,
@@ -20,7 +20,7 @@ import { CommentIngCommandHandler } from '@/commands/ing/comment-ing';
 export class IngsListWebviewProvider implements WebviewViewProvider {
     private static _instance?: IngsListWebviewProvider;
 
-    readonly viewId = `${globalState.extensionName}.ings-list-webview`;
+    readonly viewId = `${globalContext.extensionName}.ings-list-webview`;
 
     private readonly _baseTitle = '闪存';
     private _view?: WebviewView;
@@ -59,7 +59,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     }
 
     private get assetsUri() {
-        return globalState.assetsUri;
+        return globalContext.assetsUri;
     }
 
     private get ingApi() {
@@ -69,7 +69,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     static ensureRegistered() {
         if (!this._instance) {
             this._instance = new IngsListWebviewProvider();
-            globalState.extensionContext.subscriptions.push(
+            globalContext.extensionContext.subscriptions.push(
                 window.registerWebviewViewProvider(this._instance.viewId, this._instance)
             );
         }
@@ -158,7 +158,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         await commands
             .executeCommand(
                 'setContext',
-                `${globalState.extensionName}.ingsList.isRefreshing`,
+                `${globalContext.extensionName}.ingsList.isRefreshing`,
                 value ? true : undefined
             )
             .then(undefined, () => undefined);
@@ -169,7 +169,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         await commands
             .executeCommand(
                 'setContext',
-                `${globalState.extensionName}.ingsList.pageIndex`,
+                `${globalContext.extensionName}.ingsList.pageIndex`,
                 value > 0 ? value : undefined
             )
             .then(undefined, () => undefined);
