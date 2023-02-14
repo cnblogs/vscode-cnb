@@ -1,7 +1,6 @@
-import fetch from 'node-fetch';
+import got from '@/utils/http-client';
 import { PostTag } from '../models/post-tag';
-import { accountService } from './account.service';
-import { globalState } from './global-state';
+import { globalContext } from './global-state';
 
 export class PostTagService {
     private static _instance: PostTagService;
@@ -19,15 +18,16 @@ export class PostTagService {
     async fetchTags(forceRefresh = false): Promise<PostTag[]> {
         if (this._cachedTags && !forceRefresh) return this._cachedTags;
 
-        const response = await fetch(`${globalState.config.apiBaseUrl}/api/tags/list`, {
-            method: 'GET',
-            headers: [accountService.buildBearerAuthorizationHeader()],
-        });
-        if (!response.ok) throw Error(`获取标签失败!\n${await response.text()}`);
+        const {
+            ok: isOk,
+            url,
+            method,
+            body,
+        } = await got.get<PostTag[]>(`${globalContext.config.apiBaseUrl}/api/tags/list`);
+        if (!isOk) throw Error(`Failed to ${method} ${url}`);
 
-        const data = await response.json();
-        return Array.isArray(data)
-            ? data.map((x: PostTag) => Object.assign(new PostTag(), x)).filter(({ name: tagName }) => tagName)
+        return Array.isArray(body)
+            ? body.map((x: PostTag) => Object.assign(new PostTag(), x)).filter(({ name: tagName }) => tagName)
             : [];
     }
 }

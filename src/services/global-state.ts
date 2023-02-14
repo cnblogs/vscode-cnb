@@ -1,19 +1,11 @@
-import { ExtensionContext, Uri } from 'vscode';
-import { defaultConfig, devConfig, IConfig, isDev } from '../models/config';
+import { env, ExtensionContext, Uri } from 'vscode';
+import { defaultConfig, devConfig, IExtensionConfig, isDev } from '../models/config';
 import path from 'path';
 
-export class GlobalState {
-    private static _instance = new GlobalState();
-
+class GlobalContext {
     private _extensionContext?: ExtensionContext;
-    private _config: IConfig = defaultConfig;
-    private _devConfig: IConfig = devConfig;
-
-    protected constructor() {}
-
-    static get instance() {
-        return this._instance;
-    }
+    private readonly _config: IExtensionConfig = defaultConfig;
+    private readonly _devConfig: IExtensionConfig = devConfig;
 
     get secretsStorage() {
         return this.extensionContext.secrets;
@@ -23,7 +15,7 @@ export class GlobalState {
         return this.extensionContext.globalState;
     }
 
-    get config(): IConfig {
+    get config(): IExtensionConfig {
         return isDev() ? this._devConfig : this._config;
     }
 
@@ -38,12 +30,25 @@ export class GlobalState {
 
     get extensionName(): string {
         const { name } = <{ name?: string }>this.extensionContext.extension.packageJSON;
-        return name ?? '';
+        return name ?? 'vscode-cnb';
+    }
+
+    get publisher(): string {
+        const { publisher } = <{ publisher?: string }>this.extensionContext.extension.packageJSON;
+        return publisher ?? 'cnblogs';
+    }
+
+    get displayName() {
+        return this.extensionContext.extension.packageJSON.displayName as string;
     }
 
     get assetsUri() {
-        return Uri.file(path.join(globalState.extensionContext.extensionPath, 'dist', 'assets'));
+        return Uri.file(path.join(globalContext.extensionContext.extensionPath, 'dist', 'assets'));
+    }
+
+    get extensionUrl() {
+        return `${env.uriScheme}://${this.publisher}.${this.extensionName}`;
     }
 }
 
-export const globalState = GlobalState.instance;
+export const globalContext = new GlobalContext();

@@ -1,5 +1,5 @@
 import { homedir } from 'os';
-import path = require('path');
+import path from 'path';
 import { Uri, window, workspace } from 'vscode';
 import { Settings } from '../../services/settings.service';
 import { revealActiveFileInExplorer } from '../../utils/reveal-active-file';
@@ -28,7 +28,7 @@ export const createLocalDraft = async () => {
         await workspace.fs.stat(Uri.file(filePath));
     } catch (e) {
         // 文件不存在
-        await workspace.fs.writeFile(Uri.file(filePath), new TextEncoder().encode(''));
+        await workspace.fs.writeFile(Uri.file(filePath), Buffer.from(''));
     }
 
     await openPostFile(filePath);

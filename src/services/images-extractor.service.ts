@@ -3,8 +3,10 @@ import fs from 'fs';
 import { Uri } from 'vscode';
 import { imageService } from './image.service';
 import { isErrorResponse } from '../models/error-response';
+import { isString, trimEnd } from 'lodash-es';
+import { Readable } from 'stream';
 
-export interface MarkdownImage {
+export interface ImageInformation {
     link: string;
     symbol: string;
     alt: string;
@@ -12,13 +14,13 @@ export interface MarkdownImage {
     index?: number;
 }
 
-export type MarkdownImages = MarkdownImage[];
+export type ImageInformationArray = ImageInformation[];
 
 const markdownImageRegex = /(!\[.*?\])\((.*?)( {0,}["'].*?['"])?\)/g;
 const cnblogsImageLinkRegex = /\.cnblogs\.com\//;
 
 interface ImageTypeFilter {
-    (image: MarkdownImage): boolean;
+    (image: ImageInformation): boolean;
 }
 
 const webImageFilter: ImageTypeFilter = image => /^(https?:)?\/\//.test(image.link);
@@ -42,12 +44,12 @@ export class MarkdownImagesExtractor {
 
     private _status: 'pending' | 'extracting' | 'extracted' = 'pending';
     private _errors: [symbol: string, message: string][] = [];
-    private _images: MarkdownImages | null | undefined = null;
+    private _images: ImageInformationArray | null | undefined = null;
 
     constructor(
         private markdown: string,
         private filePath: Uri,
-        public onProgress?: (index: number, images: MarkdownImages) => void
+        public onProgress?: (index: number, images: ImageInformationArray) => void
     ) {}
 
     get status() {
@@ -57,7 +59,7 @@ export class MarkdownImagesExtractor {
         return this._errors;
     }
 
-    async extract(): Promise<[source: MarkdownImage, result: MarkdownImage | null][]> {
+    async extract(): Promise<[source: ImageInformation, result: ImageInformation | null][]> {
         this._status = 'extracting';
         const sourceImages = this.findImages();
         let idx = 0;
@@ -68,7 +70,7 @@ export class MarkdownImagesExtractor {
             const imageFile = newImageLink ? newImageLink : await this.resolveImageFile(image);
             if (imageFile !== false) {
                 try {
-                    newImageLink = typeof imageFile === 'string' ? imageFile : await imageService.upload(imageFile);
+                    newImageLink = isString(imageFile) ? imageFile : await imageService.upload(imageFile);
                 } catch (ex) {
                     this._errors.push([
                         image.symbol,
@@ -78,10 +80,11 @@ export class MarkdownImagesExtractor {
                 result.push([
                     image,
                     newImageLink
-                        ? Object.assign({}, image, {
+                        ? {
+                              ...image,
                               link: newImageLink,
                               symbol: `![${image.alt}](${newImageLink}${image.title})`,
-                          } as MarkdownImage)
+                          }
                         : null,
                 ]);
             } else {
@@ -92,11 +95,11 @@ export class MarkdownImagesExtractor {
         return result;
     }
 
-    findImages(): MarkdownImage[] {
+    findImages(): ImageInformation[] {
         return (
             this._images == null
                 ? (this._images = Array.from(this.markdown.matchAll(markdownImageRegex))
-                      .map<MarkdownImage>(g => ({
+                      .map<ImageInformation>(g => ({
                           link: g[2],
                           symbol: g[0],
                           alt: g[1].substring(2, g[1].length - 1),
@@ -108,27 +111,25 @@ export class MarkdownImagesExtractor {
         ).filter(x => createImageTypeFilter(this.imageType).call(null, x));
     }
 
-    private async resolveImageFile(image: MarkdownImage) {
+    private async resolveImageFile(image: ImageInformation) {
         const { link, symbol, alt, title } = image;
         if (webImageFilter(image)) {
-            const imageStream = await imageService.download(link, alt ?? title);
-            if (!(imageStream instanceof Array)) {
-                return imageStream;
-            } else {
-                this._errors.push([symbol, `无法下载网络图片, ${imageStream[0]} - ${imageStream[2]}`]);
-                return false;
-            }
+            const imageStream = await imageService
+                .download(link, alt ?? title)
+                .catch(reason => this._errors.push([symbol, trimEnd(`下载图片失败, ${reason}`, ', ')]));
+            return imageStream instanceof Readable ? imageStream : false;
         } else {
-            const triedPathed: string[] = [];
+            const triedPaths: string[] = [];
             const createReadStream = (file: string) => {
-                triedPathed.push(file);
+                triedPaths.push(file);
                 return fs.existsSync(file) ? fs.createReadStream(file) : false;
             };
             let stream = createReadStream(link);
 
             stream =
                 stream === false ? createReadStream(path.resolve(path.dirname(this.filePath.fsPath), link)) : stream;
-            if (stream === false) this._errors.push([symbol, `本地图片文件不存在(${triedPathed.join(', ')})`]);
+            if (stream === false)
+                this._errors.push([symbol, `本地图片文件不存在(已搜索路径: ${triedPaths.join(', ')})`]);
 
             return stream;
         }

@@ -64,13 +64,10 @@ export const savePostFileToCnblogs = async (fileUri: Uri | undefined) => {
                         await PostFileMapManager.updateOrCreate(selectedPost.id, filePath);
                         const postEditDto = await postService.fetchPostEditDto(selectedPost.id);
                         if (postEditDto) {
-                            const fileContent = new TextDecoder().decode(await workspace.fs.readFile(fileUri));
-                            if (!fileContent) {
-                                await workspace.fs.writeFile(
-                                    fileUri,
-                                    new TextEncoder().encode(postEditDto.post.postBody)
-                                );
-                            }
+                            const fileContent = Buffer.from(await workspace.fs.readFile(fileUri)).toString();
+                            if (!fileContent)
+                                await workspace.fs.writeFile(fileUri, Buffer.from(postEditDto.post.postBody));
+
                             await savePostToCnblogs(postEditDto.post);
                         }
                     }
@@ -91,7 +88,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
         AlertService.warning('不受支持的文件格式! 只支持markdown格式');
         return;
     }
-    const editDto = await postService.fetchPostEditDtoTemplate();
+    const editDto = await postService.fetchPostEditTemplate();
     if (!editDto) return;
 
     const { post } = editDto;
@@ -145,7 +142,7 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
             AlertService.warning('本地无该博文的编辑记录');
             return;
         }
-        const updatedPostBody = new TextDecoder().decode(await workspace.fs.readFile(Uri.file(localFilePath)));
+        const updatedPostBody = Buffer.from(await workspace.fs.readFile(Uri.file(localFilePath))).toString();
         post.postBody = updatedPostBody;
         post.title = await PostTitleSanitizer.unSanitize(post);
     }

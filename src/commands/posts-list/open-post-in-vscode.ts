@@ -76,7 +76,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
     }
 
     // 博文内容写入本地文件, 若文件不存在, 会自动创建对应的文件
-    await workspace.fs.writeFile(fileUri, new TextEncoder().encode(postEditDto.post.postBody));
+    await workspace.fs.writeFile(fileUri, Buffer.from(postEditDto.post.postBody));
     await PostFileMapManager.updateOrCreate(postId, fileUri.fsPath);
     await openPostFile(post);
     return fileUri;

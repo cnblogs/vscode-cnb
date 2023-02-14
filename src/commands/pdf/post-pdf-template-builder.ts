@@ -3,7 +3,7 @@ import { PostFileMapManager } from '../../services/post-file-map';
 import fs from 'fs';
 import { markdownItFactory } from '@cnblogs/markdown-it-presets';
 import { blogSettingsService } from '../../services/blog-settings.service';
-import { accountService } from '../../services/account.service';
+import { accountManager } from '../../authentication/account-manager';
 import { postCategoryService } from '../../services/post-category.service';
 import { PostCategory } from '../../models/post-category';
 
@@ -62,7 +62,7 @@ export namespace postPdfTemplateBuilder {
             enableCodeLineNumber: isCodeLineNumberEnabled,
             blogId,
         } = await blogSettingsService.getBlogSettings();
-        const { userId } = accountService.curUser;
+        const { userId } = accountManager.curUser;
         return `<html>
         <head>
             <title>${post.title}</title>

@@ -1,4 +1,4 @@
-import { globalState } from '../services/global-state';
+import { globalContext } from '../services/global-state';
 import vscode from 'vscode';
 import { accountViewDataProvider } from './account-view-data-provider';
 import { PostsListTreeItem, postsDataProvider } from './posts-data-provider';
@@ -48,7 +48,7 @@ export const registerTreeViews = () => {
     const disposables: IDisposable[] = [];
     for (const [, item] of Object.entries(_views)) typeof item === 'function' ? undefined : disposables.push(item);
 
-    globalState.extensionContext.subscriptions.push(...disposables);
+    globalContext.extensionContext.subscriptions.push(...disposables);
 
     return extensionViews;
 };

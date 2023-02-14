@@ -1,7 +1,7 @@
 import { CommandHandler } from '@/commands/command-handler';
 import { IngPublishModel, IngType } from '@/models/ing';
 import { AlertService } from '@/services/alert.service';
-import { globalState } from '@/services/global-state';
+import { globalContext } from '@/services/global-state';
 import { IngApi } from '@/services/ing.api';
 import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider';
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input';
@@ -163,25 +163,26 @@ export class PublishIngCommandHandler extends CommandHandler {
             const options = [
                 [
                     '打开闪存',
-                    (): Thenable<void> => commands.executeCommand('vscode.open', Uri.parse(globalState.config.ingSite)),
+                    (): Thenable<void> =>
+                        commands.executeCommand('vscode.open', Uri.parse(globalContext.config.ingSite)),
                 ],
                 [
                     '我的闪存',
                     (): Thenable<void> =>
-                        commands.executeCommand('vscode.open', Uri.parse(globalState.config.ingSite + '/#my')),
+                        commands.executeCommand('vscode.open', Uri.parse(globalContext.config.ingSite + '/#my')),
                 ],
                 [
                     '新回应',
                     (): Thenable<void> =>
                         commands.executeCommand(
                             'vscode.open',
-                            Uri.parse(globalState.config.ingSite + '/#recentcomment')
+                            Uri.parse(globalContext.config.ingSite + '/#recentcomment')
                         ),
                 ],
                 [
                     '提到我',
                     (): Thenable<void> =>
-                        commands.executeCommand('vscode.open', Uri.parse(globalState.config.ingSite + '/#mention')),
+                        commands.executeCommand('vscode.open', Uri.parse(globalContext.config.ingSite + '/#mention')),
                 ],
             ] as const;
             const option = await window.showInformationMessage(

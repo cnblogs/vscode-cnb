@@ -1,4 +1,4 @@
-import path = require('path');
+import path from 'path';
 import { MessageOptions, Uri, window } from 'vscode';
 import { AlertService } from '../services/alert.service';
 import { postService } from '../services/post.service';

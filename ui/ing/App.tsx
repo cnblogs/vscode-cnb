@@ -7,7 +7,7 @@ import { Ing, IngComment } from '@models/ing';
 import { activeThemeProvider } from 'share/active-theme-provider';
 import { ThemeProvider } from '@fluentui/react/lib/Theme';
 import { Spinner, Stack } from '@fluentui/react';
-import { cloneWith } from 'lodash';
+import { cloneWith } from 'lodash-es';
 
 export class App extends Component<unknown, IngAppState> {
     constructor(props: unknown) {

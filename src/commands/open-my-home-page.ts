@@ -1,8 +1,8 @@
-import { accountService } from '../services/account.service';
+import { accountManager } from '../authentication/account-manager';
 import vscode from 'vscode';
 
 export const openMyHomePage = () => {
-    const { accountId } = accountService.curUser;
+    const { accountId } = accountManager.curUser;
     if (!accountId || accountId <= 0) return;
 
     const userHomePageUrl = `https://home.cnblogs.com/u/${accountId}`;
