@@ -84,7 +84,7 @@ const update = async (contexts: CommandContext[]) => {
         if (post) {
             const textEditors = window.visibleTextEditors.filter(x => x.document.uri.fsPath === fileUri.fsPath);
             await Promise.all(textEditors.map(editor => editor.document.save()));
-            await workspace.fs.writeFile(fileUri, new TextEncoder().encode(post.postBody));
+            await workspace.fs.writeFile(fileUri, Buffer.from(post.postBody));
         }
     }
 };

@@ -1,19 +1,19 @@
 import { commands, workspace } from 'vscode';
 import { refreshPostCategoriesList } from '../commands/post-category/refresh-post-categories-list';
 import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
-import { globalState } from './global-state';
+import { globalContext } from './global-state';
 import { PostFileMapManager } from './post-file-map';
 import { Settings } from './settings.service';
 
 export const isTargetWorkspace = (): boolean => {
     const folders = workspace.workspaceFolders;
     const isTarget = !!folders && folders.length === 1 && folders[0].uri.path === Settings.workspaceUri.path;
-    void commands.executeCommand('setContext', `${globalState.extensionName}.isTargetWorkspace`, isTarget);
+    void commands.executeCommand('setContext', `${globalContext.extensionName}.isTargetWorkspace`, isTarget);
     return isTarget;
 };
 
 export const observeConfigurationChange = () => {
-    globalState.extensionContext?.subscriptions.push(
+    globalContext.extensionContext?.subscriptions.push(
         workspace.onDidChangeConfiguration(ev => {
             if (ev.affectsConfiguration(Settings.prefix)) isTargetWorkspace();
 
@@ -31,7 +31,7 @@ export const observeConfigurationChange = () => {
 };
 
 export const observeWorkspaceFolderAndFileChange = () => {
-    globalState.extensionContext?.subscriptions.push(
+    globalContext.extensionContext?.subscriptions.push(
         workspace.onDidRenameFiles(e => {
             for (const item of e.files) {
                 const { oldUri, newUri } = item;

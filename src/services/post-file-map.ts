@@ -1,6 +1,6 @@
 import { postCategoriesDataProvider } from '../tree-view-providers/post-categories-tree-data-provider';
 import { postsDataProvider } from '../tree-view-providers/posts-data-provider';
-import { globalState } from './global-state';
+import { globalContext } from './global-state';
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && !!map[1];
 
@@ -10,7 +10,7 @@ export class PostFileMapManager {
     static storageKey = 'postFileMaps';
 
     private static get maps(): PostFileMap[] {
-        return globalState.storage.get<PostFileMap[]>(this.storageKey) ?? [];
+        return globalContext.storage.get<PostFileMap[]>(this.storageKey) ?? [];
     }
 
     static updateOrCreateMany(maps: PostFileMap[]): Promise<void>;
@@ -38,7 +38,7 @@ export class PostFileMapManager {
         if (exist) exist[1] = filePath;
         else maps.push([postId, filePath]);
 
-        await globalState.storage.update(this.storageKey, maps.filter(validatePostFileMap));
+        await globalContext.storage.update(this.storageKey, maps.filter(validatePostFileMap));
         if (emitEvent) {
             postsDataProvider.fireTreeDataChangedEvent(postId);
             postCategoriesDataProvider.onPostUpdated({ refreshPosts: false, postIds: [postId] });

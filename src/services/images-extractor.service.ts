@@ -3,10 +3,11 @@ import fs from 'fs';
 import { Uri, workspace } from 'vscode';
 import { imageService } from './image.service';
 import { isErrorResponse } from '../models/error-response';
+import { isString, trimEnd } from 'lodash-es';
 import { promisify } from 'util';
-import { Stream } from 'stream';
+import { Readable } from 'stream';
 
-export interface MarkdownImage {
+export interface ImageInformation {
     link: string;
     symbol: string;
     alt: string;
@@ -14,13 +15,13 @@ export interface MarkdownImage {
     index?: number;
 }
 
-export type MarkdownImages = MarkdownImage[];
+export type ImageInformationArray = ImageInformation[];
 
 const markdownImageRegex = /(!\[.*?\])\((.*?)( {0,}["'].*?['"])?\)/g;
 const cnblogsImageLinkRegex = /\.cnblogs\.com\//;
 
 interface ImageTypeFilter {
-    (image: MarkdownImage): boolean;
+    (image: ImageInformation): boolean;
 }
 
 const webImageFilter: ImageTypeFilter = image => /^(https?:)?\/\//.test(image.link);
@@ -44,13 +45,13 @@ export class MarkdownImagesExtractor {
 
     private _status: 'pending' | 'extracting' | 'extracted' = 'pending';
     private _errors: [symbol: string, message: string][] = [];
-    private _images: MarkdownImages | null | undefined = null;
+    private _images: ImageInformationArray | null | undefined = null;
     private readonly _workspaceDirs: string[] | undefined;
 
     constructor(
         private readonly markdown: string,
         private readonly targetFileUri: Uri,
-        public progressHook?: (index: number, images: MarkdownImages) => void
+        public onProgress?: (index: number, images: ImageInformationArray) => void
     ) {
         this._workspaceDirs = workspace.workspaceFolders?.map(({ uri: { fsPath } }) => fsPath);
     }
@@ -62,19 +63,18 @@ export class MarkdownImagesExtractor {
         return this._errors;
     }
 
-    async extract(): Promise<[source: MarkdownImage, result: MarkdownImage | null][]> {
+    async extract(): Promise<[source: ImageInformation, result: ImageInformation | null][]> {
         this._status = 'extracting';
         const sourceImages = this.findImages();
         let idx = 0;
         const result: ReturnType<MarkdownImagesExtractor['extract']> extends Promise<infer U> ? U : never = [];
         for (const image of sourceImages) {
-            this.progressHook?.call(this, idx++, sourceImages);
+            this.onProgress?.call(this, idx++, sourceImages);
             let newImageLink = result.find(x => x[1] != null && x[0].link === image.link)?.[1]?.link;
             const imageStream = newImageLink ? newImageLink : await this.resolveImageFile(image);
             if (imageStream != null) {
                 try {
-                    newImageLink =
-                        typeof imageStream === 'string' ? imageStream : await imageService.upload(imageStream);
+                    newImageLink = isString(imageStream) ? imageStream : await imageService.upload(imageStream);
                 } catch (ex) {
                     this._errors.push([
                         image.symbol,
@@ -84,10 +84,11 @@ export class MarkdownImagesExtractor {
                 result.push([
                     image,
                     newImageLink
-                        ? Object.assign({}, image, {
+                        ? {
+                              ...image,
                               link: newImageLink,
                               symbol: `![${image.alt}](${newImageLink}${image.title})`,
-                          } as MarkdownImage)
+                          }
                         : null,
                 ]);
             } else {
@@ -98,11 +99,11 @@ export class MarkdownImagesExtractor {
         return result;
     }
 
-    findImages(): MarkdownImage[] {
+    findImages(): ImageInformation[] {
         return (
             this._images == null
                 ? (this._images = Array.from(this.markdown.matchAll(markdownImageRegex))
-                      .map<MarkdownImage>(g => ({
+                      .map<ImageInformation>(g => ({
                           link: g[2],
                           symbol: g[0],
                           alt: g[1].substring(2, g[1].length - 1),
@@ -114,7 +115,7 @@ export class MarkdownImagesExtractor {
         ).filter(x => createImageTypeFilter(this.imageType).call(null, x));
     }
 
-    private async resolveImageFile(image: MarkdownImage): Promise<Stream | undefined | null> {
+    private async resolveImageFile(image: ImageInformation): Promise<Readable | undefined | null> {
         const { link, symbol, alt, title } = image;
         if (webImageFilter(image)) {
             const imageStream = await imageService.download(link, alt ?? title);

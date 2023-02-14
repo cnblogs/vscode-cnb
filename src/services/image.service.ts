@@ -1,54 +1,45 @@
-import fetch from 'node-fetch';
-import FormData from 'form-data';
-import { accountService } from './account.service';
-import { globalState } from './global-state';
-import { throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
-import { Stream } from 'stream';
+import { globalContext } from './global-state';
+import { Readable } from 'stream';
 import mime from 'mime';
+import { isString, merge, pick } from 'lodash-es';
+import FormData from 'form-data';
+import httpClient from '@/utils/http-client';
+import path from 'path';
 
-export class ImageService {
-    private static _instance: ImageService;
-
-    private constructor() {}
-
-    static get instance() {
-        if (!this._instance) this._instance = new ImageService();
-
-        return this._instance;
-    }
-
-    async upload<T extends object>(file: T): Promise<string> {
+class ImageService {
+    async upload<T extends Readable & { name?: string; fileName?: string; filename?: string; path?: string | Buffer }>(
+        file: T
+    ): Promise<string> {
         const form = new FormData();
-        let { name: filename } = <{ name?: string }>file;
-        filename ??= 'image.png';
-        form.append('image', file, {
-            filename,
-            contentType: 'image/png',
-        });
-        const response = await fetch(`${globalState.config.apiBaseUrl}/api/posts/body/images`, {
-            method: 'POST',
-            headers: [accountService.buildBearerAuthorizationHeader()],
+        const { name, fileName, filename, path: _path } = file;
+        const finalName = path.basename(isString(_path) ? _path : fileName || filename || name || 'image.png');
+        const ext = path.extname(finalName);
+        const mimeType = mime.lookup(ext, 'image/png');
+        form.append('image', file, { filename: finalName, contentType: mimeType });
+        const response = await httpClient.post(`${globalContext.config.apiBaseUrl}/api/posts/body/images`, {
             body: form,
         });
-        await throwIfNotOkResponse(response);
-        return response.text();
+
+        return response.body;
     }
 
-    async download(
-        link: string,
-        fileNameWithoutExtension?: string
-    ): Promise<Stream | [statusCode: number, statusText: string, responseBody: string]> {
-        const response = await fetch(link, {
-            method: 'get',
+    /**
+     * Download the image from web
+     * This will reject if failed to download
+     * @param url The url of the web image
+     * @param name The name that expected applied to the downloaded image
+     * @returns The {@link Readable} stream
+     */
+    async download(url: string, name?: string): Promise<Readable> {
+        const response = await httpClient.get(url, { responseType: 'buffer' });
+        const contentType = response.headers['content-type'] ?? 'image/png';
+        name = !name ? 'image' : name;
+
+        return merge(Readable.from(response.body), {
+            ...pick(response, 'httpVersion', 'headers'),
+            path: `${name}.${mime.extension(contentType) ?? 'png'}`,
         });
-        const contentType = response.headers.get('content-type') ?? 'image/png';
-        fileNameWithoutExtension = !fileNameWithoutExtension ? 'image' : fileNameWithoutExtension;
-        return response.ok && response.body != null
-            ? Object.assign(Stream.Readable.from(await response.buffer()), {
-                  path: fileNameWithoutExtension + '.' + (mime.extension(contentType) ?? ''),
-              })
-            : [response.status, response.statusText, await response.text()];
     }
 }
 
-export const imageService = ImageService.instance;
+export const imageService = new ImageService();

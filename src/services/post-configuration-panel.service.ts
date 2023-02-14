@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash-es';
 import vscode, { Uri } from 'vscode';
 import { Post } from '../models/post';
-import { globalState } from './global-state';
+import { globalContext } from './global-state';
 import { postCategoryService } from './post-category.service';
 import { siteCategoryService } from './site-category.service';
 import { postTagService } from './post-tag.service';
@@ -26,7 +26,7 @@ export namespace postConfigurationPanel {
         beforeUpdate?: (postToUpdate: Post, panel: vscode.WebviewPanel) => Promise<boolean>;
     }
 
-    const resourceRootUri = () => globalState.assetsUri;
+    const resourceRootUri = () => globalContext.assetsUri;
 
     const setHtml = async (webview: vscode.Webview): Promise<void> => {
         webview.html = await parseWebviewHtml('post-configuration', webview);
@@ -101,7 +101,7 @@ export namespace postConfigurationPanel {
         });
         const { webview } = panel;
         await setHtml(webview);
-        panel.iconPath = Uri.joinPath(globalState.extensionContext.extensionUri, 'dist', 'assets', 'favicon.svg');
+        panel.iconPath = Uri.joinPath(globalContext.extensionContext.extensionUri, 'dist', 'assets', 'favicon.svg');
         panels.set(panelId, panel);
         return panel;
     };
