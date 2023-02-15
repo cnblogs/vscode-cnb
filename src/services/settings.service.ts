@@ -1,22 +1,34 @@
-import { homedir, platform } from 'os';
+import os, { homedir } from 'os';
 import fs from 'fs';
 import { ConfigurationTarget, Uri, workspace } from 'vscode';
 import { MarkdownImagesExtractor } from './images-extractor.service';
 import { isNumber } from 'lodash-es';
+import { untildify } from '@/utils/untildify';
 
 export class Settings {
     static readonly postsListPageSizeKey = 'pageSize.postsList';
+    static readonly platform = os.platform();
+    static readonly prefix = `cnblogsClientForVSCode`;
+    static readonly iconThemePrefix = 'workbench';
+    static readonly iconThemeKey = 'iconTheme';
+    static readonly chromiumPathKey = 'chromiumPath';
+    static readonly workspaceUriKey = 'workspace';
 
-    static get prefix() {
-        return `cnblogsClientForVSCode`;
-    }
+    private static readonly _defaultWorkspaceUri = Uri.joinPath(Uri.file(homedir()), 'Documents', 'Cnblogs');
+    private static _adaptLegacyWorkspaceTask?: Thenable<void> | null;
 
-    static get iconThemePrefix() {
-        return 'workbench';
-    }
-
-    static get iconThemeKey() {
-        return `iconTheme`;
+    static get platformPrefix() {
+        const { platform } = this;
+        switch (platform) {
+            case 'darwin':
+                return 'macos';
+            case 'win32':
+                return 'windows';
+            case 'linux':
+                return 'linux';
+            default:
+                return null;
+        }
     }
 
     static get iconTheme() {
@@ -27,25 +39,34 @@ export class Settings {
         return workspace.getConfiguration(this.prefix);
     }
 
-    static get workspaceUri(): Uri {
-        const workspace = this.configuration.get<string>('workspace');
-        return workspace
-            ? Uri.file(workspace.replace(/^~/, homedir()))
-            : Uri.joinPath(Uri.file(homedir()), 'Documents', 'Cnblogs');
+    static get platformConfiguration() {
+        const { platformPrefix, prefix } = this;
+        return platformPrefix ? workspace.getConfiguration(`${prefix}.${platformPrefix}`) : null;
     }
 
-    static get chromiumPathConfigurationKey() {
-        let key = '';
-        const p = platform();
-        if (p === 'darwin') key = `macos.chromiumPath`;
+    static get workspaceUri(): Uri {
+        if (this.legacyWorkspaceUri != null) {
+            const legacy = this.legacyWorkspaceUri;
+            if (this._adaptLegacyWorkspaceTask == null) {
+                try {
+                    this._adaptLegacyWorkspaceTask = this.removeLegacyWorkspaceUri().then(
+                        () => (legacy ? this.setWorkspaceUri(Uri.file(legacy)) : Promise.resolve()),
+                        () => undefined
+                    );
+                } finally {
+                    this._adaptLegacyWorkspaceTask = null;
+                }
+            }
 
-        if (p === 'win32') key = `windows.chromiumPath`;
+            if (legacy) return Uri.file(legacy);
+        }
 
-        return key;
+        const workspace = this.platformConfiguration?.get<string>(this.workspaceUriKey);
+        return workspace ? Uri.file(untildify(workspace)) : this._defaultWorkspaceUri;
     }
 
     static get chromiumPath(): string {
-        return this.configuration.get<string>(this.chromiumPathConfigurationKey) ?? '';
+        return this.platformConfiguration?.get(this.chromiumPathKey) ?? '';
     }
 
     static get createLocalPostFileWithCategory(): boolean {
@@ -75,21 +96,29 @@ export class Settings {
         return this.configuration.get<boolean>('markdown.enableHighlightCodeLines');
     }
 
+    private static get legacyWorkspaceUri(): string | null | undefined {
+        return this.configuration.get<string>(this.workspaceUriKey);
+    }
+
     static async setWorkspaceUri(value: Uri) {
         if (!value.fsPath || !(value.scheme === 'file')) throw Error('Invalid uri');
 
         if (!fs.existsSync(value.fsPath)) throw Error(`Folder "${value.fsPath}" not exist`);
 
-        await this.configuration.update('workspace', value.fsPath, ConfigurationTarget.Global);
+        await this.platformConfiguration?.update(this.workspaceUriKey, value.fsPath, ConfigurationTarget.Global);
     }
 
     static async setChromiumPath(value: string) {
         if (!value) return;
 
-        await this.configuration.update(this.chromiumPathConfigurationKey, value, ConfigurationTarget.Global);
+        await this.platformConfiguration?.update(this.chromiumPathKey, value, ConfigurationTarget.Global);
     }
 
     static async setCreateLocalPostFileWithCategory(value: boolean) {
         await this.configuration.update('createLocalPostFileWithCategory', value, ConfigurationTarget.Global);
+    }
+
+    private static removeLegacyWorkspaceUri() {
+        return this.configuration.update(this.workspaceUriKey, undefined, ConfigurationTarget.Global);
     }
 }

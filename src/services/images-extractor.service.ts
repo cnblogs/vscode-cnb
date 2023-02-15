@@ -43,7 +43,7 @@ export class MarkdownImagesExtractor {
     readonly createImageTypeFilter = createImageTypeFilter;
 
     private _status: 'pending' | 'extracting' | 'extracted' = 'pending';
-    private _errors: [symbol: string, message: string][] = [];
+    private _errors: [imageSymbol: string, message: string][] = [];
     private _images: ImageInformationArray | null | undefined = null;
 
     constructor(

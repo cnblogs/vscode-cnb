@@ -6,10 +6,10 @@
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
-        "project": ["./tsconfig.json", "./ui/tsconfig.json"]
+        "project": ["./tsconfig.json", "./ui/tsconfig.json", "./test/tsconfig.json"]
     },
     "rules": {},
-    "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts"],
+    "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts", "__mocks__/vscode.ts"],
     "overrides": [
         {
             "files": ["*.config.js"],
