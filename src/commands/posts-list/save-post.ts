@@ -105,8 +105,6 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
         successCallback: async savedPost => {
             await refreshPostsList();
             await openPostFile(localDraft);
-            if (Settings.automaticallyExtractImagesType)
-                await extractImages(localDraft.filePathUri, Settings.automaticallyExtractImagesType);
 
             await PostFileMapManager.updateOrCreate(savedPost.id, localDraft.filePath);
             await openPostFile(localDraft);
@@ -120,14 +118,18 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
                 AlertService.warning('本地文件已删除, 无法新建博文');
                 return false;
             }
-            const content = await localDraft.readAllText();
-            postToSave.postBody = content;
+            if (Settings.automaticallyExtractImagesType) {
+                await extractImages(localDraft.filePathUri, Settings.automaticallyExtractImagesType).catch(
+                    console.warn
+                );
+            }
+            postToSave.postBody = await localDraft.readAllText();
             return true;
         },
     });
 };
 
-export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto | undefined, isNewPost = false) => {
+export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
     input = input instanceof PostTreeItem ? input.post : input;
     const post =
         input instanceof PostEditDto
@@ -139,16 +141,14 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
 
     const { id: postId } = post;
     const localFilePath = PostFileMapManager.getFilePath(postId);
+    if (!localFilePath) return AlertService.warning('本地无该博文的编辑记录');
+
+    if (Settings.automaticallyExtractImagesType)
+        await extractImages(Uri.file(localFilePath), Settings.automaticallyExtractImagesType).catch(console.warn);
+
     await saveFilePendingChanges(localFilePath);
-    if (!isNewPost) {
-        if (!localFilePath) {
-            AlertService.warning('本地无该博文的编辑记录');
-            return;
-        }
-        const updatedPostBody = new TextDecoder().decode(await workspace.fs.readFile(Uri.file(localFilePath)));
-        post.postBody = updatedPostBody;
-        post.title = await PostTitleSanitizer.unSanitize(post);
-    }
+    post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString();
+    post.title = await PostTitleSanitizer.unSanitize(post);
 
     if (!validatePost(post)) return false;
 
@@ -164,12 +164,9 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
             });
             let hasSaved = false;
             try {
-                if (Settings.automaticallyExtractImagesType && localFilePath)
-                    await extractImages(Uri.file(localFilePath), Settings.automaticallyExtractImagesType);
-
                 const { id: postId } = await postService.updatePost(post);
-                if (!isNewPost) await openPostInVscode(postId);
-                else post.id = postId;
+                await openPostInVscode(postId);
+                post.id = postId;
 
                 hasSaved = true;
                 progress.report({ increment: 100 });
