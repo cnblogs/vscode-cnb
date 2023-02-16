@@ -48,7 +48,7 @@ export const extractImages = async (
             const failedImages = await window.withProgress(
                 { title: '提取图片', location: ProgressLocation.Notification },
                 async progress => {
-                    extractor.onProgress = (idx, images) => {
+                    extractor.progressHook = (idx, images) => {
                         const total = images.length;
                         const image = images[idx];
                         progress.report({
@@ -98,12 +98,13 @@ export const extractImages = async (
                 }
             );
             if (failedImages && failedImages.length > 0) {
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                window.showErrorMessage(
-                    `${failedImages.length}张图片提取失败\n${failedImages
-                        .map(x => [x.symbol, extractor.errors.find(y => y[0] === x.symbol)?.[1] ?? ''].join(': '))
-                        .join('\n')}`
-                );
+                window
+                    .showErrorMessage(
+                        `${failedImages.length}张图片提取失败\n${failedImages
+                            .map(x => [x.symbol, extractor.errors.find(y => y[0] === x.symbol)?.[1] ?? ''].join(': '))
+                            .join('\n')}`
+                    )
+                    .then(undefined, console.warn);
             }
         }
     }

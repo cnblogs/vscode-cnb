@@ -1,8 +1,10 @@
 import path from 'path';
 import fs from 'fs';
-import { Uri } from 'vscode';
+import { Uri, workspace } from 'vscode';
 import { imageService } from './image.service';
 import { isErrorResponse } from '../models/error-response';
+import { promisify } from 'util';
+import { Stream } from 'stream';
 
 export interface MarkdownImage {
     link: string;
@@ -43,12 +45,15 @@ export class MarkdownImagesExtractor {
     private _status: 'pending' | 'extracting' | 'extracted' = 'pending';
     private _errors: [symbol: string, message: string][] = [];
     private _images: MarkdownImages | null | undefined = null;
+    private readonly _workspaceDirs: string[] | undefined;
 
     constructor(
-        private markdown: string,
-        private filePath: Uri,
-        public onProgress?: (index: number, images: MarkdownImages) => void
-    ) {}
+        private readonly markdown: string,
+        private readonly targetFileUri: Uri,
+        public progressHook?: (index: number, images: MarkdownImages) => void
+    ) {
+        this._workspaceDirs = workspace.workspaceFolders?.map(({ uri: { fsPath } }) => fsPath);
+    }
 
     get status() {
         return this._status;
@@ -63,12 +68,13 @@ export class MarkdownImagesExtractor {
         let idx = 0;
         const result: ReturnType<MarkdownImagesExtractor['extract']> extends Promise<infer U> ? U : never = [];
         for (const image of sourceImages) {
-            this.onProgress?.call(this, idx++, sourceImages);
+            this.progressHook?.call(this, idx++, sourceImages);
             let newImageLink = result.find(x => x[1] != null && x[0].link === image.link)?.[1]?.link;
-            const imageFile = newImageLink ? newImageLink : await this.resolveImageFile(image);
-            if (imageFile !== false) {
+            const imageStream = newImageLink ? newImageLink : await this.resolveImageFile(image);
+            if (imageStream != null) {
                 try {
-                    newImageLink = typeof imageFile === 'string' ? imageFile : await imageService.upload(imageFile);
+                    newImageLink =
+                        typeof imageStream === 'string' ? imageStream : await imageService.upload(imageStream);
                 } catch (ex) {
                     this._errors.push([
                         image.symbol,
@@ -108,7 +114,7 @@ export class MarkdownImagesExtractor {
         ).filter(x => createImageTypeFilter(this.imageType).call(null, x));
     }
 
-    private async resolveImageFile(image: MarkdownImage) {
+    private async resolveImageFile(image: MarkdownImage): Promise<Stream | undefined | null> {
         const { link, symbol, alt, title } = image;
         if (webImageFilter(image)) {
             const imageStream = await imageService.download(link, alt ?? title);
@@ -116,21 +122,41 @@ export class MarkdownImagesExtractor {
                 return imageStream;
             } else {
                 this._errors.push([symbol, `无法下载网络图片, ${imageStream[0]} - ${imageStream[2]}`]);
-                return false;
+                return undefined;
             }
         } else {
-            const triedPathed: string[] = [];
-            const createReadStream = (file: string) => {
-                triedPathed.push(file);
-                return fs.existsSync(file) ? fs.createReadStream(file) : false;
-            };
-            let stream = createReadStream(link);
+            const checkReadAccess = (filePath: string) =>
+                promisify(fs.access)(filePath).then(
+                    () => true,
+                    () => false
+                );
 
-            stream =
-                stream === false ? createReadStream(path.resolve(path.dirname(this.filePath.fsPath), link)) : stream;
-            if (stream === false) this._errors.push([symbol, `本地图片文件不存在(${triedPathed.join(', ')})`]);
+            let iPath: string | undefined | null = link,
+                iDir = 0,
+                searchingDirs: string[] | undefined | null,
+                triedPath: string[] | undefined,
+                isEncodedPath = false;
 
-            return stream;
+            while (iPath != null) {
+                if (await checkReadAccess(iPath)) {
+                    return fs.createReadStream(iPath);
+                } else {
+                    (triedPath ??= []).push(iPath);
+
+                    if (!isEncodedPath) {
+                        iPath = decodeURIComponent(iPath);
+                        isEncodedPath = true;
+                        continue;
+                    }
+                }
+
+                searchingDirs ??= [path.dirname(this.targetFileUri.fsPath), ...(this._workspaceDirs ?? [])];
+                iPath = iDir >= 0 && searchingDirs.length > iDir ? path.resolve(searchingDirs[iDir], link) : undefined;
+                iDir++;
+                isEncodedPath = false;
+            }
+
+            return undefined;
         }
     }
 }
