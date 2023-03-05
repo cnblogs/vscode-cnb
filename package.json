@@ -468,6 +468,66 @@
                         "scope": "application",
                         "default": false,
                         "markdownDescription": "是否允许将选中内容发到闪存\n\n启用后, 编辑上下文菜单将包含\"将选中内容发到闪存\""
+                    },
+                    "cnblogsClientForVSCode.menus.context.explorer": {
+                        "type": "array",
+                        "default": [
+                            "保存到博客园",
+                            "拉取远程更新",
+                            "博文设置",
+                            "博客园关联博文",
+                            "在博客后台中编辑",
+                            "导出pdf",
+                            "复制博文链接"
+                        ],
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "保存到博客园",
+                                "拉取远程更新",
+                                "博文设置",
+                                "博客园关联博文",
+                                "在博客后台中编辑",
+                                "导出pdf",
+                                "复制博文链接"
+                            ]
+                        },
+                        "uniqueItems": true,
+                        "markdownDescription": "控制是否在资源管理器右键菜单中显示命令",
+                        "order": 10
+                    },
+                    "cnblogsClientForVSCode.menus.context.editor": {
+                        "type": "array",
+                        "default": [
+                            "保存到博客园",
+                            "拉取远程更新",
+                            "博文设置",
+                            "博客园关联博文",
+                            "在博客后台中编辑",
+                            "导出pdf",
+                            "复制博文链接",
+                            "上传剪贴板图片到博客园",
+                            "上传本地图片到博客园",
+                            "提取图片"
+                        ],
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "保存到博客园",
+                                "拉取远程更新",
+                                "博文设置",
+                                "博客园关联博文",
+                                "在博客后台中编辑",
+                                "导出pdf",
+                                "复制博文链接",
+                                "上传剪贴板图片到博客园",
+                                "上传本地图片到博客园",
+                                "提取图片"
+                            ]
+                        },
+                        "uniqueItems": true,
+                        "markdownDescription": "控制是否在编辑器右键菜单中显示命令",
+                        "order": 11
                     }
                 }
             }
@@ -837,47 +897,47 @@
                 },
                 {
                     "command": "vscode-cnb.show-post-to-local-file-info",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /博客园关联博文/",
                     "group": "cnblogs@1"
                 },
                 {
                     "command": "vscode-cnb.save-post-file-to-cnblogs",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /保存到博客园/",
                     "group": "cnblogs@2"
                 },
                 {
                     "command": "vscode-cnb.pull-post-remote-updates",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /拉取远程更新/",
                     "group": "cnblogs@3"
                 },
                 {
                     "command": "vscode-cnb.modify-post-settings",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /博文设置/",
                     "group": "cnblogs@4"
                 },
                 {
                     "command": "vscode-cnb.open-post-in-blog-admin",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /在博客后台中编辑/",
                     "group": "cnblogs@5"
                 },
                 {
                     "command": "vscode-cnb.upload-clipboard-image",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /上传剪贴板图片到博客园/",
                     "group": "cnblogs@6"
                 },
                 {
                     "command": "vscode-cnb.upload-local-disk-image",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /上传本地图片到博客园/",
                     "group": "cnblogs@7"
                 },
                 {
                     "command": "vscode-cnb.export-post-to-pdf",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /导出pdf/",
                     "group": "cnblogs@8"
                 },
                 {
                     "command": "vscode-cnb.extract-images",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /提取图片/",
                     "group": "cnblogs@9"
                 },
                 {
@@ -906,37 +966,37 @@
                 },
                 {
                     "command": "vscode-cnb.save-post-file-to-cnblogs",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /保存到博客园/",
                     "group": "cnblogs@2"
                 },
                 {
                     "command": "vscode-cnb.pull-post-remote-updates",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /拉取远程更新/",
                     "group": "cnblogs@3"
                 },
                 {
                     "command": "vscode-cnb.modify-post-settings",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /博文设置/",
                     "group": "cnblogs@4"
                 },
                 {
                     "command": "vscode-cnb.show-post-to-local-file-info",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /博客园关联博文/",
                     "group": "cnblogs@5"
                 },
                 {
                     "command": "vscode-cnb.open-post-in-blog-admin",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /在博客后台中编辑/",
                     "group": "cnblogs@6"
                 },
                 {
                     "command": "vscode-cnb.export-post-to-pdf",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /导出pdf/",
                     "group": "cnblogs@7"
                 },
                 {
                     "command": "vscode-cnb.copy-post-link",
-                    "when": "resourceLangId == markdown",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer =~ /复制博文链接/",
                     "group": "cnblogs@8"
                 }
             ]
