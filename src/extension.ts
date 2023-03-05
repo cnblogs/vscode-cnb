@@ -12,6 +12,7 @@ import {
 import extensionUriHandler from '@/utils/uri-handler';
 import { IngsListWebviewProvider } from 'src/services/ings-list-webview-provider';
 import { extendMarkdownIt } from '@/markdown/extend-markdownIt';
+import { Settings } from '@/services/settings.service';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -27,6 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
     }, 1000);
     observeConfigurationChange();
     observeWorkspaceFolderChange();
+    Settings.migrateEnablePublishSelectionToIng().catch(console.warn);
     vscode.window.registerUriHandler(extensionUriHandler);
     return {
         extendMarkdownIt,
