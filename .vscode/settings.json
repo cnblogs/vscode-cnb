@@ -30,5 +30,6 @@
     "eslint.format.enable": true,
     "editor.codeActionsOnSave": {
         "source.fixAll": true
-    }
+    },
+    "jest.jestCommandLine": "npm run test:unit -- "
 }

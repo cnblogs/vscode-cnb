@@ -20,6 +20,11 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
-            - run: npm ci
-            - run: npm run lint
-            - run: npm run vscode:prepublish
+            - name: 'Install Dependencies'
+              run: npm ci
+            - name: 'Lint'
+              run: npm run lint
+            - name: 'Unit Test'
+              run: npm run test:unit
+            - name: 'Build'
+              run: npm run vscode:prepublish
