@@ -11,7 +11,6 @@ import { AlertService } from './alert.service';
 import { PostFileMapManager } from './post-file-map';
 import { ZzkSearchResult } from '../models/zzk-search-result';
 import got from '@/utils/http-client';
-import { keys, merge, omit } from 'lodash-es';
 
 const defaultPageSize = 30;
 let newPostTemplate: PostEditDto | undefined;
