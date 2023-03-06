@@ -400,7 +400,7 @@
                         "scope": "application",
                         "type": "string",
                         "editPresentation": "singlelineText",
-                        "markdownDescription": "Chromium 可执行文件路径, 用于进行 PDF 导出等操作"
+                        "markdownDescription": "Windows 上 Chromium 可执行文件路径, 用于进行 PDF 导出等操作"
                     },
                     "cnblogsClientForVSCode.macos.chromiumPath": {
                         "order": 4,
@@ -408,7 +408,7 @@
                         "scope": "application",
                         "type": "string",
                         "editPresentation": "singlelineText",
-                        "markdownDescription": "Chromium 可执行文件路径, 用于进行 PDF 导出等操作"
+                        "markdownDescription": "macOS 上 Chromium 可执行文件路径, 用于进行 PDF 导出等操作"
                     },
                     "cnblogsClientForVSCode.createLocalPostFileWithCategory": {
                         "order": 5,
