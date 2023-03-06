@@ -9,7 +9,7 @@
             "name": "Run Extension",
             "type": "extensionHost",
             "request": "launch",
-            "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+            "args": ["--extensionDevelopmentPath=${workspaceFolder}", "--disable-extensions"],
             "outFiles": ["${workspaceFolder}/dist/**/*.js"],
             "preLaunchTask": "${defaultBuildTask}",
             "env": {
@@ -23,7 +23,8 @@
             "request": "launch",
             "args": [
                 "--extensionDevelopmentPath=${workspaceFolder}",
-                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index",
+                "--disable-extensions"
             ],
             "outFiles": ["${workspaceFolder}/out/**/*.js", "${workspaceFolder}/dist/**/*.js"],
             "preLaunchTask": "tasks: watch-tests"
