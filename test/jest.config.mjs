@@ -1,8 +1,10 @@
-import type { Config } from '@jest/types';
 import { pathsToModuleNameMapper } from 'ts-jest';
-import { compilerOptions } from '../tsconfig.json';
+import tsConfig from '../tsconfig.json' assert { type: 'json' };
 
-const config: Config.InitialOptions = {
+const { compilerOptions } = tsConfig;
+
+/** @type {import('ts-jest').JestConfigWithTsJest} */
+const config = {
     preset: 'ts-jest',
     displayName: {
         name: 'vscode-cnb',
