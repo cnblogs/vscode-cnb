@@ -13,8 +13,7 @@
         "paths": {
             "@/*": ["src/*"]
         },
-        "strict": true,
-        "resolveJsonModule": true
+        "strict": true
     },
     "exclude": [".vscode-test", "ui", "src/test", "test", "__mocks__"]
 }
