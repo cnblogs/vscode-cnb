@@ -5,6 +5,8 @@ import path from 'path';
 export class GlobalState {
     private static _instance = new GlobalState();
 
+    readonly extensionName = 'vscode-cnb';
+
     private _extensionContext?: ExtensionContext;
     private _config: IConfig = defaultConfig;
     private _devConfig: IConfig = devConfig;
@@ -34,11 +36,6 @@ export class GlobalState {
 
     set extensionContext(v: ExtensionContext | undefined) {
         this._extensionContext = v;
-    }
-
-    get extensionName(): string {
-        const { name } = <{ name?: string }>this.extensionContext.extension.packageJSON;
-        return name ?? '';
     }
 
     get assetsUri() {

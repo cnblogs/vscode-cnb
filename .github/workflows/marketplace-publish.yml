@@ -6,7 +6,7 @@ name: Publish extension to vscode extension marketplace
 on:
     push:
         tags:
-            - v*.*.*
+            - legacy-1.6@v*.*.*
 
 env:
     GITLAB_NPM_TOKEN: ${{secrets.GITLAB_NPM_TOKEN}}
@@ -29,7 +29,7 @@ jobs:
                   cache: 'npm'
             - run: echo "VERSION=${GITHUB_REF#refs/*/}"
             # add tag value to env
-            - run: echo "VERSION=${GITHUB_REF#refs/*/}" | sed 's/v//' >> $GITHUB_ENV
+            - run: echo "VERSION=${GITHUB_REF#refs/*/}" | sed 's/legacy-1\.6\/@v//' >> $GITHUB_ENV
             - run: echo "version:\ ${{ env.VERSION }}"
             # globally install vsce
             - run: npm i -g vsce

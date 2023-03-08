@@ -1,6 +1,6 @@
 {
-    "name": "vscode-cnb",
-    "displayName": "博客园Cnblogs客户端",
+    "name": "vscode-cnb-legacy",
+    "displayName": "博客园Cnblogs客户端(旧版兼容到vscode@1.62)",
     "description": "A vscode extension used to write and publish blog post to cnblogs",
     "version": "0.0.1",
     "license": "LICENSE.txt",
