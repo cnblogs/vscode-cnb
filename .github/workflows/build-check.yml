@@ -20,11 +20,26 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
-            - name: 'Install Dependencies'
+            - name: 'Installing Dependencies'
               run: npm ci
-            - name: 'Lint'
+            - name: 'Linting'
               run: npm run lint
-            - name: 'Unit Test'
+            - name: 'Testing(Unit)'
               run: npm run test:unit
-            - name: 'Build'
-              run: npm run vscode:prepublish
+            - name: 'Building'
+              run: ./build.sh "${{ secrets.OAUTHCLIENTID }}" "${{ secrets.OAUTHCLIENTSECRET }}"
+            - name: 'Preparing VSCE'
+              run: npm i -g vsce
+            - name: 'Versioning'
+              id: version
+              run: echo "VERSION=1.0.0-beta.$(date +%s)" >> $GITHUB_OUTPUT
+            - name: 'Packaging'
+              id: packaging
+              run: |
+                  vsce package --pre-release --no-update-package-json --no-git-tag-version ${{ steps.version.outputs.VERSION }} && \
+                  echo "PKG_NAME=vscode-cnb-${{ steps.version.outputs.VERSION }}.vsix" >> $GITHUB_OUTPUT
+            - name: Uploading the Package
+              uses: actions/upload-artifact@v3
+              with:
+                  name: ${{ steps.packaging.outputs.PKG_NAME }}
+                  path: ./${{ steps.packaging.outputs.PKG_NAME }}
