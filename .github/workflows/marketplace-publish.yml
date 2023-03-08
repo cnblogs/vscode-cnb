@@ -29,7 +29,7 @@ jobs:
                   cache: 'npm'
             - run: echo "VERSION=${GITHUB_REF#refs/*/}"
             # add tag value to env
-            - run: echo "VERSION=${GITHUB_REF#refs/*/}" | sed 's/legacy-1\.6\/@v//' >> $GITHUB_ENV
+            - run: echo "VERSION=${GITHUB_REF#refs/*/}" | sed 's/legacy-1\.6@v//' >> $GITHUB_ENV
             - run: echo "version:\ ${{ env.VERSION }}"
             # globally install vsce
             - run: npm i -g vsce
