@@ -19,14 +19,17 @@ export interface IExtensionConfig {
 
 export const isDev = () => process.env.NODE_ENV === 'Development';
 
+declare const CNBLOGS_CLIENTID: string;
+declare const CNBLOGS_CLIENTSECRET: string;
+
 export const defaultConfig: IExtensionConfig = {
     oauth: {
         authority: 'https://oauth.cnblogs.com',
         tokenEndpoint: '/connect/token',
         authorizeEndpoint: '/connect/authorize',
         userInfoEndpoint: '/connect/userinfo',
-        clientId: 'vscode-cnb',
-        clientSecret: '',
+        clientId: CNBLOGS_CLIENTID,
+        clientSecret: CNBLOGS_CLIENTSECRET,
         responseType: 'code',
         scope: 'openid profile CnBlogsApi CnblogsAdminApi',
         revocationEndpoint: '/connection/revocation',
