@@ -13,14 +13,19 @@
     "editor.formatOnSave": true,
     "cSpell.words": [
         "ASPNETCORE",
+        "CLIENTID",
+        "CLIENTSECRET",
         "fluentui",
         "iconfont",
         "ings",
         "nbsp",
+        "OAUTHCLIENTID",
+        "OAUTHCLIENTSECRET",
         "randomstring",
         "singleline",
         "tailwindcss",
-        "untildify"
+        "untildify",
+        "vsix"
     ],
     "json.format.enable": false,
     "eslint.alwaysShowStatus": true,
