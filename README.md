@@ -197,7 +197,9 @@ markdown格式链接形如: `[博文标题](https://www.cnblogs.com/cmt/p/47365.
 
 ## vscode 版本要求
 
-\>=1.62.0
+\>=1.70.0
+
+> 自 v1.7 开始, Visual Studio Code 的最低版本要求调整为 1.70.0
 
 ## 插件设置
 
