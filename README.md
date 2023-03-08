@@ -197,7 +197,14 @@ markdown格式链接形如: `[博文标题](https://www.cnblogs.com/cmt/p/47365.
 
 ## vscode 版本要求
 
-\>=1.62.0
+\>=1.70.0
+
+如果您正使用旧版 vscode(`<=1.69`), 您可以使用专为兼容旧版的遗留版本的 [博客园Cnblogs客户端(旧版兼容到vscode@1.62)](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb-legacy)
+
+> **注意**, 十分**不建议**使用遗留版本的插件, 遗留版本仅作为备选项以供万不得已的情况下使用, 并且只提供有限的bug修复, 不会再增加任何新的功能.
+>  **建议**配合 vscode 1.70 以上版本使用本插件**最新版**
+
+> **注意**, 请不要同时安装遗留版本和最新版本的插件, 这会导致冲突造成无法正常使用
 
 ## 插件设置
 
