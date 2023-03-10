@@ -1015,9 +1015,7 @@
         ]
     },
     "scripts": {
-        "compile": "webpack && npm run ui:compile",
-        "ui:compile": "webpack -c ./ui/webpack.config.mjs",
-        "watch": "webpack --watch",
+        "watch": "webpack --watch --mode=development",
         "ui:watch": "webpack watch -c ./ui/webpack.config.mjs",
         "package": "webpack --mode production --devtool hidden-source-map",
         "ui:package": "webpack --mode production --devtool hidden-source-map -c ./ui/webpack.config.mjs",
@@ -1025,11 +1023,11 @@
         "test:integration:watch": "npm run compile-tests -- --watch",
         "test:integration": "npm run compile-tests && node ./out/test/runTest.js",
         "test:unit": "jest -c ./test/jest.config.mjs",
-        "pretest": "npm run compile-tests && npm run compile && npm run lint",
         "lint": "eslint src/ ui/",
         "format": "prettier --write .",
         "format-check": "prettier --check .",
-        "download-icons": "node ./download-iconfont.mjs"
+        "download-icons": "node ./download-iconfont.mjs",
+        "stats": "npm run --silent package -- --env namedChunks=true --profile --json > ./dist/stats.json && webpack-bundle-analyzer ./dist/stats.json ./dist"
     },
     "devDependencies": {
         "@cnblogs/eslint-config-typescript": "^1.0.1",
@@ -1073,20 +1071,20 @@
         "prettier": "^2.5.0",
         "style-loader": "^3.3.1",
         "tailwindcss": "^3.0.23",
-        "terser-webpack-plugin": "^5.3.6",
+        "terser-webpack-plugin": "^5.3.7",
         "ts-jest": "^29.0.5",
         "ts-loader": "^9.2.5",
         "ts-node": "^10.9.1",
         "tsconfig-paths-webpack-plugin": "^3.5.2",
         "typescript": "^4.8.4",
         "utility-types": "^3.10.0",
-        "webpack": "5.70.x",
-        "webpack-cli": "^4.8.0"
+        "webpack": "^5.76.0",
+        "webpack-cli": "^5.0.1"
     },
     "dependencies": {
         "@cnblogs/code-highlight-adapter": "^1.7.1",
         "@cnblogs/code-quality": "^2.0.2",
-        "@cnblogs/markdown-it-presets": "^1.6.1",
+        "@cnblogs/markdown-it-presets": "1.9",
         "@fluentui/react": "^8.62.4",
         "base64url": "^3.0.1",
         "blob": "^0.1.0",

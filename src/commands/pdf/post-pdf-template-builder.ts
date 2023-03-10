@@ -1,11 +1,11 @@
 import { Post } from '../../models/post';
 import { PostFileMapManager } from '../../services/post-file-map';
 import fs from 'fs';
-import { markdownItFactory } from '@cnblogs/markdown-it-presets';
 import { blogSettingsService } from '../../services/blog-settings.service';
 import { accountManager } from '../../authentication/account-manager';
 import { postCategoryService } from '../../services/post-category.service';
 import { PostCategory } from '../../models/post-category';
+import { markdownItFactory } from '@cnblogs/markdown-it-presets';
 
 export namespace postPdfTemplateBuilder {
     export const HighlightedMessage = 'markdown-highlight-finished';

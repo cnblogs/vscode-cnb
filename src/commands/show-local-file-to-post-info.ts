@@ -6,7 +6,7 @@ import { postCategoryService } from '../services/post-category.service';
 import { PostFileMapManager } from '../services/post-file-map';
 import { searchPostsByTitle } from '../services/search-post-by-title';
 import { viewPostOnline } from './view-post-online';
-import { format } from 'date-fns';
+import format from 'date-fns/format';
 
 /**
  * 本地文件所关联的博文信息

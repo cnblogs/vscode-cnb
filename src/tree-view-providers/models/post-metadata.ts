@@ -1,5 +1,8 @@
-import { format, differenceInYears, formatDistanceStrict, differenceInSeconds } from 'date-fns';
-import { zhCN } from 'date-fns/locale';
+import differenceInSeconds from 'date-fns/differenceInSeconds';
+import differenceInYears from 'date-fns/differenceInYears';
+import format from 'date-fns/format';
+import formatDistanceStrict from 'date-fns/formatDistanceStrict';
+import zhCN from 'date-fns/locale/zh-CN';
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
 import { Post } from '../../models/post';
 import { PostEditDto } from '../../models/post-edit-dto';
