@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer-core';
+import type puppeteer from 'puppeteer-core';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -7,13 +7,13 @@ import { Post } from '../../models/post';
 import { PostFileMapManager } from '../../services/post-file-map';
 import { postService } from '../../services/post.service';
 import { extensionViews } from '../../tree-view-providers/tree-view-registration';
-import { postPdfTemplateBuilder } from './post-pdf-template-builder';
 import { chromiumPathProvider } from '../../utils/chromium-path-provider';
 import { Settings } from '../../services/settings.service';
 import { accountManager } from '../../authentication/account-manager';
 import { AlertService } from '../../services/alert.service';
 import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item';
 import { PostEditDto } from '@/models/post-edit-dto';
+import { postPdfTemplateBuilder } from '@/commands/pdf/post-pdf-template-builder';
 
 const launchBrowser = async (
     chromiumPath: string
@@ -25,6 +25,7 @@ const launchBrowser = async (
     | undefined
 > => {
     try {
+        const puppeteer = (await import('puppeteer-core')).default;
         const browser = await puppeteer.launch({
             dumpio: true,
             headless: true,
@@ -177,7 +178,9 @@ const reportErrors = (errors: string[] | undefined) => {
         void window.showErrorMessage('导出pdf时遇到错误', { modal: true, detail: errors.join('\n') } as MessageOptions);
 };
 
-const exportPostToPdf = async (input: Post | PostTreeItem | Uri): Promise<void> => {
+const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Promise<void> => {
+    if (!(input instanceof Post) && !(input instanceof PostTreeItem) && !(input instanceof Uri)) return;
+
     const chromiumPath = await retrieveChromiumPath();
     if (!chromiumPath) return;
 

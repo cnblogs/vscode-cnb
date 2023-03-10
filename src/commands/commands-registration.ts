@@ -29,7 +29,6 @@ import { openWorkspace } from './open-workspace';
 import { setWorkspace } from './set-workspace';
 import { revealWorkspaceInOs } from './reveal-workspace-in-os';
 import { viewPostOnline } from './view-post-online';
-import { exportPostToPdf } from './pdf/export-pdf.command';
 import { pullPostRemoteUpdates } from './pull-post-remote-updates';
 import { extractImages } from './extract-images';
 import { clearPostsSearchResults, refreshPostsSearchResults, searchPosts } from './posts-list/search';
@@ -75,7 +74,9 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.set-workspace`, setWorkspace),
         commands.registerCommand(`${appName}.reveal-workspace-in-os`, revealWorkspaceInOs),
         commands.registerCommand(`${appName}.view-post-online`, viewPostOnline),
-        commands.registerCommand(`${appName}.export-post-to-pdf`, exportPostToPdf),
+        commands.registerCommand(`${appName}.export-post-to-pdf`, (input: unknown) =>
+            import('./pdf/export-pdf.command').then(m => m.exportPostToPdf(input))
+        ),
         commands.registerCommand(`${appName}.extract-images`, extractImages),
         commands.registerCommand(`${appName}.search-posts`, searchPosts),
         commands.registerCommand(`${appName}.clear-posts-search-results`, clearPostsSearchResults),
