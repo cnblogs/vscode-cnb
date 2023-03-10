@@ -77,9 +77,9 @@ export default (env, { mode }) => {
                     },
                 ],
             }),
-            new webpack.ProvidePlugin({
-                CNBLOGS_CLIENTID: env.CLIENTID || 'vscode-cnb',
-                CNBLOGS_CLIENTSECRET: env.CLIENTSECRET || '',
+            new webpack.DefinePlugin({
+                CNBLOGS_CLIENTID: JSON.stringify(env.CLIENTID || 'vscode-cnb'),
+                CNBLOGS_CLIENTSECRET: JSON.stringify(env.CLIENTSECRET || ''),
             }),
         ],
         optimization: {

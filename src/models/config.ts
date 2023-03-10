@@ -19,8 +19,8 @@ export interface IExtensionConfig {
 
 export const isDev = () => process.env.NODE_ENV === 'Development';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const { CNBLOGS_CLIENTID, CNBLOGS_CLIENTSECRET } = globalThis as any;
+declare const CNBLOGS_CLIENTID: string;
+declare const CNBLOGS_CLIENTSECRET: string;
 
 export const defaultConfig: IExtensionConfig = {
     oauth: {
@@ -28,8 +28,8 @@ export const defaultConfig: IExtensionConfig = {
         tokenEndpoint: '/connect/token',
         authorizeEndpoint: '/connect/authorize',
         userInfoEndpoint: '/connect/userinfo',
-        clientId: typeof CNBLOGS_CLIENTID === 'string' ? CNBLOGS_CLIENTID : '',
-        clientSecret: typeof CNBLOGS_CLIENTSECRET === 'string' ? CNBLOGS_CLIENTSECRET : '',
+        clientId: CNBLOGS_CLIENTID,
+        clientSecret: CNBLOGS_CLIENTSECRET,
         responseType: 'code',
         scope: 'openid profile CnBlogsApi CnblogsAdminApi',
         revocationEndpoint: '/connection/revocation',

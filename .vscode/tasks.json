@@ -7,10 +7,31 @@
             "NODE_ENV": "Development"
         }
     },
+    "inputs": [
+        {
+            "id": "ClientId",
+            "type": "command",
+            "command": "extension.commandvariable.file.content",
+            "args": {
+                "fileName": "${workspaceFolder}/.vscode/api-key.txt",
+                "key": "CLIENTID"
+            }
+        },
+        {
+            "id": "ClientSecret",
+            "type": "command",
+            "command": "extension.commandvariable.file.content",
+            "args": {
+                "fileName": "${workspaceFolder}/.vscode/api-key.txt",
+                "key": "CLIENTSECRET"
+            }
+        }
+    ],
     "tasks": [
         {
-            "type": "npm",
-            "script": "watch",
+            "type": "shell",
+            "label": "npm: watch",
+            "command": "npm run watch -- --env CLIENTID=${input:ClientId} --env CLIENTSECRET=${input:ClientSecret}",
             "problemMatcher": ["$ts-webpack-watch", "$tslint-webpack-watch"],
             "isBackground": true,
             "presentation": {
@@ -19,7 +40,8 @@
             },
             "group": {
                 "kind": "build"
-            }
+            },
+            "runOptions": { "reevaluateOnRerun": false }
         },
         {
             "type": "npm",
