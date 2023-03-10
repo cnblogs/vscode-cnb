@@ -16,11 +16,13 @@ const __dirname = path.dirname(__filename);
 //@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
-export default env => {
+export default (env, { mode }) => {
+    const isProd = mode === 'production';
+
     /** @type WebpackConfig */
     const extensionConfig = {
         target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
-        mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+        mode: mode, // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 
         entry: { extension: './src/extension.ts', markdown: './src/markdown/markdown.entry.ts' }, // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
         output: {
@@ -35,19 +37,25 @@ export default env => {
         },
         resolve: {
             // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-            extensions: ['.ts', '.js'],
+            extensions: ['.ts', '.js', '.mjs'],
             plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
         },
         module: {
             rules: [
                 {
                     test: /\.ts$/,
-                    exclude: /node_modules\/(?!lodash-es.*)/,
+                    exclude: /node_modules/,
                     use: [
                         {
                             loader: 'ts-loader',
                         },
                     ],
+                },
+                {
+                    test: /\.mjs/,
+                    resolve: {
+                        fullySpecified: false,
+                    },
                 },
             ],
         },
@@ -74,6 +82,10 @@ export default env => {
                 CNBLOGS_CLIENTSECRET: env.CLIENTSECRET || '',
             }),
         ],
+        optimization: {
+            chunkIds: isProd && !env.namedChunks ? 'deterministic' : 'named',
+            usedExports: true,
+        },
     };
 
     return extensionConfig;
