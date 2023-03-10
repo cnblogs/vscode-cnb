@@ -5,12 +5,15 @@ import { PostsListTreeItem, postsDataProvider } from './posts-data-provider';
 import { postCategoriesDataProvider } from './post-categories-tree-data-provider';
 import { PostCategoriesListTreeItem } from './models/categories-list-tree-item';
 import { IDisposable } from '@fluentui/react';
+import { BlogExportTreeItem } from '@/tree-view-providers/models/blog-export';
+import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
 
 const _views: {
     postsList?: vscode.TreeView<PostsListTreeItem>;
     anotherPostsList?: vscode.TreeView<PostsListTreeItem>;
     account?: vscode.TreeView<vscode.TreeItem>;
     postCategoriesList?: vscode.TreeView<PostCategoriesListTreeItem>;
+    blogExport?: vscode.TreeView<BlogExportTreeItem>;
     postsLists: () => vscode.TreeView<PostsListTreeItem>[];
     visiblePostsList: () => vscode.TreeView<PostsListTreeItem> | undefined;
 } = {
@@ -42,7 +45,10 @@ export const registerTreeViews = () => {
             canSelectMany: true,
         }
     );
-
+    _views.blogExport = vscode.window.createTreeView('vscode-cnb.blog-export', {
+        canSelectMany: false,
+        treeDataProvider: BlogExportProvider.instance,
+    });
     _hasRegistered = true;
 
     const disposables: IDisposable[] = [];
@@ -71,6 +77,10 @@ class ExtensionViews implements Required<typeof _views> {
 
     get postCategoriesList() {
         return this.getTreeView('postCategoriesList');
+    }
+
+    get blogExport() {
+        return this.getTreeView('blogExport');
     }
 
     private getTreeView<TKey extends keyof Omit<typeof _views, 'postsLists' | 'visiblePostsList'>>(

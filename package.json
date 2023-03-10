@@ -364,6 +364,13 @@
                 "title": "复制博文链接",
                 "icon": "$(link)",
                 "enablement": "vscode-cnb.isAuthorized"
+            },
+            {
+                "command": "vscode-cnb.blog-export.refresh-records",
+                "title": "刷新博客备份记录",
+                "category": "Cnblogs",
+                "icon": "$(refresh)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing"
             }
         ],
         "configuration": [
@@ -522,6 +529,12 @@
                     "visibility": "collapsed"
                 },
                 {
+                    "id": "vscode-cnb.blog-export",
+                    "name": "博客备份",
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
+                },
+                {
                     "id": "cnblogs-account",
                     "name": "账户信息",
                     "when": "vscode-cnb.isAuthorized",
@@ -623,6 +636,11 @@
                     "command": "vscode-cnb.ing.publish",
                     "when": "view == vscode-cnb.ings-list-webview",
                     "group": "navigation@6"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.refresh-records",
+                    "when": "view == vscode-cnb.blog-export",
+                    "group": "inline@1"
                 }
             ],
             "commandPalette": [
@@ -728,6 +746,10 @@
                 },
                 {
                     "command": "vscode-cnb.copy-post-link",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.refresh-records",
                     "when": "false"
                 }
             ],
