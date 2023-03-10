@@ -1,4 +1,4 @@
-import { parseISO } from 'date-fns';
+import parseISO from 'date-fns/parseISO';
 import { camelCase, isObject, mapKeys } from 'lodash-es';
 
 export enum IngSendFromType {

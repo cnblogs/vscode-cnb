@@ -8,7 +8,7 @@ import isWsl from 'is-wsl';
 import { globalContext } from '../services/global-state';
 import { AlertService } from '../services/alert.service';
 import { IClipboardImage } from '../models/clipboard-image';
-import { format } from 'date-fns';
+import format from 'date-fns/format';
 
 export type Platform = 'darwin' | 'win32' | 'win10' | 'linux' | 'wsl';
 

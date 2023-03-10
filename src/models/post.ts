@@ -1,4 +1,5 @@
-import { differenceInSeconds, parseISO } from 'date-fns';
+import differenceInSeconds from 'date-fns/differenceInSeconds';
+import parseISO from 'date-fns/parseISO';
 
 export class Post {
     id = -1;
