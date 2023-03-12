@@ -30,7 +30,7 @@ export interface BlogExportRecord {
 
 export interface DownloadedBlogExport {
     filePath: string;
-    id: number;
+    id?: number | null;
 }
 
 export const blogExportStatusNameMap: Record<BlogExportStatus, string> = {

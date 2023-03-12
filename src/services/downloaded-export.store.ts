@@ -14,13 +14,15 @@ export class DownloadedExportStore {
         return (this._instance ??= new DownloadedExportStore());
     }
 
-    async add(filePath: string, id: number) {
+    async add(filePath: string, id?: number | null) {
         const item: DownloadedBlogExport = { id, filePath };
         const list = await this.list();
         list.splice(0, 0, item);
 
         return Promise.all([
-            this._storage.update(`${this.metadataKey}${id}`, item),
+            id != null && id > 0
+                ? this._storage.update(`${this.metadataKey}${id}`, { id, filePath })
+                : Promise.resolve(),
             this._storage.update(this.listKey, take(list, 5000)),
         ]);
     }

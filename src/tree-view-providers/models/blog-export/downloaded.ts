@@ -98,7 +98,7 @@ export class DownloadedExportsEntryTreeItem
             label: '已下载备份',
             iconPath: new ThemeIcon('files'),
             collapsibleState: TreeItemCollapsibleState.Collapsed,
-            contextValue: 'cnb-blog-export-downloaded-exports-entry',
+            contextValue: 'cnblogs-export-downloaded-entry',
         };
     }
 }

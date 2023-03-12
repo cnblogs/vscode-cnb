@@ -20,6 +20,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     private _treeDataChangedSource?: EventEmitter<BlogExportTreeItem | null | undefined> | null;
     private _store?: BlogExportRecordsStore | null;
     private _shouldRefresh = false;
+    private _downloadedExportEntry?: DownloadedExportsEntryTreeItem | null;
 
     static get instance(): BlogExportProvider {
         return (this._instance ??= new BlogExportProvider());
@@ -38,12 +39,20 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     }
 
     getChildren(element?: BlogExportTreeItem | null): ProviderResult<BlogExportTreeItem[]> {
-        if (element instanceof BlogExportRecordTreeItem) return element.getChildrenAsync();
-        else if (element instanceof DownloadedExportsEntryTreeItem) return element.getChildrenAsync();
-        else if (element instanceof DownloadedExportTreeItem) return element.getChildrenAsync();
-        else if (element instanceof ExportPostsEntry) return [];
-        else if (element == null)
-            return this.listRecords().then(records => [new DownloadedExportsEntryTreeItem(), ...records]);
+        if (element instanceof BlogExportRecordTreeItem) {
+            return element.getChildrenAsync();
+        } else if (element instanceof DownloadedExportsEntryTreeItem) {
+            return element.getChildrenAsync();
+        } else if (element instanceof DownloadedExportTreeItem) {
+            return element.getChildrenAsync();
+        } else if (element instanceof ExportPostsEntry) {
+            return element.getChildrenAsync();
+        } else if (element == null) {
+            return this.listRecords().then(records => [
+                (this._downloadedExportEntry = new DownloadedExportsEntryTreeItem()),
+                ...records,
+            ]);
+        }
 
         return null;
     }
@@ -58,6 +67,11 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
             return element.parent;
 
         return null;
+    }
+
+    refreshDownloadedExports() {
+        if (this._downloadedExportEntry) this._treeDataChangedSource?.fire(this._downloadedExportEntry);
+        return Promise.resolve();
     }
 
     async refreshRecords() {

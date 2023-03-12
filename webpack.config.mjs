@@ -39,6 +39,7 @@ export default (env, { mode }) => {
             'pg',
             'tedious',
             'pg-hstore',
+            'sqlite3',
         ],
         resolve: {
             // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
