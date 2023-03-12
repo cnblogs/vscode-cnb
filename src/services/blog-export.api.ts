@@ -1,13 +1,15 @@
 import { BlogExportRecord, BlogExportRecordList } from '@/models/blog-export';
-import { got } from '@/utils/http-client';
+import { globalContext } from '@/services/global-state';
+import got from '@/utils/http-client';
 
 const basePath = '/api/blogExports';
 
 export class BlogExportApi {
     list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }): Promise<BlogExportRecordList> {
         return got
-            .get<BlogExportRecordList>(`${basePath}`, {
+            .get<BlogExportRecordList>(`${globalContext.config.apiBaseUrl}${basePath}`, {
                 searchParams: new URLSearchParams({ pageIndex: `${pageIndex ?? ''}`, pageSize: `${pageSize ?? ''}` }),
+                responseType: 'json',
             })
             .then(r => r.body);
     }
