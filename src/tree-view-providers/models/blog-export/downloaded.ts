@@ -96,7 +96,7 @@ export class DownloadedExportsEntryTreeItem
     toTreeItem(): TreeItem | Promise<TreeItem> {
         return {
             label: '已下载备份',
-            iconPath: 'file-directory',
+            iconPath: new ThemeIcon('file-directory'),
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             contextValue: 'cnb-blog-export-downloaded-exports-entry',
         };

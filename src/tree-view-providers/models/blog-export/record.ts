@@ -34,11 +34,13 @@ export class BlogExportRecordTreeItem
 
     getChildrenAsync: () => Promise<BlogExportRecordMetadata[]> = () => Promise.resolve(this.parseMetadata());
 
-    private parseMetadata(): BlogExportRecordMetadata[] {
+    private async parseMetadata(): Promise<BlogExportRecordMetadata[]> {
+        const { filesize } = await import('filesize');
         const {
             record,
             record: { status, id, fileBytes, dateExported },
         } = this;
+        const formattedFileSize = filesize(fileBytes);
         const items = [
             new BlogExportRecordMetadata(
                 this,
@@ -56,9 +58,15 @@ export class BlogExportRecordTreeItem
                         : `${record.exportedPostCount}/${record.postCount}`
                 }`,
                 undefined,
-                'symbol-value'
+                new ThemeIcon('layers')
             ),
-            new BlogExportRecordMetadata(this, id, `文件大小: ${fileBytes}`),
+            new BlogExportRecordMetadata(
+                this,
+                id,
+                `文件大小: ${typeof formattedFileSize === 'string' ? formattedFileSize : fileBytes}`,
+                undefined,
+                new ThemeIcon('symbol-unit')
+            ),
             new BlogExportRecordMetadata(
                 this,
                 record.id,
