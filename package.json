@@ -1127,6 +1127,8 @@
         "randomstring": "^1.1.4",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
-        "sanitize-filename": "^1.6.3"
+        "sanitize-filename": "^1.6.3",
+        "sequelize": "^6.29.3",
+        "sqlite3": "^5.1.4"
     }
 }

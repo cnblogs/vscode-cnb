@@ -21,6 +21,10 @@ export class DownloadedExportMetadata extends TreeItem {
 }
 
 export class ExportPostsEntry extends BaseTreeItemSource implements BaseEntryTreeItem<ExportPostTreeItem> {
+    constructor(public readonly downloadedExport: DownloadedBlogExport) {
+        super();
+    }
+
     toTreeItem(): TreeItem | Promise<TreeItem> {
         return {
             label: '随笔',
@@ -33,8 +37,17 @@ export class ExportPostsEntry extends BaseTreeItemSource implements BaseEntryTre
         throw new Error('Not implemented');
     };
 
-    getChildrenAsync: () => Promise<ExportPostTreeItem[]> = () => {
-        throw new Error('Not implemented');
+    getChildrenAsync: () => Promise<ExportPostTreeItem[]> = async () => {
+        const { ExportPostStore } = await import('@/services/blog-export-post.store');
+        const { downloadedExport } = this;
+        const store = new ExportPostStore(downloadedExport);
+        const postTreeItems: ExportPostTreeItem[] = await store.list().then(
+            data => data.map(i => new ExportPostTreeItem(this, i)),
+            () => []
+        );
+        store.dispose();
+
+        return postTreeItems;
     };
 }
 
@@ -53,7 +66,8 @@ export class DownloadedExportTreeItem
         throw new Error('Not implemented');
     };
 
-    getChildrenAsync: () => Promise<DownloadedExportChildTreeItem[]> = () => Promise.resolve([new ExportPostsEntry()]);
+    getChildrenAsync: () => Promise<DownloadedExportChildTreeItem[]> = () =>
+        Promise.resolve([new ExportPostsEntry(this.downloadedExport)]);
 
     toTreeItem(): TreeItem | Promise<TreeItem> {
         const {

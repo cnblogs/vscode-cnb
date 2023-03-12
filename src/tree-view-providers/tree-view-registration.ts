@@ -45,7 +45,7 @@ export const registerTreeViews = () => {
             canSelectMany: true,
         }
     );
-    _views.blogExport = vscode.window.createTreeView('vscode-cnb.blog-export', {
+    _views.blogExport = vscode.window.createTreeView<BlogExportTreeItem>('vscode-cnb.blog-export', {
         canSelectMany: false,
         treeDataProvider: BlogExportProvider.instance,
     });

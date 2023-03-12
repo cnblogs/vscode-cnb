@@ -4,14 +4,15 @@ import {
     BlogExportRecordMetadata,
     BlogExportTreeItem,
     parseBlogExportRecordEntries,
-    PostTreeItem,
 } from './models/blog-export';
 import {
     DownloadedExportMetadata,
     DownloadedExportsEntryTreeItem,
     DownloadedExportTreeItem,
+    ExportPostsEntry,
 } from '@/tree-view-providers/models/blog-export/downloaded';
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
+import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post';
 
 export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> {
     private static _instance?: BlogExportProvider | null;
@@ -40,7 +41,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         if (element instanceof BlogExportRecordTreeItem) return element.getChildrenAsync();
         else if (element instanceof DownloadedExportsEntryTreeItem) return element.getChildrenAsync();
         else if (element instanceof DownloadedExportTreeItem) return element.getChildrenAsync();
-        else if (element instanceof PostTreeItem) return [];
+        else if (element instanceof ExportPostsEntry) return [];
         else if (element == null) return this.listRecords();
 
         return null;
@@ -49,9 +50,9 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     getParent(element: BlogExportTreeItem): ProviderResult<BlogExportTreeItem> {
         if (
             element instanceof BlogExportRecordMetadata ||
-            element instanceof PostTreeItem ||
             element instanceof DownloadedExportMetadata ||
-            element instanceof DownloadedExportTreeItem
+            element instanceof DownloadedExportTreeItem ||
+            element instanceof ExportPostTreeItem
         )
             return element.parent;
 

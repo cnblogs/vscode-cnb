@@ -1,16 +1,20 @@
-import { Post } from '@/models/post';
+import { ExportPost } from '@/models/blog-export/export-post';
 import { Settings } from '@/services/settings.service';
 import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-source';
+import { ExportPostsEntry } from '@/tree-view-providers/models/blog-export/downloaded';
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from 'vscode';
 
 export class ExportPostTreeItem extends BaseTreeItemSource {
-    constructor(public readonly post: Post) {
+    readonly contextValue = 'cnb-blog-export-post';
+
+    constructor(public readonly parent: ExportPostsEntry, public readonly post: ExportPost) {
         super();
     }
 
     toTreeItem(): TreeItem | Promise<TreeItem> {
         const {
             post: { title, isMarkdown },
+            contextValue,
         } = this;
 
         return {
@@ -19,6 +23,7 @@ export class ExportPostTreeItem extends BaseTreeItemSource {
             collapsibleState: TreeItemCollapsibleState.None,
             command: undefined,
             resourceUri: Uri.joinPath(Settings.workspaceUri, title + (isMarkdown ? '.md' : '.html')),
+            contextValue,
         };
     }
 }
