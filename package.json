@@ -640,7 +640,7 @@
                 {
                     "command": "vscode-cnb.blog-export.refresh-records",
                     "when": "view == vscode-cnb.blog-export",
-                    "group": "inline@1"
+                    "group": "navigation@1"
                 }
             ],
             "commandPalette": [
