@@ -1,8 +1,20 @@
-import { BlogExportRecordMetadata } from '@/tree-view-providers/models/blog-export/blog-export-metadata';
-import { BlogExportRecordsEntryTreeItem } from '@/tree-view-providers/models/blog-export/blog-export-records-entry';
+import {
+    DownloadedExportChildTreeItem,
+    DownloadedExportsEntryTreeItem,
+    DownloadedExportTreeItem,
+} from '@/tree-view-providers/models/blog-export/downloaded';
+import { BlogExportRecordMetadata } from '@/tree-view-providers/models/blog-export/record-metadata';
+import { BlogExportRecordTreeItem } from '@/tree-view-providers/models/blog-export/record';
 
-export * from './blog-export-metadata';
-export * from './blog-export-records-entry';
+export * from './record-metadata';
+export * from './record';
+export * from './downloaded';
 
-export type BlogExportTreeItem = BlogExportRecordMetadata | BlogExportRecordsEntryTreeItem;
-export { parseBlogExportRecordEntries, parseStatusIcon } from './parser';
+export type BlogExportTreeItem =
+    | BlogExportRecordMetadata
+    | BlogExportRecordTreeItem
+    | DownloadedExportTreeItem
+    | DownloadedExportChildTreeItem
+    | DownloadedExportsEntryTreeItem;
+export { parseBlogExportRecords as parseBlogExportRecordEntries, parseStatusIcon } from './parser';
+export * from '../post-tree-item';

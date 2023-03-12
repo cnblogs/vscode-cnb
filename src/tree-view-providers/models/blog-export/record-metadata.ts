@@ -1,12 +1,12 @@
 import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-source';
-import { BlogExportRecordsEntryTreeItem } from '@/tree-view-providers/models/blog-export/blog-export-records-entry';
+import { BlogExportRecordTreeItem } from '@/tree-view-providers/models/blog-export/record';
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 
 export class BlogExportRecordMetadata extends BaseTreeItemSource {
     static readonly contextValue = 'cnb-blog-export-record-meta';
 
     constructor(
-        public readonly parent: BlogExportRecordsEntryTreeItem,
+        public readonly parent: BlogExportRecordTreeItem,
         public readonly blogExportRecordId: number,
         public readonly title: string,
         public readonly description?: string,
@@ -15,12 +15,12 @@ export class BlogExportRecordMetadata extends BaseTreeItemSource {
         super();
     }
 
-    static dateAdded(parent: BlogExportRecordsEntryTreeItem): BlogExportRecordMetadata {
+    static dateAdded(parent: BlogExportRecordTreeItem): BlogExportRecordMetadata {
         const { record } = parent;
         return new BlogExportRecordMetadata(parent, record.id, `创建时间: ${record.dateAdded}`);
     }
 
-    static status(parent: BlogExportRecordsEntryTreeItem) {
+    static status(parent: BlogExportRecordTreeItem) {
         const { record } = parent;
         return new BlogExportRecordMetadata(parent, record.id, `创建时间: ${record.dateAdded}`);
     }

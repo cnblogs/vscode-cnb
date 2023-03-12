@@ -1,11 +1,11 @@
 import { BlogExportRecord, BlogExportStatus, blogExportStatusNameMap } from '@/models/blog-export';
 import { BaseEntryTreeItem } from '@/tree-view-providers/models/base-entry-tree-item';
 import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-source';
-import { BlogExportRecordMetadata } from './blog-export-metadata';
+import { BlogExportRecordMetadata } from './record-metadata';
 import { parseStatusIcon } from './parser';
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
 
-export class BlogExportRecordsEntryTreeItem
+export class BlogExportRecordTreeItem
     extends BaseTreeItemSource
     implements BaseEntryTreeItem<BlogExportRecordMetadata>
 {
@@ -23,7 +23,7 @@ export class BlogExportRecordsEntryTreeItem
         return Promise.resolve({
             label: fileName,
             collapsibleState: TreeItemCollapsibleState.Collapsed,
-            contextValue: `${BlogExportRecordsEntryTreeItem.contextValue}-${BlogExportStatus[status]}`,
+            contextValue: `${BlogExportRecordTreeItem.contextValue}-${BlogExportStatus[status]}`,
             iconPath: parseStatusIcon(status),
         });
     }

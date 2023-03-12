@@ -1,10 +1,16 @@
 import { BlogExportRecordsStore } from '@/services/blog-export-records.store';
 import {
-    BlogExportRecordsEntryTreeItem,
+    BlogExportRecordTreeItem,
     BlogExportRecordMetadata,
     BlogExportTreeItem,
     parseBlogExportRecordEntries,
-} from '@/tree-view-providers/models/blog-export';
+    PostTreeItem,
+} from './models/blog-export';
+import {
+    DownloadedExportMetadata,
+    DownloadedExportsEntryTreeItem,
+    DownloadedExportTreeItem,
+} from '@/tree-view-providers/models/blog-export/downloaded';
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
 
 export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> {
@@ -27,18 +33,27 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     }
 
     getTreeItem(element: BlogExportTreeItem): TreeItem | Thenable<TreeItem> {
-        return element.toTreeItem();
+        return element instanceof TreeItem ? element : element.toTreeItem();
     }
 
-    getChildren(element?: BlogExportTreeItem | undefined): ProviderResult<BlogExportTreeItem[]> {
-        if (element instanceof BlogExportRecordsEntryTreeItem) return element.getChildrenAsync();
+    getChildren(element?: BlogExportTreeItem | null): ProviderResult<BlogExportTreeItem[]> {
+        if (element instanceof BlogExportRecordTreeItem) return element.getChildrenAsync();
+        else if (element instanceof DownloadedExportsEntryTreeItem) return element.getChildrenAsync();
+        else if (element instanceof DownloadedExportTreeItem) return element.getChildrenAsync();
+        else if (element instanceof PostTreeItem) return [];
         else if (element == null) return this.listRecords();
 
         return null;
     }
 
     getParent(element: BlogExportTreeItem): ProviderResult<BlogExportTreeItem> {
-        if (element instanceof BlogExportRecordMetadata) return element.parent;
+        if (
+            element instanceof BlogExportRecordMetadata ||
+            element instanceof PostTreeItem ||
+            element instanceof DownloadedExportMetadata ||
+            element instanceof DownloadedExportTreeItem
+        )
+            return element.parent;
 
         return null;
     }
