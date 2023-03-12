@@ -2,13 +2,17 @@ import { DownloadedBlogExport } from '@/models/blog-export';
 import { DownloadedExportStore } from '@/services/downloaded-export.store';
 import { BaseEntryTreeItem } from '@/tree-view-providers/models/base-entry-tree-item';
 import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-source';
+import { BlogExportTreeItem } from '@/tree-view-providers/models/blog-export';
 import { parseDownloadedExports } from '@/tree-view-providers/models/blog-export/parser';
 import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post';
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item';
 import path from 'path';
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from 'vscode';
 
-export type DownloadedExportChildTreeItem = PostTreeItem<DownloadedExportTreeItem> | TreeItem | ExportPostsEntry;
+export type DownloadedExportChildTreeItem =
+    | PostTreeItem<DownloadedExportTreeItem>
+    | TreeItem
+    | ExportPostsEntryTreeItem;
 
 export class DownloadedExportMetadata extends TreeItem {
     readonly parent?: DownloadedExportTreeItem | null;
@@ -20,8 +24,8 @@ export class DownloadedExportMetadata extends TreeItem {
     }
 }
 
-export class ExportPostsEntry extends BaseTreeItemSource implements BaseEntryTreeItem<ExportPostTreeItem> {
-    constructor(public readonly downloadedExport: DownloadedBlogExport) {
+export class ExportPostsEntryTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<ExportPostTreeItem> {
+    constructor(public readonly parent: BlogExportTreeItem, public readonly downloadedExport: DownloadedBlogExport) {
         super();
     }
 
@@ -56,8 +60,9 @@ export class DownloadedExportTreeItem
     implements BaseEntryTreeItem<DownloadedExportChildTreeItem>
 {
     constructor(
-        public readonly parent: DownloadedExportsEntryTreeItem,
-        public readonly downloadedExport: DownloadedBlogExport
+        public readonly parent: BlogExportTreeItem,
+        public readonly downloadedExport: DownloadedBlogExport,
+        private readonly _uiOptions: Partial<TreeItem> = {}
     ) {
         super();
     }
@@ -67,18 +72,20 @@ export class DownloadedExportTreeItem
     };
 
     getChildrenAsync: () => Promise<DownloadedExportChildTreeItem[]> = () =>
-        Promise.resolve([new ExportPostsEntry(this.downloadedExport)]);
+        Promise.resolve([new ExportPostsEntryTreeItem(this, this.downloadedExport)]);
 
     toTreeItem(): TreeItem | Promise<TreeItem> {
         const {
             downloadedExport: { filePath },
         } = this;
 
-        return {
-            label: path.basename(filePath),
-            collapsibleState: TreeItemCollapsibleState.Collapsed,
-            iconPath: new ThemeIcon('database'),
-        };
+        return Object.assign(
+            new TreeItem(path.basename(filePath), TreeItemCollapsibleState.Collapsed),
+            {
+                iconPath: new ThemeIcon('database'),
+            },
+            this._uiOptions
+        );
     }
 }
 

@@ -6,11 +6,12 @@ import { parseStatusIcon } from './parser';
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
+import { DownloadedExportStore } from '@/services/downloaded-export.store';
+import { BlogExportTreeItem, DownloadedExportTreeItem } from '@/tree-view-providers/models/blog-export';
+import os from 'os';
+import { escapeRegExp } from 'lodash-es';
 
-export class BlogExportRecordTreeItem
-    extends BaseTreeItemSource
-    implements BaseEntryTreeItem<BlogExportRecordMetadata>
-{
+export class BlogExportRecordTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<BlogExportTreeItem> {
     static readonly contextValue = 'cnb-blog-export-record';
 
     constructor(public readonly record: BlogExportRecord) {
@@ -30,13 +31,13 @@ export class BlogExportRecordTreeItem
         });
     }
 
-    getChildren: () => BlogExportRecordMetadata[] = () => {
+    getChildren: () => BlogExportTreeItem[] = () => {
         throw new Error('Not implement');
     };
 
-    getChildrenAsync: () => Promise<BlogExportRecordMetadata[]> = () => Promise.resolve(this.parseMetadata());
+    getChildrenAsync: () => Promise<BlogExportTreeItem[]> = () => Promise.resolve(this.parseChildren());
 
-    private async parseMetadata(): Promise<BlogExportRecordMetadata[]> {
+    private async parseChildren(): Promise<BlogExportTreeItem[]> {
         const { filesize } = await import('filesize');
         const {
             record,
@@ -44,6 +45,7 @@ export class BlogExportRecordTreeItem
         } = this;
         const formattedFileSize = filesize(fileBytes);
         const dateTimeFormat = 'yyyy MM-dd HH:mm';
+        const localExport = DownloadedExportStore.instance.findById(id);
         const items = [
             new BlogExportRecordMetadata(
                 this,
@@ -86,6 +88,16 @@ export class BlogExportRecordTreeItem
                           undefined,
                           new ThemeIcon('vscode-cnb-date')
                       ),
+                  ]
+                : []),
+            ...(localExport
+                ? [
+                      new DownloadedExportTreeItem(this, localExport, {
+                          label: `本地文件: ${localExport.filePath.replace(
+                              new RegExp('^' + escapeRegExp(os.homedir())),
+                              '~'
+                          )}`,
+                      }),
                   ]
                 : []),
         ];

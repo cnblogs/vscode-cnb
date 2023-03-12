@@ -6,7 +6,6 @@ import { promisify } from 'util';
 import { AlertService } from '@/services/alert.service';
 import { DownloadedExportStore } from '@/services/downloaded-export.store';
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
-import { globalContext } from '@/services/global-state';
 
 const defaultOptions = { confirmUnzip: true };
 
@@ -57,7 +56,7 @@ export class OpenLocalExportCommandHandler extends CommandHandler {
         const dbFileName = path.basename(dbFilePath);
 
         const isExist = await promisify(fs.exists)(dbFilePath);
-        if (!isExist) return AlertService.warning('博客备份文件不存在');
+        if (!isExist) return AlertService.warning('文件不存在');
 
         const treeProvider = BlogExportProvider.instance;
         const dbFileSize = (await promisify(fs.stat)(dbFilePath)).size;

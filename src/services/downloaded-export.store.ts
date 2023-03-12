@@ -32,4 +32,8 @@ export class DownloadedExportStore {
     list(): Promise<DownloadedBlogExport[]> {
         return Promise.resolve(this._storage.get<DownloadedBlogExport[]>(this.listKey) ?? []);
     }
+
+    findById(id: number): DownloadedBlogExport | null | undefined {
+        return this._storage.get<DownloadedBlogExport>(`${this.metadataKey}${id}`);
+    }
 }

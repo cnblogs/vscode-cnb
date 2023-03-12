@@ -9,7 +9,7 @@ import {
     DownloadedExportMetadata,
     DownloadedExportsEntryTreeItem,
     DownloadedExportTreeItem,
-    ExportPostsEntry,
+    ExportPostsEntryTreeItem,
 } from '@/tree-view-providers/models/blog-export/downloaded';
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
 import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post';
@@ -45,7 +45,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
             return element.getChildrenAsync();
         } else if (element instanceof DownloadedExportTreeItem) {
             return element.getChildrenAsync();
-        } else if (element instanceof ExportPostsEntry) {
+        } else if (element instanceof ExportPostsEntryTreeItem) {
             return element.getChildrenAsync();
         } else if (element == null) {
             return this.listRecords().then(records => [
@@ -62,7 +62,8 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
             element instanceof BlogExportRecordMetadata ||
             element instanceof DownloadedExportMetadata ||
             element instanceof DownloadedExportTreeItem ||
-            element instanceof ExportPostTreeItem
+            element instanceof ExportPostTreeItem ||
+            element instanceof ExportPostsEntryTreeItem
         )
             return element.parent;
 
