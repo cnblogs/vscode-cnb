@@ -1,5 +1,5 @@
 import { DownloadedBlogExport } from '@/models/blog-export';
-import { ExportPost, ExportPostModel, PostType } from '@/models/blog-export/export-post';
+import { ExportPost, ExportPostModel } from '@/models/blog-export/export-post';
 import { DataTypes, Op, Sequelize } from 'sequelize';
 
 import { Disposable } from 'vscode';
@@ -24,6 +24,7 @@ export class ExportPostStore implements Disposable {
             dialect: 'sqlite',
             storage: filePath,
             dialectModule: __non_webpack_require__('./assets/scripts/sqlite3/lib/sqlite3.js'),
+            logging: (...msg) => (process.env.NODE_ENV?.toLowerCase() === 'development' ? console.log(msg) : undefined),
         });
 
         return this._sequelize;
@@ -48,7 +49,7 @@ export class ExportPostStore implements Disposable {
                 blogId: { type: DataTypes.NUMBER, field: 'BlogId', allowNull: false },
                 datePublished: {
                     type: DataTypes.DATE,
-                    field: 'dateAdded',
+                    field: 'DateAdded',
                     allowNull: false,
                 },
                 dateUpdated: {
@@ -72,7 +73,7 @@ export class ExportPostStore implements Disposable {
                     allowNull: true,
                 },
                 postType: {
-                    type: DataTypes.NUMBER,
+                    type: DataTypes.ENUM('BlogPost', 'Article'),
                     field: 'PostType',
                     allowNull: false,
                 },
@@ -82,7 +83,7 @@ export class ExportPostStore implements Disposable {
                     allowNull: false,
                 },
             },
-            { sequelize, tableName: 'blog_Content' }
+            { sequelize, tableName: 'blog_Content', timestamps: false }
         );
         return (this._table = ExportPostModel);
     }
@@ -92,7 +93,7 @@ export class ExportPostStore implements Disposable {
             .findAll({
                 where: {
                     postType: {
-                        [Op.eq]: PostType.blogPost,
+                        [Op.eq]: 'BlogPost',
                     },
                 },
                 order: [['id', 'desc']],
