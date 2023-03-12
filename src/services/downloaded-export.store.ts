@@ -17,7 +17,9 @@ export class DownloadedExportStore {
     async add(filePath: string, id?: number | null) {
         const item: DownloadedBlogExport = { id, filePath };
         const list = await this.list();
-        list.splice(0, 0, item);
+        const oldIdx = list.findIndex(x => x.filePath === filePath);
+
+        list.splice(oldIdx >= 0 ? oldIdx : 0, oldIdx >= 0 ? 1 : 0, item);
 
         return Promise.all([
             id != null && id > 0

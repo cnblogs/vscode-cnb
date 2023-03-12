@@ -22,9 +22,9 @@ export class OpenLocalExportCommandHandler extends CommandHandler {
                 canSelectMany: false,
                 filters: {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
-                    Sqlite: ['db'],
+                    Sqlite: ['db', 'zip'],
                     // eslint-disable-next-line @typescript-eslint/naming-convention
-                    ZipSqlite: ['zip'],
+                    // ZipSqlite: ['zip'],
                 },
             })) ?? [];
         if (fileUri == null) return;
@@ -32,7 +32,7 @@ export class OpenLocalExportCommandHandler extends CommandHandler {
         if (filePath.endsWith('.zip') && !filePath.endsWith('.db.zip'))
             return AlertService.warning('不支持的博客备份文件');
 
-        const fileName = filePath.replace(/\.db(\.zip)?$/, '');
+        const fileName = path.basename(filePath.replace(/\.db(\.zip)?$/, ''));
         const dirname = path.dirname(filePath);
         let dbFilePath = filePath;
         isConfirmedToUnzip = filePath.endsWith('.db.zip');
