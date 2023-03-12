@@ -31,7 +31,6 @@ export class BlogExportRecordMetadata extends BaseTreeItemSource {
             label: this.title,
             description: this.description,
             iconPath: this.icon,
-            id: `${BlogExportRecordMetadata.contextValue}-${this.blogExportRecordId}`,
             collapsibleState: TreeItemCollapsibleState.None,
         };
     }

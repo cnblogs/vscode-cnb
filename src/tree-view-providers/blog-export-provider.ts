@@ -42,7 +42,8 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         else if (element instanceof DownloadedExportsEntryTreeItem) return element.getChildrenAsync();
         else if (element instanceof DownloadedExportTreeItem) return element.getChildrenAsync();
         else if (element instanceof ExportPostsEntry) return [];
-        else if (element == null) return this.listRecords();
+        else if (element == null)
+            return this.listRecords().then(records => [new DownloadedExportsEntryTreeItem(), ...records]);
 
         return null;
     }
