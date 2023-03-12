@@ -4,6 +4,8 @@ import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-
 import { BlogExportRecordMetadata } from './record-metadata';
 import { parseStatusIcon } from './parser';
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
+import format from 'date-fns/format';
+import parseISO from 'date-fns/parseISO';
 
 export class BlogExportRecordTreeItem
     extends BaseTreeItemSource
@@ -24,7 +26,7 @@ export class BlogExportRecordTreeItem
             label: fileName,
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             contextValue: `${BlogExportRecordTreeItem.contextValue}-${BlogExportStatus[status]}`,
-            iconPath: parseStatusIcon(status),
+            iconPath: new ThemeIcon('database'),
         });
     }
 
@@ -41,13 +43,14 @@ export class BlogExportRecordTreeItem
             record: { status, id, fileBytes, dateExported },
         } = this;
         const formattedFileSize = filesize(fileBytes);
+        const dateTimeFormat = 'yyyy MM-dd HH:mm';
         const items = [
             new BlogExportRecordMetadata(
                 this,
                 id,
                 `状态: ${blogExportStatusNameMap[status]}`,
                 undefined,
-                new ThemeIcon('zap')
+                parseStatusIcon(status)
             ),
             new BlogExportRecordMetadata(
                 this,
@@ -70,7 +73,7 @@ export class BlogExportRecordTreeItem
             new BlogExportRecordMetadata(
                 this,
                 record.id,
-                `创建时间: ${record.dateAdded}`,
+                `创建时间: ${format(parseISO(record.dateAdded), dateTimeFormat)}`,
                 undefined,
                 new ThemeIcon('vscode-cnb-date')
             ),
@@ -79,7 +82,7 @@ export class BlogExportRecordTreeItem
                       new BlogExportRecordMetadata(
                           this,
                           id,
-                          `完成时间: ${dateExported}`,
+                          `完成时间: ${format(parseISO(dateExported), dateTimeFormat)}`,
                           undefined,
                           new ThemeIcon('vscode-cnb-date')
                       ),
