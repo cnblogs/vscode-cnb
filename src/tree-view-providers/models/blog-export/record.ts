@@ -26,7 +26,7 @@ export class BlogExportRecordTreeItem
             label: fileName,
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             contextValue: `${BlogExportRecordTreeItem.contextValue}-${BlogExportStatus[status]}`,
-            iconPath: new ThemeIcon('database'),
+            iconPath: new ThemeIcon('cloud'),
         });
     }
 
