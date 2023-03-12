@@ -7,15 +7,11 @@ export class BlogExportRecordsStore {
 
     async refresh(
         options?: BlogExportRecordsStore['list'] extends (opt: infer U) => unknown ? U : never
-    ): Promise<void> {
-        let hasCache = false;
-        if (this._cachedList) {
-            await this._cachedList.catch(() => false);
-            hasCache = true;
-        }
+    ): Promise<BlogExportRecordList> {
+        if (this._cachedList) await this._cachedList.catch(() => false);
 
         this._cachedList = null;
-        return hasCache ? this.list(options).then(() => undefined) : Promise.resolve();
+        return this.list(options);
     }
 
     list({
