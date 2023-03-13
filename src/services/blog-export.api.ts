@@ -3,6 +3,7 @@ import { globalContext } from '@/services/global-state';
 import got from '@/utils/http-client';
 
 const basePath = `${globalContext.config.apiBaseUrl}/api/blogExports`;
+const downloadOrigin = 'https://export.cnblogs.com';
 
 export class BlogExportApi {
     list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }): Promise<BlogExportRecordList> {
@@ -34,5 +35,12 @@ export class BlogExportApi {
                 },
             })
             .then(x => x.body);
+    }
+
+    download(blogId: number, exportId: number) {
+        return got.get(`${downloadOrigin}/api/v1/blogs/${blogId}/exports/${exportId}`, {
+            isStream: true,
+            throwHttpErrors: false,
+        });
     }
 }

@@ -16,6 +16,7 @@ import { BlogExportApi } from '@/services/blog-export.api';
 export class BlogExportRecordTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<BlogExportTreeItem> {
     static readonly contextValue = 'cnb-blog-export-record';
     private _blogExportApi?: BlogExportApi | null;
+    private _downloadingProgress?: { percentage: number; transferred: number; total: number } | null;
 
     constructor(private readonly _treeDataProvider: BlogExportProvider, public record: BlogExportRecord) {
         super();
@@ -48,12 +49,21 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
 
     getChildrenAsync: () => Promise<BlogExportTreeItem[]> = () => Promise.resolve(this.parseChildren());
 
+    reportDownloadingProgress(progress?: typeof this._downloadingProgress | null) {
+        this._downloadingProgress = progress;
+    }
+
     private pollingStatus() {
         const { blogExportApi } = this;
-        const timeoutId = setTimeout(async () => {
+        const timeoutId = setTimeout(() => {
             clearTimeout(timeoutId);
-            this.record = await blogExportApi.getById(this.record.id);
-            this._treeDataProvider.refreshItem(this);
+            blogExportApi
+                .getById(this.record.id)
+                .then(record => {
+                    this.record = record;
+                    this._treeDataProvider.refreshItem(this);
+                })
+                .catch(console.warn);
         }, 1500);
     }
 
@@ -62,6 +72,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
         const {
             record,
             record: { status, id, fileBytes, dateExported },
+            _downloadingProgress,
         } = this;
         const formattedFileSize = filesize(fileBytes);
         const dateTimeFormat = 'yyyy MM-dd HH:mm';
@@ -110,7 +121,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                       ),
                   ]
                 : []),
-            ...(localExport
+            ...(localExport && !_downloadingProgress
                 ? [
                       new DownloadedExportTreeItem(this, localExport, {
                           label: `本地文件: ${localExport.filePath.replace(
@@ -120,8 +131,33 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                       }),
                   ]
                 : []),
+            ...(_downloadingProgress
+                ? [
+                      new BlogExportRecordMetadata(
+                          this,
+                          id,
+                          `下载中: ${this.formatDownloadProgress(filesize)}`,
+                          undefined,
+                          new ThemeIcon('sync~spin')
+                      ),
+                  ]
+                : []),
         ];
 
         return items;
+    }
+
+    private formatDownloadProgress(filesize: typeof import('filesize').filesize): string {
+        const { _downloadingProgress } = this;
+        if (_downloadingProgress == null) return '';
+
+        let formattedTransfer = filesize(_downloadingProgress.transferred);
+        formattedTransfer =
+            typeof formattedTransfer === 'string' ? formattedTransfer : _downloadingProgress.transferred;
+
+        let formattedTotal = filesize(_downloadingProgress.total);
+        formattedTotal = typeof formattedTotal === 'string' ? formattedTotal : _downloadingProgress.total;
+
+        return `${formattedTransfer}/${formattedTotal} (${_downloadingProgress.percentage}%)`;
     }
 }

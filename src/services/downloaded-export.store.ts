@@ -14,7 +14,7 @@ export class DownloadedExportStore {
         return (this._instance ??= new DownloadedExportStore());
     }
 
-    async add(filePath: string, id?: number | null) {
+    async add(filePath: string, id?: number | null): Promise<void> {
         const item: DownloadedBlogExport = { id, filePath };
         const list = await this.list();
         const oldIdx = list.findIndex(x => x.filePath === filePath);
@@ -26,7 +26,7 @@ export class DownloadedExportStore {
                 ? this._storage.update(`${this.metadataKey}${id}`, { id, filePath })
                 : Promise.resolve(),
             this._storage.update(this.listKey, take(list, 5000)),
-        ]);
+        ]).then(() => undefined);
     }
 
     list(): Promise<DownloadedBlogExport[]> {
