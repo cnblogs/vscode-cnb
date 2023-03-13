@@ -23,13 +23,9 @@ export class AlertService {
             | null;
         let parsedError = '';
         const errors = body?.errors;
-        if (isArray(errors)) {
-            parsedError = errors.filter(i => typeof i === 'string' && i.length > 0).join(', ');
-        } else if (httpError.message) {
-            parsedError = httpError.message;
-        } else {
-            parsedError = '未知网络错误';
-        }
+        if (isArray(errors)) parsedError = errors.filter(i => typeof i === 'string' && i.length > 0).join(', ');
+        else if (httpError.message) parsedError = httpError.message;
+        else parsedError = '未知网络错误';
 
         AlertService.warning((message ? message + (parsedError ? ', ' : '') : '') + parsedError);
     }

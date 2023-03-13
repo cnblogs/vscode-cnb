@@ -13,7 +13,11 @@ export class CreateBlogExportCommandHandler extends CommandHandler {
     }
 
     async handle(): Promise<void> {
-        await this.blogExportApi.create().catch(e => AlertService.httpError(e, { message: '创建博客备份失败' }));
+        await this.blogExportApi
+            .create()
+            .catch((e: unknown) =>
+                AlertService.httpError(typeof e === 'object' && e ? e : {}, { message: '创建博客备份失败' })
+            );
         await BlogExportProvider.optionalInstance?.refreshRecords();
     }
 }

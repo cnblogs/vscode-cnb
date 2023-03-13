@@ -13,7 +13,6 @@ import {
 } from '@/tree-view-providers/models/blog-export/downloaded';
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
 import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post';
-import { TreeItemSource } from '@/tree-view-providers/converters';
 
 export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> {
     private static _instance?: BlogExportProvider | null;
