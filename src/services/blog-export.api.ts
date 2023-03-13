@@ -22,7 +22,17 @@ export class BlogExportApi {
         return got.delete(`${basePath}/${id}`).then(() => undefined);
     }
 
-    getById(id: number) {
-        throw new Error('Method not implemented');
+    getById(id: number): Promise<BlogExportRecord> {
+        return got
+            .get<BlogExportRecord>(`${basePath}/${id}`, {
+                responseType: 'json',
+                timeout: {
+                    request: 500,
+                },
+                retry: {
+                    limit: 0,
+                },
+            })
+            .then(x => x.body);
     }
 }

@@ -16,5 +16,5 @@ export type BlogExportTreeItem =
     | DownloadedExportTreeItem
     | DownloadedExportChildTreeItem
     | DownloadedExportsEntryTreeItem;
-export { parseBlogExportRecords as parseBlogExportRecordEntries, parseStatusIcon } from './parser';
+export { parseBlogExportRecords, parseStatusIcon } from './parser';
 export * from '../post-tree-item';

@@ -3,7 +3,7 @@ import {
     BlogExportRecordTreeItem,
     BlogExportRecordMetadata,
     BlogExportTreeItem,
-    parseBlogExportRecordEntries,
+    parseBlogExportRecords,
 } from './models/blog-export';
 import {
     DownloadedExportMetadata,
@@ -13,6 +13,7 @@ import {
 } from '@/tree-view-providers/models/blog-export/downloaded';
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
 import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post';
+import { TreeItemSource } from '@/tree-view-providers/converters';
 
 export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> {
     private static _instance?: BlogExportProvider | null;
@@ -84,10 +85,14 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         this._treeDataChangedSource?.fire(null);
     }
 
+    refreshItem<T extends BlogExportTreeItem>(item: T) {
+        this._treeDataChangedSource?.fire(item);
+    }
+
     private listRecords() {
         return this.store
             .list({ shouldRefresh: this._shouldRefresh })
-            .then(x => parseBlogExportRecordEntries(x.items))
+            .then(x => parseBlogExportRecords(this, x.items))
             .finally(() => (this._shouldRefresh = false));
     }
 }

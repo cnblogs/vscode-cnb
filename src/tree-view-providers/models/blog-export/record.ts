@@ -10,24 +10,35 @@ import { DownloadedExportStore } from '@/services/downloaded-export.store';
 import { BlogExportTreeItem, DownloadedExportTreeItem } from '@/tree-view-providers/models/blog-export';
 import os from 'os';
 import { escapeRegExp } from 'lodash-es';
+import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
+import { BlogExportApi } from '@/services/blog-export.api';
 
 export class BlogExportRecordTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<BlogExportTreeItem> {
     static readonly contextValue = 'cnb-blog-export-record';
+    private _blogExportApi?: BlogExportApi | null;
 
-    constructor(public readonly record: BlogExportRecord) {
+    constructor(private readonly _treeDataProvider: BlogExportProvider, public record: BlogExportRecord) {
         super();
+    }
+
+    protected get blogExportApi() {
+        return (this._blogExportApi ??= new BlogExportApi());
     }
 
     toTreeItem(): Promise<TreeItem> {
         const {
             record: { fileName, status },
         } = this;
+        const hasDone = status === BlogExportStatus.done;
+        const hasFailed = status === BlogExportStatus.failed;
 
         return Promise.resolve({
             label: fileName,
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             contextValue: `${BlogExportRecordTreeItem.contextValue}-${BlogExportStatus[status]}`,
-            iconPath: new ThemeIcon('cloud'),
+            iconPath: hasDone ? new ThemeIcon('cloud') : parseStatusIcon(status),
+        }).finally(() => {
+            if (!hasDone && !hasFailed) this.pollingStatus();
         });
     }
 
@@ -36,6 +47,15 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
     };
 
     getChildrenAsync: () => Promise<BlogExportTreeItem[]> = () => Promise.resolve(this.parseChildren());
+
+    private pollingStatus() {
+        const { blogExportApi } = this;
+        const timeoutId = setTimeout(async () => {
+            clearTimeout(timeoutId);
+            this.record = await blogExportApi.getById(this.record.id);
+            this._treeDataProvider.refreshItem(this);
+        }, 1500);
+    }
 
     private async parseChildren(): Promise<BlogExportTreeItem[]> {
         const { filesize } = await import('filesize');

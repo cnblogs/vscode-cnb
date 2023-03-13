@@ -5,6 +5,7 @@ import {
     DownloadedExportsEntryTreeItem,
     DownloadedExportTreeItem,
 } from '@/tree-view-providers/models/blog-export/downloaded';
+import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
 
 export function parseStatusIcon(status: BlogExportStatus) {
     switch (status) {
@@ -19,8 +20,8 @@ export function parseStatusIcon(status: BlogExportStatus) {
     }
 }
 
-export function parseBlogExportRecords(items: BlogExportRecord[]) {
-    return items.map(i => new BlogExportRecordTreeItem(i));
+export function parseBlogExportRecords(treeDataProvider: BlogExportProvider, items: BlogExportRecord[]) {
+    return items.map(i => new BlogExportRecordTreeItem(treeDataProvider, i));
 }
 
 export function parseDownloadedExports(
