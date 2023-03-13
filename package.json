@@ -378,6 +378,13 @@
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing",
                 "icon": "$(file-add)"
+            },
+            {
+                "command": "vscode-cnb.blog-export.edit",
+                "title": "编辑博文",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized",
+                "icon": "$(pencil)"
             }
         ],
         "configuration": [
@@ -758,6 +765,10 @@
                 {
                     "command": "vscode-cnb.blog-export.refresh-records",
                     "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.edit",
+                    "when": "false"
                 }
             ],
             "view/item/context": [
@@ -876,6 +887,11 @@
                 {
                     "command": "vscode-cnb.blog-export.open-local-export",
                     "when": "viewItem == cnblogs-export-downloaded-entry",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.edit",
+                    "when": "viewItem == cnblogs-export-post",
                     "group": "inline@1"
                 }
             ],

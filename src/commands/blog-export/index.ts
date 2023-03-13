@@ -2,6 +2,7 @@ import { RefreshExportRecordsCommandHandler } from './refresh';
 import { globalContext } from '@/services/global-state';
 import { commands, Disposable } from 'vscode';
 import { OpenLocalExportCommandHandler } from '@/commands/blog-export/open-local';
+import { EditExportPostCommandHandler } from '@/commands/blog-export/edit';
 
 export function registerCommandsForBlogExport(disposables: Disposable[]) {
     const { extensionName } = globalContext;
@@ -11,6 +12,9 @@ export function registerCommandsForBlogExport(disposables: Disposable[]) {
         ),
         commands.registerCommand(OpenLocalExportCommandHandler.commandName, () =>
             new OpenLocalExportCommandHandler().handle()
+        ),
+        commands.registerCommand(EditExportPostCommandHandler.commandName, input =>
+            new EditExportPostCommandHandler(input).handle()
         )
     );
 }

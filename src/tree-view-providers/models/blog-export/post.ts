@@ -5,7 +5,7 @@ import { ExportPostsEntryTreeItem } from '@/tree-view-providers/models/blog-expo
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from 'vscode';
 
 export class ExportPostTreeItem extends BaseTreeItemSource {
-    readonly contextValue = 'cnb-blog-export-post';
+    readonly contextValue = 'cnblogs-export-post';
 
     constructor(public readonly parent: ExportPostsEntryTreeItem, public readonly post: ExportPost) {
         super();
