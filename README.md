@@ -23,6 +23,7 @@
 	- [闪存](#闪存)
 	- [markdown语法扩展](#markdown语法扩展)
 	- [复制博文链接](#复制博文链接)
+- [博客备份](#博客备份)
 - [vscode 版本要求](#vscode-版本要求)
 - [插件设置](#插件设置)
 
@@ -194,6 +195,19 @@
 markdown格式链接形如: `[博文标题](https://www.cnblogs.com/cmt/p/47365.html)`
 也可以选择仅复制博文的Id
 
+## 博客备份
+
+您可以通过本插件创建或浏览您的博客备份;
+
+> **博客备份说明**
+> 
+> 博客备份会将您的博客中的随笔, 文章等数据导出到一个 sqlite 的数据库文件中, 此操作为耗时的任务式操作, 完成后您可以在 [博客后台](https://i.cnblogs.com/posts/export) 或 [本插件](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb) 中下载备份好的备份(后缀名为 `.db`)文件
+
+<kdb><img height="400" src="https://img2023.cnblogs.com/blog/35695/202303/35695-20230313185106422-369590508.png" /></kbd>
+
+创建博客备份后, 在博客备份记录列表中, 您可以看到备份记录的状态会实时更新
+
+<kdb><img height="400" src="https://img2023.cnblogs.com/blog/35695/202303/35695-20230313185631766-2139596772.gif"/></kdb>
 
 ## vscode 版本要求
 
