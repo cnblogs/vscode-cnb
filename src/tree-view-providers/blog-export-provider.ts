@@ -13,6 +13,8 @@ import {
 } from '@/tree-view-providers/models/blog-export/downloaded';
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
 import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post';
+import { AlertService } from '@/services/alert.service';
+import { BlogExportRecord } from '@/models/blog-export';
 
 export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> {
     private static _instance?: BlogExportProvider | null;
@@ -43,20 +45,12 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     }
 
     getChildren(element?: BlogExportTreeItem | null): ProviderResult<BlogExportTreeItem[]> {
-        if (element instanceof BlogExportRecordTreeItem) {
-            return element.getChildrenAsync();
-        } else if (element instanceof DownloadedExportsEntryTreeItem) {
-            return element.getChildrenAsync();
-        } else if (element instanceof DownloadedExportTreeItem) {
-            return element.getChildrenAsync();
-        } else if (element instanceof ExportPostsEntryTreeItem) {
-            return element.getChildrenAsync();
-        } else if (element == null) {
-            return this.listRecords().then(records => [
-                (this._downloadedExportEntry = new DownloadedExportsEntryTreeItem()),
-                ...records,
-            ]);
-        }
+        if (element instanceof BlogExportRecordTreeItem) return element.getChildrenAsync();
+        else if (element instanceof DownloadedExportsEntryTreeItem) return element.getChildrenAsync();
+        else if (element instanceof DownloadedExportTreeItem) return element.getChildrenAsync();
+        else if (element instanceof ExportPostsEntryTreeItem) return element.getChildrenAsync();
+        else if (element == null)
+            return [(this._downloadedExportEntry = new DownloadedExportsEntryTreeItem()), ...this.listRecords()];
 
         return null;
     }
@@ -79,19 +73,27 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         return Promise.resolve();
     }
 
-    async refreshRecords() {
-        await this._store?.refresh();
-        this._treeDataChangedSource?.fire(null);
+    async refreshRecords({ notifyOnError = true } = {}): Promise<boolean> {
+        const isSuccess = await this._store
+            ?.refresh()
+            .then(() => true)
+            .catch(e => (notifyOnError ? void AlertService.warning(`刷新博客备份失败记录, ${e}`) : undefined));
+        if (isSuccess) this._treeDataChangedSource?.fire(null);
+
+        return isSuccess ?? false;
     }
 
     refreshItem<T extends BlogExportTreeItem>(item: T) {
         this._treeDataChangedSource?.fire(item);
     }
 
-    private listRecords() {
-        return this.store
-            .list({ shouldRefresh: this._shouldRefresh })
-            .then(x => parseBlogExportRecords(this, x.items))
-            .finally(() => (this._shouldRefresh = false));
+    private listRecords(): BlogExportRecordTreeItem[] {
+        const {
+            store: { cached },
+        } = this;
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        if (cached == null) this.refreshRecords();
+        const items: BlogExportRecord[] = cached?.items ?? [];
+        return parseBlogExportRecords(this, items);
     }
 }
