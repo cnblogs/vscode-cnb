@@ -392,6 +392,13 @@
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing",
                 "icon": "$(add)"
+            },
+            {
+                "command": "vscode-cnb.blog-export.download",
+                "title": "下载备份",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing",
+                "icon": "$(cloud-download)"
             }
         ],
         "configuration": [
@@ -904,6 +911,11 @@
                 {
                     "command": "vscode-cnb.blog-export.edit",
                     "when": "viewItem == cnblogs-export-post",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.download",
+                    "when": "viewItem == cnblogs-export-record-done",
                     "group": "inline@1"
                 }
             ],

@@ -38,9 +38,22 @@ export class BlogExportApi {
     }
 
     download(blogId: number, exportId: number) {
-        return got.get(`${downloadOrigin}/api/v1/blogs/${blogId}/exports/${exportId}`, {
-            isStream: true,
-            throwHttpErrors: false,
-        });
+        return got
+            .extend({
+                hooks: {
+                    beforeRedirect: [
+                        (opt, resp) => {
+                            const location = resp.headers.location;
+                            if (location && location.includes('account.cnblogs.com'))
+                                // resp.emit('error', new Error('未授权'));
+                                throw new Error('未授权');
+                        },
+                    ],
+                },
+            })
+            .stream.get(`${downloadOrigin}/api/v1/blogs/${blogId}/exports/${exportId}`, {
+                throwHttpErrors: true,
+                followRedirect: true,
+            });
     }
 }

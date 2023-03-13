@@ -14,7 +14,7 @@ import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
 import { BlogExportApi } from '@/services/blog-export.api';
 
 export class BlogExportRecordTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<BlogExportTreeItem> {
-    static readonly contextValue = 'cnb-blog-export-record';
+    static readonly contextValue = 'cnblogs-export-record';
     private _blogExportApi?: BlogExportApi | null;
     private _downloadingProgress?: { percentage: number; transferred: number; total: number } | null;
 

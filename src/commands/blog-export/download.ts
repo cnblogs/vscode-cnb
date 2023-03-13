@@ -42,23 +42,28 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
         await promisify(fs.mkdir)(targetDir, { recursive: true });
         const filePath = path.join(targetDir, treeItem.record.fileName);
         const downloadStream = exportApi.download(blogId, exportId);
+        const isFileExist = await promisify(fs.exists)(filePath);
         const fileStream = fs.createWriteStream(filePath);
 
         extensionViews.blogExport.reveal(treeItem, { expand: true }).then(undefined, console.warn);
 
         const { optionalInstance: blogExportProvider } = BlogExportProvider;
 
-        downloadStream.on('downloadProgress', ({ transferred, total, percent }: Progress) => {
-            const percentage = Math.round(percent * 100);
-            treeItem.reportDownloadingProgress({ percentage, transferred, total: total ?? transferred });
-            blogExportProvider?.refreshItem(treeItem);
-        });
-
-        downloadStream.on('error', e => {
-            treeItem.reportDownloadingProgress(null);
-            blogExportProvider?.refreshItem(treeItem);
-            AlertService.warning('下载博客备份失败' + ', ' + e.toString());
-        });
+        downloadStream
+            .on('response', r => {
+                console.log(r);
+            })
+            .on('downloadProgress', ({ transferred, total, percent }: Progress) => {
+                const percentage = Math.round(percent * 100);
+                treeItem.reportDownloadingProgress({ percentage, transferred, total: total ?? transferred });
+                blogExportProvider?.refreshItem(treeItem);
+            })
+            .on('error', e => {
+                treeItem.reportDownloadingProgress(null);
+                blogExportProvider?.refreshItem(treeItem);
+                AlertService.warning('下载博客备份失败' + ', ' + e.toString());
+                fileStream.close();
+            });
 
         fileStream
             .on('error', error => AlertService.error(`写入文件 ${filePath} 时发生异常, ${error.message}`))
@@ -69,6 +74,7 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
                     .then(() => blogExportProvider?.refreshItem(treeItem))
                     .then(() => blogExportProvider?.refreshDownloadedExports())
                     .catch(console.warn);
+                if (!isFileExist) fs.rmSync(filePath);
             });
 
         downloadStream.pipe(fileStream);

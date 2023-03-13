@@ -4,6 +4,7 @@ import { commands, Disposable } from 'vscode';
 import { OpenLocalExportCommandHandler } from '@/commands/blog-export/open-local';
 import { EditExportPostCommandHandler } from '@/commands/blog-export/edit';
 import { CreateBlogExportCommandHandler } from '@/commands/blog-export/create';
+import { DownloadExportCommandHandler } from '@/commands/blog-export/download';
 
 export function registerCommandsForBlogExport(disposables: Disposable[]) {
     const { extensionName } = globalContext;
@@ -19,6 +20,9 @@ export function registerCommandsForBlogExport(disposables: Disposable[]) {
         ),
         commands.registerCommand(CreateBlogExportCommandHandler.commandName, () =>
             new CreateBlogExportCommandHandler().handle()
+        ),
+        commands.registerCommand(DownloadExportCommandHandler.commandName, input =>
+            new DownloadExportCommandHandler(input).handle()
         )
     );
 }
