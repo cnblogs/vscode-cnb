@@ -76,7 +76,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
         } = this;
         const formattedFileSize = filesize(fileBytes);
         const dateTimeFormat = 'yyyy MM-dd HH:mm';
-        const localExport = DownloadedExportStore.instance.findById(id);
+        const localExport = await DownloadedExportStore.instance.findById(id);
         const items = [
             new BlogExportRecordMetadata(
                 this,

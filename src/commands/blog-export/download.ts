@@ -50,9 +50,6 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
         const { optionalInstance: blogExportProvider } = BlogExportProvider;
 
         downloadStream
-            .on('response', r => {
-                console.log(r);
-            })
             .on('downloadProgress', ({ transferred, total, percent }: Progress) => {
                 const percentage = Math.round(percent * 100);
                 treeItem.reportDownloadingProgress({ percentage, transferred, total: total ?? transferred });
