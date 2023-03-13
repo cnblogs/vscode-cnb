@@ -58,13 +58,13 @@ export class OpenLocalExportCommandHandler extends CommandHandler {
         const isExist = await promisify(fs.exists)(dbFilePath);
         if (!isExist) return AlertService.warning('文件不存在');
 
-        const treeProvider = BlogExportProvider.instance;
+        const treeProvider = BlogExportProvider.optionalInstance;
         const dbFileSize = (await promisify(fs.stat)(dbFilePath)).size;
-        const exportRecord = await treeProvider.store
+        const exportRecord = await treeProvider?.store
             .list()
             .then(x => x.items.find(i => i.fileName === dbFileName && i.fileBytes === dbFileSize));
         await DownloadedExportStore.instance.add(dbFilePath, exportRecord?.id);
 
-        await treeProvider.refreshDownloadedExports();
+        await treeProvider?.refreshDownloadedExports();
     }
 }

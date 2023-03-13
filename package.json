@@ -385,6 +385,13 @@
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized",
                 "icon": "$(pencil)"
+            },
+            {
+                "command": "vscode-cnb.blog-export.create",
+                "title": "新建博客备份",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing",
+                "icon": "$(add)"
             }
         ],
         "configuration": [

@@ -26,6 +26,10 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         return (this._instance ??= new BlogExportProvider());
     }
 
+    static get optionalInstance(): BlogExportProvider | undefined | null {
+        return this._instance;
+    }
+
     get onDidChangeTreeData(): Event<BlogExportTreeItem | null | undefined> {
         return (this._treeDataChangedSource ??= new EventEmitter<BlogExportTreeItem | null | undefined>()).event;
     }

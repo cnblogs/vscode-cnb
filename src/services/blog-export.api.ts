@@ -21,4 +21,8 @@ export class BlogExportApi {
     delete(id: number): Promise<void> {
         return got.delete(`${basePath}/${id}`).then(() => undefined);
     }
+
+    getById(id: number) {
+        throw new Error('Method not implemented');
+    }
 }
