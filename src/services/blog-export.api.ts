@@ -2,12 +2,12 @@ import { BlogExportRecord, BlogExportRecordList } from '@/models/blog-export';
 import { globalContext } from '@/services/global-state';
 import got from '@/utils/http-client';
 
-const basePath = '/api/blogExports';
+const basePath = `${globalContext.config.apiBaseUrl}/api/blogExports`;
 
 export class BlogExportApi {
     list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }): Promise<BlogExportRecordList> {
         return got
-            .get<BlogExportRecordList>(`${globalContext.config.apiBaseUrl}${basePath}`, {
+            .get<BlogExportRecordList>(`${basePath}`, {
                 searchParams: new URLSearchParams({ pageIndex: `${pageIndex ?? ''}`, pageSize: `${pageSize ?? ''}` }),
                 responseType: 'json',
             })
@@ -15,7 +15,7 @@ export class BlogExportApi {
     }
 
     create(): Promise<BlogExportRecord> {
-        return got.post<BlogExportRecord>(`${basePath}`).then(r => r.body);
+        return got.post<BlogExportRecord>(`${basePath}`, { responseType: 'json' }).then(r => r.body);
     }
 
     delete(id: number): Promise<void> {

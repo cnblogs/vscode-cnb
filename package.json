@@ -659,9 +659,14 @@
                     "group": "navigation@6"
                 },
                 {
-                    "command": "vscode-cnb.blog-export.refresh-records",
+                    "command": "vscode-cnb.blog-export.create",
                     "when": "view == vscode-cnb.blog-export",
                     "group": "navigation@1"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.refresh-records",
+                    "when": "view == vscode-cnb.blog-export",
+                    "group": "navigation@2"
                 }
             ],
             "commandPalette": [
