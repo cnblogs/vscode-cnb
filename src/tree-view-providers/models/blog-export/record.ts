@@ -61,9 +61,9 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                 .getById(this.record.id)
                 .then(record => {
                     this.record = record;
-                    this._treeDataProvider.refreshItem(this);
                 })
-                .catch(console.warn);
+                .catch(console.warn)
+                .finally(() => this._treeDataProvider.refreshItem(this));
         }, 1500);
     }
 
