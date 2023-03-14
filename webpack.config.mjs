@@ -13,6 +13,36 @@ import webpack from 'webpack';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const preserveModules = [
+    '@mapbox',
+    'emoji-regex',
+    'readable-stream',
+    'abbrev',
+    'gauge',
+    'semver',
+    'ansi-regex',
+    'has-unicode',
+    'set-blocking',
+    'aproba',
+    'inherits',
+    'signal-exit',
+    'are-we-there-yet',
+    'is-fullwidth-code-point',
+    'string-width',
+    'color-support',
+    'lru-cache',
+    'strip-ansi',
+    'console-control-strings',
+    'nopt',
+    'util-deprecate',
+    'delegates',
+    'npmlog',
+    'wide-align',
+    'detect-libc',
+    'object-assign',
+    'yallist',
+];
+
 //@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
@@ -81,6 +111,7 @@ export default (env, { mode }) => {
                         from: 'node_modules/@cnblogs/code-highlight-adapter/index.min.css',
                         to: 'assets/styles/highlight-code-lines.css',
                     },
+                    ...preserveModules.map(m => ({ from: `node_modules/${m}`, to: `node_modules/${m}` })),
                 ],
             }),
             new webpack.DefinePlugin({
