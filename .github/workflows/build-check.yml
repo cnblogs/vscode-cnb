@@ -4,11 +4,20 @@ on:
     push:
         branches:
             - main
-    pull_request:
+    pull_request_target:
+        types:
+            - edited
+            - opened
+            - reopened
+            - synchronize
+        branches:
+            - '1.7'
+            - 'main'
 env:
     GITLAB_NPM_TOKEN: ${{secrets.GITLAB_NPM_TOKEN}}
 jobs:
     build-check:
+        permissions: read-all
         runs-on: ubuntu-latest
         strategy:
             matrix:
