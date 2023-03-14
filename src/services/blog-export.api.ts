@@ -49,7 +49,7 @@ export class BlogExportApi {
                     ],
                 },
             })
-            .stream.get(`${downloadOrigin}/api/v1/blogs/${blogId}/exports/${exportId}`, {
+            .stream.get(`${downloadOrigin}/blogs/${blogId}/exports/${exportId}`, {
                 throwHttpErrors: true,
                 followRedirect: true,
             });
