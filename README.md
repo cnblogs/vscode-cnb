@@ -201,13 +201,23 @@ markdown格式链接形如: `[博文标题](https://www.cnblogs.com/cmt/p/47365.
 
 > **博客备份说明**
 > 
-> 博客备份会将您的博客中的随笔, 文章等数据导出到一个 sqlite 的数据库文件中, 此操作为耗时的任务式操作, 完成后您可以在 [博客后台](https://i.cnblogs.com/posts/export) 或 [本插件](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb) 中下载备份好的备份(后缀名为 `.db`)文件
+> 博客备份会将您的博客中的随笔, 文章等数据导出到一个 sqlite 的数据库文件中, 此操作为耗时的任务式操作, 完成后您可以在 [博客后台](https://i.cnblogs.com/posts/export) 或 [本插件](https://marketplace.visualstudio.com/items?itemName=cnblogs.vscode-cnb) 中下载备份文件(后缀名为 `.db.zip`)
 
 <kdb><img height="400" src="https://img2023.cnblogs.com/blog/35695/202303/35695-20230313185106422-369590508.png" /></kbd>
 
-创建博客备份后, 在博客备份记录列表中, 您可以看到备份记录的状态会实时更新
+创建博客备份后, 在博客备份记录列表中, 您可以看到博客备份记录的状态会实时更新
 
 <kdb><img height="400" src="https://img2023.cnblogs.com/blog/35695/202303/35695-20230313185631766-2139596772.gif"/></kdb>
+
+您可以通过下载按钮将博客备份下载到本地; 下载过程中您可以看到实时的下载进度; 下载完成后, 插件会帮您自动进行解压(解压完成后会自动删除源压缩文件)
+
+您可以在插件中浏览您博客备份中的博文
+
+<kdb><img height="400" src="https://img2023.cnblogs.com/blog/35695/202303/35695-20230315012135922-936073150.png"></kbd>
+
+您可以删除博客列表中的备份记录, 已下载备份; 删除前, 会弹出确认对话框, 你可以根据提示确认删除操作或取消(友情提示: 请谨慎删除数据)
+
+<kdb><img height="400" src="https://img2023.cnblogs.com/blog/35695/202303/35695-20230315012345367-1975749411.png"></kdb>
 
 ## vscode 版本要求
 
