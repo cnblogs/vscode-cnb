@@ -399,6 +399,13 @@
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing && !vscode-cnb.blog-export.downloading",
                 "icon": "$(cloud-download)"
+            },
+            {
+                "command": "vscode-cnb.blog-export.view-post",
+                "title": "查看备份博文",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing",
+                "icon": "$(eye)"
             }
         ],
         "configuration": [
@@ -788,6 +795,10 @@
                 {
                     "command": "vscode-cnb.blog-export.edit",
                     "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.view-post",
+                    "when": "false"
                 }
             ],
             "view/item/context": [
@@ -909,7 +920,7 @@
                     "group": "inline@1"
                 },
                 {
-                    "command": "vscode-cnb.blog-export.edit",
+                    "command": "vscode-cnb.blog-export.view-post",
                     "when": "viewItem == cnblogs-export-post",
                     "group": "inline@1"
                 },

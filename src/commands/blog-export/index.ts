@@ -5,6 +5,7 @@ import { OpenLocalExportCommandHandler } from '@/commands/blog-export/open-local
 import { EditExportPostCommandHandler } from '@/commands/blog-export/edit';
 import { CreateBlogExportCommandHandler } from '@/commands/blog-export/create';
 import { DownloadExportCommandHandler } from '@/commands/blog-export/download';
+import { ViewPostCommandHandler } from '@/commands/blog-export/view-post';
 
 export function registerCommandsForBlogExport(disposables: Disposable[]) {
     const { extensionName } = globalContext;
@@ -23,6 +24,9 @@ export function registerCommandsForBlogExport(disposables: Disposable[]) {
         ),
         commands.registerCommand(DownloadExportCommandHandler.commandName, input =>
             new DownloadExportCommandHandler(input).handle()
+        ),
+        commands.registerCommand(ViewPostCommandHandler.commandName, input =>
+            new ViewPostCommandHandler(input).handle()
         )
     );
 }
