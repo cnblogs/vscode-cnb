@@ -1,11 +1,8 @@
 import { DownloadedBlogExport } from '@/models/blog-export';
 import { ExportPost, ExportPostModel } from '@/models/blog-export/export-post';
 import { DataTypes, Op, Sequelize } from 'sequelize';
-
 import { Disposable } from 'vscode';
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-declare const __non_webpack_require__: (p: string) => object;
+import sqlite3 from 'sqlite3';
 
 export class ExportPostStore implements Disposable {
     private _sequelize?: null | Sequelize;
@@ -23,7 +20,7 @@ export class ExportPostStore implements Disposable {
         this._sequelize = new Sequelize({
             dialect: 'sqlite',
             storage: filePath,
-            dialectModule: __non_webpack_require__('sqlite3'),
+            dialectModule: sqlite3,
             logging: (...msg) => (process.env.NODE_ENV?.toLowerCase() === 'development' ? console.log(msg) : undefined),
         });
 
