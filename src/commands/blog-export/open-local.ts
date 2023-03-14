@@ -65,6 +65,7 @@ export class OpenLocalExportCommandHandler extends CommandHandler {
             .then(x => x.items.find(i => i.fileName === dbFileName && i.fileBytes === dbFileSize));
         await DownloadedExportStore.instance.add(dbFilePath, exportRecord?.id);
 
-        await treeProvider?.refreshDownloadedExports();
+        if (exportRecord) await treeProvider?.refreshRecords({ force: false });
+        else await treeProvider?.refreshDownloadedExports();
     }
 }

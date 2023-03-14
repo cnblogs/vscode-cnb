@@ -58,6 +58,7 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
             blogExportProvider?.refreshItem(treeItem);
             this.setIsDownloading(false).then(undefined, console.warn);
         };
+
         downloadStream
             .on('downloadProgress', ({ transferred, total, percent }: Progress) => {
                 const percentage = Math.round(percent * 100);
@@ -71,6 +72,9 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
             .on('response', () => {
                 const statusCode = downloadStream.response?.statusCode;
                 if (statusCode != null && statusCode >= 200 && statusCode < 300) {
+                    treeItem.reportDownloadingProgress({ percentage: 0 });
+
+                    blogExportProvider?.refreshItem(treeItem);
                     downloadStream.pipe(
                         fs
                             .createWriteStream(zipFilePath)

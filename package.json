@@ -406,6 +406,13 @@
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing",
                 "icon": "$(eye)"
+            },
+            {
+                "command": "vscode-cnb.blog-export.delete",
+                "title": "delete",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing && !vscode-cnb.blog-export.downloading",
+                "icon": "$(trash)"
             }
         ],
         "configuration": [
@@ -799,6 +806,10 @@
                 {
                     "command": "vscode-cnb.blog-export.view-post",
                     "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.delete",
+                    "when": "false"
                 }
             ],
             "view/item/context": [
@@ -920,14 +931,24 @@
                     "group": "inline@1"
                 },
                 {
+                    "command": "vscode-cnb.blog-export.delete",
+                    "when": "viewItem == cnblogs-export-downloaded",
+                    "group": "inline@1"
+                },
+                {
                     "command": "vscode-cnb.blog-export.view-post",
                     "when": "viewItem == cnblogs-export-post",
                     "group": "inline@1"
                 },
                 {
-                    "command": "vscode-cnb.blog-export.download",
+                    "command": "vscode-cnb.blog-export.delete",
                     "when": "viewItem == cnblogs-export-record-done",
                     "group": "inline@1"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.download",
+                    "when": "viewItem == cnblogs-export-record-done",
+                    "group": "inline@2"
                 }
             ],
             "editor/context": [

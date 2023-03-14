@@ -67,19 +67,32 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         return null;
     }
 
-    refreshDownloadedExports() {
-        if (this._downloadedExportEntry) this._treeDataChangedSource?.fire(this._downloadedExportEntry);
-        return Promise.resolve();
+    async refreshDownloadedExports({ force = true } = {}) {
+        if (this._downloadedExportEntry) {
+            const hasCacheRefreshed = force
+                ? await this._downloadedExportEntry.refresh().then(
+                      () => true,
+                      () => false
+                  )
+                : true;
+            if (hasCacheRefreshed) this._treeDataChangedSource?.fire(this._downloadedExportEntry);
+
+            return hasCacheRefreshed;
+        }
+
+        return false;
     }
 
-    async refreshRecords({ notifyOnError = true } = {}): Promise<boolean> {
-        const isSuccess = await this._store
-            ?.refresh()
-            .then(() => true)
-            .catch(e => (notifyOnError ? void AlertService.warning(`刷新博客备份失败记录, ${e}`) : undefined));
-        if (isSuccess) this._treeDataChangedSource?.fire(null);
+    async refreshRecords({ notifyOnError = true, force = true } = {}): Promise<boolean> {
+        const hasCacheRefreshed = force
+            ? await this._store
+                  ?.refresh()
+                  .then(() => true)
+                  .catch(e => (notifyOnError ? void AlertService.warning(`刷新博客备份失败记录, ${e}`) : undefined))
+            : true;
+        if (hasCacheRefreshed) this._treeDataChangedSource?.fire(null);
 
-        return isSuccess ?? false;
+        return hasCacheRefreshed ?? false;
     }
 
     refreshItem<T extends BlogExportTreeItem>(item: T) {

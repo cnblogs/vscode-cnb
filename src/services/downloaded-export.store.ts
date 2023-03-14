@@ -55,6 +55,15 @@ export class DownloadedExportStore {
         return Promise.resolve(this._storage.get<DownloadedBlogExport[]>(this.listKey) ?? []);
     }
 
+    async remove(downloaded: DownloadedBlogExport, { shouldRemoveExportRecordMap = true } = {}) {
+        await Promise.all([
+            this.updateList((await this.list()).filter(x => x.filePath !== downloaded.filePath)),
+            shouldRemoveExportRecordMap && downloaded.id != null && downloaded.id > 0
+                ? this.updateExport(downloaded.id, undefined)
+                : Promise.resolve(),
+        ]);
+    }
+
     async findById(id: number, { prune = true } = {}): Promise<DownloadedBlogExport | null | undefined> {
         const key = `${this.metadataKey}${id}`;
         let item = this._storage.get<DownloadedBlogExport>(key);

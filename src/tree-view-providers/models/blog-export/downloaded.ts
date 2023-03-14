@@ -83,6 +83,7 @@ export class DownloadedExportTreeItem
             new TreeItem(path.basename(filePath), TreeItemCollapsibleState.Collapsed),
             {
                 iconPath: new ThemeIcon('database'),
+                contextValue: 'cnblogs-export-downloaded',
             },
             this._uiOptions
         );
@@ -93,12 +94,19 @@ export class DownloadedExportsEntryTreeItem
     extends BaseTreeItemSource
     implements BaseEntryTreeItem<DownloadedExportTreeItem>
 {
+    private _children?: DownloadedExportTreeItem[] | null;
+
     getChildren: () => DownloadedExportTreeItem[] = () => {
         throw new Error('Not implemented');
     };
 
     getChildrenAsync: () => Promise<DownloadedExportTreeItem[]> = async () =>
-        parseDownloadedExports(this, await DownloadedExportStore.instance.list());
+        (this._children ??= parseDownloadedExports(this, await DownloadedExportStore.instance.list()));
+
+    async refresh() {
+        this._children = null;
+        await this.getChildrenAsync();
+    }
 
     toTreeItem(): TreeItem | Promise<TreeItem> {
         return {

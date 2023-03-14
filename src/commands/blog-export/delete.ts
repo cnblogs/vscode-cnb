@@ -1,0 +1,99 @@
+import { TreeViewCommandHandler } from '@/commands/command-handler';
+import { DownloadedBlogExport } from '@/models/blog-export';
+import { AlertService } from '@/services/alert.service';
+import { BlogExportApi } from '@/services/blog-export.api';
+import { DownloadedExportStore } from '@/services/downloaded-export.store';
+import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
+import { BlogExportRecordTreeItem, DownloadedExportTreeItem } from '@/tree-view-providers/models/blog-export';
+import fs from 'fs';
+import path from 'path';
+import { promisify } from 'util';
+import { MessageItem, window } from 'vscode';
+
+export class DeleteCommandHandler extends TreeViewCommandHandler<DownloadedExportTreeItem | BlogExportRecordTreeItem> {
+    static readonly commandName = 'vscode-cnb.blog-export.delete';
+
+    constructor(private readonly _input: unknown) {
+        super();
+    }
+
+    parseInput(): DownloadedExportTreeItem | BlogExportRecordTreeItem | null | undefined {
+        return this._input instanceof DownloadedExportTreeItem || this._input instanceof BlogExportRecordTreeItem
+            ? this._input
+            : null;
+    }
+
+    async handle(): Promise<void> {
+        const input = this.parseInput();
+        if (input instanceof DownloadedExportTreeItem) await this.deleteDownloadedExportItem(input);
+        if (input instanceof BlogExportRecordTreeItem) await this.deleteExportRecordItem(input);
+    }
+
+    private confirm(
+        itemName: string,
+        hasLocalFile = true
+    ): Thenable<null | { shouldDeleteLocal: boolean } | undefined> {
+        const options: (MessageItem & {
+            result: ReturnType<DeleteCommandHandler['confirm']> extends Thenable<infer R> ? R : never;
+        })[] = [
+            { title: '确定' + (hasLocalFile ? '(保留本地文件)' : ''), result: { shouldDeleteLocal: false } },
+            ...(hasLocalFile ? [{ title: '确定(同时删除本地文件)', result: { shouldDeleteLocal: true } }] : []),
+        ];
+        return window
+            .showInformationMessage(
+                `确定要删除 ${itemName} 吗?`,
+                { modal: true, detail: '数据可能无法恢复, 请谨慎操作!' },
+                ...options
+            )
+            .then(
+                x => x?.result,
+                () => undefined
+            );
+    }
+
+    private async deleteDownloadedExportItem(
+        item: DownloadedExportTreeItem,
+        { hasConfirmed = false } = {}
+    ): Promise<void> {
+        const parent = item.parent;
+        const isChildOfRecord = parent instanceof BlogExportRecordTreeItem;
+        const result = hasConfirmed
+            ? { shouldDeleteLocal: true }
+            : await this.confirm(`博客备份-${path.basename(item.downloadedExport.filePath)}`, !isChildOfRecord);
+        if (result == null) return;
+
+        let { shouldDeleteLocal } = result;
+        shouldDeleteLocal = shouldDeleteLocal || isChildOfRecord;
+        await this.removeDownloadedBlogExport(item.downloadedExport, { shouldDeleteLocal });
+
+        if (shouldDeleteLocal) await BlogExportProvider.optionalInstance?.refreshRecords({ force: false });
+        else await BlogExportProvider.optionalInstance?.refreshDownloadedExports();
+    }
+
+    private async deleteExportRecordItem(item: BlogExportRecordTreeItem) {
+        const { record } = item;
+        const downloaded = await DownloadedExportStore.instance.findById(record.id);
+
+        const confirmResult = await this.confirm(`云端博客备份-${record.fileName}`, downloaded != null);
+        if (confirmResult == null) return;
+
+        const { shouldDeleteLocal } = confirmResult;
+        const hasDeleted = await new BlogExportApi()
+            .delete(record.id)
+            .then(() => true)
+            .catch((e: unknown) => {
+                AlertService.httpError(typeof e === 'object' && e != null ? e : {});
+                return false;
+            });
+        if (hasDeleted) if (downloaded) await this.removeDownloadedBlogExport(downloaded, { shouldDeleteLocal });
+
+        await BlogExportProvider.optionalInstance?.refreshRecords();
+    }
+
+    private async removeDownloadedBlogExport(downloaded: DownloadedBlogExport, { shouldDeleteLocal = false }) {
+        await DownloadedExportStore.instance
+            .remove(downloaded, { shouldRemoveExportRecordMap: shouldDeleteLocal })
+            .catch(console.warn);
+        if (shouldDeleteLocal) await promisify(fs.rm)(downloaded.filePath).catch(console.warn);
+    }
+}
