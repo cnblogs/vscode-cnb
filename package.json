@@ -397,7 +397,7 @@
                 "command": "vscode-cnb.blog-export.download",
                 "title": "下载备份",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing && !vscode-cnb.blog-export.downloading",
                 "icon": "$(cloud-download)"
             }
         ],

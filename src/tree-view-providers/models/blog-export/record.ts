@@ -16,7 +16,12 @@ import { BlogExportApi } from '@/services/blog-export.api';
 export class BlogExportRecordTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<BlogExportTreeItem> {
     static readonly contextValue = 'cnblogs-export-record';
     private _blogExportApi?: BlogExportApi | null;
-    private _downloadingProgress?: { percentage: number; transferred: number; total: number } | null;
+    private _downloadingProgress?: {
+        percentage?: number;
+        transferred?: number;
+        total?: number;
+        message?: string | null;
+    } | null;
 
     constructor(private readonly _treeDataProvider: BlogExportProvider, public record: BlogExportRecord) {
         super();
@@ -49,8 +54,10 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
 
     getChildrenAsync: () => Promise<BlogExportTreeItem[]> = () => Promise.resolve(this.parseChildren());
 
-    reportDownloadingProgress(progress?: typeof this._downloadingProgress | null) {
-        this._downloadingProgress = progress;
+    reportDownloadingProgress(progress?: Partial<typeof this._downloadingProgress> | null) {
+        this._downloadingProgress = progress
+            ? Object.assign({}, this._downloadingProgress ?? {}, progress ?? {})
+            : null;
     }
 
     private pollingStatus() {
@@ -136,7 +143,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                       new BlogExportRecordMetadata(
                           this,
                           id,
-                          `下载中: ${this.formatDownloadProgress(filesize)}`,
+                          `${this.formatDownloadProgress(filesize)}`,
                           undefined,
                           new ThemeIcon('sync~spin')
                       ),
@@ -150,14 +157,16 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
     private formatDownloadProgress(filesize: typeof import('filesize').filesize): string {
         const { _downloadingProgress } = this;
         if (_downloadingProgress == null) return '';
+        let { transferred, total, percentage, message } = _downloadingProgress;
+        transferred ??= 0;
+        total ??= 0;
+        percentage ??= 0;
+        let formattedTransfer = filesize(transferred);
+        formattedTransfer = typeof formattedTransfer === 'string' ? formattedTransfer : transferred;
 
-        let formattedTransfer = filesize(_downloadingProgress.transferred);
-        formattedTransfer =
-            typeof formattedTransfer === 'string' ? formattedTransfer : _downloadingProgress.transferred;
-
-        let formattedTotal = filesize(_downloadingProgress.total);
-        formattedTotal = typeof formattedTotal === 'string' ? formattedTotal : _downloadingProgress.total;
-
-        return `${formattedTransfer}/${formattedTotal} (${_downloadingProgress.percentage}%)`;
+        let formattedTotal = filesize(total);
+        formattedTotal = typeof formattedTotal === 'string' ? formattedTotal : total;
+        message ??= '下载中';
+        return `${message}: ${formattedTransfer}/${formattedTotal} (${percentage}%)`;
     }
 }
