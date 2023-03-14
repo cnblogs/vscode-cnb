@@ -10,9 +10,9 @@ import {
     DownloadedExportsEntryTreeItem,
     DownloadedExportTreeItem,
     ExportPostsEntryTreeItem,
-} from '@/tree-view-providers/models/blog-export/downloaded';
+} from './models/blog-export/downloaded';
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
-import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post';
+import { ExportPostTreeItem } from './models/blog-export/post';
 import { AlertService } from '@/services/alert.service';
 import { BlogExportRecord } from '@/models/blog-export';
 
@@ -21,7 +21,6 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
 
     private _treeDataChangedSource?: EventEmitter<BlogExportTreeItem | null | undefined> | null;
     private _store?: BlogExportRecordsStore | null;
-    private _shouldRefresh = false;
     private _downloadedExportEntry?: DownloadedExportsEntryTreeItem | null;
 
     static get instance(): BlogExportProvider {

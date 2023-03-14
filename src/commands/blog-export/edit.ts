@@ -1,7 +1,6 @@
 import { TreeViewCommandHandler } from '@/commands/command-handler';
 import { openPostFile } from '@/commands/posts-list/open-post-file';
 import { AlertService } from '@/services/alert.service';
-import { ExportPostStore } from '@/services/blog-export-post.store';
 import { Settings } from '@/services/settings.service';
 import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post';
 import fs from 'fs';
@@ -39,6 +38,7 @@ export class EditExportPostCommandHandler extends TreeViewCommandHandler<ExportP
         fs.mkdirSync(dirname, { recursive: true });
         const fullPath = path.join(`${dirname}`, `${fileName}.博客备份-${backupName}-${postId}.${extName}`);
 
+        const { ExportPostStore } = await import('@/services/blog-export-post.store');
         const store = new ExportPostStore(downloadedExport);
         await promisify(fs.writeFile)(fullPath, await store.getBody(postId));
 

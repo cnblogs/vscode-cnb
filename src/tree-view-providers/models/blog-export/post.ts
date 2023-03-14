@@ -1,4 +1,4 @@
-import { ExportPost } from '@/models/blog-export/export-post';
+import type { ExportPost } from '@/models/blog-export/export-post';
 import { Settings } from '@/services/settings.service';
 import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-source';
 import { ExportPostsEntryTreeItem } from '@/tree-view-providers/models/blog-export';
