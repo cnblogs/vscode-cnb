@@ -23,7 +23,7 @@ export class ExportPostStore implements Disposable {
         this._sequelize = new Sequelize({
             dialect: 'sqlite',
             storage: filePath,
-            dialectModule: __non_webpack_require__('./assets/scripts/sqlite3/lib/sqlite3.js'),
+            dialectModule: __non_webpack_require__('sqlite3'),
             logging: (...msg) => (process.env.NODE_ENV?.toLowerCase() === 'development' ? console.log(msg) : undefined),
         });
 

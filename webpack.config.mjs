@@ -41,6 +41,7 @@ const preserveModules = [
     'detect-libc',
     'object-assign',
     'yallist',
+    'sqlite3',
 ];
 
 //@ts-check
