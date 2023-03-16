@@ -364,6 +364,55 @@
                 "title": "复制博文链接",
                 "icon": "$(link)",
                 "enablement": "vscode-cnb.isAuthorized"
+            },
+            {
+                "command": "vscode-cnb.blog-export.refresh-records",
+                "title": "刷新博客备份记录",
+                "category": "Cnblogs",
+                "icon": "$(refresh)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing"
+            },
+            {
+                "command": "vscode-cnb.blog-export.open-local-export",
+                "title": "打开本地已下载博客备份文件",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing",
+                "icon": "$(file-add)"
+            },
+            {
+                "command": "vscode-cnb.blog-export.edit",
+                "title": "编辑博文",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized",
+                "icon": "$(pencil)"
+            },
+            {
+                "command": "vscode-cnb.blog-export.create",
+                "title": "新建博客备份",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing",
+                "icon": "$(add)"
+            },
+            {
+                "command": "vscode-cnb.blog-export.download",
+                "title": "下载备份",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing && !vscode-cnb.blog-export.downloading",
+                "icon": "$(cloud-download)"
+            },
+            {
+                "command": "vscode-cnb.blog-export.view-post",
+                "title": "查看备份博文",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing",
+                "icon": "$(eye)"
+            },
+            {
+                "command": "vscode-cnb.blog-export.delete",
+                "title": "delete",
+                "category": "Cnblogs",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.blog-export.records.isRefreshing && !vscode-cnb.blog-export.downloading",
+                "icon": "$(trash)"
             }
         ],
         "configuration": [
@@ -522,6 +571,12 @@
                     "visibility": "collapsed"
                 },
                 {
+                    "id": "vscode-cnb.blog-export",
+                    "name": "博客备份",
+                    "when": "vscode-cnb.isAuthorized",
+                    "visibility": "collapsed"
+                },
+                {
                     "id": "cnblogs-account",
                     "name": "账户信息",
                     "when": "vscode-cnb.isAuthorized",
@@ -623,6 +678,16 @@
                     "command": "vscode-cnb.ing.publish",
                     "when": "view == vscode-cnb.ings-list-webview",
                     "group": "navigation@6"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.create",
+                    "when": "view == vscode-cnb.blog-export",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.refresh-records",
+                    "when": "view == vscode-cnb.blog-export",
+                    "group": "navigation@2"
                 }
             ],
             "commandPalette": [
@@ -728,6 +793,22 @@
                 },
                 {
                     "command": "vscode-cnb.copy-post-link",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.refresh-records",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.edit",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.view-post",
+                    "when": "false"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.delete",
                     "when": "false"
                 }
             ],
@@ -843,6 +924,31 @@
                     "command": "vscode-cnb.clear-posts-search-results",
                     "when": "viewItem == cnblogs-posts-search-results-entry",
                     "group": "cnblogs-posts-search-results-entry@2"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.open-local-export",
+                    "when": "viewItem == cnblogs-export-downloaded-entry",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.delete",
+                    "when": "viewItem == cnblogs-export-downloaded",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.view-post",
+                    "when": "viewItem == cnblogs-export-post",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.delete",
+                    "when": "viewItem == cnblogs-export-record-done",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "vscode-cnb.blog-export.download",
+                    "when": "viewItem == cnblogs-export-record-done",
+                    "group": "inline@2"
                 }
             ],
             "editor/context": [
@@ -1032,6 +1138,7 @@
     "devDependencies": {
         "@cnblogs/eslint-config-typescript": "^1.0.1",
         "@cnblogs/prettier-config": "^2.0.3",
+        "@types/adm-zip": "^0.5.0",
         "@types/express": "^4.17.1",
         "@types/glob": "^7.1.4",
         "@types/jest": "^29.4.0",
@@ -1047,7 +1154,7 @@
         "@typescript-eslint/eslint-plugin": "^5.41.0",
         "@typescript-eslint/parser": "^5.41.0",
         "@vscode/test-electron": "^1.6.2",
-        "adm-zip": "^0.5.9",
+        "adm-zip": "^0.5.10",
         "autoprefixer": "^10.4.4",
         "clean-webpack-plugin": "^4.0.0",
         "copy-webpack-plugin": "^10.0.0",
@@ -1092,6 +1199,7 @@
         "date-fns": "^2.27.0",
         "download-chromium": "^2.2.1",
         "express": "^4.17.1",
+        "filesize": "^10.0.6",
         "form-data": "^4.0.0",
         "got": "^12.5.3",
         "got-fetch": "^5.1.4",
@@ -1105,6 +1213,8 @@
         "randomstring": "^1.1.4",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
-        "sanitize-filename": "^1.6.3"
+        "sanitize-filename": "^1.6.3",
+        "sequelize": "^6.29.3",
+        "sqlite3": "^5.1.4"
     }
 }

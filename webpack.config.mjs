@@ -13,6 +13,37 @@ import webpack from 'webpack';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const preserveModules = [
+    '@mapbox',
+    'emoji-regex',
+    'readable-stream',
+    'abbrev',
+    'gauge',
+    'semver',
+    'ansi-regex',
+    'has-unicode',
+    'set-blocking',
+    'aproba',
+    'inherits',
+    'signal-exit',
+    'are-we-there-yet',
+    'is-fullwidth-code-point',
+    'string-width',
+    'color-support',
+    'lru-cache',
+    'strip-ansi',
+    'console-control-strings',
+    'nopt',
+    'util-deprecate',
+    'delegates',
+    'npmlog',
+    'wide-align',
+    'detect-libc',
+    'object-assign',
+    'yallist',
+    'sqlite3',
+];
+
 //@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
@@ -31,10 +62,16 @@ export default (env, { mode }) => {
             filename: '[name].js',
             libraryTarget: 'commonjs2',
         },
-        externals: {
-            vscode: 'commonjs vscode', // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
-            // modules added here also need to be added in the .vscodeignore file
-        },
+        externals: [
+            {
+                vscode: 'commonjs vscode', // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+                // modules added here also need to be added in the .vscodeignore file
+            },
+            'pg',
+            'tedious',
+            'pg-hstore',
+            'sqlite3',
+        ],
         resolve: {
             // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
             extensions: ['.ts', '.js', '.mjs'],
@@ -75,6 +112,7 @@ export default (env, { mode }) => {
                         from: 'node_modules/@cnblogs/code-highlight-adapter/index.min.css',
                         to: 'assets/styles/highlight-code-lines.css',
                     },
+                    ...preserveModules.map(m => ({ from: `node_modules/${m}`, to: `node_modules/${m}` })),
                 ],
             }),
             new webpack.DefinePlugin({

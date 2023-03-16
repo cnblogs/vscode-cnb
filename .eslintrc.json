@@ -9,7 +9,7 @@
         "project": ["./tsconfig.json", "./ui/tsconfig.json", "./test/tsconfig.json"]
     },
     "rules": {},
-    "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts", "__mocks__/vscode.ts"],
+    "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts", "__mocks__/vscode.ts", "src/assets/**"],
     "overrides": [
         {
             "files": ["*.config.js"],
