@@ -1,0 +1,9 @@
+src/assets/scripts/sqlite3/lib/binding filter=lfs diff=lfs merge=lfs -text
+src/assets/scripts/sqlite3/lib/binding/napi-v6-linux-musl-x64/node_sqlite3.node filter=lfs diff=lfs merge=lfs -text
+src/assets/scripts/sqlite3/lib/binding/napi-v6-win32-unknown-ia32/node_sqlite3.node filter=lfs diff=lfs merge=lfs -text
+src/assets/scripts/sqlite3/lib/binding/napi-v6-win32-unknown-x64/node_sqlite3.node filter=lfs diff=lfs merge=lfs -text
+src/assets/scripts/sqlite3/lib/binding/napi-v6-darwin-unknown-arm64/node_sqlite3.node filter=lfs diff=lfs merge=lfs -text
+src/assets/scripts/sqlite3/lib/binding/napi-v6-darwin-unknown-x64/node_sqlite3.node filter=lfs diff=lfs merge=lfs -text
+src/assets/scripts/sqlite3/lib/binding/napi-v6-linux-glibc-arm64/node_sqlite3.node filter=lfs diff=lfs merge=lfs -text
+src/assets/scripts/sqlite3/lib/binding/napi-v6-linux-glibc-x64/node_sqlite3.node filter=lfs diff=lfs merge=lfs -text
+src/assets/scripts/sqlite3/lib/binding/napi-v6-linux-musl-arm64/node_sqlite3.node filter=lfs diff=lfs merge=lfs -text

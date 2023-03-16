@@ -3,7 +3,7 @@ import fs from 'fs';
 import { Uri, workspace } from 'vscode';
 import { imageService } from './image.service';
 import { isErrorResponse } from '../models/error-response';
-import { isString, trimEnd } from 'lodash-es';
+import { isString } from 'lodash-es';
 import { promisify } from 'util';
 import { Readable } from 'stream';
 

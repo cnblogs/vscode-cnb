@@ -36,6 +36,7 @@ import { handleDeletePostCategories } from './post-category/delete-selected-cate
 import { PublishIngCommandHandler } from '@/commands/ing/publish-ing';
 import { registerCommandsForIngsList } from 'src/commands/ing/ings-list-commands-registration';
 import { CopyPostLinkCommandHandler } from '@/commands/posts-list/copy-link';
+import { registerCommandsForBlogExport } from '@/commands/blog-export';
 
 export const registerCommands = () => {
     const context = globalContext.extensionContext;
@@ -88,5 +89,6 @@ export const registerCommands = () => {
         ),
     ];
     registerCommandsForIngsList(disposables);
+    registerCommandsForBlogExport(disposables);
     context?.subscriptions.push(...disposables);
 };
