@@ -118,6 +118,22 @@ export class Settings {
         await this.configuration.update('createLocalPostFileWithCategory', value, ConfigurationTarget.Global);
     }
 
+    static async migrateEnablePublishSelectionToIng() {
+        const oldKey = 'ing.enablePublishSelectionToIng';
+        const isEnablePublishSelectionToIng = this.configuration.get(oldKey);
+        if (isEnablePublishSelectionToIng === true) {
+            if (
+                await this.configuration
+                    .update('menus.context.editor', { 'ing:publish-selection': true }, ConfigurationTarget.Global)
+                    .then(
+                        () => true,
+                        () => false
+                    )
+            )
+                await this.configuration.update(oldKey, undefined, ConfigurationTarget.Global);
+        }
+    }
+
     private static removeLegacyWorkspaceUri() {
         return this.configuration.update(this.workspaceUriKey, undefined, ConfigurationTarget.Global);
     }
