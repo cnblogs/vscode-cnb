@@ -1,3 +1,4 @@
+import os from 'os';
 import { commands, workspace } from 'vscode';
 import { refreshPostCategoriesList } from '../commands/post-category/refresh-post-categories-list';
 import { refreshPostsList } from '../commands/posts-list/refresh-posts-list';
@@ -5,9 +6,20 @@ import { globalContext } from './global-state';
 import { PostFileMapManager } from './post-file-map';
 import { Settings } from './settings.service';
 
+const diskSymbolRegex = /^(\S{1,5}:)(.*)/;
+
 export const isTargetWorkspace = (): boolean => {
     const folders = workspace.workspaceFolders;
-    const isTarget = !!folders && folders.length === 1 && folders[0].uri.path === Settings.workspaceUri.path;
+    let currentFolder = folders?.length === 1 ? folders[0].uri.path : undefined;
+    let targetFolder = Settings.workspaceUri.path;
+    const platform = os.platform();
+    if (platform === 'win32' && targetFolder && currentFolder) {
+        const replacer = (sub: string, m0: string | null | undefined, m2: string | null | undefined) =>
+            m0 && m2 ? m0.toLowerCase() + m2 : sub;
+        currentFolder = currentFolder.replace(diskSymbolRegex, replacer);
+        targetFolder = targetFolder.replace(diskSymbolRegex, replacer);
+    }
+    const isTarget = !!currentFolder && currentFolder === targetFolder;
     void commands.executeCommand('setContext', `${globalContext.extensionName}.isTargetWorkspace`, isTarget);
     return isTarget;
 };
