@@ -5,10 +5,10 @@
     "compilerOptions": {
         "rootDir": "",
         "resolveJsonModule": true,
-        "moduleResolution": "node16",
         "skipLibCheck": true,
         "esModuleInterop": true,
         "allowJs": true,
-        "outDir": "out"
+        "outDir": "out",
+        "module": "CommonJS"
     }
 }

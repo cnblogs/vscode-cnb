@@ -98,6 +98,7 @@ const ThemeColor = jest.fn();
 const EventEmitter = jest.fn().mockImplementation(() => {
     return {
         fire: jest.fn(),
+        event: jest.fn(),
     };
 });
 
@@ -106,8 +107,15 @@ const QuickPickItemKind = {
     Default: 0,
 };
 
+const TreeItem = jest.fn();
+const Disposable = jest.fn();
+(Disposable as any).from = jest.fn();
+const authentication = { registerAuthenticationProvider: jest.fn() };
+
 export = {
     ThemeColor,
+    Disposable,
+    authentication,
     CodeLens,
     languages,
     StatusBarAlignment,
@@ -132,4 +140,5 @@ export = {
     TestRunRequest,
     ViewColumn,
     QuickPickItemKind,
+    TreeItem,
 };
