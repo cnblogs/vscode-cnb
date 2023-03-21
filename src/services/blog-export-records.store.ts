@@ -13,11 +13,15 @@ export class BlogExportRecordsStore {
     async refresh(
         options?: BlogExportRecordsStore['list'] extends (opt: infer U) => unknown ? U : never
     ): Promise<BlogExportRecordList> {
+        await this.clearCache();
+        return this.list(options);
+    }
+
+    async clearCache(): Promise<void> {
         if (this._cachedList) await this._cachedList.catch(() => false);
 
         this._cachedList = null;
         this._cached = null;
-        return this.list(options);
     }
 
     list({

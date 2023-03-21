@@ -83,13 +83,38 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         return false;
     }
 
-    async refreshRecords({ notifyOnError = true, force = true } = {}): Promise<boolean> {
+    /**
+     * Refresh the records of blog-export
+     * @param options
+     * @returns The boolean value which tell if the data has been refreshed
+     */
+    async refreshRecords({
+        /**
+         * Tell if to raise a notify to the user when error response received during the refreshing process
+         */
+        notifyOnError = true,
+        /**
+         * Tell should reload the cached data
+         */
+        force = true,
+        /**
+         * Tell should remove the cached data
+         * **NOTE** only works with `force=false`, when `force=true`, the cached data will always be removed and the re-created
+         */
+        clearCache = true,
+    } = {}): Promise<boolean> {
         const hasCacheRefreshed = force
             ? await this._store
                   ?.refresh()
                   .then(() => true)
                   .catch(e => (notifyOnError ? void AlertService.warning(`刷新博客备份失败记录, ${e}`) : undefined))
+            : clearCache
+            ? await this._store?.clearCache().then(
+                  () => true,
+                  () => true
+              )
             : true;
+
         if (hasCacheRefreshed) this._treeDataChangedSource?.fire(null);
 
         return hasCacheRefreshed ?? false;
