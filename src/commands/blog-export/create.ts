@@ -2,6 +2,7 @@ import { CommandHandler } from '@/commands/command-handler';
 import { AlertService } from '@/services/alert.service';
 import { BlogExportApi } from '@/services/blog-export.api';
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
+import { MessageItem, window } from 'vscode';
 
 export class CreateBlogExportCommandHandler extends CommandHandler {
     static readonly commandName = 'vscode-cnb.blog-export.create';
@@ -13,6 +14,8 @@ export class CreateBlogExportCommandHandler extends CommandHandler {
     }
 
     async handle(): Promise<void> {
+        if (!(await this.confirm())) return;
+
         if (
             (await this.blogExportApi.create().catch((e: unknown) => {
                 AlertService.httpError(typeof e === 'object' && e ? e : {}, { message: '创建博客备份失败' });
@@ -20,5 +23,15 @@ export class CreateBlogExportCommandHandler extends CommandHandler {
             })) !== false
         )
             await BlogExportProvider.optionalInstance?.refreshRecords();
+    }
+
+    private async confirm(): Promise<boolean> {
+        const items: MessageItem[] = [{ title: '确定', isCloseAffordance: false }];
+        const result = await window.showInformationMessage(
+            '确定要创建备份吗?',
+            { modal: true, detail: '一天可以创建一次备份' },
+            ...items
+        );
+        return result != null;
     }
 }
