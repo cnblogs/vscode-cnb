@@ -7,6 +7,7 @@ import { postCategoriesDataProvider } from '../tree-view-providers/post-categori
 import { OauthApi } from '@/services/oauth.api';
 import { CnblogsAuthenticationProvider } from '@/authentication/authentication-provider';
 import { CnblogsAuthenticationSession } from '@/authentication/session';
+import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
 
 const isAuthorizedStorageKey = 'isAuthorized';
 
@@ -38,6 +39,9 @@ class AccountManager extends vscode.Disposable {
                 accountViewDataProvider.fireTreeDataChangedEvent();
                 postsDataProvider.fireTreeDataChangedEvent(undefined);
                 postCategoriesDataProvider.fireTreeDataChangedEvent();
+                BlogExportProvider.optionalInstance
+                    ?.refreshRecords({ force: false, clearCache: true })
+                    .catch(console.warn);
             })
         );
     }
