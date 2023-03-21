@@ -31,7 +31,8 @@ export class DeleteCommandHandler extends TreeViewCommandHandler<DownloadedExpor
 
     private confirm(
         itemName: string,
-        hasLocalFile = true
+        hasLocalFile = true,
+        detail: string | undefined | null = '数据可能无法恢复, 请谨慎操作!'
     ): Thenable<null | { shouldDeleteLocal: boolean } | undefined> {
         const options: (MessageItem & {
             result: ReturnType<DeleteCommandHandler['confirm']> extends Thenable<infer R> ? R : never;
@@ -42,7 +43,7 @@ export class DeleteCommandHandler extends TreeViewCommandHandler<DownloadedExpor
         return window
             .showInformationMessage(
                 `确定要删除 ${itemName} 吗?`,
-                { modal: true, detail: '数据可能无法恢复, 请谨慎操作!' },
+                { modal: true, detail: detail ? detail : undefined },
                 ...options
             )
             .then(
@@ -55,26 +56,30 @@ export class DeleteCommandHandler extends TreeViewCommandHandler<DownloadedExpor
         item: DownloadedExportTreeItem,
         { hasConfirmed = false } = {}
     ): Promise<void> {
-        const parent = item.parent;
-        const isChildOfRecord = parent instanceof BlogExportRecordTreeItem;
         const result = hasConfirmed
             ? { shouldDeleteLocal: true }
-            : await this.confirm(`博客备份-${path.basename(item.downloadedExport.filePath)}`, !isChildOfRecord);
+            : await this.confirm(
+                  `博客备份-${path.basename(item.downloadedExport.filePath)}`,
+                  false,
+                  '删除后备份文件无法恢复'
+              );
         if (result == null) return;
 
-        let { shouldDeleteLocal } = result;
-        shouldDeleteLocal = shouldDeleteLocal || isChildOfRecord;
-        await this.removeDownloadedBlogExport(item.downloadedExport, { shouldDeleteLocal });
+        await this.removeDownloadedBlogExport(item.downloadedExport, { shouldDeleteLocal: true });
 
-        if (shouldDeleteLocal) await BlogExportProvider.optionalInstance?.refreshRecords({ force: false });
-        else await BlogExportProvider.optionalInstance?.refreshDownloadedExports();
+        await BlogExportProvider.optionalInstance?.refreshRecords({ force: false });
+        await BlogExportProvider.optionalInstance?.refreshDownloadedExports();
     }
 
     private async deleteExportRecordItem(item: BlogExportRecordTreeItem) {
         const { record } = item;
         const downloaded = await DownloadedExportStore.instance.findById(record.id);
 
-        const confirmResult = await this.confirm(`云端博客备份-${record.fileName}`, downloaded != null);
+        const confirmResult = await this.confirm(
+            `云端博客备份-${record.fileName}`,
+            downloaded != null,
+            '删除后备份无法恢复'
+        );
         if (confirmResult == null) return;
 
         const { shouldDeleteLocal } = confirmResult;
