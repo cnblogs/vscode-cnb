@@ -208,7 +208,7 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
             ['client_secret', clientSecret],
         ]);
         env.openExternal(Uri.parse(`${authority}${authorizeEndpoint}?${search.toString()}`)).then(
-            undefined,
+            () => LegacyTokenStore.remove(),
             console.warn
         );
         return { codeVerifier };
