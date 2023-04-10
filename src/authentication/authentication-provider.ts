@@ -175,13 +175,12 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
     protected async getAllSessions(): Promise<CnblogsAuthenticationSession[]> {
         const legacyToken = LegacyTokenStore.getAccessToken();
         if (legacyToken != null) {
-            await this.onAccessTokenGranted({ accessToken: legacyToken }, { shouldFireSessionAddedEvent: false }).then(
-                () => LegacyTokenStore.remove(),
-                console.warn
-            );
+            await this.onAccessTokenGranted({ accessToken: legacyToken }, { shouldFireSessionAddedEvent: false })
+                .then(undefined, console.warn)
+                .finally(() => LegacyTokenStore.remove());
         }
 
-        if (this._allSessions == null) {
+        if (this._allSessions == null || this._allSessions.length <= 0) {
             const sessions = JSON.parse((await this.secretStorage.get(this.sessionStorageKey)) ?? '[]') as
                 | CnblogsAuthenticationSession[]
                 | null
