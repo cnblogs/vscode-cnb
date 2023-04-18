@@ -8,6 +8,7 @@ import { OauthApi } from '@/services/oauth.api';
 import { CnblogsAuthenticationProvider } from '@/authentication/authentication-provider';
 import { CnblogsAuthenticationSession } from '@/authentication/session';
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
+import { AlertService } from '@/services/alert.service';
 
 const isAuthorizedStorageKey = 'isAuthorized';
 
@@ -73,7 +74,7 @@ class AccountManager extends vscode.Disposable {
     }
 
     async login() {
-        await this.ensureSession({ createIfNone: true, forceNewSession: false });
+        await this.ensureSession({ createIfNone: false, forceNewSession: true });
     }
 
     async logout() {
@@ -116,8 +117,8 @@ class AccountManager extends vscode.Disposable {
         opt?: AuthenticationGetSessionOptions
     ): Promise<CnblogsAuthenticationSession | undefined | null> {
         const session = await authentication.getSession(this._authenticationProvider.providerId, [], opt).then(
-            s => (s ? CnblogsAuthenticationSession.parse(s) : null),
-            () => null
+            session => (session ? CnblogsAuthenticationSession.parse(session) : null),
+            reason => AlertService.warning(`创建/获取 session 失败, ${reason}`)
         );
 
         if (session != null && session.account.accountId < 0) {
