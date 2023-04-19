@@ -23,7 +23,7 @@ export class PostTagService {
             url,
             method,
             body,
-        } = await got.get<PostTag[]>(`${globalContext.config.apiBaseUrl}/api/tags/list`);
+        } = await got.get<PostTag[]>(`${globalContext.config.apiBaseUrl}/api/tags/list`, { responseType: 'json' });
         if (!isOk) throw Error(`Failed to ${method} ${url}`);
 
         return Array.isArray(body)
