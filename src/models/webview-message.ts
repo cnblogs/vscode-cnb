@@ -19,6 +19,7 @@ export namespace webviewMessage {
         siteCategories: SiteCategories;
         tags: PostTags;
         breadcrumbs?: string[];
+        fileName: string;
     }
 
     export interface SavePostMessage extends Message {

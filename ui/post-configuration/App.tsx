@@ -11,11 +11,13 @@ import { webviewCommands } from '@models/webview-commands';
 import { PostFormContextProvider } from './components/PostFormContextProvider';
 import { activeThemeProvider } from 'share/active-theme-provider';
 import { darkTheme, lightTheme } from 'share/theme';
+import { vsCodeApi } from 'share/vscode-api';
 
 interface AppState {
     post?: Post;
     theme?: Theme | PartialTheme;
     breadcrumbs?: string[];
+    fileName: string;
 }
 
 export interface AppProps extends Record<string, never> {}
@@ -23,18 +25,32 @@ export interface AppProps extends Record<string, never> {}
 class App extends Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props);
-        this.state = { theme: activeThemeProvider.activeTheme() };
+        this.state = { theme: activeThemeProvider.activeTheme(), fileName: '' };
         this.observerMessages();
+        vsCodeApi.getInstance().postMessage({ command: webviewCommands.ExtensionCommands.refreshPost });
     }
 
     render() {
-        const isReady = !!this.state.post;
+        const { post, fileName } = this.state;
+        const isReady = post != null;
         const content = (
             <>
                 {this.renderBreadcrumbs()}
                 <Stack tokens={{ padding: '8px 10px 16px 10px' }}>
                     <PostFormContextProvider>
-                        <PostForm post={this.state.post} />
+                        <PostForm
+                            post={this.state.post}
+                            onTitleChange={title =>
+                                this.state.breadcrumbs && this.state.breadcrumbs.length > 1
+                                    ? this.setState({
+                                          breadcrumbs: this.state.breadcrumbs
+                                              .slice(0, this.state.breadcrumbs.length - 1)
+                                              .concat(title),
+                                      })
+                                    : undefined
+                            }
+                            fileName={fileName}
+                        />
                     </PostFormContextProvider>
                 </Stack>
             </>
@@ -68,7 +84,7 @@ class App extends Component<AppProps, AppState> {
             const message: webviewMessage.Message = ev.data ?? {};
             const { command } = message;
             if (command === webviewCommands.UiCommands.editPostConfiguration) {
-                const { post, activeTheme, personalCategories, siteCategories, tags, breadcrumbs } =
+                const { post, activeTheme, personalCategories, siteCategories, tags, breadcrumbs, fileName } =
                     message as webviewMessage.EditPostConfigurationMessage;
                 personalCategoriesStore.set(personalCategories);
                 siteCategoriesStore.set(siteCategories);
@@ -76,8 +92,9 @@ class App extends Component<AppProps, AppState> {
 
                 this.setState({
                     theme: activeTheme === 2 ? darkTheme : lightTheme,
-                    post: post,
+                    post,
                     breadcrumbs,
+                    fileName,
                 });
             } else if (command === webviewCommands.UiCommands.updateBreadcrumbs) {
                 const { breadcrumbs } = message as webviewMessage.UpdateBreadcrumbsMessage;
