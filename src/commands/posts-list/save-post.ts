@@ -97,6 +97,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
     post.categoryIds ??= [];
     void postConfigurationPanel.open({
         panelTitle: '',
+        localFileUri: localDraft.filePathUri,
         breadcrumbs: ['新建博文', '博文设置', post.title],
         post,
         successCallback: async savedPost => {
@@ -145,7 +146,6 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
 
     await saveFilePendingChanges(localFilePath);
     post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString();
-    post.title = await PostTitleSanitizer.unSanitize(post);
     post.isMarkdown = path.extname(localFilePath).endsWith('md') || post.isMarkdown;
 
     if (!validatePost(post)) return false;

@@ -18,10 +18,13 @@ import { webviewMessage } from '@models/webview-message';
 import { InputSummary } from './InputSummary';
 import { IPostFormContext, PostFormContext } from './PostFormContext';
 import PostEntryNameInput from './PostEntryNameInput';
+import PostTitleInput from 'post-configuration/components/PostTitleInput';
 
 export interface IPostFormProps {
     post?: Post;
+    fileName?: string;
     onConfirm?: (postConfiguration: PostConfiguration) => void;
+    onTitleChange?: (title: string) => void;
 }
 
 export interface IPostFormState extends PostConfiguration {}
@@ -42,6 +45,14 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
         return (
             <form>
                 <Stack tokens={{ childrenGap: 16 }}>
+                    <PostTitleInput
+                        value={this.state.title ?? ''}
+                        fileName={this.props.fileName ?? ''}
+                        onChange={v => {
+                            this.setState({ title: v ?? '' });
+                            this.props.onTitleChange?.(v ?? '');
+                        }}
+                    ></PostTitleInput>
                     <Stack tokens={{ childrenGap: 8 }}>
                         <Label>个人分类</Label>
                         <Stack>

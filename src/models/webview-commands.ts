@@ -12,6 +12,7 @@ export namespace webviewCommands {
         savePost = 'savePost',
         disposePanel = 'disposePanel',
         uploadImage = 'uploadImage',
+        refreshPost = 'refreshPost',
     }
 
     export namespace ingCommands {

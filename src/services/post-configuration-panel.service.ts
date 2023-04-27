@@ -13,6 +13,7 @@ import { uploadImage } from '../commands/upload-image/upload-image';
 import { ImageUploadStatusId } from '../models/image-upload-status';
 import { openPostFile } from '../commands/posts-list/open-post-file';
 import { parseWebviewHtml } from 'src/services/parse-webview-html';
+import path from 'path';
 
 const panels: Map<string, vscode.WebviewPanel> = new Map();
 
@@ -35,7 +36,7 @@ export namespace postConfigurationPanel {
     export const buildPanelId = (postId: number, postTitle: string): string => `${postId}-${postTitle}`;
     export const findPanelById = (panelId: string) => panels.get(panelId);
     export const open = async (option: PostConfigurationPanelOpenOption) => {
-        const { post, breadcrumbs } = option;
+        const { post, breadcrumbs, localFileUri } = option;
         const panelTitle = option.panelTitle ? option.panelTitle : `博文设置 - ${post.title}`;
         await openPostFile(post, {
             viewColumn: vscode.ViewColumn.One,
@@ -47,22 +48,28 @@ export namespace postConfigurationPanel {
         const disposables: (vscode.Disposable | undefined)[] = [];
         panel = await createPanel(panelTitle, post);
         const { webview } = panel;
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        webview.postMessage({
-            command: webviewCommands.UiCommands.setFluentIconBaseUrl,
-            baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
-        } as webviewMessage.SetFluentIconBaseUrlMessage);
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        webview.postMessage({
-            command: webviewCommands.UiCommands.editPostConfiguration,
-            post: cloneDeep(post),
-            activeTheme: vscode.window.activeColorTheme.kind,
-            personalCategories: cloneDeep(await postCategoryService.fetchCategories()),
-            siteCategories: cloneDeep(await siteCategoryService.fetchAll()),
-            tags: cloneDeep(await postTagService.fetchTags()),
-            breadcrumbs,
-        } as webviewMessage.EditPostConfigurationMessage);
+
         disposables.push(
+            webview.onDidReceiveMessage(async ({ command }: webviewMessage.Message) => {
+                if (command === webviewCommands.ExtensionCommands.refreshPost) {
+                    await webview.postMessage({
+                        command: webviewCommands.UiCommands.setFluentIconBaseUrl,
+                        baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
+                    } as webviewMessage.SetFluentIconBaseUrlMessage);
+                    await webview.postMessage({
+                        command: webviewCommands.UiCommands.editPostConfiguration,
+                        post: cloneDeep(post),
+                        activeTheme: vscode.window.activeColorTheme.kind,
+                        personalCategories: cloneDeep(await postCategoryService.fetchCategories()),
+                        siteCategories: cloneDeep(await siteCategoryService.fetchAll()),
+                        tags: cloneDeep(await postTagService.fetchTags()),
+                        breadcrumbs,
+                        fileName: localFileUri
+                            ? path.basename(localFileUri.fsPath, path.extname(localFileUri?.fsPath))
+                            : '',
+                    } as webviewMessage.EditPostConfigurationMessage);
+                }
+            }),
             observeWebviewMessages(panel, option),
             observeActiveColorSchemaChange(panel),
             observerPanelDisposeEvent(panel, disposables)
