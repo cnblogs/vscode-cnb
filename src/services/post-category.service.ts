@@ -1,11 +1,12 @@
 import fetch from '@/utils/fetch-client';
 import { PostCategories, PostCategory, PostCategoryAddDto } from '../models/post-category';
 import { globalContext } from './global-state';
+import { URLSearchParams } from 'url';
 
 export class PostCategoryService {
     private static _instance: PostCategoryService;
 
-    private _cached?: PostCategories;
+    private _cache?: Map<number, PostCategories>;
 
     private constructor() {}
 
@@ -23,15 +24,36 @@ export class PostCategoryService {
         return categories.filter(({ categoryId }) => ids.includes(categoryId));
     }
 
-    async listCategories(forceRefresh = false): Promise<PostCategories> {
-        if (this._cached && !forceRefresh) return this._cached;
+    listCategories(): Promise<PostCategories>;
+    listCategories({
+        forceRefresh = false,
+        parentId = -1,
+    }: {
+        forceRefresh?: boolean | null;
+        parentId?: number;
+    }): Promise<PostCategories>;
+    listCategories(forceRefresh: boolean): Promise<PostCategories>;
+    async listCategories(
+        option: boolean | { forceRefresh?: boolean | null; parentId?: number } = {}
+    ): Promise<PostCategories> {
+        const parentId = typeof option === 'object' ? option.parentId ?? -1 : -1;
+        const shouldForceRefresh =
+            option === true || (typeof option === 'object' ? option.forceRefresh ?? false : false);
+        const map = (this._cache ??= new Map<number, PostCategories>());
+        const cachedCategories = map.get(parentId);
+        if (cachedCategories && !shouldForceRefresh) return cachedCategories;
 
-        const res = await fetch(`${globalContext.config.apiBaseUrl}/api/category/blog/1/edit`);
+        const res = await fetch(
+            `${globalContext.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${new URLSearchParams([
+                ['parent', parentId <= 0 ? '' : `${parentId}`],
+            ]).toString()}`
+        );
         if (!res.ok) throw Error(`Failed to fetch post categories\n${res.status}\n${await res.text()}`);
 
-        const categories = <PostCategories>await res.json();
-        this._cached = categories.map(x => Object.assign(new PostCategory(), x));
-        return this._cached;
+        let { categories } = <{ parent?: PostCategory | null; categories: PostCategories }>await res.json();
+        categories = categories.map(x => Object.assign(new PostCategory(), x));
+        map.set(parentId, categories);
+        return categories;
     }
 
     async newCategory(categoryAddDto: PostCategoryAddDto) {
@@ -63,7 +85,7 @@ export class PostCategoryService {
     }
 
     clearCache() {
-        this._cached = undefined;
+        this._cache = undefined;
     }
 }
 

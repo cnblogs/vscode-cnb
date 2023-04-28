@@ -5,7 +5,7 @@ import { BaseTreeItemSource } from './base-tree-item-source';
 import { PostTreeItem } from './post-tree-item';
 
 export class PostCategoryTreeItem extends BaseTreeItemSource {
-    constructor(public readonly category: PostCategory, public children?: PostTreeItem<PostCategoryTreeItem>[]) {
+    constructor(public readonly category: PostCategory, public children?: (PostCategoryTreeItem | PostTreeItem)[]) {
         super();
     }
 

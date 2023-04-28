@@ -1,4 +1,5 @@
 export class PostCategory {
+    parentId?: number | null;
     categoryId = -1;
     title = '';
     visible = true;
