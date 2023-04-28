@@ -1,5 +1,5 @@
 import { ChoiceGroup, IChoiceGroupOption, Label, Stack } from '@fluentui/react';
-import { AccessPermission } from '../../../src/models/post';
+import { AccessPermission, formatAccessPermission } from '../../../src/models/post';
 import React from 'react';
 
 export interface IAccessPermissionSelectorProps {
@@ -15,18 +15,18 @@ export class AccessPermissionSelector extends React.Component<
 > {
     private options: IChoiceGroupOption[] = [
         {
-            text: '所有人',
+            text: formatAccessPermission(AccessPermission.undeclared),
             value: AccessPermission.undeclared,
             key: AccessPermission.undeclared.toString(),
         },
         {
-            text: '登录用户',
+            text: formatAccessPermission(AccessPermission.authenticated),
             value: AccessPermission.authenticated,
             key: AccessPermission.authenticated.toString(),
         },
         {
             text: '只有我',
-            value: AccessPermission.owner,
+            value: formatAccessPermission(AccessPermission.owner),
             key: AccessPermission.owner.toString(),
         },
     ];
