@@ -91,7 +91,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                     />
                     <PasswordInput
                         onChange={value => this.setState({ password: value })}
-                        password={this.state.password}
+                        password={this.state.password ?? ''}
                     />
                     <InputSummary
                         summary={this.state.description}

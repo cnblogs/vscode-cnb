@@ -27,7 +27,7 @@ export class Post {
     isPinned = false;
     isPublished = false;
     isUpdateDateAdded = false;
-    password = '';
+    password?: string | null = '';
     postBody = '';
     postType: PostType = PostType.blogPost;
     accessPermission: AccessPermission = 0;
@@ -88,4 +88,16 @@ export enum AccessPermission {
     undeclared = 0,
     authenticated = 1 << 3,
     owner = 1 << 28,
+    private = 1 << 27,
+}
+
+export function formatAccessPermission(value: AccessPermission) {
+    switch (value) {
+        case AccessPermission.undeclared:
+            return '所有人';
+        case AccessPermission.authenticated:
+            return '登录用户';
+        default:
+            return '只有我';
+    }
 }

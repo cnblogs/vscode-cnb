@@ -4,7 +4,7 @@ import format from 'date-fns/format';
 import formatDistanceStrict from 'date-fns/formatDistanceStrict';
 import zhCN from 'date-fns/locale/zh-CN';
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
-import { Post } from '../../models/post';
+import { AccessPermission, Post, formatAccessPermission } from '../../models/post';
 import { PostEditDto } from '../../models/post-edit-dto';
 import { postCategoryService } from '../../services/post-category.service';
 import { postService } from '../../services/post.service';
@@ -17,6 +17,8 @@ export enum RootPostMetadataType {
     tagEntry = 'tagEntry',
     updateDate = 'updateDate',
     createDate = 'createDate',
+    publishStatus = 'publishStatus',
+    accessPermission = 'accessPermission',
 }
 
 const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto | undefined) =>
@@ -26,6 +28,8 @@ const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto | undefined)
             () => (parsedPost.hasUpdates ? new PostUpdatedDateMetadata(parsedPost) : null),
         ],
         [RootPostMetadataType.createDate, () => new PostCreatedDateMetadata(parsedPost)],
+        [RootPostMetadataType.publishStatus, () => new PostPublishStatusMetadata(parsedPost)],
+        [RootPostMetadataType.accessPermission, () => new PostAccessPermissionMetadata(parsedPost)],
         [
             RootPostMetadataType.categoryEntry,
             () =>
@@ -204,5 +208,60 @@ export class PostUpdatedDateMetadata extends PostDateMetadata {
         const { datePublished, dateUpdated } = this.parent;
         const now = new Date();
         return differenceInSeconds(dateUpdated ?? now, datePublished ?? now) > 0;
+    }
+}
+
+export class PostAccessPermissionMetadata extends PostMetadata {
+    constructor(public readonly parent: Post) {
+        super(parent);
+    }
+
+    static parseIcon(accessPermission: AccessPermission, requirePassword: boolean) {
+        if (requirePassword) return new ThemeIcon('key');
+
+        switch (accessPermission) {
+            case AccessPermission.undeclared:
+                return new ThemeIcon('globe');
+            case AccessPermission.authenticated:
+                return new ThemeIcon('public-ports-view-icon');
+            default:
+                return new ThemeIcon('private-ports-view-icon');
+        }
+    }
+
+    toTreeItem(): Promise<TreeItem> {
+        const { password } = this.parent;
+        const isPasswordRequired = password != null && password.length > 0;
+        return Promise.resolve(
+            Object.assign<TreeItem, Partial<TreeItem>>(
+                new TreeItem(
+                    `访问权限: ${formatAccessPermission(this.parent.accessPermission)}` +
+                        (isPasswordRequired ? '(需密码)' : '')
+                ),
+                {
+                    iconPath: PostAccessPermissionMetadata.parseIcon(this.parent.accessPermission, isPasswordRequired),
+                }
+            )
+        );
+    }
+}
+
+export class PostPublishStatusMetadata extends PostMetadata {
+    constructor(public readonly parent: Post) {
+        super(parent);
+    }
+
+    toTreeItem(): Promise<TreeItem> {
+        const {
+            parent: { isPublished, isDraft },
+        } = this;
+        return Promise.resolve(
+            Object.assign<TreeItem, Partial<TreeItem>>(
+                new TreeItem(isPublished ? '已发布' : '未发布' + (isDraft ? '(草稿)' : '')),
+                {
+                    iconPath: new ThemeIcon(isDraft ? 'issue-draft' : isPublished ? 'issue-closed' : 'circle-slash'),
+                }
+            )
+        );
     }
 }
