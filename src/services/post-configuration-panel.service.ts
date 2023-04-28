@@ -60,7 +60,7 @@ export namespace postConfigurationPanel {
                         command: webviewCommands.UiCommands.editPostConfiguration,
                         post: cloneDeep(post),
                         activeTheme: vscode.window.activeColorTheme.kind,
-                        personalCategories: cloneDeep(await postCategoryService.fetchCategories()),
+                        personalCategories: cloneDeep(await postCategoryService.listCategories()),
                         siteCategories: cloneDeep(await siteCategoryService.fetchAll()),
                         tags: cloneDeep(await postTagService.fetchTags()),
                         breadcrumbs,

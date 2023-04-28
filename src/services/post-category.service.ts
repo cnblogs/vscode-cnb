@@ -19,11 +19,11 @@ export class PostCategoryService {
         ids = ids.filter(x => x > 0);
         if (ids.length <= 0) return [];
 
-        const categories = await this.fetchCategories(!useCache);
+        const categories = await this.listCategories(!useCache);
         return categories.filter(({ categoryId }) => ids.includes(categoryId));
     }
 
-    async fetchCategories(forceRefresh = false): Promise<PostCategories> {
+    async listCategories(forceRefresh = false): Promise<PostCategories> {
         if (this._cached && !forceRefresh) return this._cached;
 
         const res = await fetch(`${globalContext.config.apiBaseUrl}/api/category/blog/1/edit`);

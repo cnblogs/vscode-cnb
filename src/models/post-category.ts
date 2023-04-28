@@ -6,6 +6,8 @@ export class PostCategory {
     updateTime: Date = new Date();
     count = 0;
     order?: number;
+    childCount = 0;
+    visibleChildCount = 0;
 }
 
 export type PostCategoryAddDto = Pick<PostCategory, 'title' | 'visible' | 'description'>;

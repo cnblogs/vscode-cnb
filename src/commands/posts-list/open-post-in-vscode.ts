@@ -18,7 +18,7 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
     const postIdSegment = includePostId ? `.${post.id}` : '';
     const { text: postTitle } = await PostTitleSanitizer.sanitize(post);
     if (shouldCreateLocalPostFileWithCategory) {
-        let categories = await postCategoryService.fetchCategories();
+        let categories = await postCategoryService.listCategories();
         categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
         const categoryTitle = sanitizeFileName(categories[0]?.title ?? '', {
             replacement: invalidChar => (invalidChar === '/' ? '_' : ''),

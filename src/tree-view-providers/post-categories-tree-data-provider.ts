@@ -128,7 +128,7 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
             await this.setIsRefreshing(true);
             let categories: PostCategories = [];
             try {
-                categories = await postCategoryService.fetchCategories(true);
+                categories = await postCategoryService.listCategories(true);
             } catch (err) {
                 void window.showWarningMessage('获取博文分类失败', {
                     detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
