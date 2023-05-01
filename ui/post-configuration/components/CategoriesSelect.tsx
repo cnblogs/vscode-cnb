@@ -13,7 +13,7 @@ interface CategoriesSelectorState {
     categoryIds: number[];
 }
 
-class CategoriesSelector extends Component<CategoriesSelectorProps, CategoriesSelectorState> {
+class CategoriesSelect extends Component<CategoriesSelectorProps, CategoriesSelectorState> {
     constructor(props: CategoriesSelectorProps) {
         super(props);
         this.state = { categories: personalCategoriesStore.get(), categoryIds: props.categoryIds ?? [] };
@@ -53,4 +53,4 @@ class CategoriesSelector extends Component<CategoriesSelectorProps, CategoriesSe
     }
 }
 
-export { CategoriesSelector };
+export { CategoriesSelect };

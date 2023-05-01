@@ -1,7 +1,7 @@
 import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 import { Stack } from '@fluentui/react/lib/Stack';
 import React from 'react';
-import { CategoriesSelector } from './CategoriesSelector';
+import { CategoriesSelect } from './CategoriesSelect';
 import { SiteHomeContributionOptionsSelector } from './SiteHomeContributionOptionsSelector';
 import { PostConfiguration } from '@models/post-configuration';
 import { Post } from '@models/post';
@@ -56,7 +56,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                     <Stack tokens={{ childrenGap: 8 }}>
                         <Label>个人分类</Label>
                         <Stack>
-                            <CategoriesSelector
+                            <CategoriesSelect
                                 onChange={categoryIds => {
                                     this.setState({ categoryIds: categoryIds });
                                 }}
