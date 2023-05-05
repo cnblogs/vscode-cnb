@@ -9,6 +9,7 @@ export class PostCategory {
     order?: number;
     childCount = 0;
     visibleChildCount = 0;
+    parent?: PostCategory | null;
 }
 
 export type PostCategoryAddDto = Pick<PostCategory, 'title' | 'visible' | 'description'>;

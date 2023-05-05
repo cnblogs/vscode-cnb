@@ -56,6 +56,17 @@ export class PostCategoryService {
         return categories;
     }
 
+    async find(id: number) {
+        const res = await fetch(
+            `${globalContext.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${new URLSearchParams([
+                ['parent', id <= 0 ? '' : `${id}`],
+            ]).toString()}`
+        );
+        const { parent } = <{ parent?: PostCategory | null; categories: PostCategories }>await res.json();
+
+        return parent;
+    }
+
     async newCategory(categoryAddDto: PostCategoryAddDto) {
         const res = await fetch(`${globalContext.config.apiBaseUrl}/api/category/blog/1`, {
             method: 'POST',
