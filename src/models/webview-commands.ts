@@ -1,3 +1,5 @@
+import { PostCategories } from '@/models/post-category';
+
 export namespace webviewCommands {
     export enum UiCommands {
         editPostConfiguration = 'editPostConfiguration',
@@ -6,6 +8,7 @@ export namespace webviewCommands {
         updateImageUploadStatus = 'updateImageUploadStatus',
         setFluentIconBaseUrl = 'setFluentIconBaseUrl',
         updateTheme = 'updateTheme',
+        updateChildCategories = 'updateChildCategories',
     }
 
     export enum ExtensionCommands {
@@ -13,6 +16,16 @@ export namespace webviewCommands {
         disposePanel = 'disposePanel',
         uploadImage = 'uploadImage',
         refreshPost = 'refreshPost',
+        getChildCategories = 'getChildCategories',
+    }
+
+    export interface GetChildCategoriesPayload {
+        parentId: number;
+    }
+
+    export interface UpdateChildCategoriesPayload {
+        parentId: number;
+        value: PostCategories;
     }
 
     export namespace ingCommands {
@@ -35,8 +48,9 @@ export namespace webviewCommands {
     }
 }
 
-interface WebviewCommonCommand<T> {
+export interface WebviewCommonCommand<T> {
     payload: T;
+    command: unknown;
 }
 
 export interface IngWebviewUiCommand<T extends Record<string, unknown> = Record<string, unknown>>

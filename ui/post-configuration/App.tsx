@@ -18,6 +18,7 @@ interface AppState {
     theme?: Theme | PartialTheme;
     breadcrumbs?: string[];
     fileName: string;
+    useNestCategoriesSelect: boolean;
 }
 
 export interface AppProps extends Record<string, never> {}
@@ -25,7 +26,7 @@ export interface AppProps extends Record<string, never> {}
 class App extends Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props);
-        this.state = { theme: activeThemeProvider.activeTheme(), fileName: '' };
+        this.state = { theme: activeThemeProvider.activeTheme(), fileName: '', useNestCategoriesSelect: false };
         this.observerMessages();
         vsCodeApi.getInstance().postMessage({ command: webviewCommands.ExtensionCommands.refreshPost });
     }
@@ -50,6 +51,7 @@ class App extends Component<AppProps, AppState> {
                                     : undefined
                             }
                             fileName={fileName}
+                            useNestCategoriesSelect={this.state.useNestCategoriesSelect}
                         />
                     </PostFormContextProvider>
                 </Stack>
@@ -81,8 +83,10 @@ class App extends Component<AppProps, AppState> {
     private observerMessages() {
         window.addEventListener('message', ev => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const message: webviewMessage.Message = ev.data ?? {};
-            const { command } = message;
+            const { command } = ev.data;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const message = ev.data as any;
+
             if (command === webviewCommands.UiCommands.editPostConfiguration) {
                 const { post, activeTheme, personalCategories, siteCategories, tags, breadcrumbs, fileName } =
                     message as webviewMessage.EditPostConfigurationMessage;
@@ -95,6 +99,7 @@ class App extends Component<AppProps, AppState> {
                     post,
                     breadcrumbs,
                     fileName,
+                    useNestCategoriesSelect: personalCategories.some(c => c.childCount > 0),
                 });
             } else if (command === webviewCommands.UiCommands.updateBreadcrumbs) {
                 const { breadcrumbs } = message as webviewMessage.UpdateBreadcrumbsMessage;

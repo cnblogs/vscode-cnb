@@ -8,7 +8,7 @@ import { postTagService } from './post-tag.service';
 import { postService } from './post.service';
 import { isErrorResponse } from '../models/error-response';
 import { webviewMessage } from '../models/webview-message';
-import { webviewCommands } from 'src/models/webview-commands';
+import { WebviewCommonCommand, webviewCommands } from 'src/models/webview-commands';
 import { uploadImage } from '../commands/upload-image/upload-image';
 import { ImageUploadStatusId } from '../models/image-upload-status';
 import { openPostFile } from '../commands/posts-list/open-post-file';
@@ -204,6 +204,20 @@ export namespace postConfigurationPanel {
                     break;
                 case webviewCommands.ExtensionCommands.uploadImage:
                     await onUploadImageCommand(panel, <webviewMessage.UploadImageMessage>message);
+                    break;
+                case webviewCommands.ExtensionCommands.getChildCategories:
+                    {
+                        const { payload } = message as WebviewCommonCommand<webviewCommands.GetChildCategoriesPayload>;
+                        await webview.postMessage({
+                            command: webviewCommands.UiCommands.updateChildCategories,
+                            payload: {
+                                value: await postCategoryService
+                                    .listCategories({ parentId: payload.parentId })
+                                    .catch(() => []),
+                                parentId: payload.parentId,
+                            },
+                        } as WebviewCommonCommand<webviewCommands.UpdateChildCategoriesPayload>);
+                    }
                     break;
             }
         });

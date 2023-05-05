@@ -22,7 +22,7 @@ export class ErrorResponse extends React.Component<IErrorResponseProps, IErrorRe
 
         this.state = { errors: [] };
         window.addEventListener('message', msg => {
-            const { command, errorResponse } = (msg.data ?? {}) as Optional<
+            const { command, errorResponse } = (msg.data ?? {}) as any as Optional<
                 webviewMessage.ShowErrorResponseMessage,
                 'command'
             >;
