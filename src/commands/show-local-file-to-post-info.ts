@@ -52,7 +52,7 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
     const post = (await postService.fetchPostEditDto(postId))?.post;
     if (!post) return;
 
-    let categories = await postCategoryService.fetchCategories();
+    let categories = await postCategoryService.listCategories();
     categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
     const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : '';
     const tagsDesc = post.tags?.length ?? 0 > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : '';

@@ -100,7 +100,7 @@ export const inputPostSettings = (
         calculateStepNumber('categoryIds');
         let categories: PostCategories = [];
         try {
-            categories = await postCategoryService.fetchCategories();
+            categories = await postCategoryService.listCategories();
         } catch (err) {
             AlertService.error(err instanceof Error ? err.message : JSON.stringify(err));
             // 取消

@@ -18,11 +18,20 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
     const postIdSegment = includePostId ? `.${post.id}` : '';
     const { text: postTitle } = await PostTitleSanitizer.sanitize(post);
     if (shouldCreateLocalPostFileWithCategory) {
-        let categories = await postCategoryService.fetchCategories();
-        categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
-        const categoryTitle = sanitizeFileName(categories[0]?.title ?? '', {
-            replacement: invalidChar => (invalidChar === '/' ? '_' : ''),
-        });
+        const firstCategoryId = post.categoryIds?.[0];
+        const category = firstCategoryId ? await postCategoryService.find(firstCategoryId) : null;
+        let i: typeof category | undefined = category;
+        let categoryTitle = '';
+        while (i != null) {
+            categoryTitle = path.join(
+                sanitizeFileName(i.title, {
+                    replacement: invalidChar => (invalidChar === '/' ? '_' : ''),
+                }),
+                categoryTitle
+            );
+            i = i.parent;
+        }
+
         return Uri.joinPath(workspaceUri, categoryTitle, `${postTitle}${postIdSegment}${ext}`);
     } else {
         return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`);

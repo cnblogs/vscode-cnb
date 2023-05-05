@@ -11,6 +11,7 @@ import { postService } from '../../services/post.service';
 import { BaseEntryTreeItem } from './base-entry-tree-item';
 import { BaseTreeItemSource } from './base-tree-item-source';
 import { PostTreeItem } from './post-tree-item';
+import { PostCategory } from '@/models/post-category';
 
 export enum RootPostMetadataType {
     categoryEntry = 'categoryEntry',
@@ -129,9 +130,19 @@ export class PostCategoryMetadata extends PostMetadata {
         const {
             post: { categoryIds },
         } = editDto;
-        return (await postCategoryService.findCategories(categoryIds ?? [])).map(
-            ({ categoryId, title }) => new PostCategoryMetadata(parent, title, categoryId)
-        );
+        return (await Promise.all((categoryIds ?? []).map(categoryId => postCategoryService.find(categoryId))))
+            .filter((x): x is PostCategory => x != null)
+            .map(
+                category =>
+                    new PostCategoryMetadata(
+                        parent,
+                        category
+                            .flattenParents()
+                            .map(({ title }) => title)
+                            .join('/'),
+                        category.categoryId
+                    )
+            );
     }
 
     toTreeItem = (): TreeItem =>

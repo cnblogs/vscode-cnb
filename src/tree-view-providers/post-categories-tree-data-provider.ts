@@ -33,7 +33,11 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
     get flattenPostItems() {
         return (
             flattenDepth(
-                this._roots?.map(x => x.children ?? []),
+                this._roots?.map(
+                    x =>
+                        x.children?.filter((c): c is PostTreeItem<PostCategoryTreeItem> => c instanceof PostTreeItem) ??
+                        []
+                ),
                 1
             ) ?? []
         );
@@ -57,10 +61,17 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
 
     getChildren(parent?: PostCategoriesListTreeItem): ProviderResult<PostCategoriesListTreeItem[]> {
         if (!this.isRefreshing) {
-            if (parent == null) return this.getRootChildren();
-            else if (parent instanceof PostCategoryTreeItem) return this.getPostChildren(parent);
-            else if (parent instanceof PostTreeItem) return this.getPostMetadataChildren(parent);
-            else if (parent instanceof PostEntryMetadata) return parent.getChildrenAsync();
+            if (parent == null) {
+                return this.getCategories();
+            } else if (parent instanceof PostCategoryTreeItem) {
+                return Promise.all([this.getCategories(parent.category.categoryId), this.getPosts(parent)]).then(
+                    ([childCategories, childPosts]) => (parent.children = [...childCategories, ...childPosts])
+                );
+            } else if (parent instanceof PostTreeItem) {
+                return this.getPostMetadataChildren(parent);
+            } else if (parent instanceof PostEntryMetadata) {
+                return parent.getChildrenAsync();
+            }
         }
 
         return Promise.resolve([]);
@@ -93,54 +104,45 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
         });
     }
 
-    private async getPostChildren(parent: PostCategoryTreeItem): Promise<PostTreeItem[]> {
+    private async getPosts(parent: PostCategoryTreeItem): Promise<PostTreeItem[]> {
         const {
             category: { categoryId },
         } = parent;
 
-        if (parent.children == null) {
-            parent.children = take(
-                (await postService.fetchPostsList({ categoryId: categoryId, pageSize: 100 })).items.map(x =>
-                    Object.assign<PostTreeItem<PostCategoryTreeItem>, Partial<PostTreeItem<PostCategoryTreeItem>>>(
-                        new PostTreeItem<PostCategoryTreeItem>(x, true),
-                        {
-                            parent,
-                        }
-                    )
-                ),
-                500
-            );
-            if (parent.children.length <= 0 && parent.category.count > 0) {
-                parent.category.count = 0;
-                this.fireTreeDataChangedEvent(parent);
-            }
-        }
-
-        return parent.children;
+        return take(
+            (await postService.fetchPostsList({ categoryId, pageSize: 100 })).items.map(x =>
+                Object.assign<PostTreeItem<PostCategoryTreeItem>, Partial<PostTreeItem<PostCategoryTreeItem>>>(
+                    new PostTreeItem<PostCategoryTreeItem>(x, true),
+                    {
+                        parent,
+                    }
+                )
+            ),
+            500
+        );
     }
 
     private getPostMetadataChildren(parent: PostTreeItem) {
         return PostMetadata.parseRoots({ post: parent, exclude: [RootPostMetadataType.categoryEntry] });
     }
 
-    private async getRootChildren() {
-        if (this._roots == null) {
-            await this.setIsRefreshing(true);
-            let categories: PostCategories = [];
-            try {
-                categories = await postCategoryService.fetchCategories(true);
-            } catch (err) {
-                void window.showWarningMessage('获取博文分类失败', {
-                    detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
-                } as MessageOptions);
-            } finally {
-                await this.setIsRefreshing(false);
-            }
-
-            this._roots = categories.map(x => new PostCategoryTreeItem(x));
+    private async getCategories(parentId?: number | null) {
+        await this.setIsRefreshing(true);
+        let categories: PostCategories = [];
+        try {
+            categories = await postCategoryService.listCategories({
+                forceRefresh: true,
+                parentId: parentId ?? undefined,
+            });
+        } catch (err) {
+            void window.showWarningMessage('获取博文分类失败', {
+                detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
+            } as MessageOptions);
+        } finally {
+            await this.setIsRefreshing(false);
         }
 
-        return this._roots;
+        return categories.map(x => new PostCategoryTreeItem(x));
     }
 }
 

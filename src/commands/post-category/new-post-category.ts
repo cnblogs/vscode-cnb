@@ -25,7 +25,7 @@ export const newPostCategory = async () => {
                     increment: 90,
                 });
                 refreshPostCategoriesList();
-                const newCategory = (await postCategoryService.fetchCategories()).find(x => x.title === input.title);
+                const newCategory = (await postCategoryService.listCategories()).find(x => x.title === input.title);
                 if (newCategory) await extensionViews.postCategoriesList.reveal(newCategory);
             } catch (err) {
                 void window.showErrorMessage('新建博文分类时遇到了错误', {
