@@ -64,7 +64,7 @@ export class PostCategoryService {
         );
         const { parent } = <{ parent?: PostCategory | null; categories: PostCategories }>await res.json();
 
-        return parent;
+        return Object.assign(new PostCategory(), parent);
     }
 
     async newCategory(categoryAddDto: PostCategoryAddDto) {

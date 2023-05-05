@@ -20,7 +20,7 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
     if (shouldCreateLocalPostFileWithCategory) {
         const firstCategoryId = post.categoryIds?.[0];
         const category = firstCategoryId ? await postCategoryService.find(firstCategoryId) : null;
-        let i = category;
+        let i: typeof category | undefined = category;
         let categoryTitle = '';
         while (i != null) {
             categoryTitle = path.join(

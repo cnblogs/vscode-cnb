@@ -10,6 +10,19 @@ export class PostCategory {
     childCount = 0;
     visibleChildCount = 0;
     parent?: PostCategory | null;
+
+    flattenParents({ includeSelf = true }: { includeSelf?: boolean } = {}): PostCategories {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        let i: PostCategory | null | undefined = this;
+        const result: PostCategories = [];
+        while (i != null) {
+            if (i !== this || includeSelf) result.unshift(i);
+            if (i.parent && !(i.parent instanceof PostCategory)) i.parent = Object.assign(new PostCategory(), i.parent);
+            i = i.parent;
+        }
+
+        return result;
+    }
 }
 
 export type PostCategoryAddDto = Pick<PostCategory, 'title' | 'visible' | 'description'>;
