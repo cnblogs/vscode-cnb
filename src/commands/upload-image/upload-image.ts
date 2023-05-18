@@ -1,5 +1,5 @@
 import { AlertService } from '@/services/alert.service';
-import { MessageOptions, window } from 'vscode';
+import { window } from 'vscode';
 import { uploadImageFromClipboard } from './upload-clipboard-image';
 import { insertImageLinkToActiveEditor, showUploadSuccessModel } from './upload-image-utils';
 import { uploadLocalDiskImage } from './upload-local-disk-image';
@@ -12,7 +12,7 @@ export const uploadImage = async (autoInsertToActiveEditor = true, from?: 'local
               {
                   modal: true,
                   detail: '选择图片来源',
-              } as MessageOptions,
+              },
               ...options
           )
         : from;

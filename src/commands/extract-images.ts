@@ -1,4 +1,4 @@
-import { Uri, workspace, window, MessageOptions, MessageItem, ProgressLocation, Range } from 'vscode';
+import { Uri, workspace, window, MessageOptions, MessageItem, ProgressLocation, Range, WorkspaceEdit } from 'vscode';
 import { ImageInformation, MarkdownImagesExtractor } from '../services/images-extractor.service';
 
 type ExtractOption = MessageItem & Partial<Pick<MarkdownImagesExtractor, 'imageType'>>;
@@ -38,13 +38,13 @@ export const extractImages = async (
                   ...extractOptions
               );
         const editor = window.visibleTextEditors.find(x => x.document.fileName === arg.fsPath);
+        const textDocument = editor?.document ?? workspace.textDocuments.find(x => x.fileName === arg.fsPath);
 
-        if (result && result.imageType && editor) {
-            extractor.imageType = result.imageType;
+        if (result && result.imageType && textDocument) {
             if (extractor.findImages().length <= 0) return warnNoImages();
+            extractor.imageType = result.imageType;
 
-            const document = editor.document;
-            await document.save();
+            await textDocument.save();
             const failedImages = await window.withProgress(
                 { title: '提取图片', location: ProgressLocation.Notification },
                 async progress => {
@@ -59,8 +59,9 @@ export const extractImages = async (
                     const extractResults = await extractor.extract();
                     const idx = 0;
                     const total = extractResults.length;
-                    await editor.edit(editBuilder => {
-                        for (const [range, , extractedImage] of extractResults
+
+                    await workspace.applyEdit(
+                        extractResults
                             .filter((x): x is [source: ImageInformation, result: ImageInformation] => x[1] != null)
                             .map(
                                 ([sourceImage, result]): [
@@ -70,30 +71,36 @@ export const extractImages = async (
                                 ] => {
                                     if (sourceImage.index == null) return [null, sourceImage, result];
 
-                                    const endPos = document.positionAt(
+                                    const endPos = textDocument.positionAt(
                                         sourceImage.index + sourceImage.symbol.length - 1
                                     );
                                     return [
                                         new Range(
-                                            document.positionAt(sourceImage.index),
+                                            textDocument.positionAt(sourceImage.index),
                                             endPos.with({ character: endPos.character + 1 })
                                         ),
                                         sourceImage,
                                         result,
                                     ];
                                 }
-                            )) {
-                            if (range == null) continue;
+                            )
+                            .reduce((workspaceEdit, [range, , extractedImage]) => {
+                                if (range) {
+                                    progress.report({
+                                        increment: (idx / total) * 20 + 80,
+                                        message: `[${idx + 1} / ${total}] 正在替换图片链接 ${extractedImage.symbol}`,
+                                    });
+                                    workspaceEdit.replace(textDocument.uri, range, extractedImage.symbol, {
+                                        needsConfirmation: false,
+                                        label: extractedImage.symbol,
+                                    });
+                                }
 
-                            progress.report({
-                                increment: (idx / total) * 20 + 80,
-                                message: `[${idx + 1} / ${total}] 执行替换 ${extractedImage.symbol}`,
-                            });
+                                return workspaceEdit;
+                            }, new WorkspaceEdit())
+                    );
 
-                            editBuilder.replace(range, extractedImage.symbol);
-                        }
-                    });
-                    await document.save();
+                    await textDocument.save();
                     return extractResults.filter(x => x[1] === null).map(x => x[0]);
                 }
             );
