@@ -25,8 +25,8 @@ export class AccessPermissionSelector extends React.Component<
             key: AccessPermission.authenticated.toString(),
         },
         {
-            text: '只有我',
-            value: formatAccessPermission(AccessPermission.owner),
+            text: formatAccessPermission(AccessPermission.owner),
+            value: AccessPermission.owner,
             key: AccessPermission.owner.toString(),
         },
     ];
