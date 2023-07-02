@@ -17,5 +17,6 @@
                 "node": true
             }
         }
-    ]
+    ],    
+    "endOfLine": "auto"    
 }
