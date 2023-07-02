@@ -88,6 +88,8 @@ export class PostService {
             return undefined;
         }
 
+        AlertService.info(await response.text());
+
         const { blogPost, myConfig } = (await response.json()) as { blogPost?: Post; myConfig?: unknown };
 
         if (blogPost) blogPost.postBody = blogPost.postBody.replace(/[\ufffd]/g, '');
