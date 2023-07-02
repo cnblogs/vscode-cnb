@@ -91,8 +91,6 @@ export class PostService {
             return undefined;
         }
 
-        AlertService.info(await response.text());
-
         const { blogPost, myConfig } = (await response.json()) as { blogPost?: Post; myConfig?: unknown };
 
         return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined;
