@@ -70,6 +70,9 @@ export class PostService {
     async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
         const response = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
             method: 'GET',
+            headers: {
+                'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+            },
         });
 
         try {
