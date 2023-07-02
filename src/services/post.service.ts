@@ -92,8 +92,6 @@ export class PostService {
 
         const { blogPost, myConfig } = (await response.json()) as { blogPost?: Post; myConfig?: unknown };
 
-        if (blogPost) blogPost.postBody = blogPost.postBody.replace(/[\ufffd]/g, '');
-
         return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined;
     }
 
