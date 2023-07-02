@@ -1,114 +1,114 @@
 name: Build and check the code format
 
 on:
-    push:
-        branches:
-            - main
-    pull_request_target:
-        types:
-            - opened
-            - synchronize
-            - reopened
-            - edited
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
 env:
-    GITLAB_NPM_TOKEN: ${{secrets.GITLAB_NPM_TOKEN}}
+  GITLAB_NPM_TOKEN: ${{secrets.GITLAB_NPM_TOKEN}}
 jobs:
-    lint:
-        permissions: read-all
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [16.x]
-        steps:
-            - uses: actions/checkout@v2
-              with:
-                  ref: ${{ github.event.pull_request.head.sha }}
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v2
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  cache: 'npm'
-            - name: 'Installing Dependencies'
-              run: npm ci
-            - name: 'Linting'
-              run: npm run lint
-            - name: 'Testing(Unit)'
-              run: npm run test:unit
-    package:
-        strategy:
-            matrix:
-                include:
-                    - os: windows-latest
-                      platform: win32
-                      arch: x64
-                      npm_config_arch: x64
-                    - os: windows-latest
-                      platform: win32
-                      arch: ia32
-                      npm_config_arch: ia32
-                    - os: windows-latest
-                      platform: win32
-                      arch: arm64
-                      npm_config_arch: arm
-                    - os: ubuntu-latest
-                      platform: linux
-                      arch: x64
-                      npm_config_arch: x64
-                    - os: ubuntu-latest
-                      platform: linux
-                      arch: arm64
-                      npm_config_arch: arm64
-                    - os: ubuntu-latest
-                      platform: linux
-                      arch: armhf
-                      npm_config_arch: arm
-                    - os: ubuntu-latest
-                      platform: alpine
-                      arch: x64
-                      npm_config_arch: x64
-                    - os: macos-latest
-                      platform: darwin
-                      arch: x64
-                      npm_config_arch: x64
-                    - os: macos-latest
-                      platform: darwin
-                      arch: arm64
-                      npm_config_arch: arm64
-        runs-on: ${{ matrix.os }}
-        needs: lint
-        env:
-            npm_config_arch: ${{ matrix.npm_config_arch }}
-        steps:
-            - uses: actions/checkout@v2
-              with:
-                  ref: ${{ github.event.pull_request.head.sha }}
-            - name: Use Node.js
-              uses: actions/setup-node@v2
-              with:
-                  node-version: 16.x
-                  cache: 'npm'
+  lint:
+    permissions: read-all
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - name: "Installing Dependencies"
+        run: npm ci
+      - name: "Linting"
+        run: npm run lint
+      - name: "Testing(Unit)"
+        run: npm run test:unit
+  package:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win32
+            arch: x64
+            npm_config_arch: x64
+          - os: windows-latest
+            platform: win32
+            arch: ia32
+            npm_config_arch: ia32
+          - os: windows-latest
+            platform: win32
+            arch: arm64
+            npm_config_arch: arm
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+            npm_config_arch: x64
+          - os: ubuntu-latest
+            platform: linux
+            arch: arm64
+            npm_config_arch: arm64
+          - os: ubuntu-latest
+            platform: linux
+            arch: armhf
+            npm_config_arch: arm
+          - os: ubuntu-latest
+            platform: alpine
+            arch: x64
+            npm_config_arch: x64
+          - os: macos-latest
+            platform: darwin
+            arch: x64
+            npm_config_arch: x64
+          - os: macos-latest
+            platform: darwin
+            arch: arm64
+            npm_config_arch: arm64
+    runs-on: ${{ matrix.os }}
+    needs: lint
+    env:
+      npm_config_arch: ${{ matrix.npm_config_arch }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: "npm"
 
-            - name: 'Installing Dependencies'
-              run: npm ci
+      - name: "Installing Dependencies"
+        run: npm ci
 
-            - name: 'Building'
-              run: npm run package -- --env CLIENTID=${{ secrets.OAUTHCLIENTID }} --env CLIENTSECRET=${{ secrets.OAUTHCLIENTSECRET }} && npm run ui:package
+      - name: "Building"
+        run: npm run package -- --env CLIENTID=${{ secrets.OAUTHCLIENTID }} --env CLIENTSECRET=${{ secrets.OAUTHCLIENTSECRET }} && npm run ui:package
 
-            - name: 'Versioning'
-              id: version
-              shell: bash
-              run: echo "VERSION=1.0.0-beta.$(date +%s)" >> $GITHUB_OUTPUT
+      - name: "Versioning"
+        id: version
+        shell: bash
+        run: echo "VERSION=1.0.0-beta.$(date +%s)" >> $GITHUB_OUTPUT
 
-            - id: targeting
-              name: Targeting
-              shell: pwsh
-              run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_OUTPUT
+      - id: targeting
+        name: Targeting
+        shell: pwsh
+        run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_OUTPUT
 
-            - name: 'Packaging'
-              id: packaging
-              run: |
-                  npx vsce package --pre-release --target ${{ steps.targeting.outputs.target }} --no-update-package-json --no-git-tag-version ${{ steps.version.outputs.VERSION }}
-            - uses: actions/upload-artifact@v2
-              with:
-                  name: ${{ steps.targeting.outputs.target }}
-                  path: '*.vsix'
+      - name: "Packaging"
+        id: packaging
+        run: |
+          npx @vscode/vsce package --pre-release --target ${{ steps.targeting.outputs.target }} --no-update-package-json --no-git-tag-version ${{ steps.version.outputs.VERSION }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.targeting.outputs.target }}
+          path: "*.vsix"
