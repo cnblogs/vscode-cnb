@@ -8,7 +8,14 @@
         "sourceType": "module",
         "project": ["./tsconfig.json", "./ui/tsconfig.json", "./test/tsconfig.json"]
     },
-    "rules": {},
+    "rules": {
+        "prettier/prettier": [
+            "error",
+            {
+                "endOfLine": "auto"
+            }
+        ]
+    },
     "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts", "__mocks__/vscode.ts", "src/assets/**"],
     "overrides": [
         {
