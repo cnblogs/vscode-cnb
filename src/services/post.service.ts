@@ -71,6 +71,7 @@ export class PostService {
         const response = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
             method: 'GET',
         });
+
         try {
             await throwIfNotOkResponse(response);
         } catch (ex) {
@@ -86,7 +87,11 @@ export class PostService {
             }
             return undefined;
         }
+
         const { blogPost, myConfig } = (await response.json()) as { blogPost?: Post; myConfig?: unknown };
+
+        if (blogPost) blogPost.postBody = blogPost.postBody.replace(/[\ufffd]/g, '');
+
         return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined;
     }
 
