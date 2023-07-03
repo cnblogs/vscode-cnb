@@ -1,4 +1,4 @@
-import fetch from '@/utils/fetch-client';
+import fetch, { fetchWithBuffer } from '@/utils/fetch-client';
 import { Post } from '../models/post';
 import { globalContext } from './global-state';
 import { PageModel } from '../models/page-model';
@@ -69,7 +69,7 @@ export class PostService {
     }
 
     async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
-        const response = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
+        const response = await fetchWithBuffer(`${this._baseUrl}/api/posts/${postId}`, {
             method: 'GET',
         });
 
