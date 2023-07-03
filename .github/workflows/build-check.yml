@@ -91,7 +91,7 @@ jobs:
       - name: "Installing Dependencies"
         run: npm ci
 
-      - name: "Building"
+      - name: Building
         run: npm run package -- --env CLIENTID=${{ secrets.OAUTHCLIENTID }} --env CLIENTSECRET=${{ secrets.OAUTHCLIENTSECRET }} && npm run ui:package
 
       - name: "Versioning"
@@ -104,7 +104,7 @@ jobs:
         shell: pwsh
         run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_OUTPUT
 
-      - name: "Packaging"
+      - name: Packaging
         id: packaging
         run: |
           npx @vscode/vsce package --pre-release --target ${{ steps.targeting.outputs.target }} --no-update-package-json --no-git-tag-version ${{ steps.version.outputs.VERSION }}
