@@ -11,6 +11,7 @@ import { AlertService } from './alert.service';
 import { PostFileMapManager } from './post-file-map';
 import { ZzkSearchResult } from '../models/zzk-search-result';
 import got from '@/utils/http-client';
+import iconv from 'iconv-lite';
 
 const defaultPageSize = 30;
 let newPostTemplate: PostEditDto | undefined;
@@ -88,9 +89,10 @@ export class PostService {
             return undefined;
         }
 
-        AlertService.info(await response.text());
+        const buffer = Buffer.from(await response.arrayBuffer());
+        const decodedBody = iconv.decode(buffer, 'utf-8');
 
-        const { blogPost, myConfig } = (await response.json()) as { blogPost?: Post; myConfig?: unknown };
+        const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown };
 
         return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined;
     }
