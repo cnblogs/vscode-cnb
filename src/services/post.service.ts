@@ -5,7 +5,7 @@ import { PageModel } from '../models/page-model';
 import { PostsListState } from '../models/posts-list-state';
 import { PostEditDto } from '../models/post-edit-dto';
 import { PostUpdatedResponse } from '../models/post-updated-response';
-import { throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
+import { throwIfNotOkGotResponse, throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
 import { IErrorResponse } from '../models/error-response';
 import { AlertService } from './alert.service';
 import { PostFileMapManager } from './post-file-map';
@@ -69,27 +69,25 @@ export class PostService {
     }
 
     async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
-        const body = await gotWithBuffer(`${this._baseUrl}/api/posts/${postId}`, {
-            method: 'GET',
-        }).buffer();
+        const response = await gotWithBuffer(`${this._baseUrl}/api/posts/${postId}`);
 
-        // try {
-        //     await throwIfNotOkResponse(response);
-        // } catch (ex) {
-        //     const { statusCode, errors } = ex as IErrorResponse;
-        //     if (!muteErrorNotification) {
-        //         if (statusCode === 404) {
-        //             AlertService.error('博文不存在');
-        //             const postFilePath = PostFileMapManager.getFilePath(postId);
-        //             if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '');
-        //         } else {
-        //             AlertService.error(errors.join('\n'));
-        //         }
-        //     }
-        //     return undefined;
-        // }
+        try {
+            throwIfNotOkGotResponse(response);
+        } catch (ex) {
+            const { statusCode, errors } = ex as IErrorResponse;
+            if (!muteErrorNotification) {
+                if (statusCode === 404) {
+                    AlertService.error('博文不存在');
+                    const postFilePath = PostFileMapManager.getFilePath(postId);
+                    if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '');
+                } else {
+                    AlertService.error(errors.join('\n'));
+                }
+            }
+            return undefined;
+        }
 
-        const decodedBody = iconv.decode(body, 'utf-8');
+        const decodedBody = iconv.decode(response.rawBody, 'utf-8');
 
         const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown };
 
