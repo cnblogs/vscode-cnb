@@ -5,12 +5,13 @@ import { PageModel } from '../models/page-model';
 import { PostsListState } from '../models/posts-list-state';
 import { PostEditDto } from '../models/post-edit-dto';
 import { PostUpdatedResponse } from '../models/post-updated-response';
-import { throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
+import { throwIfNotOkGotResponse, throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
 import { IErrorResponse } from '../models/error-response';
 import { AlertService } from './alert.service';
 import { PostFileMapManager } from './post-file-map';
 import { ZzkSearchResult } from '../models/zzk-search-result';
-import got from '@/utils/http-client';
+import { got, gotWithBuffer } from '@/utils/http-client';
+import iconv from 'iconv-lite';
 
 const defaultPageSize = 30;
 let newPostTemplate: PostEditDto | undefined;
@@ -68,11 +69,10 @@ export class PostService {
     }
 
     async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
-        const response = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
-            method: 'GET',
-        });
+        const response = await gotWithBuffer(`${this._baseUrl}/api/posts/${postId}`);
+
         try {
-            await throwIfNotOkResponse(response);
+            throwIfNotOkGotResponse(response);
         } catch (ex) {
             const { statusCode, errors } = ex as IErrorResponse;
             if (!muteErrorNotification) {
@@ -86,7 +86,11 @@ export class PostService {
             }
             return undefined;
         }
-        const { blogPost, myConfig } = (await response.json()) as { blogPost?: Post; myConfig?: unknown };
+
+        const decodedBody = iconv.decode(response.rawBody, 'utf-8');
+
+        const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown };
+
         return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined;
     }
 
