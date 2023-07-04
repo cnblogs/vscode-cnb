@@ -24,7 +24,7 @@ const gotWithBuffer = got.extend({
     hooks: {
         beforeRequest: [bearerTokenHook],
     },
-    throwHttpErrors: true,
+    throwHttpErrors: false,
     https: { rejectUnauthorized: false },
     responseType: 'buffer',
 });
