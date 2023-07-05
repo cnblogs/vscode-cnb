@@ -20,15 +20,6 @@ const httpClient = got.extend({
     https: { rejectUnauthorized: false },
 });
 
-const gotWithBuffer = got.extend({
-    hooks: {
-        beforeRequest: [bearerTokenHook],
-    },
-    throwHttpErrors: false,
-    https: { rejectUnauthorized: false },
-    responseType: 'buffer',
-});
-
-export { got, gotWithBuffer };
+export { got };
 export * from 'got';
 export default httpClient;

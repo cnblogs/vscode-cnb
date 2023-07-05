@@ -1,6 +1,7 @@
 import { GotFetchResponse } from 'got-fetch/out/lib/response';
 import { Response as GotResponse } from 'got';
 import { IErrorResponse, isErrorResponse } from '../models/error-response';
+import iconv from 'iconv-lite';
 
 const throwIfNotOkResponse = async (response: GotFetchResponse) => {
     if (!response.ok) {
@@ -21,9 +22,9 @@ const throwIfNotOkResponse = async (response: GotFetchResponse) => {
     }
 };
 
-const throwIfNotOkGotResponse = (response: GotResponse<string>) => {
+const throwIfNotOkGotResponse = (response: GotResponse<Buffer>) => {
     if (!response.ok) {
-        const responseText = response.body;
+        const responseText = iconv.decode(response.rawBody, 'utf-8');
         let responseJson: unknown;
         try {
             responseJson = JSON.parse(responseText);
