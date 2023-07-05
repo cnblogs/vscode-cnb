@@ -17,7 +17,7 @@ export interface ImageInformation {
 
 export type ImageInformationArray = ImageInformation[];
 
-const markdownImageRegex = /(!\[.*?\])\((.*?)( {0,}["'].*?['"])?\)/g;
+const markdownImageRegex = /(!\[.*?\])\((.+?\.(?:png|jpg|webp|svg|gif))['"]?\)/g;
 const cnblogsImageLinkRegex = /\.cnblogs\.com\//;
 
 interface ImageTypeFilter {
