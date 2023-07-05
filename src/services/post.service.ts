@@ -12,6 +12,7 @@ import { PostFileMapManager } from './post-file-map';
 import { ZzkSearchResult } from '../models/zzk-search-result';
 import got from '@/utils/http-client';
 import httpClient from '@/utils/http-client';
+import iconv from 'iconv-lite';
 
 const defaultPageSize = 30;
 let newPostTemplate: PostEditDto | undefined;
@@ -69,12 +70,12 @@ export class PostService {
     }
 
     async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
-        // const bufferHttpClient = httpClient.extend({
-        //     throwHttpErrors: false,
-        //     responseType: 'buffer',
-        // });
+        const bufferHttpClient = httpClient.extend({
+            throwHttpErrors: false,
+            responseType: 'buffer',
+        });
 
-        const response = await httpClient(`${this._baseUrl}/api/posts/${postId}`);
+        const response = await bufferHttpClient(`${this._baseUrl}/api/posts/${postId}`);
 
         try {
             throwIfNotOkGotResponse(response);
@@ -92,7 +93,7 @@ export class PostService {
             return undefined;
         }
 
-        const decodedBody = 'test'; // iconv.decode(response.rawBody, 'utf-8');
+        const decodedBody = iconv.decode(response.rawBody, 'utf-8');
 
         const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown };
 
