@@ -10,7 +10,7 @@ import { IErrorResponse } from '../models/error-response';
 import { AlertService } from './alert.service';
 import { PostFileMapManager } from './post-file-map';
 import { ZzkSearchResult } from '../models/zzk-search-result';
-import { got, gotWithBuffer } from '@/utils/http-client';
+import httpClient, { Options, got } from '@/utils/http-client';
 import iconv from 'iconv-lite';
 
 const defaultPageSize = 30;
@@ -69,7 +69,12 @@ export class PostService {
     }
 
     async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
-        const response = await gotWithBuffer(`${this._baseUrl}/api/posts/${postId}`);
+        const bufferHttpClient = httpClient.extend({
+            throwHttpErrors: false,
+            responseType: 'buffer',
+        });
+
+        const response = await bufferHttpClient(`${this._baseUrl}/api/posts/${postId}`);
 
         try {
             throwIfNotOkGotResponse(response);
