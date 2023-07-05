@@ -69,12 +69,12 @@ export class PostService {
     }
 
     async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
-        const bufferHttpClient = httpClient.extend({
-            throwHttpErrors: false,
-            responseType: 'buffer',
-        });
+        // const bufferHttpClient = httpClient.extend({
+        //     throwHttpErrors: false,
+        //     responseType: 'buffer',
+        // });
 
-        const response = await bufferHttpClient(`${this._baseUrl}/api/posts/${postId}`);
+        const response = await httpClient(`${this._baseUrl}/api/posts/${postId}`);
 
         try {
             throwIfNotOkGotResponse(response);
