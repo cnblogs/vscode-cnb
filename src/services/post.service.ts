@@ -10,8 +10,8 @@ import { IErrorResponse } from '../models/error-response';
 import { AlertService } from './alert.service';
 import { PostFileMapManager } from './post-file-map';
 import { ZzkSearchResult } from '../models/zzk-search-result';
-import httpClient, { Options, got } from '@/utils/http-client';
-import iconv from 'iconv-lite';
+import got from '@/utils/http-client';
+import httpClient from '@/utils/http-client';
 
 const defaultPageSize = 30;
 let newPostTemplate: PostEditDto | undefined;
@@ -74,31 +74,29 @@ export class PostService {
         //     responseType: 'buffer',
         // });
 
-        // const response = await got(`${this._baseUrl}/api/posts/${postId}`);
+        const response = await httpClient(`${this._baseUrl}/api/posts/${postId}`);
 
-        // try {
-        //     throwIfNotOkGotResponse(response);
-        // } catch (ex) {
-        //     const { statusCode, errors } = ex as IErrorResponse;
-        //     if (!muteErrorNotification) {
-        //         if (statusCode === 404) {
-        //             AlertService.error('博文不存在');
-        //             const postFilePath = PostFileMapManager.getFilePath(postId);
-        //             if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '');
-        //         } else {
-        //             AlertService.error(errors.join('\n'));
-        //         }
-        //     }
-        //     return undefined;
-        // }
+        try {
+            throwIfNotOkGotResponse(response);
+        } catch (ex) {
+            const { statusCode, errors } = ex as IErrorResponse;
+            if (!muteErrorNotification) {
+                if (statusCode === 404) {
+                    AlertService.error('博文不存在');
+                    const postFilePath = PostFileMapManager.getFilePath(postId);
+                    if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '');
+                } else {
+                    AlertService.error(errors.join('\n'));
+                }
+            }
+            return undefined;
+        }
 
-        // const decodedBody = iconv.decode(response.rawBody, 'utf-8');
+        const decodedBody = 'test'; // iconv.decode(response.rawBody, 'utf-8');
 
-        // const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown };
+        const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown };
 
-        // return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined;
-        await new Promise<string>(() => undefined);
-        return undefined;
+        return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined;
     }
 
     async deletePost(postId: number) {
