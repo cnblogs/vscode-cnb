@@ -1,5 +1,5 @@
-import { TreeItem } from 'vscode';
+import { TreeItem } from 'vscode'
 
 export abstract class BaseTreeItemSource {
-    abstract toTreeItem(): TreeItem | Promise<TreeItem>;
+    abstract toTreeItem(): TreeItem | Promise<TreeItem>
 }

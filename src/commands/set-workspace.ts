@@ -1,6 +1,6 @@
-import { window } from 'vscode';
-import { AlertService } from '../services/alert.service';
-import { Settings } from '../services/settings.service';
+import { window } from 'vscode'
+import { AlertService } from '../services/alert.service'
+import { Settings } from '../services/settings.service'
 
 export const setWorkspace = async () => {
     const input = ((await window.showOpenDialog({
@@ -9,10 +9,10 @@ export const setWorkspace = async () => {
         canSelectFiles: false,
         canSelectMany: false,
         defaultUri: Settings.workspaceUri,
-    })) ?? [])[0];
+    })) ?? [])[0]
 
-    if (!input) return;
+    if (!input) return
 
-    await Settings.setWorkspaceUri(input);
-    AlertService.info(`工作空间成功修改为: "${Settings.workspaceUri.fsPath}"`);
-};
+    await Settings.setWorkspaceUri(input)
+    AlertService.info(`工作空间成功修改为: "${Settings.workspaceUri.fsPath}"`)
+}

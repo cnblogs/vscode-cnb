@@ -1,3 +1,3 @@
 export interface AccessToken {
-    exp?: number;
+    exp?: number
 }

@@ -1,40 +1,40 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/naming-convention */
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { rmSync, readdirSync, cpSync, existsSync } from 'fs';
-import { resolve } from 'path';
-import tailwindConfig from './tailwind.config.js';
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import { rmSync, readdirSync, cpSync, existsSync } from 'fs'
+import { resolve } from 'path'
+import tailwindConfig from './tailwind.config.js'
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+import TerserPlugin from 'terser-webpack-plugin'
 
-const isDev = process.env.ASPNETCORE_ENVIRONMENT === 'Development' || process.env.NODE_ENV === 'development';
+const isDev = process.env.ASPNETCORE_ENVIRONMENT === 'Development' || process.env.NODE_ENV === 'development'
 
-rmSync('./dist/assets/ui/**', { force: true, recursive: true });
+rmSync('./dist/assets/ui/**', { force: true, recursive: true })
 
 const buildEntry = () => {
     /**
      * @type {Record<string, string>}
      */
-    const entries = {};
+    const entries = {}
     const folders = readdirSync('ui', { withFileTypes: true })
         .filter(x => x.isDirectory() && !['share', 'dist', 'lib'].includes(x.name))
-        .map(x => x.name);
+        .map(x => x.name)
     for (let folder of folders) {
-        const key = `${folder}/index`;
-        entries[key] = `./ui/${folder}/index.tsx`;
-        cpSync(`./ui/${folder}/index.html`, `./dist/assets/ui/${folder}/index.html`, { force: true });
+        const key = `${folder}/index`
+        entries[key] = `./ui/${folder}/index.tsx`
+        cpSync(`./ui/${folder}/index.html`, `./dist/assets/ui/${folder}/index.html`, { force: true })
     }
 
-    const libPath = './ui/lib/';
-    if (existsSync(libPath)) cpSync(libPath, './dist/assets/ui/lib/', { recursive: true });
+    const libPath = './ui/lib/'
+    if (existsSync(libPath)) cpSync(libPath, './dist/assets/ui/lib/', { recursive: true })
 
-    cpSync('./node_modules/@fluentui/font-icons-mdl2/fonts/', './dist/assets/fonts/', { recursive: true });
+    cpSync('./node_modules/@fluentui/font-icons-mdl2/fonts/', './dist/assets/fonts/', { recursive: true })
 
-    if (isDev) console.log(entries);
+    if (isDev) console.log(entries)
 
-    return entries;
-};
+    return entries
+}
 
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
@@ -108,8 +108,8 @@ const config = {
         {
             apply: compiler => {
                 compiler.hooks.watchRun.tap('customPreTask', () => {
-                    buildEntry();
-                });
+                    buildEntry()
+                })
             },
         },
     ],
@@ -125,6 +125,6 @@ const config = {
             }),
         ],
     },
-};
+}
 
-export default [config];
+export default [config]

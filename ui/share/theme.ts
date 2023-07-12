@@ -1,4 +1,4 @@
-import { PartialTheme } from '@fluentui/react';
+import { PartialTheme } from '@fluentui/react'
 
 const accent: PartialTheme = {
     palette: {
@@ -24,9 +24,9 @@ const accent: PartialTheme = {
         primaryButtonBackgroundPressed: 'var(--vscode-button-foreground)',
         link: 'var(--vscode-textLink-foreground)',
     },
-};
+}
 
-const lightTheme: PartialTheme = accent;
+const lightTheme: PartialTheme = accent
 
 const darkTheme: PartialTheme = {
     palette: Object.assign(
@@ -59,6 +59,6 @@ const darkTheme: PartialTheme = {
     ),
     semanticColors: accent.semanticColors,
     defaultFontStyle: accent.defaultFontStyle,
-};
+}
 
-export { lightTheme, darkTheme };
+export { lightTheme, darkTheme }

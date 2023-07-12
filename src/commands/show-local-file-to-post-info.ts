@@ -1,12 +1,12 @@
-import path from 'path';
-import { MessageOptions, Uri, window } from 'vscode';
-import { AlertService } from '../services/alert.service';
-import { postService } from '../services/post.service';
-import { postCategoryService } from '../services/post-category.service';
-import { PostFileMapManager } from '../services/post-file-map';
-import { searchPostsByTitle } from '../services/search-post-by-title';
-import { viewPostOnline } from './view-post-online';
-import format from 'date-fns/format';
+import path from 'path'
+import { MessageOptions, Uri, window } from 'vscode'
+import { AlertService } from '../services/alert.service'
+import { postService } from '../services/post.service'
+import { postCategoryService } from '../services/post-category.service'
+import { PostFileMapManager } from '../services/post-file-map'
+import { searchPostsByTitle } from '../services/search-post-by-title'
+import { viewPostOnline } from './view-post-online'
+import format from 'date-fns/format'
 
 /**
  * 本地文件所关联的博文信息
@@ -15,13 +15,13 @@ import format from 'date-fns/format';
  * @returns {*}  {Promise<void>}
  */
 export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void> => {
-    let filePath: string | undefined;
-    let postId: number | undefined;
+    let filePath: string | undefined
+    let postId: number | undefined
     if (input instanceof Uri && input.scheme === 'file') {
-        postId = PostFileMapManager.getPostId(input.fsPath);
-        filePath = input.fsPath;
+        postId = PostFileMapManager.getPostId(input.fsPath)
+        filePath = input.fsPath
         if (!postId) {
-            const options = ['现在去关联'];
+            const options = ['现在去关联']
             const selected = await window.showInformationMessage(
                 '本地文件尚未关联到博文',
                 {
@@ -29,35 +29,35 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
                     detail: filePath,
                 } as MessageOptions,
                 ...options
-            );
+            )
             if (selected === options[0]) {
                 const selectedPost = await searchPostsByTitle({
                     postTitle: path.basename(filePath, path.extname(filePath)),
                     quickPickTitle: '搜索要关联的博文',
-                });
+                })
                 if (selectedPost) {
-                    await PostFileMapManager.updateOrCreate(selectedPost.id, filePath);
-                    AlertService.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`);
+                    await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
+                    AlertService.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`)
                 }
             }
-            return;
+            return
         }
     } else if (typeof input === 'number') {
-        filePath = PostFileMapManager.getFilePath(input);
-        postId = input;
+        filePath = PostFileMapManager.getFilePath(input)
+        postId = input
     }
 
-    if (!filePath || !postId || !(postId >= 0)) return;
+    if (!filePath || !postId || !(postId >= 0)) return
 
-    const post = (await postService.fetchPostEditDto(postId))?.post;
-    if (!post) return;
+    const post = (await postService.fetchPostEditDto(postId))?.post
+    if (!post) return
 
-    let categories = await postCategoryService.listCategories();
-    categories = categories.filter(x => post.categoryIds?.includes(x.categoryId));
-    const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : '';
-    const tagsDesc = post.tags?.length ?? 0 > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : '';
-    const options = ['在线查看博文', '取消关联'];
-    const postUrl = post.url.startsWith('//') ? `https:${post.url}` : post.url;
+    let categories = await postCategoryService.listCategories()
+    categories = categories.filter(x => post.categoryIds?.includes(x.categoryId))
+    const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : ''
+    const tagsDesc = post.tags?.length ?? 0 > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : ''
+    const options = ['在线查看博文', '取消关联']
+    const postUrl = post.url.startsWith('//') ? `https:${post.url}` : post.url
     const selected = await window.showInformationMessage(
         `关联博文 - ${post.title}(Id: ${post.id})`,
         {
@@ -70,11 +70,11 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
             }\n${categoryDesc}${tagsDesc}`.replace(/\n$/, ''),
         } as MessageOptions,
         ...options
-    );
+    )
     if (selected === options[0]) {
-        await viewPostOnline(post);
+        await viewPostOnline(post)
     } else if (selected === options[1]) {
-        await PostFileMapManager.updateOrCreate(postId, '');
-        AlertService.info(`博文 ${post.title} 已与 ${filePath} 取消关联`);
+        await PostFileMapManager.updateOrCreate(postId, '')
+        AlertService.info(`博文 ${post.title} 已与 ${filePath} 取消关联`)
     }
-};
+}

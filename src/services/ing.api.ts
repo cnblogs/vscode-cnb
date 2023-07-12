@@ -1,9 +1,9 @@
-import { Ing, IngComment, IngPublishModel, IngType } from '@/models/ing';
-import { AlertService } from '@/services/alert.service';
-import { globalContext } from '@/services/global-state';
-import fetch from '@/utils/fetch-client';
-import { URLSearchParams } from 'url';
-import { isArray, isNumber, isObject } from 'lodash-es';
+import { Ing, IngComment, IngPublishModel, IngType } from '@/models/ing'
+import { AlertService } from '@/services/alert.service'
+import { globalContext } from '@/services/global-state'
+import fetch from '@/utils/fetch-client'
+import { URLSearchParams } from 'url'
+import { isArray, isNumber, isObject } from 'lodash-es'
 
 export class IngApi {
     async publishIng(ing: IngPublishModel): Promise<boolean> {
@@ -11,11 +11,11 @@ export class IngApi {
             method: 'POST',
             body: JSON.stringify(ing),
             headers: [['Content-Type', 'application/json']],
-        }).catch(reason => void AlertService.warning(JSON.stringify(reason)));
+        }).catch(reason => void AlertService.warning(JSON.stringify(reason)))
         if (!resp || !resp.ok)
-            AlertService.error(`闪存发布失败, ${resp?.statusText ?? ''} ${JSON.stringify((await resp?.text()) ?? '')}`);
+            AlertService.error(`闪存发布失败, ${resp?.statusText ?? ''} ${JSON.stringify((await resp?.text()) ?? '')}`)
 
-        return resp != null && resp.ok;
+        return resp != null && resp.ok
     }
 
     async list({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}): Promise<Ing[] | null> {
@@ -28,29 +28,29 @@ export class IngApi {
                 method: 'GET',
                 headers: [['Content-Type', 'application/json']],
             }
-        ).catch(reason => void AlertService.warning(JSON.stringify(reason)));
+        ).catch(reason => void AlertService.warning(JSON.stringify(reason)))
         if (!resp || !resp.ok) {
             AlertService.error(
                 `获取闪存列表失败, ${resp?.statusText ?? ''} ${JSON.stringify((await resp?.text()) ?? '')}`
-            );
-            return null;
+            )
+            return null
         }
 
         return resp
             .json()
             .then(x => (isArray(x) ? (x.every(isObject) ? x.map(Ing.parse) : null) : null))
             .then(x => {
-                if (x == null) throw Error('获取闪存列表失败, 无法读取响应');
-                return x;
+                if (x == null) throw Error('获取闪存列表失败, 无法读取响应')
+                return x
             })
             .catch(reason => {
-                AlertService.error(JSON.stringify(reason));
-                return null;
-            });
+                AlertService.error(JSON.stringify(reason))
+                return null
+            })
     }
 
     listComments(ingIds: number | number[]): Promise<Record<number, IngComment[]>> {
-        const arr = isNumber(ingIds) ? [ingIds] : ingIds;
+        const arr = isNumber(ingIds) ? [ingIds] : ingIds
         return Promise.all(
             arr.map(id =>
                 fetch(`${globalContext.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`, {
@@ -65,10 +65,10 @@ export class IngApi {
             )
         ).then(results =>
             results.reduce<Record<number, IngComment[]>>((p, v) => {
-                if (v) p[v[0]] = (v[1] ?? []).map(IngComment.parse);
-                return p;
+                if (v) p[v[0]] = (v[1] ?? []).map(IngComment.parse)
+                return p
             }, {})
-        );
+        )
     }
 
     comment(ingId: number, data: { replyTo?: number; parentCommentId?: number; content: string }) {
@@ -78,12 +78,12 @@ export class IngApi {
             body: JSON.stringify(data),
         })
             .then(async resp => {
-                if (!resp.ok) throw Error(await resp.text());
-                return resp.ok;
+                if (!resp.ok) throw Error(await resp.text())
+                return resp.ok
             })
             .catch(reason => {
-                AlertService.warning(`发表评论失败, ${reason}`);
-                return false;
-            });
+                AlertService.warning(`发表评论失败, ${reason}`)
+                return false
+            })
     }
 }

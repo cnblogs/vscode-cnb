@@ -1,27 +1,27 @@
-import path from 'path';
-import fs from 'fs';
-import { Uri, workspace } from 'vscode';
+import path from 'path'
+import fs from 'fs'
+import { Uri, workspace } from 'vscode'
 
 export class LocalDraft {
     constructor(public filePath: string) {}
 
     get fileName(): string {
-        return path.basename(this.filePath);
+        return path.basename(this.filePath)
     }
     get fileNameWithoutExt(): string {
-        return path.basename(this.filePath, this.fileExt);
+        return path.basename(this.filePath, this.fileExt)
     }
     get fileExt() {
-        return path.extname(this.filePath);
+        return path.extname(this.filePath)
     }
     get filePathUri() {
-        return Uri.file(this.filePath);
+        return Uri.file(this.filePath)
     }
     get exist() {
-        return fs.existsSync(this.filePath);
+        return fs.existsSync(this.filePath)
     }
 
     async readAllText(): Promise<string> {
-        return Buffer.from(await workspace.fs.readFile(this.filePathUri)).toString();
+        return Buffer.from(await workspace.fs.readFile(this.filePathUri)).toString()
     }
 }

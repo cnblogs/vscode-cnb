@@ -1,17 +1,17 @@
-import { commands } from 'vscode';
-import { RefreshIngsList } from 'src/commands/ing/refresh-ings-list';
-import { globalContext } from 'src/services/global-state';
-import { IDisposable } from '@fluentui/react';
+import { commands } from 'vscode'
+import { RefreshIngsList } from 'src/commands/ing/refresh-ings-list'
+import { globalContext } from 'src/services/global-state'
+import { IDisposable } from '@fluentui/react'
 import {
     GotoIngsListFirstPage,
     GotoIngsListNextPage,
     GotoIngsListPreviousPage,
-} from 'src/commands/ing/goto-ings-list-page';
-import { SelectIngType } from '@/commands/ing/select-ing-type';
-import { OpenIngInBrowser } from '@/commands/ing/open-ing-in-browser';
+} from 'src/commands/ing/goto-ings-list-page'
+import { SelectIngType } from '@/commands/ing/select-ing-type'
+import { OpenIngInBrowser } from '@/commands/ing/open-ing-in-browser'
 
 export const registerCommandsForIngsList = (disposables: IDisposable[]) => {
-    const appName = globalContext.extensionName;
+    const appName = globalContext.extensionName
 
     disposables.push(
         ...[
@@ -22,5 +22,5 @@ export const registerCommandsForIngsList = (disposables: IDisposable[]) => {
             commands.registerCommand(`${appName}.ings-list.select-type`, () => new SelectIngType().handle()),
             commands.registerCommand(`${appName}.ings-list.open-in-browser`, () => new OpenIngInBrowser().handle()),
         ]
-    );
-};
+    )
+}

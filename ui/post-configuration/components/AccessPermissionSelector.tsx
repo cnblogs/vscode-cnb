@@ -1,10 +1,10 @@
-import { ChoiceGroup, IChoiceGroupOption, Label, Stack } from '@fluentui/react';
-import { AccessPermission, formatAccessPermission } from '../../../src/models/post';
-import React from 'react';
+import { ChoiceGroup, IChoiceGroupOption, Label, Stack } from '@fluentui/react'
+import { AccessPermission, formatAccessPermission } from '../../../src/models/post'
+import React from 'react'
 
 export interface IAccessPermissionSelectorProps {
-    accessPermission?: AccessPermission;
-    onChange?: (accessPermission: AccessPermission) => void;
+    accessPermission?: AccessPermission
+    onChange?: (accessPermission: AccessPermission) => void
 }
 
 export interface IAccessPermissionSelectorState extends Record<string, never> {}
@@ -29,13 +29,13 @@ export class AccessPermissionSelector extends React.Component<
             value: AccessPermission.owner,
             key: AccessPermission.owner.toString(),
         },
-    ];
+    ]
 
     constructor(props: IAccessPermissionSelectorProps) {
-        props.accessPermission ??= AccessPermission.undeclared;
-        super(props);
+        props.accessPermission ??= AccessPermission.undeclared
+        super(props)
 
-        this.state = {};
+        this.state = {}
     }
 
     render() {
@@ -50,6 +50,6 @@ export class AccessPermissionSelector extends React.Component<
                     selectedKey={this.props.accessPermission?.toString()}
                 />
             </Stack>
-        );
+        )
     }
 }

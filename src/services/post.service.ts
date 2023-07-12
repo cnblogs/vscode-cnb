@@ -1,37 +1,37 @@
-import fetch from '@/utils/fetch-client';
-import { Post } from '../models/post';
-import { globalContext } from './global-state';
-import { PageModel } from '../models/page-model';
-import { PostsListState } from '../models/posts-list-state';
-import { PostEditDto } from '../models/post-edit-dto';
-import { PostUpdatedResponse } from '../models/post-updated-response';
-import { throwIfNotOkGotResponse, throwIfNotOkResponse } from '../utils/throw-if-not-ok-response';
-import { IErrorResponse } from '../models/error-response';
-import { AlertService } from './alert.service';
-import { PostFileMapManager } from './post-file-map';
-import { ZzkSearchResult } from '../models/zzk-search-result';
-import got from '@/utils/http-client';
-import httpClient from '@/utils/http-client';
-import iconv from 'iconv-lite';
+import fetch from '@/utils/fetch-client'
+import { Post } from '../models/post'
+import { globalContext } from './global-state'
+import { PageModel } from '../models/page-model'
+import { PostsListState } from '../models/posts-list-state'
+import { PostEditDto } from '../models/post-edit-dto'
+import { PostUpdatedResponse } from '../models/post-updated-response'
+import { throwIfNotOkGotResponse, throwIfNotOkResponse } from '../utils/throw-if-not-ok-response'
+import { IErrorResponse } from '../models/error-response'
+import { AlertService } from './alert.service'
+import { PostFileMapManager } from './post-file-map'
+import { ZzkSearchResult } from '../models/zzk-search-result'
+import got from '@/utils/http-client'
+import httpClient from '@/utils/http-client'
+import iconv from 'iconv-lite'
 
-const defaultPageSize = 30;
-let newPostTemplate: PostEditDto | undefined;
+const defaultPageSize = 30
+let newPostTemplate: PostEditDto | undefined
 
 export class PostService {
-    private static _instance = new PostService();
+    private static _instance = new PostService()
 
     protected constructor() {}
 
     protected get _baseUrl() {
-        return globalContext.config.apiBaseUrl;
+        return globalContext.config.apiBaseUrl
     }
 
     static get instance() {
-        return this._instance;
+        return this._instance
     }
 
     get postsListState(): PostsListState | undefined {
-        return globalContext.storage.get<PostsListState>('postsListState');
+        return globalContext.storage.get<PostsListState>('postsListState')
     }
 
     async fetchPostsList({
@@ -41,7 +41,7 @@ export class PostService {
         categoryId = <null | number>null,
     }): Promise<
         PageModel<Post> & {
-            zzkSearchResult?: ZzkSearchResult;
+            zzkSearchResult?: ZzkSearchResult
         }
     > {
         const s = new URLSearchParams([
@@ -50,14 +50,14 @@ export class PostService {
             ['s', `${pageSize}`],
             ['search', search],
             ['cid', categoryId != null && categoryId > 0 ? `${categoryId}` : ''],
-        ]);
+        ])
         const response = await fetch(`${this._baseUrl}/api/posts/list?${s.toString()}`, {
             method: 'GET',
-        });
-        if (!response.ok) throw Error(`request failed, ${response.status}, ${await response.text()}`);
+        })
+        if (!response.ok) throw Error(`request failed, ${response.status}, ${await response.text()}`)
 
-        const obj = <PostListModel>await response.json();
-        const { zzkSearchResult } = obj;
+        const obj = <PostListModel>await response.json()
+        const { zzkSearchResult } = obj
         return Object.assign(
             new PageModel(
                 obj.pageIndex,
@@ -66,51 +66,51 @@ export class PostService {
                 obj.postList.map(x => Object.assign(new Post(), x))
             ),
             { zzkSearchResult: ZzkSearchResult.parse(zzkSearchResult) || undefined }
-        );
+        )
     }
 
     async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
         const response = await httpClient.get(`${this._baseUrl}/api/posts/${postId}`, {
             throwHttpErrors: false,
             responseType: 'buffer',
-        });
+        })
 
         try {
-            throwIfNotOkGotResponse(response);
+            throwIfNotOkGotResponse(response)
         } catch (ex) {
-            const { statusCode, errors } = ex as IErrorResponse;
+            const { statusCode, errors } = ex as IErrorResponse
             if (!muteErrorNotification) {
                 if (statusCode === 404) {
-                    AlertService.error('博文不存在');
-                    const postFilePath = PostFileMapManager.getFilePath(postId);
-                    if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '');
+                    AlertService.error('博文不存在')
+                    const postFilePath = PostFileMapManager.getFilePath(postId)
+                    if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '')
                 } else {
-                    AlertService.error(errors.join('\n'));
+                    AlertService.error(errors.join('\n'))
                 }
             }
-            return undefined;
+            return undefined
         }
 
-        const decodedBody = iconv.decode(response.rawBody, 'utf-8');
+        const decodedBody = iconv.decode(response.rawBody, 'utf-8')
 
-        const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown };
+        const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown }
 
-        return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined;
+        return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined
     }
 
     async deletePost(postId: number) {
         const res = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
             method: 'DELETE',
-        });
-        if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`);
+        })
+        if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
     }
 
     async deletePosts(postIds: number[]) {
-        const searchParams = new URLSearchParams(postIds.map<[string, string]>(id => ['postIds', `${id}`]));
+        const searchParams = new URLSearchParams(postIds.map<[string, string]>(id => ['postIds', `${id}`]))
         const res = await fetch(`${this._baseUrl}/api/bulk-operation/post?${searchParams.toString()}`, {
             method: 'DELETE',
-        });
-        if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`);
+        })
+        if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
     }
 
     async updatePost(post: Post): Promise<PostUpdatedResponse> {
@@ -121,9 +121,9 @@ export class PostService {
             body,
             statusCode,
             statusMessage,
-        } = await got.post<PostUpdatedResponse>(`${this._baseUrl}/api/posts`, { json: post, responseType: 'json' });
-        if (!isOk) throw new Error(`Failed to ${method} ${url}, ${statusCode} - ${statusMessage}`);
-        return PostUpdatedResponse.parse(body);
+        } = await got.post<PostUpdatedResponse>(`${this._baseUrl}/api/posts`, { json: post, responseType: 'json' })
+        if (!isOk) throw new Error(`Failed to ${method} ${url}, ${statusCode} - ${statusMessage}`)
+        return PostUpdatedResponse.parse(body)
     }
 
     async updatePostsListState(state: PostsListState | undefined | PageModel<Post>) {
@@ -139,29 +139,29 @@ export class PostService {
                       hasPrevious: state.hasPrevious,
                       pageCount: state.pageCount,
                   }
-                : state;
-        await globalContext.storage.update('postsListState', finalState);
+                : state
+        await globalContext.storage.update('postsListState', finalState)
     }
 
     async fetchPostEditTemplate(): Promise<PostEditDto | undefined> {
-        if (!newPostTemplate) newPostTemplate = await this.fetchPostEditDto(-1);
+        if (!newPostTemplate) newPostTemplate = await this.fetchPostEditDto(-1)
 
         return newPostTemplate
             ? new PostEditDto(
                   Object.assign(new Post(), newPostTemplate.post),
                   Object.assign({}, newPostTemplate.config)
               )
-            : undefined;
+            : undefined
     }
 }
 
-export const postService = PostService.instance;
+export const postService = PostService.instance
 
 interface PostListModel {
-    categoryName: string;
-    pageIndex: number;
-    pageSize: number;
-    postList: [];
-    postsCount: number;
-    zzkSearchResult?: ZzkSearchResult;
+    categoryName: string
+    pageIndex: number
+    pageSize: number
+    postList: []
+    postsCount: number
+    zzkSearchResult?: ZzkSearchResult
 }

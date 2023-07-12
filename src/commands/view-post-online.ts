@@ -1,19 +1,19 @@
-import { commands, Uri, window } from 'vscode';
-import { Post } from '../models/post';
-import { postService } from '../services/post.service';
-import { PostFileMapManager } from '../services/post-file-map';
-import { PostTreeItem } from '../tree-view-providers/models/post-tree-item';
+import { commands, Uri, window } from 'vscode'
+import { Post } from '../models/post'
+import { postService } from '../services/post.service'
+import { PostFileMapManager } from '../services/post-file-map'
+import { PostTreeItem } from '../tree-view-providers/models/post-tree-item'
 
 export const viewPostOnline = async (input?: Post | PostTreeItem | Uri) => {
-    let post: Post | undefined = input instanceof Post ? input : input instanceof PostTreeItem ? input.post : undefined;
-    if (!input) input = window.activeTextEditor?.document.uri;
+    let post: Post | undefined = input instanceof Post ? input : input instanceof PostTreeItem ? input.post : undefined
+    if (!input) input = window.activeTextEditor?.document.uri
 
     if (input instanceof Uri) {
-        const postId = PostFileMapManager.getPostId(input.fsPath);
-        if (postId) post = (await postService.fetchPostEditDto(postId))?.post;
+        const postId = PostFileMapManager.getPostId(input.fsPath)
+        if (postId) post = (await postService.fetchPostEditDto(postId))?.post
     }
 
-    if (!post) return;
+    if (!post) return
 
-    await commands.executeCommand('vscode.open', Uri.parse(post.url));
-};
+    await commands.executeCommand('vscode.open', Uri.parse(post.url))
+}

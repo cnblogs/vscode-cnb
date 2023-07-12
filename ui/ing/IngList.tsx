@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
-import { Ing, IngComment } from '@models/ing';
-import { IngItem } from 'ing/IngItem';
-import { Stack } from '@fluentui/react';
+import React, { Component } from 'react'
+import { Ing, IngComment } from '@models/ing'
+import { IngItem } from 'ing/IngItem'
+import { Stack } from '@fluentui/react'
 
 interface IngListProps {
-    ings: Ing[];
-    comments: Record<number, IngComment[]>;
+    ings: Ing[]
+    comments: Record<number, IngComment[]>
 }
 
 class IngList extends Component<IngListProps> {
     constructor(props: IngListProps) {
-        super(props);
+        super(props)
     }
 
     render() {
@@ -20,17 +20,17 @@ class IngList extends Component<IngListProps> {
                     {this.renderItems()}
                 </Stack>
             </div>
-        );
+        )
     }
 
     private renderItems() {
-        const { comments } = this.props;
+        const { comments } = this.props
         return this.props.ings.map(ing => (
             <Stack.Item>
                 <IngItem ing={ing} comments={comments[ing.id]} />
             </Stack.Item>
-        ));
+        ))
     }
 }
 
-export { IngList };
+export { IngList }

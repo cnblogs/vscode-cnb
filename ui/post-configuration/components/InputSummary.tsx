@@ -1,36 +1,36 @@
-import { ActionButton, Label, MessageBar, MessageBarType, Stack, TextField, Text } from '@fluentui/react';
-import { ImageUploadStatusId } from '@models/image-upload-status';
-import { webviewCommands } from '@models/webview-commands';
-import { webviewMessage } from '@models/webview-message';
-import React from 'react';
-import { vsCodeApi } from 'share/vscode-api';
+import { ActionButton, Label, MessageBar, MessageBarType, Stack, TextField, Text } from '@fluentui/react'
+import { ImageUploadStatusId } from '@models/image-upload-status'
+import { webviewCommands } from '@models/webview-commands'
+import { webviewMessage } from '@models/webview-message'
+import React from 'react'
+import { vsCodeApi } from 'share/vscode-api'
 
 export interface IInputSummaryProps {
-    summary?: string;
-    featureImageUrl?: string;
-    onChange?: (summary: string) => void;
-    onFeatureImageChange?: (imageUrl: string) => void;
+    summary?: string
+    featureImageUrl?: string
+    onChange?: (summary: string) => void
+    onFeatureImageChange?: (imageUrl: string) => void
 }
 
 export interface IInputSummaryState {
-    isCollapse: boolean;
-    disabled: boolean;
-    errors?: string[];
+    isCollapse: boolean
+    disabled: boolean
+    errors?: string[]
 }
 
 export class InputSummary extends React.Component<IInputSummaryProps, IInputSummaryState> {
-    private uploadingImageId = '';
+    private uploadingImageId = ''
     constructor(props: IInputSummaryProps) {
-        super(props);
-        const { featureImageUrl, summary } = props;
+        super(props)
+        const { featureImageUrl, summary } = props
 
-        this.state = { isCollapse: !featureImageUrl && !summary, disabled: false };
-        window.addEventListener('message', this.observerMessage);
+        this.state = { isCollapse: !featureImageUrl && !summary, disabled: false }
+        window.addEventListener('message', this.observerMessage)
     }
 
     render() {
-        const { isCollapse } = this.state;
-        const { featureImageUrl } = this.props;
+        const { isCollapse } = this.state
+        const { featureImageUrl } = this.props
         return (
             <Stack tokens={{ childrenGap: 16 }}>
                 <Stack horizontal horizontalAlign="space-between">
@@ -62,11 +62,11 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
 
                 {this.renderContent()}
             </Stack>
-        );
+        )
     }
 
     private renderContent() {
-        if (this.state.isCollapse) return <></>;
+        if (this.state.isCollapse) return <></>
 
         return (
             <Stack tokens={{ childrenGap: 8 }}>
@@ -88,7 +88,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
                 {this.state.errors ? (
                     <MessageBar
                         onDismiss={() => {
-                            this.setState({ errors: undefined });
+                            this.setState({ errors: undefined })
                         }}
                         messageBarType={MessageBarType.error}
                     >
@@ -98,36 +98,36 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
                     <></>
                 )}
             </Stack>
-        );
+        )
     }
 
     private observerMessage = (ev: MessageEvent<any>) => {
-        const data = ev.data as webviewMessage.Message;
-        const { command } = data;
+        const data = ev.data as webviewMessage.Message
+        const { command } = data
         switch (command) {
             case webviewCommands.UiCommands.updateImageUploadStatus:
                 {
-                    const { imageId, status } = data as webviewMessage.UpdateImageUpdateStatusMessage;
+                    const { imageId, status } = data as webviewMessage.UpdateImageUpdateStatusMessage
                     if (imageId === this.uploadingImageId) {
-                        this.setState({ disabled: status.id === ImageUploadStatusId.uploading });
+                        this.setState({ disabled: status.id === ImageUploadStatusId.uploading })
                         if (status.id === ImageUploadStatusId.uploaded)
-                            this.props.onFeatureImageChange?.apply(this, [status.imageUrl ?? '']);
+                            this.props.onFeatureImageChange?.apply(this, [status.imageUrl ?? ''])
                     }
                 }
-                break;
+                break
         }
-    };
+    }
 
     private uploadFeatureImage() {
-        this.uploadingImageId = `${Date.now()}`;
+        this.uploadingImageId = `${Date.now()}`
         vsCodeApi.getInstance().postMessage({
             command: webviewCommands.ExtensionCommands.uploadImage,
             imageId: this.uploadingImageId,
-        } as webviewMessage.UploadImageMessage);
+        } as webviewMessage.UploadImageMessage)
     }
 
     private renderFeatureImage() {
-        const { featureImageUrl } = this.props;
+        const { featureImageUrl } = this.props
         if (!featureImageUrl) {
             return (
                 <ActionButton
@@ -139,12 +139,12 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
                 >
                     上传图片
                 </ActionButton>
-            );
+            )
         }
         return (
             <span>
                 <img style={{ width: 135, height: 70 }} src={featureImageUrl} alt="题图" />
             </span>
-        );
+        )
     }
 }

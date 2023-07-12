@@ -1,46 +1,46 @@
-import { commands } from 'vscode';
-import { openMyAccountSettings } from './open-my-account-settings';
-import { openMyWebBlogConsole } from './open-my-blog-management-background';
-import { openMyHomePage } from './open-my-home-page';
-import { login, logout } from './login';
-import { openMyBlog } from './open-my-blog';
-import { globalContext } from '../services/global-state';
+import { commands } from 'vscode'
+import { openMyAccountSettings } from './open-my-account-settings'
+import { openMyWebBlogConsole } from './open-my-blog-management-background'
+import { openMyHomePage } from './open-my-home-page'
+import { login, logout } from './login'
+import { openMyBlog } from './open-my-blog'
+import { globalContext } from '../services/global-state'
 import {
     gotoNextPostsList,
     gotoPreviousPostsList,
     refreshPostsList,
     seekPostsList,
-} from './posts-list/refresh-posts-list';
-import { savePostFileToCnblogs, savePostToCnblogs } from './posts-list/save-post';
-import { createLocalDraft } from './posts-list/create-local-draft';
-import { deleteSelectedPosts } from './posts-list/delete-post';
-import { modifyPostSettings } from './posts-list/modify-post-settings';
-import { uploadImage } from './upload-image/upload-image';
-import { revealLocalPostFileInOs } from './reveal-local-post-file-in-os';
-import { showLocalFileToPostInfo } from './show-local-file-to-post-info';
-import { newPostCategory } from './post-category/new-post-category';
-import { refreshPostCategoriesList } from './post-category/refresh-post-categories-list';
-import { handleUpdatePostCategory } from './post-category/update-post-category';
-import { openPostInVscode } from './posts-list/open-post-in-vscode';
-import { deletePostToLocalFileMap } from './posts-list/delete-post-to-local-file-map';
-import { renamePost } from './posts-list/rename-post';
-import { openPostInBlogAdmin } from './open-post-in-blog-admin';
-import { openWorkspace } from './open-workspace';
-import { setWorkspace } from './set-workspace';
-import { revealWorkspaceInOs } from './reveal-workspace-in-os';
-import { viewPostOnline } from './view-post-online';
-import { pullPostRemoteUpdates } from './pull-post-remote-updates';
-import { extractImages } from './extract-images';
-import { clearPostsSearchResults, refreshPostsSearchResults, searchPosts } from './posts-list/search';
-import { handleDeletePostCategories } from './post-category/delete-selected-categories';
-import { PublishIngCommandHandler } from '@/commands/ing/publish-ing';
-import { registerCommandsForIngsList } from 'src/commands/ing/ings-list-commands-registration';
-import { CopyPostLinkCommandHandler } from '@/commands/posts-list/copy-link';
-import { registerCommandsForBlogExport } from '@/commands/blog-export';
+} from './posts-list/refresh-posts-list'
+import { savePostFileToCnblogs, savePostToCnblogs } from './posts-list/save-post'
+import { createLocalDraft } from './posts-list/create-local-draft'
+import { deleteSelectedPosts } from './posts-list/delete-post'
+import { modifyPostSettings } from './posts-list/modify-post-settings'
+import { uploadImage } from './upload-image/upload-image'
+import { revealLocalPostFileInOs } from './reveal-local-post-file-in-os'
+import { showLocalFileToPostInfo } from './show-local-file-to-post-info'
+import { newPostCategory } from './post-category/new-post-category'
+import { refreshPostCategoriesList } from './post-category/refresh-post-categories-list'
+import { handleUpdatePostCategory } from './post-category/update-post-category'
+import { openPostInVscode } from './posts-list/open-post-in-vscode'
+import { deletePostToLocalFileMap } from './posts-list/delete-post-to-local-file-map'
+import { renamePost } from './posts-list/rename-post'
+import { openPostInBlogAdmin } from './open-post-in-blog-admin'
+import { openWorkspace } from './open-workspace'
+import { setWorkspace } from './set-workspace'
+import { revealWorkspaceInOs } from './reveal-workspace-in-os'
+import { viewPostOnline } from './view-post-online'
+import { pullPostRemoteUpdates } from './pull-post-remote-updates'
+import { extractImages } from './extract-images'
+import { clearPostsSearchResults, refreshPostsSearchResults, searchPosts } from './posts-list/search'
+import { handleDeletePostCategories } from './post-category/delete-selected-categories'
+import { PublishIngCommandHandler } from '@/commands/ing/publish-ing'
+import { registerCommandsForIngsList } from 'src/commands/ing/ings-list-commands-registration'
+import { CopyPostLinkCommandHandler } from '@/commands/posts-list/copy-link'
+import { registerCommandsForBlogExport } from '@/commands/blog-export'
 
 export const registerCommands = () => {
-    const context = globalContext.extensionContext;
-    const appName = globalContext.extensionName;
+    const context = globalContext.extensionContext
+    const appName = globalContext.extensionName
     const disposables = [
         commands.registerCommand(`${appName}.login`, login),
         commands.registerCommand(`${appName}.open-my-blog`, openMyBlog),
@@ -87,8 +87,8 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.ing.publish-selection`, () =>
             new PublishIngCommandHandler('selection').handle()
         ),
-    ];
-    registerCommandsForIngsList(disposables);
-    registerCommandsForBlogExport(disposables);
-    context?.subscriptions.push(...disposables);
-};
+    ]
+    registerCommandsForIngsList(disposables)
+    registerCommandsForBlogExport(disposables)
+    context?.subscriptions.push(...disposables)
+}

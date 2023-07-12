@@ -1,14 +1,14 @@
 class WebviewService {
-    static _instance?: WebviewService;
+    static _instance?: WebviewService
 
     private constructor() {}
 
     static get instance() {
-        this._instance ??= new WebviewService();
-        return this._instance;
+        this._instance ??= new WebviewService()
+        return this._instance
     }
 }
 
-const webviewService = WebviewService.instance;
+const webviewService = WebviewService.instance
 
-export { webviewService };
+export { webviewService }

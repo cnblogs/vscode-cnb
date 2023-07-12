@@ -1,18 +1,18 @@
-import { ActionButton, Checkbox, Label, Stack } from '@fluentui/react';
-import { SiteCategories } from '@models/site-category';
-import React from 'react';
-import { siteCategoriesStore } from '../services/site-categories-store';
+import { ActionButton, Checkbox, Label, Stack } from '@fluentui/react'
+import { SiteCategories } from '@models/site-category'
+import React from 'react'
+import { siteCategoriesStore } from '../services/site-categories-store'
 
 export interface ISiteCategoriesSelectorProps {
-    categoryIds?: number[];
-    onChange?: (siteCategoryId: number) => void;
+    categoryIds?: number[]
+    onChange?: (siteCategoryId: number) => void
 }
 
 export interface ISiteCategoriesSelectorState {
-    siteCategories: SiteCategories;
-    isCollapsed: boolean;
-    categoryIds: number[];
-    categoryExpandState: { [key: number]: boolean | undefined };
+    siteCategories: SiteCategories
+    isCollapsed: boolean
+    categoryIds: number[]
+    categoryExpandState: { [key: number]: boolean | undefined }
 }
 
 export class SiteCategoriesSelector extends React.Component<
@@ -20,31 +20,31 @@ export class SiteCategoriesSelector extends React.Component<
     ISiteCategoriesSelectorState
 > {
     constructor(props: ISiteCategoriesSelectorProps) {
-        super(props);
+        super(props)
 
-        const siteCategories = siteCategoriesStore.get();
-        const categoryExpandState: { selectedParentCategoryId?: boolean } = {};
-        let selectedParentCategoryId = -1;
+        const siteCategories = siteCategoriesStore.get()
+        const categoryExpandState: { selectedParentCategoryId?: boolean } = {}
+        let selectedParentCategoryId = -1
         if (props.categoryIds && props.categoryIds.length > 0) {
             selectedParentCategoryId =
-                siteCategories.find(x => x.children.find(child => child.id === props.categoryIds?.[0]))?.id ?? -1;
+                siteCategories.find(x => x.children.find(child => child.id === props.categoryIds?.[0]))?.id ?? -1
         }
-        if (selectedParentCategoryId > 0) categoryExpandState.selectedParentCategoryId = true;
+        if (selectedParentCategoryId > 0) categoryExpandState.selectedParentCategoryId = true
 
         this.state = {
             siteCategories: siteCategories,
             isCollapsed: true,
             categoryIds: props.categoryIds ?? [],
             categoryExpandState,
-        };
+        }
     }
 
     render() {
-        const { siteCategories, categoryIds } = this.state;
+        const { siteCategories, categoryIds } = this.state
         const group = siteCategories.map(parent => {
-            const { children, id: parentId } = parent;
-            const { categoryExpandState } = this.state;
-            const isParentExpanded = !!categoryExpandState[parentId];
+            const { children, id: parentId } = parent
+            const { categoryExpandState } = this.state
+            const isParentExpanded = !!categoryExpandState[parentId]
             const groupItems = children.map(child => (
                 <Checkbox
                     key={child.id.toString()}
@@ -52,13 +52,13 @@ export class SiteCategoriesSelector extends React.Component<
                     checked={categoryIds.includes(child.id)}
                     onChange={(_, checked) => this.onCheckboxChange(child.id, checked)}
                 ></Checkbox>
-            ));
+            ))
             return (
                 <Stack key={parentId} tokens={{ childrenGap: 12, padding: ' 0 0 0 8px' }}>
                     <Stack
                         onClick={() => {
-                            categoryExpandState[parentId] = !isParentExpanded;
-                            this.setState({ categoryExpandState });
+                            categoryExpandState[parentId] = !isParentExpanded
+                            this.setState({ categoryExpandState })
                         }}
                         horizontal
                         verticalAlign="center"
@@ -79,8 +79,8 @@ export class SiteCategoriesSelector extends React.Component<
                         <></>
                     )}
                 </Stack>
-            );
-        });
+            )
+        })
         return (
             <Stack tokens={{ childrenGap: 16 }}>
                 <Stack horizontal>
@@ -118,11 +118,11 @@ export class SiteCategoriesSelector extends React.Component<
                 </Stack>
                 {this.state.isCollapsed ? <></> : <Stack tokens={{ childrenGap: 12 }}>{group}</Stack>}
             </Stack>
-        );
+        )
     }
 
     private onCheckboxChange(categoryId: number, checked?: boolean) {
-        this.setState({ categoryIds: checked ? [categoryId] : [] });
-        this.props.onChange?.apply(this, [categoryId]);
+        this.setState({ categoryIds: checked ? [categoryId] : [] })
+        this.props.onChange?.apply(this, [categoryId])
     }
 }

@@ -1,30 +1,30 @@
-import { accountManager } from '../authentication/account-manager';
-import { EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode';
+import { accountManager } from '../authentication/account-manager'
+import { EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode'
 
 export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
-    private static _instance?: AccountViewDataProvider;
-    protected _onDidChangeTreeData = new EventEmitter<null | undefined>();
+    private static _instance?: AccountViewDataProvider
+    protected _onDidChangeTreeData = new EventEmitter<null | undefined>()
 
     protected constructor() {}
 
     static get instance() {
-        if (!this._instance) this._instance = new AccountViewDataProvider();
+        if (!this._instance) this._instance = new AccountViewDataProvider()
 
-        return this._instance;
+        return this._instance
     }
 
     get onDidChangeTreeData() {
-        return this._onDidChangeTreeData.event;
+        return this._onDidChangeTreeData.event
     }
 
     getTreeItem(element: TreeItem): TreeItem | Thenable<TreeItem> {
-        return element;
+        return element
     }
 
     getChildren(element?: TreeItem): ProviderResult<TreeItem[]> {
-        if (!accountManager.isAuthorized || element) return [];
+        if (!accountManager.isAuthorized || element) return []
 
-        const u = accountManager.curUser;
+        const u = accountManager.curUser
         return [
             { label: u.name, tooltip: '用户名', iconPath: new ThemeIcon('account') },
             {
@@ -76,12 +76,12 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 },
                 iconPath: new ThemeIcon('log-out'),
             },
-        ];
+        ]
     }
 
     fireTreeDataChangedEvent() {
-        this._onDidChangeTreeData.fire(undefined);
+        this._onDidChangeTreeData.fire(undefined)
     }
 }
 
-export const accountViewDataProvider = AccountViewDataProvider.instance;
+export const accountViewDataProvider = AccountViewDataProvider.instance

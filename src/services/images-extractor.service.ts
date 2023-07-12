@@ -1,85 +1,85 @@
-import path from 'path';
-import fs from 'fs';
-import { Uri, workspace } from 'vscode';
-import { imageService } from './image.service';
-import { isErrorResponse } from '../models/error-response';
-import { isString } from 'lodash-es';
-import { promisify } from 'util';
-import { Readable } from 'stream';
+import path from 'path'
+import fs from 'fs'
+import { Uri, workspace } from 'vscode'
+import { imageService } from './image.service'
+import { isErrorResponse } from '../models/error-response'
+import { isString } from 'lodash-es'
+import { promisify } from 'util'
+import { Readable } from 'stream'
 
 export interface ImageInformation {
-    link: string;
-    symbol: string;
-    alt: string;
-    title: string;
-    index?: number;
+    link: string
+    symbol: string
+    alt: string
+    title: string
+    index?: number
 }
 
-export type ImageInformationArray = ImageInformation[];
+export type ImageInformationArray = ImageInformation[]
 
-const markdownImageRegex = /(!\[.*?\])\((.+?\.(?:png|jpg|webp|svg|gif))['"]?\)/g;
-const cnblogsImageLinkRegex = /\.cnblogs\.com\//;
+const markdownImageRegex = /(!\[.*?\])\((.+?\.(?:png|jpg|webp|svg|gif))['"]?\)/g
+const cnblogsImageLinkRegex = /\.cnblogs\.com\//
 
 interface ImageTypeFilter {
-    (image: ImageInformation): boolean;
+    (image: ImageInformation): boolean
 }
 
-const webImageFilter: ImageTypeFilter = image => /^(https?:)?\/\//.test(image.link);
-const localImageFilter: ImageTypeFilter = image => !webImageFilter(image);
-const allImageFilter: ImageTypeFilter = () => true;
+const webImageFilter: ImageTypeFilter = image => /^(https?:)?\/\//.test(image.link)
+const localImageFilter: ImageTypeFilter = image => !webImageFilter(image)
+const allImageFilter: ImageTypeFilter = () => true
 const createImageTypeFilter = (type: MarkdownImagesExtractor['imageType']) => {
     switch (type) {
         case 'web':
-            return webImageFilter;
+            return webImageFilter
         case 'local':
-            return localImageFilter;
+            return localImageFilter
         default:
-            return allImageFilter;
+            return allImageFilter
     }
-};
+}
 
 export class MarkdownImagesExtractor {
-    imageType: 'web' | 'local' | 'all' = 'all';
-    readonly markdownImageRegex = markdownImageRegex;
-    readonly createImageTypeFilter = createImageTypeFilter;
+    imageType: 'web' | 'local' | 'all' = 'all'
+    readonly markdownImageRegex = markdownImageRegex
+    readonly createImageTypeFilter = createImageTypeFilter
 
-    private _status: 'pending' | 'extracting' | 'extracted' = 'pending';
-    private _errors: [imageSymbol: string, message: string][] = [];
-    private _images: ImageInformationArray | null | undefined = null;
-    private readonly _workspaceDirs: string[] | undefined;
+    private _status: 'pending' | 'extracting' | 'extracted' = 'pending'
+    private _errors: [imageSymbol: string, message: string][] = []
+    private _images: ImageInformationArray | null | undefined = null
+    private readonly _workspaceDirs: string[] | undefined
 
     constructor(
         private readonly markdown: string,
         private readonly targetFileUri: Uri,
         public onProgress?: (index: number, images: ImageInformationArray) => void
     ) {
-        this._workspaceDirs = workspace.workspaceFolders?.map(({ uri: { fsPath } }) => fsPath);
+        this._workspaceDirs = workspace.workspaceFolders?.map(({ uri: { fsPath } }) => fsPath)
     }
 
     get status() {
-        return this._status;
+        return this._status
     }
     get errors() {
-        return this._errors;
+        return this._errors
     }
 
     async extract(): Promise<[source: ImageInformation, result: ImageInformation | null][]> {
-        this._status = 'extracting';
-        const sourceImages = this.findImages();
-        let idx = 0;
-        const result: ReturnType<MarkdownImagesExtractor['extract']> extends Promise<infer U> ? U : never = [];
+        this._status = 'extracting'
+        const sourceImages = this.findImages()
+        let idx = 0
+        const result: ReturnType<MarkdownImagesExtractor['extract']> extends Promise<infer U> ? U : never = []
         for (const image of sourceImages) {
-            this.onProgress?.call(this, idx++, sourceImages);
-            let newImageLink = result.find(x => x[1] != null && x[0].link === image.link)?.[1]?.link;
-            const imageStream = newImageLink ? newImageLink : await this.resolveImageFile(image);
+            this.onProgress?.call(this, idx++, sourceImages)
+            let newImageLink = result.find(x => x[1] != null && x[0].link === image.link)?.[1]?.link
+            const imageStream = newImageLink ? newImageLink : await this.resolveImageFile(image)
             if (imageStream != null) {
                 try {
-                    newImageLink = isString(imageStream) ? imageStream : await imageService.upload(imageStream);
+                    newImageLink = isString(imageStream) ? imageStream : await imageService.upload(imageStream)
                 } catch (ex) {
                     this._errors.push([
                         image.symbol,
                         `上传图片失败, ${isErrorResponse(ex) ? ex.errors.join(',') : JSON.stringify(ex)}`,
-                    ]);
+                    ])
                 }
                 result.push([
                     image,
@@ -90,13 +90,13 @@ export class MarkdownImagesExtractor {
                               symbol: `![${image.alt}](${newImageLink}${image.title})`,
                           }
                         : null,
-                ]);
+                ])
             } else {
-                result.push([image, null]);
+                result.push([image, null])
             }
         }
-        this._status = 'extracted';
-        return result;
+        this._status = 'extracted'
+        return result
     }
 
     findImages(): ImageInformation[] {
@@ -112,52 +112,52 @@ export class MarkdownImagesExtractor {
                       }))
                       .filter(x => !cnblogsImageLinkRegex.test(x.link)))
                 : this._images
-        ).filter(x => createImageTypeFilter(this.imageType).call(null, x));
+        ).filter(x => createImageTypeFilter(this.imageType).call(null, x))
     }
 
     private async resolveImageFile(image: ImageInformation): Promise<Readable | undefined | null> {
-        const { link, symbol, alt, title } = image;
+        const { link, symbol, alt, title } = image
         if (webImageFilter(image)) {
-            const imageStream = await imageService.download(link, alt ?? title);
+            const imageStream = await imageService.download(link, alt ?? title)
             if (!(imageStream instanceof Array)) {
-                return imageStream;
+                return imageStream
             } else {
-                this._errors.push([symbol, `无法下载网络图片, ${imageStream[0]} - ${imageStream[2]}`]);
-                return undefined;
+                this._errors.push([symbol, `无法下载网络图片, ${imageStream[0]} - ${imageStream[2]}`])
+                return undefined
             }
         } else {
             const checkReadAccess = (filePath: string) =>
                 promisify(fs.access)(filePath).then(
                     () => true,
                     () => false
-                );
+                )
 
             let iPath: string | undefined | null = link,
                 iDir = 0,
                 searchingDirs: string[] | undefined | null,
                 triedPath: string[] | undefined,
-                isEncodedPath = false;
+                isEncodedPath = false
 
             while (iPath != null) {
                 if (await checkReadAccess(iPath)) {
-                    return fs.createReadStream(iPath);
+                    return fs.createReadStream(iPath)
                 } else {
-                    (triedPath ??= []).push(iPath);
+                    ;(triedPath ??= []).push(iPath)
 
                     if (!isEncodedPath) {
-                        iPath = decodeURIComponent(iPath);
-                        isEncodedPath = true;
-                        continue;
+                        iPath = decodeURIComponent(iPath)
+                        isEncodedPath = true
+                        continue
                     }
                 }
 
-                searchingDirs ??= [path.dirname(this.targetFileUri.fsPath), ...(this._workspaceDirs ?? [])];
-                iPath = iDir >= 0 && searchingDirs.length > iDir ? path.resolve(searchingDirs[iDir], link) : undefined;
-                iDir++;
-                isEncodedPath = false;
+                searchingDirs ??= [path.dirname(this.targetFileUri.fsPath), ...(this._workspaceDirs ?? [])]
+                iPath = iDir >= 0 && searchingDirs.length > iDir ? path.resolve(searchingDirs[iDir], link) : undefined
+                iDir++
+                isEncodedPath = false
             }
 
-            return undefined;
+            return undefined
         }
     }
 }

@@ -1,4 +1,4 @@
-import { PostCategories } from '@/models/post-category';
+import { PostCategories } from '@/models/post-category'
 
 export namespace webviewCommands {
     export enum UiCommands {
@@ -20,12 +20,12 @@ export namespace webviewCommands {
     }
 
     export interface GetChildCategoriesPayload {
-        parentId: number;
+        parentId: number
     }
 
     export interface UpdateChildCategoriesPayload {
-        parentId: number;
-        value: PostCategories;
+        parentId: number
+        value: PostCategories
     }
 
     export namespace ingCommands {
@@ -40,25 +40,25 @@ export namespace webviewCommands {
         }
 
         export type CommentCommandPayload = {
-            ingId: number;
-            atUser?: { id: number; displayName: string };
-            parentCommentId?: number;
-            ingContent: string;
-        };
+            ingId: number
+            atUser?: { id: number; displayName: string }
+            parentCommentId?: number
+            ingContent: string
+        }
     }
 }
 
 export interface WebviewCommonCommand<T> {
-    payload: T;
-    command: unknown;
+    payload: T
+    command: unknown
 }
 
 export interface IngWebviewUiCommand<T extends Record<string, unknown> = Record<string, unknown>>
     extends WebviewCommonCommand<T> {
-    command: webviewCommands.ingCommands.UiCommands;
+    command: webviewCommands.ingCommands.UiCommands
 }
 
 export interface IngWebviewHostCommand<T extends Record<string, unknown> = Record<string, unknown>>
     extends WebviewCommonCommand<T> {
-    command: webviewCommands.ingCommands.ExtensionCommands;
+    command: webviewCommands.ingCommands.ExtensionCommands
 }

@@ -1,26 +1,26 @@
-import { env } from 'process';
+import { env } from 'process'
 
 export interface IExtensionConfig {
     readonly oauth: Readonly<{
-        authority: string;
-        tokenEndpoint: string;
-        authorizeEndpoint: string;
-        userInfoEndpoint: string;
-        clientId: string;
-        clientSecret: string;
-        responseType: string;
-        scope: string;
-        revocationEndpoint: string;
-    }>;
-    readonly apiBaseUrl: string;
-    readonly ingSite: string;
-    readonly cnblogsOpenApiUrl: string;
+        authority: string
+        tokenEndpoint: string
+        authorizeEndpoint: string
+        userInfoEndpoint: string
+        clientId: string
+        clientSecret: string
+        responseType: string
+        scope: string
+        revocationEndpoint: string
+    }>
+    readonly apiBaseUrl: string
+    readonly ingSite: string
+    readonly cnblogsOpenApiUrl: string
 }
 
-export const isDev = () => process.env.NODE_ENV === 'Development';
+export const isDev = () => process.env.NODE_ENV === 'Development'
 
-declare const CNBLOGS_CLIENTID: string;
-declare const CNBLOGS_CLIENTSECRET: string;
+declare const CNBLOGS_CLIENTID: string
+declare const CNBLOGS_CLIENTSECRET: string
 
 export const defaultConfig: IExtensionConfig = {
     oauth: {
@@ -37,7 +37,7 @@ export const defaultConfig: IExtensionConfig = {
     apiBaseUrl: 'https://i.cnblogs.com',
     ingSite: 'https://ing.cnblogs.com',
     cnblogsOpenApiUrl: 'https://api.cnblogs.com',
-};
+}
 
 export const devConfig: IExtensionConfig = {
     ...defaultConfig,
@@ -50,4 +50,4 @@ export const devConfig: IExtensionConfig = {
     apiBaseUrl: 'https://admin.cnblogs.com',
     ingSite: 'https://my-ing.cnblogs.com',
     cnblogsOpenApiUrl: 'https://my-api.cnblogs.com',
-};
+}

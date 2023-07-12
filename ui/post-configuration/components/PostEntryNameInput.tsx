@@ -1,23 +1,23 @@
-import { ActionButton, ITextField, Label, Stack, TextField } from '@fluentui/react';
-import * as React from 'react';
+import { ActionButton, ITextField, Label, Stack, TextField } from '@fluentui/react'
+import * as React from 'react'
 
 export interface IPostEntryNameInputProps {
-    entryName?: string;
-    onChange?: (value: string) => void;
+    entryName?: string
+    onChange?: (value: string) => void
 }
 
 export interface IPostEntryNameInputState {
-    isCollapsed: boolean;
+    isCollapsed: boolean
 }
 
 export default class PostEntryNameInput extends React.Component<IPostEntryNameInputProps, IPostEntryNameInputState> {
-    textFieldComp?: ITextField | null;
+    textFieldComp?: ITextField | null
     constructor(props: IPostEntryNameInputProps) {
-        super(props);
+        super(props)
 
         this.state = {
             isCollapsed: true,
-        };
+        }
     }
 
     render() {
@@ -60,8 +60,8 @@ export default class PostEntryNameInput extends React.Component<IPostEntryNameIn
                     <Stack tokens={{ childrenGap: 12 }}>
                         <TextField
                             componentRef={input => {
-                                this.textFieldComp = input;
-                                if (this.state.isCollapsed === false) this.textFieldComp?.focus();
+                                this.textFieldComp = input
+                                if (this.state.isCollapsed === false) this.textFieldComp?.focus()
                             }}
                             value={this.props.entryName}
                             onChange={(_, value) => this.props.onChange?.call(this, value)}
@@ -70,6 +70,6 @@ export default class PostEntryNameInput extends React.Component<IPostEntryNameIn
                     </Stack>
                 )}
             </Stack>
-        );
+        )
     }
 }

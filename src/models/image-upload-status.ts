@@ -5,9 +5,9 @@ enum ImageUploadStatusId {
 }
 
 interface ImageUploadStatus {
-    id: ImageUploadStatusId;
-    imageUrl?: string;
-    errors?: string[];
+    id: ImageUploadStatusId
+    imageUrl?: string
+    errors?: string[]
 }
 
-export { ImageUploadStatusId, ImageUploadStatus };
+export { ImageUploadStatusId, ImageUploadStatus }

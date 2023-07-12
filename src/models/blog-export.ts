@@ -7,30 +7,30 @@ export enum BlogExportStatus {
 }
 
 export interface BlogExportRecordList {
-    items: BlogExportRecord[];
-    pageIndex: number;
-    pageSize: number;
-    totalCount: number;
+    items: BlogExportRecord[]
+    pageIndex: number
+    pageSize: number
+    totalCount: number
 }
 
 export interface BlogExportRecord {
-    id: number;
-    blogId: number;
-    fileName: string;
-    archiveName?: string | null;
-    fileBytes: number;
-    archiveBytes: number;
-    sha256Checksum?: string | null;
-    exportedPostCount: number;
-    postCount: number;
-    status: BlogExportStatus;
-    dateExported?: string | null;
-    dateAdded: string;
+    id: number
+    blogId: number
+    fileName: string
+    archiveName?: string | null
+    fileBytes: number
+    archiveBytes: number
+    sha256Checksum?: string | null
+    exportedPostCount: number
+    postCount: number
+    status: BlogExportStatus
+    dateExported?: string | null
+    dateAdded: string
 }
 
 export interface DownloadedBlogExport {
-    filePath: string;
-    id?: number | null;
+    filePath: string
+    id?: number | null
 }
 
 export const blogExportStatusNameMap: Record<BlogExportStatus, string> = {
@@ -39,4 +39,4 @@ export const blogExportStatusNameMap: Record<BlogExportStatus, string> = {
     [BlogExportStatus.created]: '排队中',
     [BlogExportStatus.done]: '已完成',
     [BlogExportStatus.failed]: '失败',
-};
+}
