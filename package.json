@@ -1305,7 +1305,7 @@
         "postcss": "^8.4.12",
         "postcss-loader": "^6.2.1",
         "postcss-preset-env": "^7.4.3",
-        "prettier": "^2.5.0",
+        "prettier": "^2.8.8",
         "style-loader": "^3.3.1",
         "tailwindcss": "^3.0.23",
         "terser-webpack-plugin": "^5.3.7",
