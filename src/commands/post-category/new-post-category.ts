@@ -1,6 +1,6 @@
 import { MessageOptions, ProgressLocation, window } from 'vscode'
-import { postCategoryService } from '../../services/post-category.service'
-import { extensionViews } from '../../tree-view-providers/tree-view-registration'
+import { postCategoryService } from '@/services/post-category.service'
+import { extensionViews } from '@/tree-view-providers/tree-view-registration'
 import { inputPostCategory } from './input-post-category'
 import { refreshPostCategoriesList } from './refresh-post-categories-list'
 

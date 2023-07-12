@@ -1,9 +1,9 @@
 import { MessageOptions, window } from 'vscode'
-import { Post } from '../../models/post'
-import { PostFileMap, PostFileMapManager } from '../../services/post-file-map'
-import { revealPostsListItem } from '../../services/posts-list-view'
-import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item'
-import { extensionViews } from '../../tree-view-providers/tree-view-registration'
+import { Post } from '@/models/post'
+import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
+import { revealPostsListItem } from '@/services/posts-list-view'
+import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
+import { extensionViews } from '@/tree-view-providers/tree-view-registration'
 
 const confirm = async (posts: Post[]): Promise<boolean> => {
     const options = ['确定']

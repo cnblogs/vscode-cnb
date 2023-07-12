@@ -1,5 +1,5 @@
 import fetch from '@/utils/fetch-client'
-import { BlogSettings, BlogSiteDto, BlogSiteExtendDto } from '../models/blog-settings'
+import { BlogSettings, BlogSiteDto, BlogSiteExtendDto } from '@/models/blog-settings'
 import { globalContext } from './global-state'
 
 export class BlogSettingsService {

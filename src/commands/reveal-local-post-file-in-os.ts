@@ -1,6 +1,6 @@
 import { commands, Uri } from 'vscode'
-import { Post } from '../models/post'
-import { PostFileMapManager } from '../services/post-file-map'
+import { Post } from '@/models/post'
+import { PostFileMapManager } from '@/services/post-file-map'
 
 export const revealLocalPostFileInOs = (post: Post) => {
     if (!post) return

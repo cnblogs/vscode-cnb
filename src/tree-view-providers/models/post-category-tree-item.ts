@@ -1,5 +1,5 @@
 import { TreeItem } from 'vscode'
-import { PostCategory } from '../../models/post-category'
+import { PostCategory } from '@/models/post-category'
 import { toTreeItem } from '../converters'
 import { BaseTreeItemSource } from './base-tree-item-source'
 import { PostTreeItem } from './post-tree-item'

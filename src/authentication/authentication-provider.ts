@@ -14,7 +14,7 @@ import {
     Uri,
     window,
 } from 'vscode'
-import { globalContext } from '../services/global-state'
+import { globalContext } from '@/services/global-state'
 import RandomString from 'randomstring'
 import { OauthApi } from '@/services/oauth.api'
 import extensionUriHandler from '@/utils/uri-handler'

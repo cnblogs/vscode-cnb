@@ -4,7 +4,7 @@ import { openMyWebBlogConsole } from './open-my-blog-management-background'
 import { openMyHomePage } from './open-my-home-page'
 import { login, logout } from './login'
 import { openMyBlog } from './open-my-blog'
-import { globalContext } from '../services/global-state'
+import { globalContext } from '@/services/global-state'
 import {
     gotoNextPostsList,
     gotoPreviousPostsList,

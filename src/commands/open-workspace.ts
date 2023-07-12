@@ -1,5 +1,5 @@
 import { commands, MessageOptions, window } from 'vscode'
-import { Settings } from '../services/settings.service'
+import { Settings } from '@/services/settings.service'
 
 export const openWorkspace = async () => {
     const uri = Settings.workspaceUri

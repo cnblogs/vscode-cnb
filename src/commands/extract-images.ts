@@ -1,5 +1,5 @@
 import { Uri, workspace, window, MessageOptions, MessageItem, ProgressLocation, Range, WorkspaceEdit } from 'vscode'
-import { ImageInformation, MarkdownImagesExtractor } from '../services/images-extractor.service'
+import { ImageInformation, MarkdownImagesExtractor } from '@/services/images-extractor.service'
 
 type ExtractOption = MessageItem & Partial<Pick<MarkdownImagesExtractor, 'imageType'>>
 const extractOptions: readonly ExtractOption[] = [

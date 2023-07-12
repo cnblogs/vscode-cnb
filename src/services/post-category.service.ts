@@ -1,5 +1,5 @@
 import fetch from '@/utils/fetch-client'
-import { PostCategories, PostCategory, PostCategoryAddDto } from '../models/post-category'
+import { PostCategories, PostCategory, PostCategoryAddDto } from '@/models/post-category'
 import { globalContext } from './global-state'
 import { URLSearchParams } from 'url'
 

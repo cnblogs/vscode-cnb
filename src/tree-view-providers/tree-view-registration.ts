@@ -1,4 +1,4 @@
-import { globalContext } from '../services/global-state'
+import { globalContext } from '@/services/global-state'
 import vscode from 'vscode'
 import { accountViewDataProvider } from './account-view-data-provider'
 import { PostsListTreeItem, postsDataProvider } from './posts-data-provider'

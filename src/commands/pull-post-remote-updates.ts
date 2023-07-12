@@ -1,13 +1,13 @@
 import { MessageOptions, Uri, window, workspace } from 'vscode'
-import { Post } from '../models/post'
-import { PostFileMapManager } from '../services/post-file-map'
+import { Post } from '@/models/post'
+import { PostFileMapManager } from '@/services/post-file-map'
 import { openPostInVscode } from './posts-list/open-post-in-vscode'
 import fs from 'fs'
-import { postService } from '../services/post.service'
-import { AlertService } from '../services/alert.service'
+import { postService } from '@/services/post.service'
+import { AlertService } from '@/services/alert.service'
 import path from 'path'
-import { revealPostsListItem } from '../services/posts-list-view'
-import { PostTreeItem } from '../tree-view-providers/models/post-tree-item'
+import { revealPostsListItem } from '@/services/posts-list-view'
+import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 
 const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefined | null): Promise<void> => {
     const ctxs: CommandContext[] = []

@@ -39,7 +39,6 @@ describe('isTargetWorkspace', () => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             mockedWorkspace.workspaceFolders = [{ name: '', uri: { path: current } }]
-
             ;(mockSettings as any).workspaceUri = { path: target }
 
             const { isTargetWorkspace } = await import('@/services/check-workspace')

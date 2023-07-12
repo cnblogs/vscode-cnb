@@ -1,6 +1,6 @@
 import path from 'path'
 import sanitize from 'sanitize-filename'
-import { Post } from '../models/post'
+import { Post } from '@/models/post'
 import { globalContext } from './global-state'
 import { PostFileMapManager } from './post-file-map'
 

@@ -1,13 +1,13 @@
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
-import { Post } from '../../models/post'
-import { AlertService } from '../../services/alert.service'
-import { postService } from '../../services/post.service'
-import { PostFileMap, PostFileMapManager } from '../../services/post-file-map'
-import { postsDataProvider } from '../../tree-view-providers/posts-data-provider'
-import { extensionViews } from '../../tree-view-providers/tree-view-registration'
+import { Post } from '@/models/post'
+import { AlertService } from '@/services/alert.service'
+import { postService } from '@/services/post.service'
+import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
+import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { extensionViews } from '@/tree-view-providers/tree-view-registration'
 import { refreshPostsList } from './refresh-posts-list'
-import { PostTreeItem } from '../../tree-view-providers/models/post-tree-item'
-import { postCategoriesDataProvider } from '../../tree-view-providers/post-categories-tree-data-provider'
+import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
+import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
 
 let isDeleting = false
 

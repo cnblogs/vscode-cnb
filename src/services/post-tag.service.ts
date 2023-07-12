@@ -1,5 +1,5 @@
 import got from '@/utils/http-client'
-import { PostTag } from '../models/post-tag'
+import { PostTag } from '@/models/post-tag'
 import { globalContext } from './global-state'
 
 export class PostTagService {

@@ -1,11 +1,11 @@
-import { globalContext } from '../../services/global-state'
-import { postService } from '../../services/post.service'
+import { globalContext } from '@/services/global-state'
+import { postService } from '@/services/post.service'
 import vscode from 'vscode'
-import { postsDataProvider } from '../../tree-view-providers/posts-data-provider'
-import { AlertService } from '../../services/alert.service'
-import { PostsListState } from '../../models/posts-list-state'
+import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { AlertService } from '@/services/alert.service'
+import { PostsListState } from '@/models/posts-list-state'
 import { window } from 'vscode'
-import { extensionViews } from '../../tree-view-providers/tree-view-registration'
+import { extensionViews } from '@/tree-view-providers/tree-view-registration'
 
 let refreshTask: Promise<boolean> | null = null
 

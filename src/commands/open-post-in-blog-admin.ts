@@ -1,7 +1,7 @@
 import { commands, Uri } from 'vscode'
-import { Post } from '../models/post'
-import { PostFileMapManager } from '../services/post-file-map'
-import { PostTreeItem } from '../tree-view-providers/models/post-tree-item'
+import { Post } from '@/models/post'
+import { PostFileMapManager } from '@/services/post-file-map'
+import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 
 export const openPostInBlogAdmin = (item: Post | PostTreeItem | Uri) => {
     if (!item) return

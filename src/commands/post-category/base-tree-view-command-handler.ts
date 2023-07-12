@@ -1,7 +1,7 @@
-import { PostCategory } from '../../models/post-category'
-import { PostCategoriesListTreeItem } from '../../tree-view-providers/models/categories-list-tree-item'
-import { PostCategoryTreeItem } from '../../tree-view-providers/models/post-category-tree-item'
-import { extensionViews } from '../../tree-view-providers/tree-view-registration'
+import { PostCategory } from '@/models/post-category'
+import { PostCategoriesListTreeItem } from '@/tree-view-providers/models/categories-list-tree-item'
+import { PostCategoryTreeItem } from '@/tree-view-providers/models/post-category-tree-item'
+import { extensionViews } from '@/tree-view-providers/tree-view-registration'
 import { MultiSelectableTreeViewCommandHandler, TreeViewCommandHandler } from '../command-handler'
 
 export abstract class BasePostCategoryTreeViewCommandHandler implements TreeViewCommandHandler<PostCategory> {

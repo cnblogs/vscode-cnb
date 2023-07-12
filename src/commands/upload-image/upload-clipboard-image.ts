@@ -1,8 +1,8 @@
 import fs from 'fs'
 import { ProgressLocation, Uri, window, workspace } from 'vscode'
-import { AlertService } from '../../services/alert.service'
-import { imageService } from '../../services/image.service'
-import getClipboardImage from '../../utils/get-clipboard-image'
+import { AlertService } from '@/services/alert.service'
+import { imageService } from '@/services/image.service'
+import getClipboardImage from '@/utils/get-clipboard-image'
 
 const noImagePath = 'no image'
 

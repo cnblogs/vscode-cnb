@@ -1,6 +1,6 @@
 import { GotFetchResponse } from 'got-fetch/out/lib/response'
 import { Response as GotResponse } from 'got'
-import { IErrorResponse, isErrorResponse } from '../models/error-response'
+import { IErrorResponse, isErrorResponse } from '@/models/error-response'
 import iconv from 'iconv-lite'
 
 const throwIfNotOkResponse = async (response: GotFetchResponse) => {

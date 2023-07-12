@@ -1,5 +1,5 @@
-import { postCategoriesDataProvider } from '../tree-view-providers/post-categories-tree-data-provider'
-import { postsDataProvider } from '../tree-view-providers/posts-data-provider'
+import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
+import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { globalContext } from './global-state'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && !!map[1]
