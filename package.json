@@ -468,16 +468,16 @@
                     },
                     "cnblogsClientForVSCode.automaticallyExtractImages": {
                         "order": 6,
-                        "default": "---",
+                        "default": "disable",
                         "scope": "application",
                         "enum": [
-                            "---",
+                            "disable",
                             "local",
                             "web",
-                            "all"
+                            "any"
                         ],
                         "enumItemLabels": [
-                            "不自动提取图片",
+                            "禁用",
                             "自动提取本地图片",
                             "自动提取网络图片",
                             "自动提取全部图片"

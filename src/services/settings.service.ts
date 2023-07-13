@@ -1,7 +1,7 @@
 import os, { homedir } from 'os'
 import fs from 'fs'
 import { ConfigurationTarget, Uri, workspace } from 'vscode'
-import { MarkdownImagesExtractor } from './images-extractor.service'
+import { ImageSrc, MarkdownImagesExtractor } from './images-extractor.service'
 import { isNumber } from 'lodash-es'
 import { untildify } from '@/utils/untildify'
 
@@ -73,9 +73,14 @@ export class Settings {
         return this.configuration.get<boolean>('createLocalPostFileWithCategory') ?? false
     }
 
-    static get automaticallyExtractImagesType(): MarkdownImagesExtractor['imageType'] | null {
-        const value = this.configuration.get<MarkdownImagesExtractor['imageType']>('automaticallyExtractImages') ?? null
-        return value?.startsWith('---') ? null : value
+    static get automaticallyExtractImagesType(): ImageSrc | null {
+        const cfg = this.configuration.get<'disable' | 'web' | 'local' | 'any'>('automaticallyExtractImages') ?? null
+
+        if (cfg === 'local') return ImageSrc.local
+        if (cfg === 'any') return ImageSrc.any
+        if (cfg === 'web') return ImageSrc.web
+
+        return null // 'disable' case
     }
 
     static get postsListPageSize() {
