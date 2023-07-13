@@ -1,13 +1,13 @@
-import { UserInformationSpec } from '@/services/oauth.api';
-import { trim } from 'lodash-es';
-import { AuthenticationSessionAccountInformation } from 'vscode';
-import { CnblogsAuthenticationProvider } from './authentication-provider';
+import { UserInformationSpec } from '@/services/oauth.api'
+import { trim } from 'lodash-es'
+import { AuthenticationSessionAccountInformation } from 'vscode'
+import { CnblogsAuthenticationProvider } from './authentication-provider'
 
 export class CnblogsAccountInformation implements AuthenticationSessionAccountInformation {
-    readonly label: string;
-    readonly id: string;
+    readonly label: string
+    readonly id: string
 
-    private _blogApp?: string | null;
+    private _blogApp?: string | null
 
     /**
      * Creates an instance of {@link CnblogsAccountInformation}.
@@ -26,18 +26,18 @@ export class CnblogsAccountInformation implements AuthenticationSessionAccountIn
         public readonly sub: string,
         public readonly accountId: number
     ) {
-        this.id = `${this.accountId}-${CnblogsAuthenticationProvider.providerId}`;
-        this.label = name;
+        this.id = `${this.accountId}-${CnblogsAuthenticationProvider.providerId}`
+        this.label = name
     }
 
     get userId() {
-        return this.sub;
+        return this.sub
     }
 
     get blogApp(): string | null {
-        if (this._blogApp == null) this._blogApp = this.parseBlogApp();
+        if (this._blogApp == null) this._blogApp = this.parseBlogApp()
 
-        return this._blogApp;
+        return this._blogApp
     }
 
     static parse(userInfo: Partial<UserInformationSpec & CnblogsAccountInformation> = {}) {
@@ -48,7 +48,7 @@ export class CnblogsAccountInformation implements AuthenticationSessionAccountIn
             userInfo.blog_id ? parseInt(userInfo.blog_id, 10) : userInfo.blogId ?? -1,
             userInfo.sub || '',
             userInfo.account_id ? parseInt(userInfo.account_id, 10) : userInfo.accountId ?? -1
-        );
+        )
     }
 
     private parseBlogApp() {
@@ -56,6 +56,6 @@ export class CnblogsAccountInformation implements AuthenticationSessionAccountIn
             trim(this.website ?? '', '/')
                 .split('/')
                 .pop() ?? null
-        );
+        )
     }
 }

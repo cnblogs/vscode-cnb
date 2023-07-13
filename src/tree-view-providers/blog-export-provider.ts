@@ -1,57 +1,57 @@
-import { BlogExportRecordsStore } from '@/services/blog-export-records.store';
+import { BlogExportRecordsStore } from '@/services/blog-export-records.store'
 import {
     BlogExportRecordTreeItem,
     BlogExportRecordMetadata,
     BlogExportTreeItem,
     parseBlogExportRecords,
-} from './models/blog-export';
+} from './models/blog-export'
 import {
     DownloadedExportMetadata,
     DownloadedExportsEntryTreeItem,
     DownloadedExportTreeItem,
     ExportPostsEntryTreeItem,
-} from './models/blog-export/downloaded';
-import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode';
-import { ExportPostTreeItem } from './models/blog-export/post';
-import { AlertService } from '@/services/alert.service';
-import { BlogExportRecord } from '@/models/blog-export';
+} from './models/blog-export/downloaded'
+import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
+import { ExportPostTreeItem } from './models/blog-export/post'
+import { AlertService } from '@/services/alert.service'
+import { BlogExportRecord } from '@/models/blog-export'
 
 export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> {
-    private static _instance?: BlogExportProvider | null;
+    private static _instance?: BlogExportProvider | null
 
-    private _treeDataChangedSource?: EventEmitter<BlogExportTreeItem | null | undefined> | null;
-    private _store?: BlogExportRecordsStore | null;
-    private _downloadedExportEntry?: DownloadedExportsEntryTreeItem | null;
+    private _treeDataChangedSource?: EventEmitter<BlogExportTreeItem | null | undefined> | null
+    private _store?: BlogExportRecordsStore | null
+    private _downloadedExportEntry?: DownloadedExportsEntryTreeItem | null
 
     static get instance(): BlogExportProvider {
-        return (this._instance ??= new BlogExportProvider());
+        return (this._instance ??= new BlogExportProvider())
     }
 
     static get optionalInstance(): BlogExportProvider | undefined | null {
-        return this._instance;
+        return this._instance
     }
 
     get onDidChangeTreeData(): Event<BlogExportTreeItem | null | undefined> {
-        return (this._treeDataChangedSource ??= new EventEmitter<BlogExportTreeItem | null | undefined>()).event;
+        return (this._treeDataChangedSource ??= new EventEmitter<BlogExportTreeItem | null | undefined>()).event
     }
 
     get store(): BlogExportRecordsStore {
-        return (this._store ??= new BlogExportRecordsStore());
+        return (this._store ??= new BlogExportRecordsStore())
     }
 
     getTreeItem(element: BlogExportTreeItem): TreeItem | Thenable<TreeItem> {
-        return element instanceof TreeItem ? element : element.toTreeItem();
+        return element instanceof TreeItem ? element : element.toTreeItem()
     }
 
     getChildren(element?: BlogExportTreeItem | null): ProviderResult<BlogExportTreeItem[]> {
-        if (element instanceof BlogExportRecordTreeItem) return element.getChildrenAsync();
-        else if (element instanceof DownloadedExportsEntryTreeItem) return element.getChildrenAsync();
-        else if (element instanceof DownloadedExportTreeItem) return element.getChildrenAsync();
-        else if (element instanceof ExportPostsEntryTreeItem) return element.getChildrenAsync();
+        if (element instanceof BlogExportRecordTreeItem) return element.getChildrenAsync()
+        else if (element instanceof DownloadedExportsEntryTreeItem) return element.getChildrenAsync()
+        else if (element instanceof DownloadedExportTreeItem) return element.getChildrenAsync()
+        else if (element instanceof ExportPostsEntryTreeItem) return element.getChildrenAsync()
         else if (element == null)
-            return [(this._downloadedExportEntry = new DownloadedExportsEntryTreeItem()), ...this.listRecords()];
+            return [(this._downloadedExportEntry = new DownloadedExportsEntryTreeItem()), ...this.listRecords()]
 
-        return null;
+        return null
     }
 
     getParent(element: BlogExportTreeItem): ProviderResult<BlogExportTreeItem> {
@@ -62,9 +62,9 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
             element instanceof ExportPostTreeItem ||
             element instanceof ExportPostsEntryTreeItem
         )
-            return element.parent;
+            return element.parent
 
-        return null;
+        return null
     }
 
     async refreshDownloadedExports({ force = true } = {}) {
@@ -74,13 +74,13 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
                       () => true,
                       () => false
                   )
-                : true;
-            if (hasCacheRefreshed) this._treeDataChangedSource?.fire(this._downloadedExportEntry);
+                : true
+            if (hasCacheRefreshed) this._treeDataChangedSource?.fire(this._downloadedExportEntry)
 
-            return hasCacheRefreshed;
+            return hasCacheRefreshed
         }
 
-        return false;
+        return false
     }
 
     /**
@@ -113,24 +113,24 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
                   () => true,
                   () => true
               )
-            : true;
+            : true
 
-        if (hasCacheRefreshed) this._treeDataChangedSource?.fire(null);
+        if (hasCacheRefreshed) this._treeDataChangedSource?.fire(null)
 
-        return hasCacheRefreshed ?? false;
+        return hasCacheRefreshed ?? false
     }
 
     refreshItem<T extends BlogExportTreeItem>(item: T) {
-        this._treeDataChangedSource?.fire(item);
+        this._treeDataChangedSource?.fire(item)
     }
 
     private listRecords(): BlogExportRecordTreeItem[] {
         const {
             store: { cached },
-        } = this;
+        } = this
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        if (cached == null) this.refreshRecords();
-        const items: BlogExportRecord[] = cached?.items ?? [];
-        return parseBlogExportRecords(this, items);
+        if (cached == null) this.refreshRecords()
+        const items: BlogExportRecord[] = cached?.items ?? []
+        return parseBlogExportRecords(this, items)
     }
 }

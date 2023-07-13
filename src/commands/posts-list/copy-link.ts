@@ -1,15 +1,15 @@
-import { TreeViewCommandHandler } from '@/commands/command-handler';
-import { Post } from '@/models/post';
-import { AlertService } from '@/services/alert.service';
-import { PostFileMapManager } from '@/services/post-file-map';
-import { postService } from '@/services/post.service';
-import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item';
-import { env, MessageItem, Uri, window } from 'vscode';
+import { TreeViewCommandHandler } from '@/commands/command-handler'
+import { Post } from '@/models/post'
+import { AlertService } from '@/services/alert.service'
+import { PostFileMapManager } from '@/services/post-file-map'
+import { postService } from '@/services/post.service'
+import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
+import { env, MessageItem, Uri, window } from 'vscode'
 
-type LinkFormat = 'markdown' | 'raw' | 'id';
+type LinkFormat = 'markdown' | 'raw' | 'id'
 interface CopyStrategy {
-    name: string;
-    provideContent: (post: Post) => Thenable<string>;
+    name: string
+    provideContent: (post: Post) => Thenable<string>
 }
 
 export class CopyPostLinkCommandHandler extends TreeViewCommandHandler<Thenable<Post | null | undefined>> {
@@ -26,38 +26,38 @@ export class CopyPostLinkCommandHandler extends TreeViewCommandHandler<Thenable<
             name: '复制Id',
             provideContent: ({ id }) => Promise.resolve(`${id}`),
         },
-    };
+    }
 
     constructor(public readonly input: unknown) {
-        super();
+        super()
     }
 
     async handle(): Promise<void> {
-        const post = await this.parseInput();
+        const post = await this.parseInput()
 
-        if (post == null) return;
+        if (post == null) return
 
-        const linkFormat = await this.askFormat();
-        if (linkFormat == null) return;
+        const linkFormat = await this.askFormat()
+        if (linkFormat == null) return
 
-        const contentToCopy = await this._strategies[linkFormat].provideContent(post);
-        if (contentToCopy.length > 0) await env.clipboard.writeText(contentToCopy);
+        const contentToCopy = await this._strategies[linkFormat].provideContent(post)
+        if (contentToCopy.length > 0) await env.clipboard.writeText(contentToCopy)
     }
 
     parseInput(): Thenable<Post | null | undefined> {
-        const { input } = this;
+        const { input } = this
         if (input instanceof Post) {
-            return Promise.resolve(input);
+            return Promise.resolve(input)
         } else if (input instanceof PostTreeItem) {
-            return Promise.resolve(input.post);
+            return Promise.resolve(input.post)
         } else if (input instanceof Uri) {
-            const postId = PostFileMapManager.findByFilePath(input.fsPath)?.[0];
+            const postId = PostFileMapManager.findByFilePath(input.fsPath)?.[0]
             return postId == null || postId <= 0
                 ? Promise.resolve(undefined).then(() => void AlertService.fileNotLinkedToPost(input))
-                : postService.fetchPostEditDto(postId).then(v => v?.post);
+                : postService.fetchPostEditDto(postId).then(v => v?.post)
         }
 
-        return Promise.resolve(undefined);
+        return Promise.resolve(undefined)
     }
 
     private askFormat(): Thenable<LinkFormat | undefined | null> {
@@ -71,6 +71,6 @@ export class CopyPostLinkCommandHandler extends TreeViewCommandHandler<Thenable<
                     isCloseAffordance: false,
                 }))
             )
-            .then(x => x?.format);
+            .then(x => x?.format)
     }
 }

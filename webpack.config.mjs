@@ -2,16 +2,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 //@ts-check
 
-'use strict';
+'use strict'
 
-import path from 'path';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
-import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
-import { fileURLToPath } from 'url';
-import webpack from 'webpack';
+import path from 'path'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
+import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin'
+import { fileURLToPath } from 'url'
+import webpack from 'webpack'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const preserveModules = [
     '@mapbox',
@@ -42,13 +42,13 @@ const preserveModules = [
     'object-assign',
     'yallist',
     'sqlite3',
-];
+]
 
 //@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
 export default (env, { mode }) => {
-    const isProd = mode === 'production';
+    const isProd = mode === 'production'
 
     /** @type WebpackConfig */
     const extensionConfig = {
@@ -124,7 +124,7 @@ export default (env, { mode }) => {
             chunkIds: isProd && !env.namedChunks ? 'deterministic' : 'named',
             usedExports: true,
         },
-    };
+    }
 
-    return extensionConfig;
-};
+    return extensionConfig
+}

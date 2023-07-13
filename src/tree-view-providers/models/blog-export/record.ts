@@ -1,42 +1,42 @@
-import { BlogExportRecord, BlogExportStatus, blogExportStatusNameMap } from '@/models/blog-export';
-import { BaseEntryTreeItem } from '@/tree-view-providers/models/base-entry-tree-item';
-import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-source';
-import { BlogExportRecordMetadata } from './record-metadata';
-import { parseStatusIcon } from './parser';
-import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
-import format from 'date-fns/format';
-import parseISO from 'date-fns/parseISO';
-import { DownloadedExportStore } from '@/services/downloaded-export.store';
-import { BlogExportTreeItem, DownloadedExportTreeItem } from '@/tree-view-providers/models/blog-export';
-import os from 'os';
-import { escapeRegExp } from 'lodash-es';
-import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
-import { BlogExportApi } from '@/services/blog-export.api';
+import { BlogExportRecord, BlogExportStatus, blogExportStatusNameMap } from '@/models/blog-export'
+import { BaseEntryTreeItem } from '@/tree-view-providers/models/base-entry-tree-item'
+import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-source'
+import { BlogExportRecordMetadata } from './record-metadata'
+import { parseStatusIcon } from './parser'
+import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
+import format from 'date-fns/format'
+import parseISO from 'date-fns/parseISO'
+import { DownloadedExportStore } from '@/services/downloaded-export.store'
+import { BlogExportTreeItem, DownloadedExportTreeItem } from '@/tree-view-providers/models/blog-export'
+import os from 'os'
+import { escapeRegExp } from 'lodash-es'
+import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
+import { BlogExportApi } from '@/services/blog-export.api'
 
 export class BlogExportRecordTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<BlogExportTreeItem> {
-    static readonly contextValue = 'cnblogs-export-record';
-    private _blogExportApi?: BlogExportApi | null;
+    static readonly contextValue = 'cnblogs-export-record'
+    private _blogExportApi?: BlogExportApi | null
     private _downloadingProgress?: {
-        percentage?: number;
-        transferred?: number;
-        total?: number;
-        message?: string | null;
-    } | null;
+        percentage?: number
+        transferred?: number
+        total?: number
+        message?: string | null
+    } | null
 
     constructor(private readonly _treeDataProvider: BlogExportProvider, public record: BlogExportRecord) {
-        super();
+        super()
     }
 
     protected get blogExportApi() {
-        return (this._blogExportApi ??= new BlogExportApi());
+        return (this._blogExportApi ??= new BlogExportApi())
     }
 
     toTreeItem(): Promise<TreeItem> {
         const {
             record: { fileName, status },
-        } = this;
-        const hasDone = status === BlogExportStatus.done;
-        const hasFailed = status === BlogExportStatus.failed;
+        } = this
+        const hasDone = status === BlogExportStatus.done
+        const hasFailed = status === BlogExportStatus.failed
 
         return Promise.resolve({
             label: fileName,
@@ -44,46 +44,44 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
             contextValue: `${BlogExportRecordTreeItem.contextValue}-${BlogExportStatus[status]}`,
             iconPath: hasDone ? new ThemeIcon('cloud') : parseStatusIcon(status),
         }).finally(() => {
-            if (!hasDone && !hasFailed) this.pollingStatus();
-        });
+            if (!hasDone && !hasFailed) this.pollingStatus()
+        })
     }
 
     getChildren: () => BlogExportTreeItem[] = () => {
-        throw new Error('Not implement');
-    };
+        throw new Error('Not implement')
+    }
 
-    getChildrenAsync: () => Promise<BlogExportTreeItem[]> = () => Promise.resolve(this.parseChildren());
+    getChildrenAsync: () => Promise<BlogExportTreeItem[]> = () => Promise.resolve(this.parseChildren())
 
     reportDownloadingProgress(progress?: Partial<typeof this._downloadingProgress> | null) {
-        this._downloadingProgress = progress
-            ? Object.assign({}, this._downloadingProgress ?? {}, progress ?? {})
-            : null;
+        this._downloadingProgress = progress ? Object.assign({}, this._downloadingProgress ?? {}, progress ?? {}) : null
     }
 
     private pollingStatus() {
-        const { blogExportApi } = this;
+        const { blogExportApi } = this
         const timeoutId = setTimeout(() => {
-            clearTimeout(timeoutId);
+            clearTimeout(timeoutId)
             blogExportApi
                 .getById(this.record.id)
                 .then(record => {
-                    this.record = record;
+                    this.record = record
                 })
                 .catch(console.warn)
-                .finally(() => this._treeDataProvider.refreshItem(this));
-        }, 1500);
+                .finally(() => this._treeDataProvider.refreshItem(this))
+        }, 1500)
     }
 
     private async parseChildren(): Promise<BlogExportTreeItem[]> {
-        const { filesize } = await import('filesize');
+        const { filesize } = await import('filesize')
         const {
             record,
             record: { status, id, fileBytes, dateExported },
             _downloadingProgress,
-        } = this;
-        const formattedFileSize = filesize(fileBytes);
-        const dateTimeFormat = 'yyyy MM-dd HH:mm';
-        const localExport = await DownloadedExportStore.instance.findById(id);
+        } = this
+        const formattedFileSize = filesize(fileBytes)
+        const dateTimeFormat = 'yyyy MM-dd HH:mm'
+        const localExport = await DownloadedExportStore.instance.findById(id)
         const items = [
             new BlogExportRecordMetadata(
                 this,
@@ -149,24 +147,24 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                       ),
                   ]
                 : []),
-        ];
+        ]
 
-        return items;
+        return items
     }
 
     private formatDownloadProgress(filesize: typeof import('filesize').filesize): string {
-        const { _downloadingProgress } = this;
-        if (_downloadingProgress == null) return '';
-        let { transferred, total, percentage, message } = _downloadingProgress;
-        transferred ??= 0;
-        total ??= 0;
-        percentage ??= 0;
-        let formattedTransfer = filesize(transferred);
-        formattedTransfer = typeof formattedTransfer === 'string' ? formattedTransfer : transferred;
+        const { _downloadingProgress } = this
+        if (_downloadingProgress == null) return ''
+        let { transferred, total, percentage, message } = _downloadingProgress
+        transferred ??= 0
+        total ??= 0
+        percentage ??= 0
+        let formattedTransfer = filesize(transferred)
+        formattedTransfer = typeof formattedTransfer === 'string' ? formattedTransfer : transferred
 
-        let formattedTotal = filesize(total);
-        formattedTotal = typeof formattedTotal === 'string' ? formattedTotal : total;
-        message ??= '下载中';
-        return `${message}: ${formattedTransfer}/${formattedTotal} (${percentage}%)`;
+        let formattedTotal = filesize(total)
+        formattedTotal = typeof formattedTotal === 'string' ? formattedTotal : total
+        message ??= '下载中'
+        return `${message}: ${formattedTransfer}/${formattedTotal} (${percentage}%)`
     }
 }

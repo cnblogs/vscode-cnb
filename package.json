@@ -468,16 +468,16 @@
                     },
                     "cnblogsClientForVSCode.automaticallyExtractImages": {
                         "order": 6,
-                        "default": "---",
+                        "default": "disable",
                         "scope": "application",
                         "enum": [
-                            "---",
+                            "disable",
                             "local",
                             "web",
-                            "all"
+                            "any"
                         ],
                         "enumItemLabels": [
-                            "不自动提取图片",
+                            "禁用",
                             "自动提取本地图片",
                             "自动提取网络图片",
                             "自动提取全部图片"
@@ -1301,11 +1301,11 @@
         "lodash": "^4.17.21",
         "mini-css-extract-plugin": "^2.6.0",
         "mocha": "^10.2.0",
-        "npm": "^8.5.5",
+        "npm": "^9.8.0",
         "postcss": "^8.4.12",
         "postcss-loader": "^6.2.1",
         "postcss-preset-env": "^7.4.3",
-        "prettier": "^2.5.0",
+        "prettier": "^2.8.8",
         "style-loader": "^3.3.1",
         "tailwindcss": "^3.0.23",
         "terser-webpack-plugin": "^5.3.7",
@@ -1327,7 +1327,7 @@
         "blob": "^0.1.0",
         "crypto": "^1.0.1",
         "date-fns": "^2.27.0",
-        "download-chromium": "^2.2.1",
+        "download-chromium": "^2.1.0",
         "express": "^4.17.1",
         "filesize": "^10.0.6",
         "form-data": "^4.0.0",

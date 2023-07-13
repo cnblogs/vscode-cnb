@@ -1,15 +1,15 @@
-import { RefreshExportRecordsCommandHandler } from './refresh';
-import { globalContext } from '@/services/global-state';
-import { commands, Disposable } from 'vscode';
-import { OpenLocalExportCommandHandler } from '@/commands/blog-export/open-local';
-import { EditExportPostCommandHandler } from '@/commands/blog-export/edit';
-import { CreateBlogExportCommandHandler } from '@/commands/blog-export/create';
-import { DownloadExportCommandHandler } from '@/commands/blog-export/download';
-import { ViewPostCommandHandler } from '@/commands/blog-export/view-post';
-import { DeleteCommandHandler } from '@/commands/blog-export/delete';
+import { RefreshExportRecordsCommandHandler } from './refresh'
+import { globalContext } from '@/services/global-state'
+import { commands, Disposable } from 'vscode'
+import { OpenLocalExportCommandHandler } from '@/commands/blog-export/open-local'
+import { EditExportPostCommandHandler } from '@/commands/blog-export/edit'
+import { CreateBlogExportCommandHandler } from '@/commands/blog-export/create'
+import { DownloadExportCommandHandler } from '@/commands/blog-export/download'
+import { ViewPostCommandHandler } from '@/commands/blog-export/view-post'
+import { DeleteCommandHandler } from '@/commands/blog-export/delete'
 
 export function registerCommandsForBlogExport(disposables: Disposable[]) {
-    const { extensionName } = globalContext;
+    const { extensionName } = globalContext
     disposables.push(
         commands.registerCommand(`${extensionName}.blog-export.refresh-records`, () =>
             new RefreshExportRecordsCommandHandler().handle()
@@ -30,5 +30,5 @@ export function registerCommandsForBlogExport(disposables: Disposable[]) {
             new ViewPostCommandHandler(input).handle()
         ),
         commands.registerCommand(DeleteCommandHandler.commandName, input => new DeleteCommandHandler(input).handle())
-    );
+    )
 }

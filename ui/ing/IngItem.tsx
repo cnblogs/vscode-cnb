@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
-import { Ing, IngComment, IngSendFromType } from '@models/ing';
-import { IngItemState } from '@models/ing-view';
-import { take } from 'lodash-es';
-import { ActivityItem, IPersonaProps, Link, Text } from '@fluentui/react';
-import { format, formatDistanceStrict } from 'date-fns';
-import { zhCN } from 'date-fns/locale';
-import { vsCodeApi } from 'share/vscode-api';
-import { IngWebviewHostCommand, webviewCommands } from '@models/webview-commands';
+import React, { Component } from 'react'
+import { Ing, IngComment, IngSendFromType } from '@models/ing'
+import { IngItemState } from '@models/ing-view'
+import { take } from 'lodash-es'
+import { ActivityItem, IPersonaProps, Link, Text } from '@fluentui/react'
+import { format, formatDistanceStrict } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
+import { vsCodeApi } from 'share/vscode-api'
+import { IngWebviewHostCommand, webviewCommands } from '@models/webview-commands'
 
 interface IngItemProps {
-    ing: Ing;
-    comments?: IngComment[];
+    ing: Ing
+    comments?: IngComment[]
 }
 
 class IngItem extends Component<IngItemProps, IngItemState> {
@@ -42,24 +42,24 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                 ></path>
             </svg>
         ),
-    } as const;
+    } as const
 
     constructor(props: IngItemProps) {
-        super(props);
-        this.state = {};
+        super(props)
+        this.state = {}
     }
 
     private get persons() {
-        return take([this.props.ing.userIconUrl, ...(this.state.comments?.map((x: Ing) => x.userIconUrl) ?? [])], 5);
+        return take([this.props.ing.userIconUrl, ...(this.state.comments?.map((x: Ing) => x.userIconUrl) ?? [])], 5)
     }
 
     render() {
         const {
             ing: { id, content, userDisplayName, dateAdded, icons, sendFrom },
             comments,
-        } = this.props;
-        const { persons } = this;
-        console.debug(comments);
+        } = this.props
+        const { persons } = this
+        console.debug(comments)
         /* eslint-disable-next-line @typescript-eslint/naming-convention */
         return (
             <div>
@@ -139,7 +139,7 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                 </div>
                 {comments ? <div className="pl-[40px] text-[12px]">{comments.map(this.renderComment)}</div> : <></>}
             </div>
-        );
+        )
     }
 
     private renderComment = (
@@ -186,14 +186,14 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                 </Link>
             </Text>
         </div>
-    );
+    )
 
     private renderSendFromIcon(value: IngSendFromType) {
         switch (value) {
             case IngSendFromType.code:
-                return this.icons.vscodeLogo;
+                return this.icons.vscodeLogo
             case IngSendFromType.cellPhone:
-                return this.icons.mobile;
+                return this.icons.mobile
         }
     }
 
@@ -201,8 +201,8 @@ class IngItem extends Component<IngItemProps, IngItemState> {
         vsCodeApi.getInstance().postMessage({
             command: webviewCommands.ingCommands.ExtensionCommands.comment,
             payload,
-        } as IngWebviewHostCommand<webviewCommands.ingCommands.CommentCommandPayload>);
+        } as IngWebviewHostCommand<webviewCommands.ingCommands.CommentCommandPayload>)
     }
 }
 
-export { IngItem };
+export { IngItem }

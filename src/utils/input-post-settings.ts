@@ -1,41 +1,41 @@
-import { QuickPickItem } from 'vscode';
-import { AccessPermission, Post } from '../models/post';
-import { PostCategories, PostCategory } from '../models/post-category';
-import { AlertService } from '../services/alert.service';
-import { InputFlowAction, InputStep, MultiStepInput, QuickPickParameters } from '../services/multi-step-input';
-import { postCategoryService } from '../services/post-category.service';
+import { QuickPickItem } from 'vscode'
+import { AccessPermission, Post } from '@/models/post'
+import { PostCategories, PostCategory } from '@/models/post-category'
+import { AlertService } from '@/services/alert.service'
+import { InputFlowAction, InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'
+import { postCategoryService } from '@/services/post-category.service'
 
 class CategoryPickItem implements QuickPickItem {
-    label: string;
-    description?: string | undefined;
-    detail?: string | undefined;
-    picked?: boolean | undefined;
-    alwaysShow?: boolean | undefined;
+    label: string
+    description?: string | undefined
+    detail?: string | undefined
+    picked?: boolean | undefined
+    alwaysShow?: boolean | undefined
 
     constructor(name: string, public id: number) {
-        this.label = name;
+        this.label = name
     }
 
     static fromPostCategory(this: void, category: PostCategory): CategoryPickItem {
-        return new CategoryPickItem(category.title, category.categoryId);
+        return new CategoryPickItem(category.title, category.categoryId)
     }
 
     static fromPostCategories(categories: PostCategories): CategoryPickItem[] {
-        return categories.map(this.fromPostCategory);
+        return categories.map(this.fromPostCategory)
     }
 }
 
 class AccessPermissionPickItem implements QuickPickItem {
-    description?: string | undefined;
-    detail?: string | undefined;
-    picked?: boolean | undefined;
-    alwaysShow?: boolean | undefined;
+    description?: string | undefined
+    detail?: string | undefined
+    picked?: boolean | undefined
+    alwaysShow?: boolean | undefined
 
     constructor(public id: AccessPermission, public label: string) {}
 }
 
-type PostSettingsType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission' | 'isPublished';
-type PostSettingsDto = Pick<Post, PostSettingsType>;
+type PostSettingsType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission' | 'isPublished'
+type PostSettingsDto = Pick<Post, PostSettingsType>
 
 const defaultSteps: PostSettingsType[] = [
     'accessPermission',
@@ -44,37 +44,37 @@ const defaultSteps: PostSettingsType[] = [
     'tags',
     'password',
     'isPublished',
-];
+]
 
-const parseTagNames = (value: string) => value.split(/[,，]/).filter(({ length }) => length > 0);
+const parseTagNames = (value: string) => value.split(/[,，]/).filter(({ length }) => length > 0)
 
 export const inputPostSettings = (
     postTitle: string,
     source: PostSettingsDto,
     steps: PostSettingsType[] = []
 ): Promise<PostSettingsDto | undefined> => {
-    steps = steps?.length > 0 ? steps : defaultSteps;
-    const configuredPost = Object.assign({}, source);
+    steps = steps?.length > 0 ? steps : defaultSteps
+    const configuredPost = Object.assign({}, source)
     const state = {
         title: `${postTitle} - 博文设置`,
         totalSteps: steps.length,
         step: 1,
-    };
-    let map: [PostSettingsType, (input: MultiStepInput) => Promise<InputStep | undefined>][] = [];
+    }
+    let map: [PostSettingsType, (input: MultiStepInput) => Promise<InputStep | undefined>][] = []
     const calculateNextStep = (): undefined | InputStep =>
-        state.step > steps.length ? undefined : map.find(x => x[0] === steps[state.step - 1])?.[1];
+        state.step > steps.length ? undefined : map.find(x => x[0] === steps[state.step - 1])?.[1]
     const calculateStepNumber = (type: PostSettingsType) => {
-        state.step = steps.findIndex(x => x === type) + 1;
-    };
+        state.step = steps.findIndex(x => x === type) + 1
+    }
 
     // 访问权限
     const inputAccessPermission = async (input: MultiStepInput) => {
-        calculateStepNumber('accessPermission');
+        calculateStepNumber('accessPermission')
         const items = [
             new AccessPermissionPickItem(AccessPermission.undeclared, '公开'),
             new AccessPermissionPickItem(AccessPermission.authenticated, '仅登录用户'),
             new AccessPermissionPickItem(AccessPermission.owner, '只有我'),
-        ];
+        ]
         const picked = <AccessPermissionPickItem>await input.showQuickPick<
             AccessPermissionPickItem,
             QuickPickParameters<AccessPermissionPickItem>
@@ -90,23 +90,23 @@ export const inputPostSettings = (
             buttons: [],
             canSelectMany: false,
             shouldResume: () => Promise.resolve(false),
-        });
-        if (items.includes(picked)) configuredPost.accessPermission = picked.id;
+        })
+        if (items.includes(picked)) configuredPost.accessPermission = picked.id
 
-        return calculateNextStep();
-    };
+        return calculateNextStep()
+    }
     // 分类
     const inputCategory = async (input: MultiStepInput) => {
-        calculateStepNumber('categoryIds');
-        let categories: PostCategories = [];
+        calculateStepNumber('categoryIds')
+        let categories: PostCategories = []
         try {
-            categories = await postCategoryService.listCategories();
+            categories = await postCategoryService.listCategories()
         } catch (err) {
-            AlertService.error(err instanceof Error ? err.message : JSON.stringify(err));
+            AlertService.error(err instanceof Error ? err.message : JSON.stringify(err))
             // 取消
-            throw InputFlowAction.cancel;
+            throw InputFlowAction.cancel
         }
-        const items = CategoryPickItem.fromPostCategories(categories);
+        const items = CategoryPickItem.fromPostCategories(categories)
         const picked = await input.showQuickPick({
             items: items,
             title: state.title,
@@ -117,14 +117,14 @@ export const inputPostSettings = (
             buttons: [],
             canSelectMany: true,
             shouldResume: () => Promise.resolve(false),
-        });
-        if (Array.isArray(picked)) configuredPost.categoryIds = picked.map(p => (p as CategoryPickItem).id);
+        })
+        if (Array.isArray(picked)) configuredPost.categoryIds = picked.map(p => (p as CategoryPickItem).id)
 
-        return calculateNextStep();
-    };
+        return calculateNextStep()
+    }
     // 标签
     const inputTags = async (input: MultiStepInput) => {
-        calculateStepNumber('tags');
+        calculateStepNumber('tags')
         const value = await input.showInputBox({
             title: state.title,
             step: state.step++,
@@ -134,13 +134,13 @@ export const inputPostSettings = (
             prompt: '请输入博文标签, 以 ","分隔',
             validateInput: () => Promise.resolve(undefined),
             value: configuredPost.tags?.join(',') ?? '',
-        });
-        configuredPost.tags = parseTagNames(value);
-        return calculateNextStep();
-    };
+        })
+        configuredPost.tags = parseTagNames(value)
+        return calculateNextStep()
+    }
     // 摘要
     const inputDescription = async (input: MultiStepInput) => {
-        calculateStepNumber('description');
+        calculateStepNumber('description')
         const value = await input.showInputBox({
             title: state.title,
             step: state.step++,
@@ -151,13 +151,13 @@ export const inputPostSettings = (
             prompt: '请输入博文摘要',
             validateInput: () => Promise.resolve(undefined),
             value: configuredPost.description ?? '',
-        });
-        configuredPost.description = value ?? '';
-        return calculateNextStep();
-    };
+        })
+        configuredPost.description = value ?? ''
+        return calculateNextStep()
+    }
     // 密码保护
     const inputPassword = async (input: MultiStepInput) => {
-        calculateStepNumber('password');
+        calculateStepNumber('password')
         const value = await input.showInputBox({
             title: state.title,
             step: state.step++,
@@ -168,14 +168,14 @@ export const inputPostSettings = (
             validateInput: () => Promise.resolve(undefined),
             value: configuredPost.password ?? '',
             password: true,
-        });
-        configuredPost.password = value ?? '';
-        return calculateNextStep();
-    };
+        })
+        configuredPost.password = value ?? ''
+        return calculateNextStep()
+    }
     // 是否发布
     const inputIsPublished = async (input: MultiStepInput) => {
-        calculateStepNumber('isPublished');
-        const items = [{ label: '是' } as QuickPickItem, { label: '否' } as QuickPickItem];
+        calculateStepNumber('isPublished')
+        const items = [{ label: '是' } as QuickPickItem, { label: '否' } as QuickPickItem]
         const picked = await input.showQuickPick({
             items: items,
             title: state.title,
@@ -186,11 +186,11 @@ export const inputPostSettings = (
             buttons: [],
             canSelectMany: false,
             shouldResume: () => Promise.resolve(false),
-        });
-        if (picked) configuredPost.isPublished = picked === items[0];
+        })
+        if (picked) configuredPost.isPublished = picked === items[0]
 
-        return calculateNextStep();
-    };
+        return calculateNextStep()
+    }
     map = [
         ['accessPermission', inputAccessPermission],
         ['categoryIds', inputCategory],
@@ -198,10 +198,10 @@ export const inputPostSettings = (
         ['description', inputDescription],
         ['tags', inputTags],
         ['isPublished', inputIsPublished],
-    ];
+    ]
 
-    const nextStep = calculateNextStep();
+    const nextStep = calculateNextStep()
     return nextStep
         ? MultiStepInput.run(nextStep).then(() => (state.step - 1 === state.totalSteps ? configuredPost : undefined))
-        : Promise.resolve(undefined);
-};
+        : Promise.resolve(undefined)
+}

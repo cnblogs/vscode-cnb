@@ -1,21 +1,21 @@
-import { Post } from '../../models/post';
-import { PostFileMapManager } from '../../services/post-file-map';
-import fs from 'fs';
-import { blogSettingsService } from '../../services/blog-settings.service';
-import { accountManager } from '../../authentication/account-manager';
-import { postCategoryService } from '../../services/post-category.service';
-import { PostCategory } from '../../models/post-category';
-import { markdownItFactory } from '@cnblogs/markdown-it-presets';
+import { Post } from '@/models/post'
+import { PostFileMapManager } from '@/services/post-file-map'
+import fs from 'fs'
+import { blogSettingsService } from '@/services/blog-settings.service'
+import { accountManager } from '@/authentication/account-manager'
+import { postCategoryService } from '@/services/post-category.service'
+import { PostCategory } from '@/models/post-category'
+import { markdownItFactory } from '@cnblogs/markdown-it-presets'
 
 export namespace postPdfTemplateBuilder {
-    export const HighlightedMessage = 'markdown-highlight-finished';
+    export const HighlightedMessage = 'markdown-highlight-finished'
 
     export const build = async (post: Post, blogApp: string): Promise<string> => {
-        let { postBody } = post;
-        const { isMarkdown, id: postId } = post;
+        let { postBody } = post
+        const { isMarkdown, id: postId } = post
 
-        const localFilePath = PostFileMapManager.getFilePath(postId);
-        postBody = localFilePath ? fs.readFileSync(localFilePath).toString('utf-8') : postBody;
+        const localFilePath = PostFileMapManager.getFilePath(postId)
+        postBody = localFilePath ? fs.readFileSync(localFilePath).toString('utf-8') : postBody
 
         const html = isMarkdown
             ? markdownItFactory({
@@ -24,23 +24,23 @@ export namespace postPdfTemplateBuilder {
                   disableRules: [],
                   html: true,
               }).render(postBody)
-            : postBody;
+            : postBody
 
         const buildTagHtml = (): Promise<string> => {
             let html =
                 post.tags && post.tags.length > 0
                     ? post.tags.map(t => `<a href="https://www.cnblogs.com/${blogApp}/tag/${t}/">${t}</a>`).join(', ')
-                    : '';
-            html = html ? `<div id="EntryTag">标签: ${html}</div>` : '';
-            return Promise.resolve(html);
-        };
+                    : ''
+            html = html ? `<div id="EntryTag">标签: ${html}</div>` : ''
+            return Promise.resolve(html)
+        }
 
         const buildCategoryHtml = async (): Promise<string> => {
-            const categories = await postCategoryService.listCategories();
+            const categories = await postCategoryService.listCategories()
             const postCategories =
                 post.categoryIds
                     ?.map(categoryId => categories.find(x => x.categoryId === categoryId))
-                    .filter((x): x is PostCategory => x != null) ?? [];
+                    .filter((x): x is PostCategory => x != null) ?? []
             let html =
                 postCategories.length > 0
                     ? postCategories
@@ -49,20 +49,20 @@ export namespace postPdfTemplateBuilder {
                                   `<a href="https://www.cnblogs.com/${blogApp}/category/${c.categoryId}.html" target="_blank">${c?.title}</a>`
                           )
                           .join(', ')
-                    : '';
-            html = html ? `<div id="BlogPostCategory">分类: ${html}</div>` : '';
-            return html;
-        };
+                    : ''
+            html = html ? `<div id="BlogPostCategory">分类: ${html}</div>` : ''
+            return html
+        }
 
-        const tagHtml = await buildTagHtml();
-        const categoryHtml = await buildCategoryHtml();
+        const tagHtml = await buildTagHtml()
+        const categoryHtml = await buildCategoryHtml()
         const {
             codeHighlightEngine,
             codeHighlightTheme,
             enableCodeLineNumber: isCodeLineNumberEnabled,
             blogId,
-        } = await blogSettingsService.getBlogSettings();
-        const { userId } = accountManager.curUser;
+        } = await blogSettingsService.getBlogSettings()
+        const { userId } = accountManager.curUser
         return `<html>
         <head>
             <title>${post.title}</title>
@@ -125,6 +125,6 @@ export namespace postPdfTemplateBuilder {
                 });
             </script>
         </body>
-    </html>`;
-    };
+    </html>`
+    }
 }

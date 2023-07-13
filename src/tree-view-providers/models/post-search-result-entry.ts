@@ -1,12 +1,12 @@
-import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from 'vscode';
-import { Post } from '../../models/post';
-import { ZzkSearchResult } from '../../models/zzk-search-result';
-import { BaseEntryTreeItem } from './base-entry-tree-item';
-import { BaseTreeItemSource } from './base-tree-item-source';
-import { PostTreeItem } from './post-tree-item';
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from 'vscode'
+import { Post } from '@/models/post'
+import { ZzkSearchResult } from '@/models/zzk-search-result'
+import { BaseEntryTreeItem } from './base-entry-tree-item'
+import { BaseTreeItemSource } from './base-tree-item-source'
+import { PostTreeItem } from './post-tree-item'
 
 export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEntryTreeItem<PostTreeItem | TreeItem> {
-    readonly children: (PostTreeItem | TreeItem)[];
+    readonly children: (PostTreeItem | TreeItem)[]
 
     constructor(
         public searchKey: string,
@@ -14,14 +14,14 @@ export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEnt
         public readonly totalCount: number,
         public readonly zzkSearchResult?: ZzkSearchResult
     ) {
-        if (searchKey.length <= 0) throw Error('Empty search key is not allowed');
+        if (searchKey.length <= 0) throw Error('Empty search key is not allowed')
 
-        super();
-        this.children = this.parseChildren();
+        super()
+        this.children = this.parseChildren()
     }
 
     private get zzkCount() {
-        return this.zzkSearchResult?.count ?? 0;
+        return this.zzkSearchResult?.count ?? 0
     }
 
     toTreeItem = (): TreeItem | Promise<TreeItem> =>
@@ -29,15 +29,15 @@ export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEnt
             iconPath: new ThemeIcon('vscode-cnb-posts-list-search'),
             collapsibleState: TreeItemCollapsibleState.Expanded,
             contextValue: 'cnblogs-posts-search-results-entry',
-        });
+        })
 
-    getChildren = () => this.children;
-    getChildrenAsync = () => Promise.resolve(this.children);
+    getChildren = () => this.children
+    getChildrenAsync = () => Promise.resolve(this.children)
 
     private readonly parseChildren = () => [
         this.buildSummaryTreeItem(),
         ...this.posts.map(post => new PostTreeItem(post, false)),
-    ];
+    ]
 
     private readonly buildSummaryTreeItem = (): TreeItem =>
         Object.assign<TreeItem, TreeItem>(
@@ -46,5 +46,5 @@ export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEnt
                     (this.zzkCount > 0 ? `, ${this.zzkSearchResult?.postIds.length} 篇来自找找看` : '')
             ),
             { iconPath: new ThemeIcon('vscode-cnb-posts-list-search-result-summary') }
-        );
+        )
 }

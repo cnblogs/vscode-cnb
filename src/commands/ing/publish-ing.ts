@@ -1,19 +1,19 @@
-import { CommandHandler } from '@/commands/command-handler';
-import { IngPublishModel, IngType } from '@/models/ing';
-import { AlertService } from '@/services/alert.service';
-import { globalContext } from '@/services/global-state';
-import { IngApi } from '@/services/ing.api';
-import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider';
-import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input';
-import { commands, MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode';
+import { CommandHandler } from '@/commands/command-handler'
+import { IngPublishModel, IngType } from '@/models/ing'
+import { AlertService } from '@/services/alert.service'
+import { globalContext } from '@/services/global-state'
+import { IngApi } from '@/services/ing.api'
+import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
+import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'
+import { commands, MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode'
 
 export class PublishIngCommandHandler extends CommandHandler {
-    readonly maxLength = 0;
-    readonly operation = '发布闪存';
-    readonly editingText = '编辑闪存';
+    readonly maxLength = 0
+    readonly operation = '发布闪存'
+    readonly editingText = '编辑闪存'
     readonly inputStep: Record<'content' | 'access' | 'tags', InputStep> = {
         content: async input => {
-            this.currentStep = 1;
+            this.currentStep = 1
             this.inputContent = await input.showInputBox({
                 title: this.editingText + ' - 内容',
                 value: this.inputContent,
@@ -23,15 +23,15 @@ export class PublishIngCommandHandler extends CommandHandler {
                 ignoreFocusOut: true,
                 validateInput: v => Promise.resolve(v.length > 2000 ? '最多输入2000个字符' : undefined),
                 shouldResume: () => Promise.resolve(false),
-            });
+            })
         },
         access: async input => {
-            this.currentStep = 2;
+            this.currentStep = 2
             const items = [
                 { label: '公开', value: false },
                 { label: '仅自己', value: true },
-            ];
-            const activeItem = items.filter(x => x.value === this.inputIsPrivate);
+            ]
+            const activeItem = items.filter(x => x.value === this.inputIsPrivate)
             const result = <QuickPickItem & { value: boolean }>await input.showQuickPick<
                 QuickPickItem & { value: boolean },
                 QuickPickParameters<QuickPickItem & { value: boolean }>
@@ -45,11 +45,11 @@ export class PublishIngCommandHandler extends CommandHandler {
                 canSelectMany: false,
                 ignoreFocusOut: true,
                 shouldResume: () => Promise.resolve(false),
-            });
-            if (result && result.value != null) this.inputIsPrivate = result.value;
+            })
+            if (result && result.value != null) this.inputIsPrivate = result.value
         },
         tags: async input => {
-            this.currentStep = 3;
+            this.currentStep = 3
             const value = await input.showInputBox({
                 title: this.editingText + '标签(非必填)',
                 step: this.currentStep,
@@ -60,72 +60,72 @@ export class PublishIngCommandHandler extends CommandHandler {
                 validateInput: () => Promise.resolve(undefined),
                 value: this.inputTags.join(', '),
                 ignoreFocusOut: true,
-            });
+            })
             this.inputTags = value
                 .split(/, ?/)
                 .map(x => x.trim())
-                .filter(x => !!x);
+                .filter(x => !!x)
         },
-    };
-    inputTags: string[] = [];
-    inputContent = '';
-    inputIsPrivate = false;
-    currentStep = 0;
+    }
+    inputTags: string[] = []
+    inputContent = ''
+    inputIsPrivate = false
+    currentStep = 0
 
     constructor(public readonly contentSource: 'selection' | 'input' = 'selection') {
-        super();
+        super()
     }
 
     private get formattedIngContent() {
-        return `${this.inputTags.map(x => `[${x}]`).join('')}${this.inputContent}`;
+        return `${this.inputTags.map(x => `[${x}]`).join('')}${this.inputContent}`
     }
 
     async handle(): Promise<void> {
-        const content = await this.getContent();
-        return content ? this.publish(content) : Promise.resolve();
+        const content = await this.getContent()
+        return content ? this.publish(content) : Promise.resolve()
     }
 
     private async publish(model: IngPublishModel): Promise<void> {
-        const api = new IngApi();
+        const api = new IngApi()
 
         return this.onPublished(
             await window.withProgress({ location: ProgressLocation.Notification, title: '正在发闪, 请稍候...' }, p => {
-                p.report({ increment: 30 });
+                p.report({ increment: 30 })
                 return api.publishIng(model).then(isPublished => {
-                    p.report({ increment: 70 });
-                    return isPublished;
-                });
+                    p.report({ increment: 70 })
+                    return isPublished
+                })
             })
-        );
+        )
     }
 
     private getContent(): Promise<IngPublishModel | false> {
         switch (this.contentSource) {
             case 'selection':
-                return this.getContentFromSelection();
+                return this.getContentFromSelection()
             case 'input':
-                return this.acquireInputContent();
+                return this.acquireInputContent()
         }
     }
 
     private getContentFromSelection(): Promise<IngPublishModel | false> {
-        const text = window.activeTextEditor?.document.getText(window.activeTextEditor?.selection);
+        const text = window.activeTextEditor?.document.getText(window.activeTextEditor?.selection)
         if (!text) {
-            this.warnNoSelection();
-            return Promise.resolve(false);
+            this.warnNoSelection()
+            return Promise.resolve(false)
         }
-        this.inputContent = text;
-        return this.acquireInputContent();
+        this.inputContent = text
+        return this.acquireInputContent()
     }
 
     private async acquireInputContent(step = this.inputStep.content): Promise<IngPublishModel | false> {
-        await MultiStepInput.run(step);
+        await MultiStepInput.run(step)
         return this.inputContent && (await this.confirmPublish())
             ? {
                   content: this.formattedIngContent,
                   isPrivate: this.inputIsPrivate,
               }
-            : false;
+            : false
     }
 
     private async confirmPublish(): Promise<boolean> {
@@ -134,7 +134,7 @@ export class PublishIngCommandHandler extends CommandHandler {
             ['编辑内容', async () => (await this.acquireInputContent(this.inputStep.content)) !== false],
             ['编辑访问权限', async () => (await this.acquireInputContent(this.inputStep.access)) !== false],
             ['编辑标签', async () => (await this.acquireInputContent(this.inputStep.tags)) !== false],
-        ] as const;
+        ] as const
         const selected = await window.showInformationMessage(
             '确定要发布闪存吗?',
             {
@@ -142,22 +142,22 @@ export class PublishIngCommandHandler extends CommandHandler {
                 detail: '📝' + this.formattedIngContent + (this.inputIsPrivate ? '\n\n🔒仅自己可见' : ''),
             } as MessageOptions,
             ...items.map(([title]) => title)
-        );
-        return (await items.find(x => x[0] === selected)?.[1].call(null)) ?? false;
+        )
+        return (await items.find(x => x[0] === selected)?.[1].call(null)) ?? false
     }
 
     private warnNoSelection() {
-        AlertService.warning(`无法${this.operation}, 当前没有选中的内容`);
+        AlertService.warning(`无法${this.operation}, 当前没有选中的内容`)
     }
 
     private async onPublished(isPublished: boolean): Promise<void> {
-        const ingsListProvider = IngsListWebviewProvider.instance;
+        const ingsListProvider = IngsListWebviewProvider.instance
         if (isPublished) {
             if (ingsListProvider) {
                 return ingsListProvider.refreshIngsList({
                     ingType: this.inputIsPrivate ? IngType.my : IngType.all,
                     pageIndex: 1,
-                });
+                })
             }
 
             const options = [
@@ -184,13 +184,13 @@ export class PublishIngCommandHandler extends CommandHandler {
                     (): Thenable<void> =>
                         commands.executeCommand('vscode.open', Uri.parse(globalContext.config.ingSite + '/#mention')),
                 ],
-            ] as const;
+            ] as const
             const option = await window.showInformationMessage(
                 '闪存已发布, 快去看看吧',
                 { modal: false },
                 ...options.map(v => ({ title: v[0], id: v[0] }))
-            );
-            if (option) return options.find(x => x[0] === option.id)?.[1].call(null);
+            )
+            if (option) return options.find(x => x[0] === option.id)?.[1].call(null)
         }
     }
 }

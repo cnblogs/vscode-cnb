@@ -1,118 +1,108 @@
-import { Uri, workspace, window, MessageOptions, MessageItem, ProgressLocation, Range, WorkspaceEdit } from 'vscode';
-import { ImageInformation, MarkdownImagesExtractor } from '../services/images-extractor.service';
+import { MessageItem, MessageOptions, ProgressLocation, Range, Uri, window, workspace, WorkspaceEdit } from 'vscode'
+import { ImageSrc, MarkdownImagesExtractor, ImageInfo, newImageSrcFilter } from '@/services/images-extractor.service'
 
-type ExtractOption = MessageItem & Partial<Pick<MarkdownImagesExtractor, 'imageType'>>;
+type ExtractOption = MessageItem & Partial<{ imageSrc: ImageSrc }>
 const extractOptions: readonly ExtractOption[] = [
-    { title: '提取本地图片', imageType: 'local' },
-    { title: '提取网络图片', imageType: 'web' },
-    { title: '提取全部', imageType: 'all' },
-    { title: '取消', imageType: undefined, isCloseAffordance: true },
-];
+    { title: '提取本地图片', imageSrc: ImageSrc.local },
+    { title: '提取网络图片', imageSrc: ImageSrc.web },
+    { title: '提取全部', imageSrc: ImageSrc.any },
+    { title: '取消', imageSrc: undefined, isCloseAffordance: true },
+]
 
-export const extractImages = async (
-    arg: unknown,
-    inputImageType: MarkdownImagesExtractor['imageType'] | null | undefined
-): Promise<void> => {
-    if (arg instanceof Uri && arg.scheme === 'file') {
-        const shouldIgnoreWarnings = inputImageType != null;
-        const markdown = (await workspace.fs.readFile(arg)).toString();
-        const extractor = new MarkdownImagesExtractor(markdown, arg);
-        const images = extractor.findImages();
-        const availableWebImagesCount = images.filter(extractor.createImageTypeFilter('web')).length;
-        const availableLocalImagesCount = images.filter(extractor.createImageTypeFilter('local')).length;
-        const warnNoImages = (): void =>
-            void (shouldIgnoreWarnings ? null : window.showWarningMessage('没有可以提取的图片'));
-        if (images.length <= 0) return warnNoImages();
+export async function extractImages(arg: unknown, inputImageSrc: ImageSrc | undefined) {
+    if (!(arg instanceof Uri && arg.scheme === 'file')) return
 
-        let result = extractOptions.find(x => inputImageType != null && x.imageType === inputImageType);
-        result = result
-            ? result
-            : await window.showInformationMessage<ExtractOption>(
-                  '请选择要提取哪些图片? 注意! 此操作会替换源文件中的图片链接!',
-                  {
-                      modal: true,
-                      detail:
-                          `共找到 ${availableWebImagesCount} 张可以提取的网络图片\n` +
-                          `${availableLocalImagesCount} 张可以提取的本地图片`,
-                  } as MessageOptions,
-                  ...extractOptions
-              );
-        const editor = window.visibleTextEditors.find(x => x.document.fileName === arg.fsPath);
-        const textDocument = editor?.document ?? workspace.textDocuments.find(x => x.fileName === arg.fsPath);
+    const shouldIgnoreWarnings = inputImageSrc != null
+    const markdown = (await workspace.fs.readFile(arg)).toString()
+    const extractor = new MarkdownImagesExtractor(markdown, arg)
+    const images = extractor.findImages()
+    const availableWebImagesCount = images.filter(newImageSrcFilter(ImageSrc.web)).length
+    const availableLocalImagesCount = images.filter(newImageSrcFilter(ImageSrc.local)).length
 
-        if (result && result.imageType && textDocument) {
-            if (extractor.findImages().length <= 0) return warnNoImages();
-            extractor.imageType = result.imageType;
+    const warnNoImages = () =>
+        void (!shouldIgnoreWarnings ? window.showWarningMessage('没有找到可以提取的图片') : undefined)
 
-            await textDocument.save();
-            const failedImages = await window.withProgress(
-                { title: '提取图片', location: ProgressLocation.Notification },
-                async progress => {
-                    extractor.onProgress = (idx, images) => {
-                        const total = images.length;
-                        const image = images[idx];
-                        progress.report({
-                            increment: (idx / total) * 80,
-                            message: `[${idx + 1} / ${total}] 正在提取 ${image.symbol}`,
-                        });
-                    };
-                    const extractResults = await extractor.extract();
-                    const idx = 0;
-                    const total = extractResults.length;
+    if (images.length <= 0) return warnNoImages()
 
-                    await workspace.applyEdit(
-                        extractResults
-                            .filter((x): x is [source: ImageInformation, result: ImageInformation] => x[1] != null)
-                            .map(
-                                ([sourceImage, result]): [
-                                    range: Range | null,
-                                    sourceImage: ImageInformation,
-                                    extractedImage: ImageInformation
-                                ] => {
-                                    if (sourceImage.index == null) return [null, sourceImage, result];
+    const result =
+        extractOptions.find(x => inputImageSrc != null && x.imageSrc === inputImageSrc) ??
+        (await window.showInformationMessage<ExtractOption>(
+            '要提取哪些图片? 此操作会替换源文件中的图片链接!',
+            {
+                modal: true,
+                detail:
+                    `共找到 ${availableWebImagesCount} 张可以提取的网络图片\n` +
+                    `${availableLocalImagesCount} 张可以提取的本地图片`,
+            } as MessageOptions,
+            ...extractOptions
+        ))
 
-                                    const endPos = textDocument.positionAt(
-                                        sourceImage.index + sourceImage.symbol.length - 1
-                                    );
-                                    return [
-                                        new Range(
-                                            textDocument.positionAt(sourceImage.index),
-                                            endPos.with({ character: endPos.character + 1 })
-                                        ),
-                                        sourceImage,
-                                        result,
-                                    ];
-                                }
-                            )
-                            .reduce((workspaceEdit, [range, , extractedImage]) => {
-                                if (range) {
-                                    progress.report({
-                                        increment: (idx / total) * 20 + 80,
-                                        message: `[${idx + 1} / ${total}] 正在替换图片链接 ${extractedImage.symbol}`,
-                                    });
-                                    workspaceEdit.replace(textDocument.uri, range, extractedImage.symbol, {
-                                        needsConfirmation: false,
-                                        label: extractedImage.symbol,
-                                    });
-                                }
+    const editor = window.visibleTextEditors.find(x => x.document.fileName === arg.fsPath)
+    const textDocument = editor?.document ?? workspace.textDocuments.find(x => x.fileName === arg.fsPath)
 
-                                return workspaceEdit;
-                            }, new WorkspaceEdit())
-                    );
+    if (!(result && result.imageSrc && textDocument)) return
 
-                    await textDocument.save();
-                    return extractResults.filter(x => x[1] === null).map(x => x[0]);
-                }
-            );
-            if (failedImages && failedImages.length > 0) {
-                window
-                    .showErrorMessage(
-                        `${failedImages.length}张图片提取失败\n${failedImages
-                            .map(x => [x.symbol, extractor.errors.find(y => y[0] === x.symbol)?.[1] ?? ''].join(': '))
-                            .join('\n')}`
-                    )
-                    .then(undefined, console.warn);
+    if (extractor.findImages().length <= 0) return warnNoImages()
+    extractor.imageSrc = result.imageSrc
+
+    await textDocument.save()
+
+    const failedImages = await window.withProgress(
+        { title: '提取图片', location: ProgressLocation.Notification },
+        async progress => {
+            extractor.onProgress = (idx, images) => {
+                const total = images.length
+                const image = images[idx]
+                progress.report({
+                    increment: (idx / total) * 80,
+                    message: `[${idx + 1} / ${total}] 正在提取 ${image.link}`,
+                })
             }
+
+            const extracted = await extractor.extract()
+            const extractedLen = extracted.length
+            const idx = 0
+
+            const we = extracted
+                .filter(([, dst]) => dst != null)
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                .map(([src, dst]) => [src, dst!])
+                .map(([src, dst]) => {
+                    const startPos = textDocument.positionAt(src.startOffset)
+                    const endPos = textDocument.positionAt(
+                        src.startOffset + src.prefix.length + src.link.length + src.postfix.length
+                    )
+                    const range = new Range(startPos, endPos)
+
+                    const ret: [Range, ImageInfo] = [range, dst]
+                    return ret
+                })
+                .reduce((we, [range, dst]) => {
+                    if (range) {
+                        progress.report({
+                            increment: (idx / extractedLen) * 20 + 80,
+                            message: `[${idx + 1} / ${extractedLen}] 正在替换图片链接 ${dst.link}`,
+                        })
+                        const newText = dst.prefix + dst.link + dst.postfix
+                        we.replace(textDocument.uri, range, newText, {
+                            needsConfirmation: false,
+                            label: dst.link,
+                        })
+                    }
+
+                    return we
+                }, new WorkspaceEdit())
+
+            await workspace.applyEdit(we)
+            await textDocument.save()
+            return extracted.filter(([, dst]) => dst === null).map(([src]) => src)
         }
+    )
+
+    if (failedImages && failedImages.length > 0) {
+        const info = failedImages
+            .map(x => [x.link, extractor.errors.find(([link]) => link === x.link)?.[1] ?? ''].join(','))
+            .join('\n')
+        window.showErrorMessage(`${failedImages.length}张图片提取失败: ${info}`).then(undefined, console.warn)
     }
-};
+}

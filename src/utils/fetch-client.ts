@@ -1,7 +1,7 @@
-import httpClient from '@/utils/http-client';
-import { createFetch } from 'got-fetch';
+import httpClient from '@/utils/http-client'
+import { createFetch } from 'got-fetch'
 
-const fetch = createFetch(httpClient);
+const fetch = createFetch(httpClient)
 
-export * from 'got-fetch';
-export default fetch;
+export * from 'got-fetch'
+export default fetch

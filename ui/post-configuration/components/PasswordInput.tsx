@@ -1,16 +1,16 @@
-import { Label, Stack, TextField } from '@fluentui/react';
-import React from 'react';
+import { Label, Stack, TextField } from '@fluentui/react'
+import React from 'react'
 
 export interface IPasswordInputProps {
-    password?: string;
-    onChange?: (password: string) => void;
+    password?: string
+    onChange?: (password: string) => void
 }
 
 export class PasswordInput extends React.Component<IPasswordInputProps> {
     constructor(props: IPasswordInputProps) {
-        super(props);
+        super(props)
 
-        this.state = {};
+        this.state = {}
     }
 
     render() {
@@ -24,6 +24,6 @@ export class PasswordInput extends React.Component<IPasswordInputProps> {
                     canRevealPassword
                 ></TextField>
             </Stack>
-        );
+        )
     }
 }

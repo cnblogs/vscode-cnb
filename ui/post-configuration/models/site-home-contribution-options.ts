@@ -1,6 +1,6 @@
 interface SiteHomeContributionOptions {
-    inSiteCandidate: boolean;
-    inSiteHome: boolean;
+    inSiteCandidate: boolean
+    inSiteHome: boolean
 }
 
-export { SiteHomeContributionOptions };
+export { SiteHomeContributionOptions }

@@ -1,33 +1,33 @@
-import { window, ProgressLocation } from 'vscode';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import { AlertService } from '@/services/alert.service';
+import { window, ProgressLocation } from 'vscode'
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
+import { AlertService } from '@/services/alert.service'
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-const download: (arg: Record<string, unknown>) => Promise<string> = require('download-chromium');
+const download: (arg: Record<string, unknown>) => Promise<string> = require('download-chromium')
 
 namespace chromiumPathProvider {
     export const defaultChromiumPath = {
         osx: [`${os.homedir()}/Applications/Google Chrome.app`, '/Applications/Google Chrome.app'],
         win: ['C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'],
-    };
-    export type ChromiumProviderFunc = () => Promise<string | undefined>;
-    const selectFromLocalTitle = '选择本地Chromium';
+    }
+    export type ChromiumProviderFunc = () => Promise<string | undefined>
+    const selectFromLocalTitle = '选择本地Chromium'
     export const lookupExecutableFromMacApp = (path?: string) => {
         if (path?.endsWith('.app')) {
-            path = `${path}/Contents/MacOS`;
-            if (!fs.existsSync(path)) return undefined;
+            path = `${path}/Contents/MacOS`
+            if (!fs.existsSync(path)) return undefined
 
             for (const item of fs.readdirSync(path)) {
-                path = `${path}/${item}`;
-                if (fs.statSync(path).mode & fs.constants.S_IXUSR) return path;
+                path = `${path}/${item}`
+                if (fs.statSync(path).mode & fs.constants.S_IXUSR) return path
             }
         }
 
-        return path;
-    };
+        return path
+    }
     export const selectFromLocal: ChromiumProviderFunc = async (): Promise<string | undefined> => {
-        const platform = os.platform();
+        const platform = os.platform()
         const path = (
             await window.showOpenDialog({
                 canSelectMany: false,
@@ -42,47 +42,47 @@ namespace chromiumPathProvider {
                     ],
                 },
             })
-        )?.pop()?.fsPath;
-        return lookupExecutableFromMacApp(path);
-    };
-    const downloadFromInternetTitle = '帮我下载Chromium';
+        )?.pop()?.fsPath
+        return lookupExecutableFromMacApp(path)
+    }
+    const downloadFromInternetTitle = '帮我下载Chromium'
     export const downloadFromInternet: ChromiumProviderFunc = async (): Promise<string | undefined> => {
-        const installPath = path.join(os.homedir(), `Downloads`);
-        fs.mkdirSync(installPath, { recursive: true });
+        const installPath = path.join(os.homedir(), `Downloads`)
+        fs.mkdirSync(installPath, { recursive: true })
         const chromiumPath = await window.withProgress(
             { title: '正在下载Chromium', location: ProgressLocation.Notification },
             async progress => {
-                progress.report({ increment: 0 });
+                progress.report({ increment: 0 })
                 try {
-                    let percentCache = 0;
+                    let percentCache = 0
                     return await download({
                         log: false,
                         revision: 983122,
                         installPath,
                         onProgress: ({ percent }: { percent: number }) => {
-                            percent *= 100;
-                            percent = Math.floor(percent);
+                            percent *= 100
+                            percent = Math.floor(percent)
                             progress.report({
                                 message: `${percent}%`,
                                 increment: percent - percentCache,
-                            });
-                            percentCache = percent;
+                            })
+                            percentCache = percent
                         },
-                    });
+                    })
                 } catch {
-                    return undefined;
+                    return undefined
                 }
             }
-        );
-        if (chromiumPath) AlertService.info(`Chromium已下载至${chromiumPath}`);
+        )
+        if (chromiumPath) AlertService.info(`Chromium已下载至${chromiumPath}`)
 
-        return chromiumPath;
-    };
+        return chromiumPath
+    }
 
     export const Options: [string, chromiumPathProvider.ChromiumProviderFunc][] = [
         [selectFromLocalTitle, chromiumPathProvider.selectFromLocal],
         [downloadFromInternetTitle, chromiumPathProvider.downloadFromInternet],
-    ];
+    ]
 }
 
-export { chromiumPathProvider };
+export { chromiumPathProvider }

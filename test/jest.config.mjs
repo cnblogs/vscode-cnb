@@ -1,7 +1,7 @@
-import { pathsToModuleNameMapper } from 'ts-jest';
-import tsConfig from '../tsconfig.json' assert { type: 'json' };
+import { pathsToModuleNameMapper } from 'ts-jest'
+import tsConfig from '../tsconfig.json' assert { type: 'json' }
 
-const { compilerOptions } = tsConfig;
+const { compilerOptions } = tsConfig
 
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 const config = {
@@ -40,6 +40,6 @@ const config = {
         ...pathsToModuleNameMapper(compilerOptions.paths),
         '^lodash-es.*$': 'lodash',
     },
-};
+}
 
-export default config;
+export default config

@@ -1,49 +1,49 @@
-import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
-import { Stack } from '@fluentui/react/lib/Stack';
-import React from 'react';
-import { CategoriesSelect } from './CategoriesSelect';
-import { SiteHomeContributionOptionsSelector } from './SiteHomeContributionOptionsSelector';
-import { PostConfiguration } from '@models/post-configuration';
-import { Post } from '@models/post';
-import { Label, Spinner } from '@fluentui/react';
-import { SiteCategoriesSelector } from './SiteCategoriesSelector';
-import { TagsInput } from './TagsInput';
-import { CommonOptions } from './CommonOptions';
-import { AccessPermissionSelector } from './AccessPermissionSelector';
-import { PasswordInput } from './PasswordInput';
-import { vsCodeApi } from '../../share/vscode-api';
-import { ErrorResponse } from './ErrorResponse';
-import { webviewCommands } from '@models/webview-commands';
-import { webviewMessage } from '@models/webview-message';
-import { InputSummary } from './InputSummary';
-import { IPostFormContext, PostFormContext } from './PostFormContext';
-import PostEntryNameInput from './PostEntryNameInput';
-import PostTitleInput from 'post-configuration/components/PostTitleInput';
-import NestCategoriesSelect from 'post-configuration/components/NestCategoriesSelect';
+import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button'
+import { Stack } from '@fluentui/react/lib/Stack'
+import React from 'react'
+import { CategoriesSelect } from './CategoriesSelect'
+import { SiteHomeContributionOptionsSelector } from './SiteHomeContributionOptionsSelector'
+import { PostConfiguration } from '@models/post-configuration'
+import { Post } from '@models/post'
+import { Label, Spinner } from '@fluentui/react'
+import { SiteCategoriesSelector } from './SiteCategoriesSelector'
+import { TagsInput } from './TagsInput'
+import { CommonOptions } from './CommonOptions'
+import { AccessPermissionSelector } from './AccessPermissionSelector'
+import { PasswordInput } from './PasswordInput'
+import { vsCodeApi } from '../../share/vscode-api'
+import { ErrorResponse } from './ErrorResponse'
+import { webviewCommands } from '@models/webview-commands'
+import { webviewMessage } from '@models/webview-message'
+import { InputSummary } from './InputSummary'
+import { IPostFormContext, PostFormContext } from './PostFormContext'
+import PostEntryNameInput from './PostEntryNameInput'
+import PostTitleInput from 'post-configuration/components/PostTitleInput'
+import NestCategoriesSelect from 'post-configuration/components/NestCategoriesSelect'
 
 export interface IPostFormProps {
-    post?: Post;
-    fileName?: string;
-    useNestCategoriesSelect: boolean;
-    onConfirm?: (postConfiguration: PostConfiguration) => void;
-    onTitleChange?: (title: string) => void;
+    post?: Post
+    fileName?: string
+    useNestCategoriesSelect: boolean
+    onConfirm?: (postConfiguration: PostConfiguration) => void
+    onTitleChange?: (title: string) => void
 }
 
 export interface IPostFormState extends PostConfiguration {}
 
 export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
-    static contextType?: React.Context<IPostFormContext> | undefined = PostFormContext;
-    declare context: React.ContextType<typeof PostFormContext>;
+    static contextType?: React.Context<IPostFormContext> | undefined = PostFormContext
+    declare context: React.ContextType<typeof PostFormContext>
 
     constructor(props: IPostFormProps) {
-        super(props);
-        this.state = Object.assign({}, props.post ?? new Post());
+        super(props)
+        this.state = Object.assign({}, props.post ?? new Post())
     }
 
     render() {
-        if (!this.props.post) return <></>;
+        if (!this.props.post) return <></>
 
-        const { disabled: isDisabled, status } = this.context;
+        const { disabled: isDisabled, status } = this.context
         return (
             <form>
                 <Stack tokens={{ childrenGap: 16 }}>
@@ -51,8 +51,8 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                         value={this.state.title ?? ''}
                         fileName={this.props.fileName ?? ''}
                         onChange={v => {
-                            this.setState({ title: v ?? '' });
-                            this.props.onTitleChange?.(v ?? '');
+                            this.setState({ title: v ?? '' })
+                            this.props.onTitleChange?.(v ?? '')
                         }}
                     ></PostTitleInput>
                     <Stack tokens={{ childrenGap: 8 }}>
@@ -75,7 +75,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                     <AccessPermissionSelector
                         accessPermission={this.state.accessPermission}
                         onChange={value => {
-                            this.setState({ accessPermission: value });
+                            this.setState({ accessPermission: value })
                         }}
                     />
                     <CommonOptions
@@ -140,21 +140,21 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                     </Stack>
                 </Stack>
             </form>
-        );
+        )
     }
 
     private onConfirm() {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        this.context.set({ disabled: true, status: 'submitting' });
+        this.context.set({ disabled: true, status: 'submitting' })
         vsCodeApi.getInstance().postMessage({
             command: webviewCommands.ExtensionCommands.savePost,
             post: Object.assign({}, this.props.post, this.state),
-        } as webviewMessage.SavePostMessage);
+        } as webviewMessage.SavePostMessage)
     }
 
     private onCancel() {
         vsCodeApi
             .getInstance()
-            .postMessage({ command: webviewCommands.ExtensionCommands.disposePanel } as webviewMessage.Message);
+            .postMessage({ command: webviewCommands.ExtensionCommands.disposePanel } as webviewMessage.Message)
     }
 }

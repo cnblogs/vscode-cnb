@@ -1,18 +1,18 @@
-import { Checkbox, Label, Stack } from '@fluentui/react';
-import * as React from 'react';
+import { Checkbox, Label, Stack } from '@fluentui/react'
+import * as React from 'react'
 
-type Option = { [key: string]: { label: string; checked: boolean } };
+type Option = { [key: string]: { label: string; checked: boolean } }
 
 export interface ICommonOptionsProps<TOption extends Option = Option> {
-    options: TOption;
-    onChange?: (optionKey: keyof TOption, checked: boolean, stateObj: { [p in typeof optionKey]: boolean }) => void;
+    options: TOption
+    onChange?: (optionKey: keyof TOption, checked: boolean, stateObj: { [p in typeof optionKey]: boolean }) => void
 }
 
 export class CommonOptions<TOption extends Option = Option> extends React.Component<ICommonOptionsProps<TOption>> {
     constructor(props: ICommonOptionsProps<TOption>) {
-        super(props);
+        super(props)
 
-        this.state = {};
+        this.state = {}
     }
 
     render() {
@@ -23,13 +23,13 @@ export class CommonOptions<TOption extends Option = Option> extends React.Compon
                     {this.renderOptions()}
                 </Stack>
             </Stack>
-        );
+        )
     }
 
     private renderOptions() {
-        const { options } = this.props;
+        const { options } = this.props
         return Object.keys(options).map((optionKey: keyof TOption) => {
-            const { checked: isChecked, label: title } = options[optionKey];
+            const { checked: isChecked, label: title } = options[optionKey]
             return (
                 <Checkbox
                     key={optionKey as string}
@@ -43,7 +43,7 @@ export class CommonOptions<TOption extends Option = Option> extends React.Compon
                         ])
                     }
                 />
-            );
-        });
+            )
+        })
     }
 }

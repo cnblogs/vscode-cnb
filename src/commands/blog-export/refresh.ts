@@ -1,15 +1,15 @@
-import { CommandHandler } from '@/commands/command-handler';
-import { globalContext } from '@/services/global-state';
-import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider';
-import { commands } from 'vscode';
+import { CommandHandler } from '@/commands/command-handler'
+import { globalContext } from '@/services/global-state'
+import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
+import { commands } from 'vscode'
 
 export class RefreshExportRecordsCommandHandler extends CommandHandler {
     async handle(): Promise<void> {
-        await this.setIsRefreshing(true);
+        await this.setIsRefreshing(true)
 
-        await BlogExportProvider.instance.refreshRecords();
+        await BlogExportProvider.instance.refreshRecords()
 
-        await this.setIsRefreshing(false);
+        await this.setIsRefreshing(false)
     }
 
     private setIsRefreshing(value: boolean) {
@@ -17,6 +17,6 @@ export class RefreshExportRecordsCommandHandler extends CommandHandler {
             'setContext',
             `${globalContext.extensionName}.blog-export.records.isRefreshing`,
             value || undefined
-        );
+        )
     }
 }

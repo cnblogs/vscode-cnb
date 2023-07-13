@@ -1,17 +1,17 @@
-import differenceInSeconds from 'date-fns/differenceInSeconds';
-import differenceInYears from 'date-fns/differenceInYears';
-import format from 'date-fns/format';
-import formatDistanceStrict from 'date-fns/formatDistanceStrict';
-import zhCN from 'date-fns/locale/zh-CN';
-import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
-import { AccessPermission, Post, formatAccessPermission } from '../../models/post';
-import { PostEditDto } from '../../models/post-edit-dto';
-import { postCategoryService } from '../../services/post-category.service';
-import { postService } from '../../services/post.service';
-import { BaseEntryTreeItem } from './base-entry-tree-item';
-import { BaseTreeItemSource } from './base-tree-item-source';
-import { PostTreeItem } from './post-tree-item';
-import { PostCategory } from '@/models/post-category';
+import differenceInSeconds from 'date-fns/differenceInSeconds'
+import differenceInYears from 'date-fns/differenceInYears'
+import format from 'date-fns/format'
+import formatDistanceStrict from 'date-fns/formatDistanceStrict'
+import zhCN from 'date-fns/locale/zh-CN'
+import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
+import { AccessPermission, Post, formatAccessPermission } from '@/models/post'
+import { PostEditDto } from '@/models/post-edit-dto'
+import { postCategoryService } from '@/services/post-category.service'
+import { postService } from '@/services/post.service'
+import { BaseEntryTreeItem } from './base-entry-tree-item'
+import { BaseTreeItemSource } from './base-tree-item-source'
+import { PostTreeItem } from './post-tree-item'
+import { PostCategory } from '@/models/post-category'
 
 export enum RootPostMetadataType {
     categoryEntry = 'categoryEntry',
@@ -47,32 +47,32 @@ const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto | undefined)
                     () => null
                 ),
         ],
-    ] as const;
+    ] as const
 
 export abstract class PostMetadata extends BaseTreeItemSource {
     constructor(public parent: Post) {
-        super();
+        super()
     }
 
     static async parseRoots({
         exclude = [],
         post,
     }: {
-        post: Post | PostTreeItem;
-        exclude?: RootPostMetadataType[];
+        post: Post | PostTreeItem
+        exclude?: RootPostMetadataType[]
     }): Promise<PostMetadata[]> {
-        let parsedPost = post instanceof PostTreeItem ? post.post : post;
-        const postEditDto = await postService.fetchPostEditDto(parsedPost.id);
-        parsedPost = postEditDto?.post || parsedPost;
+        let parsedPost = post instanceof PostTreeItem ? post.post : post
+        const postEditDto = await postService.fetchPostEditDto(parsedPost.id)
+        parsedPost = postEditDto?.post || parsedPost
         return Promise.all(
             rootMetadataMap(parsedPost, postEditDto)
                 .filter(([type]) => !exclude.includes(type))
                 .map(([, factory]) => factory())
                 .map(x => (x instanceof Promise ? x : Promise.resolve(x)))
-        ).then(v => v.filter((x): x is PostMetadata => x instanceof PostMetadata));
+        ).then(v => v.filter((x): x is PostMetadata => x instanceof PostMetadata))
     }
 
-    abstract toTreeItem(): TreeItem | Promise<TreeItem>;
+    abstract toTreeItem(): TreeItem | Promise<TreeItem>
 }
 
 export abstract class PostEntryMetadata<T extends PostMetadata = PostMetadata>
@@ -80,11 +80,11 @@ export abstract class PostEntryMetadata<T extends PostMetadata = PostMetadata>
     implements BaseEntryTreeItem<T>
 {
     constructor(parent: Post, public readonly children: T[]) {
-        super(parent);
+        super(parent)
     }
 
-    readonly getChildren = () => this.children;
-    readonly getChildrenAsync = () => Promise.resolve(this.children);
+    readonly getChildren = () => this.children
+    readonly getChildrenAsync = () => Promise.resolve(this.children)
 }
 
 export class PostCategoryEntryMetadata extends PostEntryMetadata<PostCategoryMetadata> {
@@ -92,14 +92,14 @@ export class PostCategoryEntryMetadata extends PostEntryMetadata<PostCategoryMet
         super(
             parent,
             children.filter((x): x is PostCategoryMetadata => x instanceof PostCategoryMetadata)
-        );
+        )
     }
 
     toTreeItem = (): TreeItem => ({
         label: '分类',
         collapsibleState: TreeItemCollapsibleState.Collapsed,
         iconPath: new ThemeIcon('vscode-cnb-folders'),
-    });
+    })
 }
 
 export class PostTagEntryMetadata extends PostEntryMetadata<PostTagMetadata> {
@@ -107,29 +107,29 @@ export class PostTagEntryMetadata extends PostEntryMetadata<PostTagMetadata> {
         super(
             parent,
             children.filter((x): x is PostTagMetadata => x instanceof PostTagMetadata)
-        );
+        )
     }
 
     toTreeItem = (): TreeItem => ({
         label: '标签',
         collapsibleState: TreeItemCollapsibleState.Collapsed,
         iconPath: new ThemeIcon('tag'),
-    });
+    })
 }
 
 export class PostCategoryMetadata extends PostMetadata {
-    readonly icon = new ThemeIcon('vscode-cnb-folder-close');
+    readonly icon = new ThemeIcon('vscode-cnb-folder-close')
     constructor(parent: Post, public categoryName: string, public categoryId: number) {
-        super(parent);
+        super(parent)
     }
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCategoryMetadata[]> {
-        editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id);
-        if (editDto == null) return [];
+        editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id)
+        if (editDto == null) return []
 
         const {
             post: { categoryIds },
-        } = editDto;
+        } = editDto
         return (await Promise.all((categoryIds ?? []).map(categoryId => postCategoryService.find(categoryId))))
             .filter((x): x is PostCategory => x != null)
             .map(
@@ -142,54 +142,54 @@ export class PostCategoryMetadata extends PostMetadata {
                             .join('/'),
                         category.categoryId
                     )
-            );
+            )
     }
 
     toTreeItem = (): TreeItem =>
         Object.assign<TreeItem, TreeItem>(new TreeItem(this.categoryName), {
             iconPath: this.icon,
-        });
+        })
 }
 
 export class PostTagMetadata extends PostMetadata {
-    readonly icon = undefined;
+    readonly icon = undefined
     constructor(parent: Post, public tag: string, public tagId?: string) {
-        super(parent);
+        super(parent)
     }
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostMetadata[]> {
-        editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id);
-        if (editDto == null) return [];
+        editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id)
+        if (editDto == null) return []
 
         const {
             post: { tags },
-        } = editDto;
-        return (tags ?? [])?.map(tag => new PostTagMetadata(parent, tag));
+        } = editDto
+        return (tags ?? [])?.map(tag => new PostTagMetadata(parent, tag))
     }
 
     toTreeItem = (): TreeItem =>
         Object.assign<TreeItem, TreeItem>(new TreeItem(`# ${this.tag}`), {
             iconPath: this.icon,
-        });
+        })
 }
 
 export abstract class PostDateMetadata extends PostMetadata {
-    readonly distance: string;
+    readonly distance: string
     constructor(public label: string, parent: Post, public readonly date: Date) {
-        super(parent);
-        this.distance = this.toDistance();
+        super(parent)
+        this.distance = this.toDistance()
     }
 
     get enabled(): boolean {
-        return true;
+        return true
     }
 
     get formattedDate(): string {
-        return format(this.date, 'yyyy MM-dd HH:mm');
+        return format(this.date, 'yyyy MM-dd HH:mm')
     }
 
-    shouldUseDistance = (): boolean => differenceInYears(new Date(), this.date) < 1;
-    toDistance = () => formatDistanceStrict(this.date, new Date(), { addSuffix: true, locale: zhCN });
+    shouldUseDistance = (): boolean => differenceInYears(new Date(), this.date) < 1
+    toDistance = () => formatDistanceStrict(this.date, new Date(), { addSuffix: true, locale: zhCN })
 
     toTreeItem = (): TreeItem =>
         Object.assign<TreeItem, TreeItem>(
@@ -201,48 +201,48 @@ export abstract class PostDateMetadata extends PostMetadata {
             {
                 iconPath: new ThemeIcon('vscode-cnb-date'),
             }
-        );
+        )
 }
 
 export class PostCreatedDateMetadata extends PostDateMetadata {
     constructor(parent: Post) {
-        super('创建于', parent, parent.datePublished ?? new Date());
+        super('创建于', parent, parent.datePublished ?? new Date())
     }
 }
 
 export class PostUpdatedDateMetadata extends PostDateMetadata {
     constructor(parent: Post) {
-        super('更新于', parent, parent.dateUpdated ?? new Date());
+        super('更新于', parent, parent.dateUpdated ?? new Date())
     }
 
     get enabled(): boolean {
-        const { datePublished, dateUpdated } = this.parent;
-        const now = new Date();
-        return differenceInSeconds(dateUpdated ?? now, datePublished ?? now) > 0;
+        const { datePublished, dateUpdated } = this.parent
+        const now = new Date()
+        return differenceInSeconds(dateUpdated ?? now, datePublished ?? now) > 0
     }
 }
 
 export class PostAccessPermissionMetadata extends PostMetadata {
     constructor(public readonly parent: Post) {
-        super(parent);
+        super(parent)
     }
 
     static parseIcon(accessPermission: AccessPermission, requirePassword: boolean) {
-        if (requirePassword) return new ThemeIcon('key');
+        if (requirePassword) return new ThemeIcon('key')
 
         switch (accessPermission) {
             case AccessPermission.undeclared:
-                return new ThemeIcon('globe');
+                return new ThemeIcon('globe')
             case AccessPermission.authenticated:
-                return new ThemeIcon('public-ports-view-icon');
+                return new ThemeIcon('public-ports-view-icon')
             default:
-                return new ThemeIcon('private-ports-view-icon');
+                return new ThemeIcon('private-ports-view-icon')
         }
     }
 
     toTreeItem(): Promise<TreeItem> {
-        const { password } = this.parent;
-        const isPasswordRequired = password != null && password.length > 0;
+        const { password } = this.parent
+        const isPasswordRequired = password != null && password.length > 0
         return Promise.resolve(
             Object.assign<TreeItem, Partial<TreeItem>>(
                 new TreeItem(
@@ -253,19 +253,19 @@ export class PostAccessPermissionMetadata extends PostMetadata {
                     iconPath: PostAccessPermissionMetadata.parseIcon(this.parent.accessPermission, isPasswordRequired),
                 }
             )
-        );
+        )
     }
 }
 
 export class PostPublishStatusMetadata extends PostMetadata {
     constructor(public readonly parent: Post) {
-        super(parent);
+        super(parent)
     }
 
     toTreeItem(): Promise<TreeItem> {
         const {
             parent: { isPublished, isDraft },
-        } = this;
+        } = this
         return Promise.resolve(
             Object.assign<TreeItem, Partial<TreeItem>>(
                 new TreeItem(isPublished ? '已发布' : '未发布' + (isDraft ? '(草稿)' : '')),
@@ -273,6 +273,6 @@ export class PostPublishStatusMetadata extends PostMetadata {
                     iconPath: new ThemeIcon(isDraft ? 'issue-draft' : isPublished ? 'issue-closed' : 'circle-slash'),
                 }
             )
-        );
+        )
     }
 }

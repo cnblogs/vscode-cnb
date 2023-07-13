@@ -1,11 +1,11 @@
 class PostTag {
-    id = -1;
-    name = '';
-    useCount = 0;
-    privateUseCount = 0;
-    createTime: Date = new Date();
+    id = -1
+    name = ''
+    useCount = 0
+    privateUseCount = 0
+    createTime: Date = new Date()
 }
 
-type PostTags = PostTag[];
+type PostTags = PostTag[]
 
-export { PostTags, PostTag };
+export { PostTags, PostTag }

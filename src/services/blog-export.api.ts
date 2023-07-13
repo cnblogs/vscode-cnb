@@ -1,9 +1,9 @@
-import { BlogExportRecord, BlogExportRecordList } from '@/models/blog-export';
-import { globalContext } from '@/services/global-state';
-import got from '@/utils/http-client';
+import { BlogExportRecord, BlogExportRecordList } from '@/models/blog-export'
+import { globalContext } from '@/services/global-state'
+import got from '@/utils/http-client'
 
-const basePath = `${globalContext.config.apiBaseUrl}/api/blogExports`;
-const downloadOrigin = 'https://export.cnblogs.com';
+const basePath = `${globalContext.config.apiBaseUrl}/api/blogExports`
+const downloadOrigin = 'https://export.cnblogs.com'
 
 export class BlogExportApi {
     list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }): Promise<BlogExportRecordList> {
@@ -12,15 +12,15 @@ export class BlogExportApi {
                 searchParams: new URLSearchParams({ pageIndex: `${pageIndex ?? ''}`, pageSize: `${pageSize ?? ''}` }),
                 responseType: 'json',
             })
-            .then(r => r.body);
+            .then(r => r.body)
     }
 
     create(): Promise<BlogExportRecord> {
-        return got.post<BlogExportRecord>(`${basePath}`, { responseType: 'json' }).then(r => r.body);
+        return got.post<BlogExportRecord>(`${basePath}`, { responseType: 'json' }).then(r => r.body)
     }
 
     delete(id: number): Promise<void> {
-        return got.delete(`${basePath}/${id}`).then(() => undefined);
+        return got.delete(`${basePath}/${id}`).then(() => undefined)
     }
 
     getById(id: number): Promise<BlogExportRecord> {
@@ -34,7 +34,7 @@ export class BlogExportApi {
                     limit: 0,
                 },
             })
-            .then(x => x.body);
+            .then(x => x.body)
     }
 
     download(blogId: number, exportId: number) {
@@ -43,8 +43,8 @@ export class BlogExportApi {
                 hooks: {
                     beforeRedirect: [
                         (opt, resp) => {
-                            const location = resp.headers.location;
-                            if (location && location.includes('account.cnblogs.com')) throw new Error('未授权');
+                            const location = resp.headers.location
+                            if (location && location.includes('account.cnblogs.com')) throw new Error('未授权')
                         },
                     ],
                 },
@@ -52,6 +52,6 @@ export class BlogExportApi {
             .stream.get(`${downloadOrigin}/blogs/${blogId}/exports/${exportId}`, {
                 throwHttpErrors: true,
                 followRedirect: true,
-            });
+            })
     }
 }
