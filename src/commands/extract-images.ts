@@ -12,18 +12,21 @@ const extractOptions: readonly ExtractOption[] = [
 export async function extractImages(arg: unknown, inputImageSrc: ImageSrc | undefined) {
     if (!(arg instanceof Uri && arg.scheme === 'file')) return
 
-    const shouldIgnoreWarnings = inputImageSrc != null
+    const editor = window.visibleTextEditors.find(x => x.document.fileName === arg.fsPath)
+    const textDocument = editor?.document ?? workspace.textDocuments.find(x => x.fileName === arg.fsPath)
+
+    if (!textDocument) return
+    await textDocument.save()
+
     const markdown = (await workspace.fs.readFile(arg)).toString()
     const extractor = new MarkdownImagesExtractor(markdown, arg)
+
     const images = extractor.findImages()
+    if (images.length <= 0)
+        void (!inputImageSrc != null ? window.showWarningMessage('没有找到可以提取的图片') : undefined)
+
     const availableWebImagesCount = images.filter(newImageSrcFilter(ImageSrc.web)).length
     const availableLocalImagesCount = images.filter(newImageSrcFilter(ImageSrc.local)).length
-
-    const warnNoImages = () =>
-        void (!shouldIgnoreWarnings ? window.showWarningMessage('没有找到可以提取的图片') : undefined)
-
-    if (images.length <= 0) return warnNoImages()
-
     const result =
         extractOptions.find(x => inputImageSrc != null && x.imageSrc === inputImageSrc) ??
         (await window.showInformationMessage<ExtractOption>(
@@ -37,15 +40,9 @@ export async function extractImages(arg: unknown, inputImageSrc: ImageSrc | unde
             ...extractOptions
         ))
 
-    const editor = window.visibleTextEditors.find(x => x.document.fileName === arg.fsPath)
-    const textDocument = editor?.document ?? workspace.textDocuments.find(x => x.fileName === arg.fsPath)
+    if (!(result && result.imageSrc !== undefined)) return
 
-    if (!(result && result.imageSrc && textDocument)) return
-
-    if (extractor.findImages().length <= 0) return warnNoImages()
     extractor.imageSrc = result.imageSrc
-
-    await textDocument.save()
 
     const failedImages = await window.withProgress(
         { title: '提取图片', location: ProgressLocation.Notification },
