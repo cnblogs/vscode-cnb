@@ -1,0 +1,2 @@
+CLIENTID:client_id_example
+CLIENTSECRET:client_secret_example
