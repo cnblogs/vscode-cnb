@@ -115,9 +115,9 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
                 AlertService.warning('本地文件已删除, 无法新建博文')
                 return false
             }
-            if (Settings.automaticallyExtractImagesType) {
+            if (Settings.automaticallyExtractImagesType)
                 await extractImages(localDraft.filePathUri, Settings.automaticallyExtractImagesType).catch(console.warn)
-            }
+
             postToSave.postBody = await localDraft.readAllText()
             return true
         },
