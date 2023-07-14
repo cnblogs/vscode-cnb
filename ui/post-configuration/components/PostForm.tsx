@@ -147,9 +147,9 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         this.context.set({ disabled: true, status: 'submitting' })
         vsCodeApi.getInstance().postMessage({
-            command: webviewCommands.ExtensionCommands.savePost,
+            command: webviewCommands.ExtensionCommands.uploadPost,
             post: Object.assign({}, this.props.post, this.state),
-        } as webviewMessage.SavePostMessage)
+        } as webviewMessage.UploadPostMessage)
     }
 
     private onCancel() {

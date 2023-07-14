@@ -67,10 +67,10 @@ const confirmOperation = async (ctxs: CommandContext[]): Promise<boolean> => {
     const options = ['确定']
     return (
         (await window.showWarningMessage(
-            '确定要拉取远程博文内容更新本地文件吗?',
+            '确定要拉取远程博文吗?',
             {
                 modal: true,
-                detail: `本地文件${resolveFileNames(ctxs)}的内容将被覆盖, 数据无价, 请谨慎操作`,
+                detail: `本地文件 ${resolveFileNames(ctxs)} 将被覆盖, 请谨慎操作!`,
             } as MessageOptions,
             ...options
         )) === options[0]

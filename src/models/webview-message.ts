@@ -22,7 +22,7 @@ export namespace webviewMessage {
         fileName: string
     }
 
-    export interface SavePostMessage extends Message {
+    export interface UploadPostMessage extends Message {
         post: Post
     }
 
