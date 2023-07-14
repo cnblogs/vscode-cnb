@@ -1,7 +1,7 @@
 import os, { homedir } from 'os'
 import fs from 'fs'
 import { ConfigurationTarget, Uri, workspace } from 'vscode'
-import { ImageSrc, MarkdownImagesExtractor } from './images-extractor.service'
+import { ImageSrc, MkdImgExtractor } from './mkd-img-extractor.service'
 import { isNumber } from 'lodash-es'
 import { untildify } from '@/utils/untildify'
 
@@ -74,11 +74,13 @@ export class Settings {
     }
 
     static get automaticallyExtractImagesType(): ImageSrc | null {
-        const cfg = this.configuration.get<'disable' | 'web' | 'local' | 'any'>('automaticallyExtractImages') ?? null
+        const cfg =
+            this.configuration.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('automaticallyExtractImages') ?? null
 
-        if (cfg === 'local') return ImageSrc.local
-        if (cfg === 'any') return ImageSrc.any
+        if (cfg === 'fs') return ImageSrc.fs
+        if (cfg === 'dataUrl') return ImageSrc.dataUrl
         if (cfg === 'web') return ImageSrc.web
+        if (cfg === 'any') return ImageSrc.any
 
         return null // 'disable' case
     }
