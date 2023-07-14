@@ -1,4 +1,4 @@
-import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
+import vscode, { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
 import { Post } from '@/models/post'
 import { LocalDraft } from '@/services/local-draft.service'
 import { AlertService } from '@/services/alert.service'
@@ -146,6 +146,13 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
     post.isMarkdown = path.extname(localFilePath).endsWith('md') || post.isMarkdown
 
     if (!validatePost(post)) return false
+
+    const answer = await vscode.window.showWarningMessage(
+        '确认上传吗? 本地博文将对远程博文进行覆盖! 操作不可逆',
+        '确认',
+        '取消'
+    )
+    if (answer === '取消') return false
 
     return window.withProgress(
         {
