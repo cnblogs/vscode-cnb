@@ -1,4 +1,4 @@
-import { accountManager } from '@/authentication/account-manager'
+import { accountManager } from '@/auth/account-manager'
 import { EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode'
 
 export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {

@@ -1,7 +1,7 @@
 import { UserInformationSpec } from '@/services/oauth.api'
 import { trim } from 'lodash-es'
 import { AuthenticationSessionAccountInformation } from 'vscode'
-import { CnblogsAuthenticationProvider } from './authentication-provider'
+import { CnblogsAuthenticationProvider } from './auth-provider'
 
 export class CnblogsAccountInformation implements AuthenticationSessionAccountInformation {
     readonly label: string

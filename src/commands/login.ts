@@ -1,4 +1,4 @@
-import { accountManager } from '@/authentication/account-manager'
+import { accountManager } from '@/auth/account-manager'
 
 export const login = () => accountManager.login()
 

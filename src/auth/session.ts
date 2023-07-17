@@ -1,5 +1,5 @@
-import { AccessToken } from '@/authentication/access-token'
-import { CnblogsAccountInformation } from '@/authentication/account-information'
+import { AccessToken } from '@/auth/access-token'
+import { CnblogsAccountInformation } from '@/auth/account-information'
 import { keys, merge, pick } from 'lodash-es'
 import { AuthenticationSession } from 'vscode'
 

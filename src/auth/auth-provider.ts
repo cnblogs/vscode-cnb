@@ -1,4 +1,4 @@
-import { CnblogsAuthenticationSession } from '@/authentication/session'
+import { CnblogsAuthenticationSession } from '@/auth/session'
 import { generateCodeChallenge } from '@/services/code-challenge.service'
 import { isArray, isUndefined } from 'lodash-es'
 import {
@@ -18,8 +18,7 @@ import { globalContext } from '@/services/global-state'
 import RandomString from 'randomstring'
 import { OauthApi } from '@/services/oauth.api'
 import extensionUriHandler from '@/utils/uri-handler'
-import { AlertService } from '@/services/alert.service'
-import { CnblogsAccountInformation } from '@/authentication/account-information'
+import { CnblogsAccountInformation } from '@/auth/account-information'
 import { TokenInformation } from '@/models/token-information'
 import { Optional } from 'utility-types'
 
@@ -91,64 +90,64 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
 
     createSession(scopes: readonly string[]): Thenable<CnblogsAuthenticationSession> {
         const parsedScopes = this.ensureScopes(scopes)
-        return window.withProgress<CnblogsAuthenticationSession>(
-            {
-                title: `${globalContext.displayName} - 登录`,
-                cancellable: true,
-                location: ProgressLocation.Notification,
-            },
-            (progress, cancellationToken) => {
-                let disposable: Disposable | undefined | null
+        const options = {
+            title: `${globalContext.displayName} - 登录`,
+            cancellable: true,
+            location: ProgressLocation.Notification,
+        }
 
-                return new Promise<CnblogsAuthenticationSession>((resolve, reject) => {
-                    const cancellationSource = new CancellationTokenSource()
-                    let isTimeout = false
-                    const timeoutId = setTimeout(() => {
-                        clearTimeout(timeoutId)
-                        isTimeout = true
-                        cancellationSource.cancel()
-                    }, /* 30min */ 1800000)
-                    const { codeVerifier } = this.signInWithBrowser({ scopes: parsedScopes })
-                    progress.report({ message: '等待用户在浏览器中进行授权...' })
+        let disposable: Disposable | undefined | null
+        const cancellationSource = new CancellationTokenSource()
 
-                    disposable = Disposable.from(
-                        cancellationSource,
-                        extensionUriHandler.onUri(uri => {
-                            if (cancellationSource.token.isCancellationRequested) return
+        return window.withProgress<CnblogsAuthenticationSession>(options, (progress, cancellationToken) =>
+            new Promise<CnblogsAuthenticationSession>((resolve, reject) => {
+                let isTimeout = false
+                const timeoutId = setTimeout(() => {
+                    clearTimeout(timeoutId)
+                    isTimeout = true
+                    cancellationSource.cancel()
+                }, /* 30min */ 1800000)
 
-                            const { authorizationCode } = this.parseOauthCallbackUri(uri)
-                            if (!authorizationCode) return
+                const { codeVerifier } = this.signInWithBrowser({ scopes: parsedScopes })
+                progress.report({ message: '等待用户在浏览器中进行授权...' })
 
-                            progress.report({ message: '已获得授权, 正在获取令牌...' })
+                disposable = Disposable.from(
+                    cancellationSource,
+                    extensionUriHandler.onUri(uri => {
+                        if (cancellationSource.token.isCancellationRequested) return
 
-                            this.oauthClient
-                                .fetchToken({
-                                    codeVerifier,
-                                    authorizationCode,
+                        const { authorizationCode } = this.parseOauthCallbackUri(uri)
+                        if (!authorizationCode) return
+
+                        progress.report({ message: '已获得授权, 正在获取令牌...' })
+
+                        this.oauthClient
+                            .fetchToken({
+                                codeVerifier,
+                                authorizationCode,
+                                cancellationToken: cancellationSource.token,
+                            })
+                            .then(token =>
+                                this.onAccessTokenGranted(token, {
                                     cancellationToken: cancellationSource.token,
+                                    onStateChange(state) {
+                                        progress.report({ message: state })
+                                    },
                                 })
-                                .then(token =>
-                                    this.onAccessTokenGranted(token, {
-                                        cancellationToken: cancellationSource.token,
-                                        onStateChange(state) {
-                                            progress.report({ message: state })
-                                        },
-                                    })
-                                )
-                                .then(resolve)
-                                .catch(reject)
-                        }),
-                        cancellationToken.onCancellationRequested(() => cancellationSource.cancel()),
-                        cancellationSource.token.onCancellationRequested(() => {
-                            reject(`${isTimeout ? '由于超时, ' : ''}登录操作已取消`)
-                        })
-                    )
-                })
-                    .catch(reason => Promise.reject(AlertService.error(`${reason}`)))
-                    .finally(() => {
-                        disposable?.dispose()
+                            )
+                            .then(resolve)
+                            .catch(reject)
+                    }),
+                    cancellationToken.onCancellationRequested(() => cancellationSource.cancel()),
+                    cancellationSource.token.onCancellationRequested(() => {
+                        reject(`${isTimeout ? '由于超时, ' : ''}登录操作已取消`)
                     })
-            }
+                )
+            })
+                .catch(reason => Promise.reject(reason))
+                .finally(() => {
+                    disposable?.dispose()
+                })
         )
     }
 

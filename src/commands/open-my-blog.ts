@@ -1,4 +1,4 @@
-import { accountManager } from '@/authentication/account-manager'
+import { accountManager } from '@/auth/account-manager'
 import vscode from 'vscode'
 
 export const openMyBlog = () => {

@@ -9,7 +9,7 @@ import { postService } from '@/services/post.service'
 import { extensionViews } from '@/tree-view-providers/tree-view-registration'
 import { chromiumPathProvider } from '@/utils/chromium-path-provider'
 import { Settings } from '@/services/settings.service'
-import { accountManager } from '@/authentication/account-manager'
+import { accountManager } from '@/auth/account-manager'
 import { AlertService } from '@/services/alert.service'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { PostEditDto } from '@/models/post-edit-dto'
@@ -135,7 +135,7 @@ const inputTargetFolder = async (): Promise<Uri | undefined> =>
         canSelectFiles: false,
         canSelectFolders: true,
         canSelectMany: false,
-        title: '请选择用于保存pdf的目录',
+        title: '请选择用于保存 PDF 的目录',
     })) ?? [])[0]
 
 const handlePostInput = (post: Post | PostTreeItem): Promise<Post[]> => {
@@ -175,7 +175,10 @@ const mapToPostEditDto = async (posts: Post[]) =>
 
 const reportErrors = (errors: string[] | undefined) => {
     if (errors && errors.length > 0)
-        void window.showErrorMessage('导出pdf时遇到错误', { modal: true, detail: errors.join('\n') } as MessageOptions)
+        void window.showErrorMessage('导出 PDF 时遇到错误', {
+            modal: true,
+            detail: errors.join('\n'),
+        } as MessageOptions)
 }
 
 const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Promise<void> => {
@@ -197,7 +200,7 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
             },
             async progress => {
                 const errors: string[] = []
-                progress.report({ message: '导出pdf - 处理博文数据' })
+                progress.report({ message: '导出 PDF - 处理博文数据' })
                 let selectedPosts = await (input instanceof Post || input instanceof PostTreeItem
                     ? handlePostInput(input)
                     : handleUriInput(input))

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { TokenInformation } from '@/models/token-information'
-import { CnblogsAccountInformation } from '@/authentication/account-information'
+import { CnblogsAccountInformation } from '@/auth/account-information'
 import { convertObjectKeysToCamelCase } from '@/services/fetch-json-response-to-camel-case'
 import { globalContext } from '@/services/global-state'
 import fetch from '@/utils/fetch-client'

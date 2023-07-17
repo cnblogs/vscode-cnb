@@ -1,4 +1,4 @@
-import { accountManager } from '@/authentication/account-manager'
+import { accountManager } from '@/auth/account-manager'
 import { AuthorizationHeaderKey } from '@/utils/constants'
 import got, { BeforeRequestHook } from 'got'
 import { isString } from 'lodash-es'

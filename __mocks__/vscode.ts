@@ -110,12 +110,12 @@ const QuickPickItemKind = {
 const TreeItem = jest.fn()
 const Disposable = jest.fn()
 ;(Disposable as any).from = jest.fn()
-const authentication = { registerAuthenticationProvider: jest.fn() }
+const auth = { registerAuthenticationProvider: jest.fn() }
 
 export = {
     ThemeColor,
     Disposable,
-    authentication,
+    auth,
     CodeLens,
     languages,
     StatusBarAlignment,

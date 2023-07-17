@@ -4,7 +4,7 @@ import { globalContext } from '@/services/global-state'
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import vscode from 'vscode'
-import { accountManager } from '@/authentication/account-manager'
+import { accountManager } from '@/auth/account-manager'
 import {
     observeConfigurationChange,
     observeWorkspaceFolderAndFileChange as observeWorkspaceFolderChange,
