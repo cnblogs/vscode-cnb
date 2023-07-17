@@ -1,5 +1,5 @@
 import { env, ExtensionContext, Uri } from 'vscode'
-import { defaultConfig, devConfig, IExtensionConfig, isDev } from '@/models/config'
+import { defaultConfig, devConfig, IExtensionConfig, isDevEnv } from '@/models/config'
 import path from 'path'
 
 class GlobalContext {
@@ -16,7 +16,7 @@ class GlobalContext {
     }
 
     get config(): IExtensionConfig {
-        return isDev() ? this._devConfig : this._config
+        return isDevEnv() ? this._devConfig : this._config
     }
 
     get extensionContext(): ExtensionContext {
