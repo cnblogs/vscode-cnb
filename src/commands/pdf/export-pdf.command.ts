@@ -191,7 +191,7 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
         curUser: { blogApp },
     } = accountManager
 
-    if (!blogApp) return AlertService.warning('无法获取到博客地址, 请检查登录状态')
+    if (!blogApp) return AlertService.warn('无法获取到博客地址, 请检查登录状态')
 
     reportErrors(
         await window.withProgress<string[] | undefined>(
@@ -211,9 +211,9 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
                 const dir = await inputTargetFolder()
                 if (!dir || !chromiumPath) return
 
-                progress.report({ message: '启动Chromium' })
+                progress.report({ message: '启动 Chromium' })
                 const { browser, page } = (await launchBrowser(chromiumPath)) ?? {}
-                if (!browser || !page) return ['启动Chromium失败']
+                if (!browser || !page) return ['启动 Chromium 失败']
 
                 let idx = 0
                 const { length: total } = selectedPosts

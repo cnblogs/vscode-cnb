@@ -18,7 +18,7 @@ export class CreateBlogExportCommandHandler extends CommandHandler {
 
         if (
             (await this.blogExportApi.create().catch((e: unknown) => {
-                AlertService.httpError(typeof e === 'object' && e ? e : {}, { message: '创建博客备份失败' })
+                AlertService.httpErr(typeof e === 'object' && e ? e : {}, { message: '创建博客备份失败' })
                 return false
             })) !== false
         )

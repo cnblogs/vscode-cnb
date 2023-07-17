@@ -147,7 +147,7 @@ export class PublishIngCommandHandler extends CommandHandler {
     }
 
     private warnNoSelection() {
-        AlertService.warning(`无法${this.operation}, 当前没有选中的内容`)
+        AlertService.warn(`无法${this.operation}, 当前没有选中的内容`)
     }
 
     private async onPublished(isPublished: boolean): Promise<void> {

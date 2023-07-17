@@ -4,7 +4,7 @@ import path from 'path'
 import vscode, { Uri } from 'vscode'
 
 export class AlertService {
-    static error(message: string) {
+    static err(message: string) {
         void vscode.window.showErrorMessage(message)
     }
 
@@ -12,11 +12,11 @@ export class AlertService {
         vscode.window.showInformationMessage(message).then(undefined, undefined)
     }
 
-    static warning(message: string) {
+    static warn(message: string) {
         vscode.window.showWarningMessage(message).then(undefined, undefined)
     }
 
-    static httpError(httpError: Partial<HTTPError>, { message = '' } = {}) {
+    static httpErr(httpError: Partial<HTTPError>, { message = '' } = {}) {
         const body = httpError.response?.body as
             | { errors: (string | unknown)[] | undefined | unknown }
             | undefined
@@ -27,7 +27,7 @@ export class AlertService {
         else if (httpError.message) parsedError = httpError.message
         else parsedError = '未知网络错误'
 
-        AlertService.warning((message ? message + (parsedError ? ', ' : '') : '') + parsedError)
+        AlertService.warn((message ? message + (parsedError ? ', ' : '') : '') + parsedError)
     }
 
     /**
@@ -37,10 +37,10 @@ export class AlertService {
     static fileNotLinkedToPost(file: string | Uri, { trimExt = true } = {}) {
         file = file instanceof Uri ? file.fsPath : file
         file = trimExt ? path.basename(file, path.extname(file)) : file
-        this.warning(`本地文件"${file}"未关联博客园博文`)
+        this.warn(`本地文件"${file}"未关联博客园博文`)
     }
 
-    static async alertUnauthenticated({ onLoginActionHook }: { onLoginActionHook?: () => unknown } = {}) {
+    static async alertUnAuth({ onLoginActionHook }: { onLoginActionHook?: () => unknown } = {}) {
         const options = ['立即登录']
         const input = await vscode.window.showWarningMessage(
             '登录状态已过期, 请重新登录',

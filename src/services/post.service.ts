@@ -54,7 +54,7 @@ export class PostService {
         const response = await fetch(`${this._baseUrl}/api/posts/list?${s.toString()}`, {
             method: 'GET',
         })
-        if (!response.ok) throw Error(`request failed, ${response.status}, ${await response.text()}`)
+        if (!response.ok) throw Error(`请求博文列表失败: ${response.status}, ${await response.text()}`)
 
         const obj = <PostListModel>await response.json()
         const { zzkSearchResult } = obj
@@ -77,15 +77,15 @@ export class PostService {
 
         try {
             throwIfNotOkGotResponse(response)
-        } catch (ex) {
-            const { statusCode, errors } = ex as IErrorResponse
+        } catch (e) {
+            const { statusCode, errors } = e as IErrorResponse
             if (!muteErrorNotification) {
                 if (statusCode === 404) {
-                    AlertService.error('博文不存在')
+                    AlertService.err('博文不存在')
                     const postFilePath = PostFileMapManager.getFilePath(postId)
                     if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '')
                 } else {
-                    AlertService.error(errors.join('\n'))
+                    AlertService.err(errors.join('\n'))
                 }
             }
             return undefined

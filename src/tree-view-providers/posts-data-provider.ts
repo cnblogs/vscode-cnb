@@ -64,8 +64,8 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
         const { pageIndex } = postService.postsListState ?? {}
         const pageSize = Settings.postsListPageSize
         this._pagedPosts = await postService.fetchPostsList({ pageIndex, pageSize }).catch(ex => {
-            if (ex instanceof Error) AlertService.error(ex.message)
-            else AlertService.error(`加载博文失败\n${JSON.stringify(ex)}`)
+            if (ex instanceof Error) AlertService.err(ex.message)
+            else AlertService.err(`加载博文失败\n${JSON.stringify(ex)}`)
             return undefined
         })
         this.fireTreeDataChangedEvent(undefined)

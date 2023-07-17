@@ -9,6 +9,7 @@ import { PostCategoriesListTreeItem } from './models/categories-list-tree-item'
 import { PostCategoryTreeItem } from './models/post-category-tree-item'
 import { PostEntryMetadata, PostMetadata, RootPostMetadataType } from './models/post-metadata'
 import { PostTreeItem } from './models/post-tree-item'
+import { AlertService } from '@/services/alert.service'
 
 export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {
     private static _instance: PostCategoriesTreeDataProvider
@@ -42,6 +43,7 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
             ) ?? []
         )
     }
+
     get onDidChangeTreeData() {
         return this._treeDataChanged.event
     }
@@ -134,10 +136,8 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
                 forceRefresh: true,
                 parentId: parentId ?? undefined,
             })
-        } catch (err) {
-            void window.showWarningMessage('获取博文分类失败', {
-                detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
-            } as MessageOptions)
+        } catch (e) {
+            AlertService.err(`获取博文分类失败: ${(<Error>e).message}`)
         } finally {
             await this.setIsRefreshing(false)
         }

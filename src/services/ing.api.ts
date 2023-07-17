@@ -11,9 +11,9 @@ export class IngApi {
             method: 'POST',
             body: JSON.stringify(ing),
             headers: [['Content-Type', 'application/json']],
-        }).catch(reason => void AlertService.warning(JSON.stringify(reason)))
+        }).catch(reason => void AlertService.warn(JSON.stringify(reason)))
         if (!resp || !resp.ok)
-            AlertService.error(`闪存发布失败, ${resp?.statusText ?? ''} ${JSON.stringify((await resp?.text()) ?? '')}`)
+            AlertService.err(`闪存发布失败, ${resp?.statusText ?? ''} ${JSON.stringify((await resp?.text()) ?? '')}`)
 
         return resp != null && resp.ok
     }
@@ -28,9 +28,9 @@ export class IngApi {
                 method: 'GET',
                 headers: [['Content-Type', 'application/json']],
             }
-        ).catch(reason => void AlertService.warning(JSON.stringify(reason)))
+        ).catch(reason => void AlertService.warn(JSON.stringify(reason)))
         if (!resp || !resp.ok) {
-            AlertService.error(
+            AlertService.err(
                 `获取闪存列表失败, ${resp?.statusText ?? ''} ${JSON.stringify((await resp?.text()) ?? '')}`
             )
             return null
@@ -44,7 +44,7 @@ export class IngApi {
                 return x
             })
             .catch(reason => {
-                AlertService.error(JSON.stringify(reason))
+                AlertService.err(JSON.stringify(reason))
                 return null
             })
     }
@@ -60,7 +60,7 @@ export class IngApi {
                     resp =>
                         resp?.json().then(obj => [id, obj as IngComment[] | null | undefined] as const) ??
                         Promise.resolve(undefined),
-                    reason => void AlertService.warning(JSON.stringify(reason))
+                    reason => void AlertService.warn(JSON.stringify(reason))
                 )
             )
         ).then(results =>
@@ -82,7 +82,7 @@ export class IngApi {
                 return resp.ok
             })
             .catch(reason => {
-                AlertService.warning(`发表评论失败, ${reason}`)
+                AlertService.err(`发表评论失败, ${reason}`)
                 return false
             })
     }

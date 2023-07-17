@@ -21,7 +21,7 @@ export class EditExportPostCommandHandler extends TreeViewCommandHandler<ExportP
 
     async handle(): Promise<void> {
         const target = this.parseInput()
-        if (!target) return AlertService.warning('不支持的参数输入')
+        if (!target) return AlertService.warn('不支持的参数输入')
 
         const {
             post: { title, isMarkdown, id: postId },

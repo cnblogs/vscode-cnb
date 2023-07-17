@@ -53,7 +53,7 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
         await this.setIsDownloading(true)
 
         const onError = (msg?: string | null) => {
-            if (msg) AlertService.warning(msg)
+            if (msg) AlertService.warn(msg)
             if (!isFileExist) fs.rmSync(zipFilePath)
             blogExportProvider?.refreshItem(treeItem)
             this.setIsDownloading(false).then(undefined, console.warn)

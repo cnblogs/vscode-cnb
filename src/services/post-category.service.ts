@@ -48,7 +48,7 @@ export class PostCategoryService {
                 ['parent', parentId <= 0 ? '' : `${parentId}`],
             ]).toString()}`
         )
-        if (!res.ok) throw Error(`Failed to fetch post categories\n${res.status}\n${await res.text()}`)
+        if (!res.ok) throw Error(`${res.status}\n${await res.text()}`)
 
         let { categories } = <{ parent?: PostCategory | null; categories: PostCategories }>await res.json()
         categories = categories.map(x => Object.assign(new PostCategory(), x))

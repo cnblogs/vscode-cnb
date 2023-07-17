@@ -29,8 +29,10 @@ class AccountManager extends vscode.Disposable {
             this._disposable.dispose()
         })
 
+        this._authProvider = AuthProvider.instance
+
         this._disposable = Disposable.from(
-            (this._authProvider = AuthProvider.instance),
+            this._authProvider,
             this._authProvider.onDidChangeSessions(async ({ added }) => {
                 this._session = null
                 if (added != null && added.length > 0) await this.ensureSession()
@@ -95,17 +97,19 @@ class AccountManager extends vscode.Disposable {
         }
     }
 
-    setup() {
-        this.updateAuthorizationStatus().catch(console.warn)
+    setup = async () => {
+        await this.updateAuthorizationStatus()
     }
 
     private async updateAuthorizationStatus() {
         await this.ensureSession({ createIfNone: false })
+
         await vscode.commands.executeCommand(
             'setContext',
             `${globalContext.extensionName}.${isAuthorizedStorageKey}`,
             this.isAuthorized
         )
+
         if (this.isAuthorized) {
             await vscode.commands.executeCommand('setContext', `${globalContext.extensionName}.user`, {
                 name: this.curUser.name,
@@ -117,7 +121,7 @@ class AccountManager extends vscode.Disposable {
     private async ensureSession(opt?: AuthenticationGetSessionOptions): Promise<AuthSession> {
         const session = await authentication.getSession(this._authProvider.providerId, [], opt).then(
             session => (session ? AuthSession.parse(session) : null),
-            reason => AlertService.error(`创建/获取 session 失败: ${reason}`)
+            e => AlertService.err(`创建/获取 session 失败: ${e}`)
         )
 
         if (session != null && session.account.accountId < 0) {

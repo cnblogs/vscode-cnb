@@ -22,8 +22,12 @@ export async function extractImages(arg: unknown, inputImageSrc: ImageSrc | unde
     const extractor = new MarkdownImagesExtractor(markdown, arg)
 
     const images = extractor.findImages()
-    if (images.length <= 0)
-        void (!inputImageSrc != null ? window.showWarningMessage('没有找到可以提取的图片') : undefined)
+
+    // TODO: consider: && inputImageSrc != null
+    if (images.length <= 0) {
+        await window.showInformationMessage('没有找到可以提取的图片')
+        return
+    }
 
     const availableWebImagesCount = images.filter(newImageSrcFilter(ImageSrc.web)).length
     const availableLocalImagesCount = images.filter(newImageSrcFilter(ImageSrc.local)).length
@@ -100,6 +104,6 @@ export async function extractImages(arg: unknown, inputImageSrc: ImageSrc | unde
         const info = failedImages
             .map(x => [x.link, extractor.errors.find(([link]) => link === x.link)?.[1] ?? ''].join(','))
             .join('\n')
-        window.showErrorMessage(`${failedImages.length}张图片提取失败: ${info}`).then(undefined, console.warn)
+        window.showErrorMessage(`${failedImages.length}张图片提取失败: ${info}`).then(undefined, console.error)
     }
 }

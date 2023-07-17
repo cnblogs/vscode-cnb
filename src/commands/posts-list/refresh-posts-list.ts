@@ -34,7 +34,7 @@ export const refreshPostsList = ({ queue = false } = {}): Promise<boolean> => {
                 )
                 .then(pagedPosts =>
                     pagedPosts == null
-                        ? Promise.resolve(false).finally(() => AlertService.error('刷新博文列表失败'))
+                        ? Promise.resolve(false).finally(() => AlertService.err('刷新博文列表失败'))
                         : postService
                               .updatePostsListState(pagedPosts)
                               .catch()

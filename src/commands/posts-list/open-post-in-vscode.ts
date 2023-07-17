@@ -97,7 +97,7 @@ const createDirectoryIfNotExist = async (uri: Uri) => {
     } catch (err) {
         if (err instanceof FileSystemError) await workspace.fs.createDirectory(uri)
 
-        AlertService.error('create workspace directory failed')
+        AlertService.err('Create workspace directory failed')
         console.error(err)
     }
 }

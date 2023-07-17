@@ -9,7 +9,7 @@ const noImagePath = 'no image'
 export const uploadImageFromClipboard = async () => {
     const clipboardImage = await getClipboardImage()
     if (clipboardImage.imgPath === noImagePath) {
-        AlertService.warning('剪贴板中没有找到图片')
+        AlertService.warn('剪贴板中没有找到图片')
         return
     }
 

@@ -84,7 +84,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
 
     // check format
     if (!['.md'].some(x => localDraft.fileExt === x)) {
-        AlertService.warning('不受支持的文件格式! 只支持markdown格式')
+        AlertService.warn('不受支持的文件格式! 只支持markdown格式')
         return
     }
     const editDto = await postService.fetchPostEditTemplate()
@@ -112,7 +112,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
             await saveFilePendingChanges(localDraft.filePath)
             // 本地文件已经被删除了
             if (!localDraft.exist && panel) {
-                AlertService.warning('本地文件已删除, 无法新建博文')
+                AlertService.warn('本地文件已删除, 无法新建博文')
                 return false
             }
             if (Settings.automaticallyExtractImagesType)
@@ -136,7 +136,7 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
 
     const { id: postId } = post
     const localFilePath = PostFileMapManager.getFilePath(postId)
-    if (!localFilePath) return AlertService.warning('本地无该博文的编辑记录')
+    if (!localFilePath) return AlertService.warn('本地无该博文的编辑记录')
 
     if (Settings.automaticallyExtractImagesType)
         await extractImages(Uri.file(localFilePath), Settings.automaticallyExtractImagesType).catch(console.warn)
@@ -169,7 +169,7 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
                 await refreshPostsList()
             } catch (err) {
                 progress.report({ increment: 100 })
-                AlertService.error(`保存失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
+                AlertService.err(`保存失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
                 console.error(err)
             }
             return hasSaved
@@ -179,7 +179,7 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
 
 const validatePost = (post: Post): boolean => {
     if (!post.postBody) {
-        AlertService.warning('文件内容为空!')
+        AlertService.warn('文件内容为空!')
         return false
     }
 

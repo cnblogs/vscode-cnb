@@ -55,7 +55,7 @@ export const deleteSelectedPosts = async (arg: unknown) => {
     if (selectedPosts.length <= 0) return
 
     if (isDeleting) {
-        AlertService.warning('休息会儿再点吧~')
+        AlertService.warn('休息会儿再点吧~')
         return
     }
 
@@ -78,7 +78,7 @@ export const deleteSelectedPosts = async (arg: unknown) => {
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')
                     .filter(x => !!x)
                     .forEach(path => {
-                        workspace.fs.delete(Uri.file(path)).then(undefined, ex => console.error(ex))
+                        workspace.fs.delete(Uri.file(path)).then(undefined, e => console.error(e))
                     })
             }
             await PostFileMapManager.updateOrCreateMany({

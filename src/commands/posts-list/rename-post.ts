@@ -69,9 +69,9 @@ export const renamePost = async (arg: Post | PostTreeItem) => {
                     postsDataProvider.fireTreeDataChangedEvent(post)
                     hasUpdated = true
                 } catch (err) {
-                    void window.showInformationMessage('更新博文失败', {
+                    void window.showErrorMessage('更新博文失败', {
                         modal: true,
-                        detail: err instanceof Error ? err.message : '服务器返回了异常',
+                        detail: err instanceof Error ? err.message : '服务器返回异常',
                     } as MessageOptions)
                 } finally {
                     progress.report({ increment: 100 })
