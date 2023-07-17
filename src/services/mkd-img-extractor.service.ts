@@ -27,8 +27,8 @@ export interface ImageInfo {
 // Related RFC:
 // https://datatracker.ietf.org/doc/html/rfc2397
 
-const imgTagDataUrlImgPat = /(<img.*?src\s*=\s*")(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)("[^/]*?\/>)/g
-const imgTagUrlImgPat = /(<img.*?src\s*=\s*")(.*\.(?:png|jpg|jpeg|webp|svg|gif))("[^/]*?\/>)/gi
+const imgTagDataUrlImgPat = /(<img.*?src\s*=\s*")(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)("[^/]*?\/?>)/g
+const imgTagUrlImgPat = /(<img.*?src\s*=\s*")(.*\.(?:png|jpg|jpeg|webp|svg|gif))("[^/]*?\/?>)/gi
 const mkdDataUrlImgPat = /(!\[.*?\]\()(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)(\))/g
 const mkdUrlImgPat = /(!\[.*?\]\()(.*?\.(?:png|jpg|jpeg|webp|svg|gif))(\))/gi
 
