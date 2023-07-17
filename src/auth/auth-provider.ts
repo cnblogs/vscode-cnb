@@ -1,10 +1,10 @@
-import { CnblogsAuthenticationSession } from '@/auth/session'
-import { generateCodeChallenge } from '@/services/code-challenge.service'
+import { AuthSession } from '@/auth/session'
+import { genCodePair } from '@/services/code-challenge.service'
 import { isArray, isUndefined } from 'lodash-es'
 import {
     authentication,
     AuthenticationProvider,
-    AuthenticationProviderAuthenticationSessionsChangeEvent,
+    AuthenticationProviderAuthenticationSessionsChangeEvent as VscAuthProviderAuthSessionChEv,
     CancellationToken,
     CancellationTokenSource,
     Disposable,
@@ -18,44 +18,36 @@ import { globalContext } from '@/services/global-state'
 import RandomString from 'randomstring'
 import { OauthApi } from '@/services/oauth.api'
 import extensionUriHandler from '@/utils/uri-handler'
-import { CnblogsAccountInformation } from '@/auth/account-information'
-import { TokenInformation } from '@/models/token-information'
+import { AccountInfo } from '@/auth/account-info'
+import { TokenInfo } from '@/models/token-info'
 import { Optional } from 'utility-types'
 
-export class CnblogsAuthenticationProvider implements AuthenticationProvider, Disposable {
+export class AuthProvider implements AuthenticationProvider, Disposable {
     static readonly providerId = 'cnblogs'
     static readonly providerName = '博客园Cnblogs'
 
-    private static _instance?: CnblogsAuthenticationProvider | null
+    private static _instance?: AuthProvider | null
 
-    readonly providerId = CnblogsAuthenticationProvider.providerId
-    readonly providerName = CnblogsAuthenticationProvider.providerName
+    readonly providerId = AuthProvider.providerId
+    readonly providerName = AuthProvider.providerName
 
-    protected readonly sessionStorageKey = `${CnblogsAuthenticationProvider.providerId}.sessions`
+    protected readonly sessionStorageKey = `${AuthProvider.providerId}.sessions`
     protected readonly allScopes = globalContext.config.oauth.scope.split(' ')
 
-    private _allSessions?: CnblogsAuthenticationSession[] | null
+    private _allSessions?: AuthSession[] | null
     private _oauthClient?: OauthApi | null
-    private readonly _sessionChangeEmitter = new EventEmitter<AuthenticationProviderAuthenticationSessionsChangeEvent>()
-    private readonly _disposable: Disposable
-
-    private constructor() {
-        this._disposable = Disposable.from(
-            this._sessionChangeEmitter,
-            authentication.registerAuthenticationProvider(
-                CnblogsAuthenticationProvider.providerId,
-                CnblogsAuthenticationProvider.providerName,
-                this,
-                {
-                    supportsMultipleAccounts: false,
-                }
-            ),
-            this.onDidChangeSessions(() => (this._allSessions = null))
-        )
-    }
+    private readonly _sessionChangeEmitter = new EventEmitter<VscAuthProviderAuthSessionChEv>()
+    private readonly _disposable = Disposable.from(
+        this._sessionChangeEmitter,
+        authentication.registerAuthenticationProvider(AuthProvider.providerId, AuthProvider.providerName, this, {
+            supportsMultipleAccounts: false,
+        }),
+        this.onDidChangeSessions(() => (this._allSessions = null))
+    )
 
     static get instance() {
-        return (this._instance ??= new CnblogsAuthenticationProvider())
+        this._instance ??= new AuthProvider()
+        return this._instance
     }
 
     get onDidChangeSessions() {
@@ -75,20 +67,20 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
     }
 
     protected get oauthClient() {
-        return (this._oauthClient ??= new OauthApi())
+        this._oauthClient ??= new OauthApi()
+        return this._oauthClient
     }
 
-    async getSessions(scopes?: readonly string[] | undefined): Promise<readonly CnblogsAuthenticationSession[]> {
+    async getSessions(scopes?: readonly string[] | undefined): Promise<readonly AuthSession[]> {
         const sessions = await this.getAllSessions()
         const parsedScopes = this.ensureScopes(scopes)
-        return isArray(sessions)
-            ? sessions
-                  .map(x => CnblogsAuthenticationSession.parse(x))
-                  .filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
-            : []
+
+        return sessions
+            .map(x => AuthSession.parse(x))
+            .filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
     }
 
-    createSession(scopes: readonly string[]): Thenable<CnblogsAuthenticationSession> {
+    createSession(scopes: readonly string[]): Thenable<AuthSession> {
         const parsedScopes = this.ensureScopes(scopes)
         const options = {
             title: `${globalContext.displayName} - 登录`,
@@ -97,27 +89,31 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
         }
 
         let disposable: Disposable | undefined | null
-        const cancellationSource = new CancellationTokenSource()
+        const cancelTokenSrc = new CancellationTokenSource()
 
-        return window.withProgress<CnblogsAuthenticationSession>(options, (progress, cancellationToken) =>
-            new Promise<CnblogsAuthenticationSession>((resolve, reject) => {
-                let isTimeout = false
-                const timeoutId = setTimeout(() => {
-                    clearTimeout(timeoutId)
-                    isTimeout = true
-                    cancellationSource.cancel()
-                }, /* 30min */ 1800000)
+        let isTimeout = false
 
-                const { codeVerifier } = this.signInWithBrowser({ scopes: parsedScopes })
-                progress.report({ message: '等待用户在浏览器中进行授权...' })
+        {
+            const timeoutId = setTimeout(() => {
+                clearTimeout(timeoutId)
+                isTimeout = true
+                cancelTokenSrc.cancel()
+            }, 30 * 60 * 1000) // 30 min
+        }
 
+        const codeVerifier = this.signInWithBrowser({ scopes: parsedScopes })
+
+        return window.withProgress<AuthSession>(options, async (progress, cancelToken) => {
+            progress.report({ message: '等待用户在浏览器中进行授权...' })
+
+            const fut = new Promise<AuthSession>((resolve, reject) => {
                 disposable = Disposable.from(
-                    cancellationSource,
+                    cancelTokenSrc,
                     extensionUriHandler.onUri(uri => {
-                        if (cancellationSource.token.isCancellationRequested) return
+                        if (cancelTokenSrc.token.isCancellationRequested) return
 
-                        const { authorizationCode } = this.parseOauthCallbackUri(uri)
-                        if (!authorizationCode) return
+                        const authorizationCode = this.parseOauthCallbackUri(uri)
+                        if (authorizationCode == null) return
 
                         progress.report({ message: '已获得授权, 正在获取令牌...' })
 
@@ -125,11 +121,11 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
                             .fetchToken({
                                 codeVerifier,
                                 authorizationCode,
-                                cancellationToken: cancellationSource.token,
+                                cancellationToken: cancelTokenSrc.token,
                             })
                             .then(token =>
                                 this.onAccessTokenGranted(token, {
-                                    cancellationToken: cancellationSource.token,
+                                    cancellationToken: cancelTokenSrc.token,
                                     onStateChange(state) {
                                         progress.report({ message: state })
                                     },
@@ -138,29 +134,28 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
                             .then(resolve)
                             .catch(reject)
                     }),
-                    cancellationToken.onCancellationRequested(() => cancellationSource.cancel()),
-                    cancellationSource.token.onCancellationRequested(() => {
+                    cancelToken.onCancellationRequested(() => cancelTokenSrc.cancel()),
+                    cancelTokenSrc.token.onCancellationRequested(() => {
                         reject(`${isTimeout ? '由于超时, ' : ''}登录操作已取消`)
                     })
                 )
             })
-                .catch(reason => Promise.reject(reason))
-                .finally(() => {
-                    disposable?.dispose()
-                })
-        )
+
+            try {
+                return await fut
+            } finally {
+                disposable?.dispose()
+            }
+        })
     }
 
     async removeSession(sessionId: string): Promise<void> {
-        const data = (await this.getAllSessions()).reduce<{
-            removed: CnblogsAuthenticationSession[]
-            keep: CnblogsAuthenticationSession[]
-        }>(
-            (p, c) => {
-                c.id === sessionId ? p.removed.push(c) : p.keep.push(c)
-                return p
+        const data = (await this.getAllSessions()).reduce(
+            ({ removed, keep }, c) => {
+                c.id === sessionId ? removed.push(c) : keep.push(c)
+                return { removed, keep }
             },
-            { removed: [], keep: [] }
+            { removed: <AuthSession[]>[], keep: <AuthSession[]>[] }
         )
         await this.context.secrets.store(this.sessionStorageKey, JSON.stringify(data.keep))
         this._sessionChangeEmitter.fire({ removed: data.removed, added: undefined, changed: undefined })
@@ -170,28 +165,28 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
         this._disposable.dispose()
     }
 
-    protected async getAllSessions(): Promise<CnblogsAuthenticationSession[]> {
+    protected async getAllSessions(): Promise<AuthSession[]> {
         const legacyToken = LegacyTokenStore.getAccessToken()
         if (legacyToken != null) {
             await this.onAccessTokenGranted({ accessToken: legacyToken }, { shouldFireSessionAddedEvent: false })
                 .then(undefined, console.warn)
-                .finally(() => LegacyTokenStore.remove())
+                .finally(() => void LegacyTokenStore.remove())
         }
 
         if (this._allSessions == null || this._allSessions.length <= 0) {
             const sessions = JSON.parse((await this.secretStorage.get(this.sessionStorageKey)) ?? '[]') as
-                | CnblogsAuthenticationSession[]
+                | AuthSession[]
                 | null
                 | undefined
                 | unknown
-            this._allSessions = isArray(sessions) ? sessions.map(x => CnblogsAuthenticationSession.parse(x)) : []
+            this._allSessions = isArray(sessions) ? sessions.map(x => AuthSession.parse(x)) : []
         }
 
         return this._allSessions
     }
 
     private signInWithBrowser({ scopes }: { scopes: readonly string[] }) {
-        const { codeVerifier, codeChallenge } = generateCodeChallenge()
+        const { codeVerifier, codeChallenge } = genCodePair()
         const { clientId, responseType, authorizeEndpoint, authority, clientSecret } = this.config.oauth
 
         const search = new URLSearchParams([
@@ -204,11 +199,13 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
             ['scope', scopes.join(' ')],
             ['client_secret', clientSecret],
         ])
+
         env.openExternal(Uri.parse(`${authority}${authorizeEndpoint}?${search.toString()}`)).then(
             undefined,
             console.warn
         )
-        return { codeVerifier }
+
+        return codeVerifier
     }
 
     private ensureScopes(
@@ -218,13 +215,10 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
         return scopes == null || scopes.length <= 0 ? defaultScopes : scopes
     }
 
-    private parseOauthCallbackUri(uri: Uri) {
-        const authorizationCode = new URLSearchParams(`?${uri.query}`).get('code')
-        return { authorizationCode }
-    }
+    private parseOauthCallbackUri = (uri: Uri) => new URLSearchParams(`?${uri.query}`).get('code') // authorizationCode
 
     private async onAccessTokenGranted(
-        { accessToken, refreshToken }: TokenInformation,
+        { accessToken, refreshToken }: TokenInfo,
         {
             cancellationToken,
             onStateChange,
@@ -235,66 +229,67 @@ export class CnblogsAuthenticationProvider implements AuthenticationProvider, Di
             shouldFireSessionAddedEvent?: boolean
         } = {}
     ) {
-        const run = <TResult = unknown>(func: () => TResult, predicate = () => true): TResult | undefined =>
-            cancellationToken?.isCancellationRequested !== true && predicate() ? func() : undefined
+        const ifNotCancelledThen = <TR>(f: () => TR): TR | undefined => {
+            if (cancellationToken?.isCancellationRequested) return
+            return f()
+        }
 
-        let session: CnblogsAuthenticationSession | undefined
+        let session: AuthSession | undefined
+
         try {
             onStateChange?.('正在获取账户信息...')
-            const userInfo = await run(() =>
-                this.oauthClient.fetchUserInformation(accessToken, {
+
+            const spec = await ifNotCancelledThen(() =>
+                this.oauthClient.fetchUserInfo(accessToken, {
                     cancellationToken: cancellationToken,
                 })
             )
 
             onStateChange?.('即将完成...')
-            session = run(() =>
-                isUndefined(userInfo)
-                    ? undefined
-                    : CnblogsAuthenticationSession.parse({
-                          accessToken,
-                          refreshToken,
-                          account: CnblogsAccountInformation.parse(userInfo),
-                          scopes: this.ensureScopes(null),
-                          id: `${this.providerId}-${userInfo.account_id}`,
-                      })
-            )
-            const hasStored = await run(() =>
-                isUndefined(session)
-                    ? Promise.resolve(false)
-                    : this.secretStorage.store(this.sessionStorageKey, JSON.stringify([session])).then(
-                          () => true,
-                          () => false
-                      )
-            )
-            run(
-                () =>
-                    isUndefined(session) || !shouldFireSessionAddedEvent
-                        ? undefined
-                        : this._sessionChangeEmitter.fire({
-                              added: [session],
-                              removed: undefined,
-                              changed: undefined,
-                          }),
-                () => hasStored === true
-            )
+
+            session = ifNotCancelledThen(() => {
+                if (isUndefined(spec)) return
+
+                return AuthSession.parse({
+                    accessToken,
+                    refreshToken,
+                    account: AccountInfo.from(spec),
+                    scopes: this.ensureScopes(null),
+                    id: `${this.providerId}-${spec.account_id}`,
+                })
+            })
+
+            const hasStored = await ifNotCancelledThen(() => {
+                if (isUndefined(session)) return Promise.resolve(false)
+
+                return this.secretStorage.store(this.sessionStorageKey, JSON.stringify([session])).then(
+                    () => true,
+                    () => false
+                )
+            })
+
+            ifNotCancelledThen(() => {
+                if (!hasStored || isUndefined(session) || !shouldFireSessionAddedEvent) return
+
+                return this._sessionChangeEmitter.fire({
+                    added: [session],
+                    removed: undefined,
+                    changed: undefined,
+                })
+            })
         } finally {
             if (session != null && cancellationToken?.isCancellationRequested) await this.removeSession(session.id)
         }
+
         if (session == null) throw new Error('Failed to create session')
+
         return session
     }
 }
 
 class LegacyTokenStore {
-    private static readonly _key = 'user'
+    static getAccessToken = () =>
+        globalContext.storage.get<Optional<{ authorizationInfo?: TokenInfo }>>('user')?.authorizationInfo?.accessToken
 
-    static getAccessToken() {
-        return globalContext.storage.get<Optional<{ authorizationInfo?: TokenInformation }>>(this._key)
-            ?.authorizationInfo?.accessToken
-    }
-
-    static remove() {
-        globalContext.storage.update(this._key, undefined).then(undefined, console.error)
-    }
+    static remove = () => globalContext.storage.update('user', undefined).then(undefined, console.error)
 }

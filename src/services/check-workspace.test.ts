@@ -1,5 +1,6 @@
 import { workspace } from 'vscode'
 
+// TODO: test for Linux and macOS
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 describe('isTargetWorkspace', () => {
     const testItems: [current: string, target: string, result: boolean][] = [

@@ -1,12 +1,12 @@
-import { CnblogsAccountInformation } from './account-information'
+import { AccountInfo } from './account-info'
 import { globalContext } from '@/services/global-state'
 import vscode, { authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view-providers/account-view-data-provider'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
 import { OauthApi } from '@/services/oauth.api'
-import { CnblogsAuthenticationProvider } from '@/auth/auth-provider'
-import { CnblogsAuthenticationSession } from '@/auth/session'
+import { AuthProvider } from '@/auth/auth-provider'
+import { AuthSession } from '@/auth/session'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { AlertService } from '@/services/alert.service'
 
@@ -18,11 +18,11 @@ class AccountManager extends vscode.Disposable {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     static readonly ACQUIRE_TOKEN_REJECT_EXPIRED = 'expired'
 
-    private readonly _authProvider: CnblogsAuthenticationProvider
+    private readonly _authProvider: AuthProvider
     private readonly _disposable: vscode.Disposable
 
-    private _oauthClient?: OauthApi | null
-    private _session?: CnblogsAuthenticationSession | null
+    private _oauthClient: OauthApi | null = null
+    private _session: AuthSession | null = null
 
     constructor() {
         super(() => {
@@ -30,7 +30,7 @@ class AccountManager extends vscode.Disposable {
         })
 
         this._disposable = Disposable.from(
-            (this._authProvider = CnblogsAuthenticationProvider.instance),
+            (this._authProvider = AuthProvider.instance),
             this._authProvider.onDidChangeSessions(async ({ added }) => {
                 this._session = null
                 if (added != null && added.length > 0) await this.ensureSession()
@@ -40,6 +40,7 @@ class AccountManager extends vscode.Disposable {
                 accountViewDataProvider.fireTreeDataChangedEvent()
                 postsDataProvider.fireTreeDataChangedEvent(undefined)
                 postCategoriesDataProvider.fireTreeDataChangedEvent()
+
                 BlogExportProvider.optionalInstance
                     ?.refreshRecords({ force: false, clearCache: true })
                     .catch(console.warn)
@@ -48,11 +49,11 @@ class AccountManager extends vscode.Disposable {
     }
 
     get isAuthorized() {
-        return this._session != null
+        return this._session !== null
     }
 
-    get curUser(): CnblogsAccountInformation {
-        return this._session?.account ?? CnblogsAccountInformation.parse()
+    get curUser(): AccountInfo {
+        return this._session?.account ?? AccountInfo.newAnonymous()
     }
 
     protected get oauthClient() {
@@ -68,7 +69,7 @@ class AccountManager extends vscode.Disposable {
         const session = await this.ensureSession({ createIfNone: false })
         return session == null
             ? Promise.reject(AccountManager.ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED)
-            : session.hasExpired
+            : session.isExpired
             ? Promise.reject(AccountManager.ACQUIRE_TOKEN_REJECT_EXPIRED)
             : session.accessToken
     }
@@ -80,7 +81,7 @@ class AccountManager extends vscode.Disposable {
     async logout() {
         if (!this.isAuthorized) return
 
-        const session = await authentication.getSession(CnblogsAuthenticationProvider.providerId, [])
+        const session = await authentication.getSession(AuthProvider.providerId, [])
         if (session) await this._authProvider.removeSession(session.id)
 
         // For old version compatibility, **never** remove this line
@@ -113,11 +114,9 @@ class AccountManager extends vscode.Disposable {
         }
     }
 
-    private async ensureSession(
-        opt?: AuthenticationGetSessionOptions
-    ): Promise<CnblogsAuthenticationSession | undefined | null> {
+    private async ensureSession(opt?: AuthenticationGetSessionOptions): Promise<AuthSession> {
         const session = await authentication.getSession(this._authProvider.providerId, [], opt).then(
-            session => (session ? CnblogsAuthenticationSession.parse(session) : null),
+            session => (session ? AuthSession.parse(session) : null),
             reason => AlertService.error(`创建/获取 session 失败: ${reason}`)
         )
 
@@ -128,9 +127,8 @@ class AccountManager extends vscode.Disposable {
             this._session = session
         }
 
-        return this._session ?? CnblogsAuthenticationSession.parse()
+        return this._session ?? AuthSession.parse()
     }
 }
 
 export const accountManager = new AccountManager()
-export default accountManager

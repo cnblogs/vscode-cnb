@@ -1,4 +1,4 @@
 export * from './auth-provider'
 export * from './session'
 export * from './access-token'
-export * from './account-information'
+export * from './account-info'

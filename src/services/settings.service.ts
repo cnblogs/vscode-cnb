@@ -1,7 +1,7 @@
 import os, { homedir } from 'os'
 import fs from 'fs'
 import { ConfigurationTarget, Uri, workspace } from 'vscode'
-import { ImageSrc, MarkdownImagesExtractor } from './images-extractor.service'
+import { ImageSrc } from './images-extractor.service'
 import { isNumber } from 'lodash-es'
 import { untildify } from '@/utils/untildify'
 

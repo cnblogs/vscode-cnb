@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { TokenInformation } from '@/models/token-information'
-import { CnblogsAccountInformation } from '@/auth/account-information'
+import { TokenInfo } from '@/models/token-info'
+import { AccountInfo } from '@/auth/account-info'
 import { convertObjectKeysToCamelCase } from '@/services/fetch-json-response-to-camel-case'
 import { globalContext } from '@/services/global-state'
 import fetch from '@/utils/fetch-client'
@@ -9,7 +9,7 @@ import { CancellationToken } from 'vscode'
 import { AbortController } from 'node-abort-controller'
 import { AuthorizationHeaderKey } from '@/utils/constants'
 
-export type UserInformationSpec = Pick<CnblogsAccountInformation, 'sub' | 'website' | 'name'> & {
+export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
     readonly blog_id: string
     readonly account_id: string
     readonly picture: string
@@ -24,7 +24,7 @@ export class OauthApi {
         codeVerifier: string
         authorizationCode: string
         cancellationToken?: CancellationToken
-    }): Promise<TokenInformation> {
+    }): Promise<TokenInfo> {
         const abortControl = new AbortController()
         if (cancellationToken?.isCancellationRequested) abortControl.abort()
         cancellationToken?.onCancellationRequested(() => abortControl.abort())
@@ -32,7 +32,7 @@ export class OauthApi {
         const url = globalContext.config.oauth.authority + globalContext.config.oauth.tokenEndpoint
         const { clientId, clientSecret } = globalContext.config.oauth
 
-        const res = await got.post<TokenInformation>(url, {
+        const res = await got.post<TokenInfo>(url, {
             form: {
                 code: authorizationCode,
                 code_verifier: codeVerifier,
@@ -54,17 +54,17 @@ export class OauthApi {
         )
     }
 
-    async fetchUserInformation(
+    async fetchUserInfo(
         token: string,
         { cancellationToken }: { cancellationToken?: CancellationToken | null } = {}
-    ): Promise<UserInformationSpec> {
+    ): Promise<UserInfoSpec> {
         const { authority, userInfoEndpoint } = globalContext.config.oauth
         const abortController = new AbortController()
 
         if (cancellationToken?.isCancellationRequested) abortController.abort()
         const cancellationSubscribe = cancellationToken?.onCancellationRequested(() => abortController.abort())
 
-        const { body } = await got<UserInformationSpec>(`${authority}${userInfoEndpoint}`, {
+        const { body } = await got<UserInfoSpec>(`${authority}${userInfoEndpoint}`, {
             method: 'GET',
             // eslint-disable-next-line @typescript-eslint/naming-convention
             headers: { Authorization: `Bearer ${token}` },

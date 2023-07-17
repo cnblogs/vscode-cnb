@@ -1,3 +1,3 @@
-export interface AccessToken {
-    exp?: number
+export type AccessToken = {
+    expireTime: number
 }
