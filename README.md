@@ -47,13 +47,13 @@
 
 若本地文件已经关联到一篇博客园博文，那么会直接更新这篇博文。
 
-也通过 vscode 的 `Command Palette`（唤起 `Command Palette` 快捷键，windows：`ctrl+shift+p`，macos：`command+shift+p`）调用 `Cnblogs: 保存到博客园`命令，将当前正在编辑的 markdown 文件保存到博客园上
+也通过 vscode 的 `Command Palette`（唤起 `Command Palette` 快捷键，windows：`ctrl+shift+p`，macos：`command+shift+p`）调用 `Cnblogs: 上传到博客园`命令，将当前正在编辑的 markdown 文件上传到博客园上
 
 <kbd><img src="https://img2022.cnblogs.com/blog/1596066/202204/1596066-20220415194545998-874211959.png" height="550"></kbd>
 
 ### 博客园博文列表
 
-当点击列表中的博文时，会自动将博文内容下载到工作空间一个本地文件中（此时这个本地文件就关联到了这篇博文），完成编辑后可以再将本地的内容保存到博客园博文
+当点击列表中的博文时，会自动将博文内容下载到工作空间一个本地文件中（此时这个本地文件就关联到了这篇博文），完成编辑后可以再将本地的内容上传到博客园
 
 <kbd><img src="https://img2020.cnblogs.com/blog/3/202112/3-20211227184342642-1938639868.png" height="550"></kbd>
 
@@ -129,7 +129,7 @@
 
 ![image](https://img2022.cnblogs.com/blog/1596066/202209/1596066-20220917215536822-836105648.png)
 
-也可以在设置中配置保存到博客园时自动提取图片
+也可以在设置中配置上传到博客园时自动提取图片
 
 ![image](https://img2022.cnblogs.com/blog/1596066/202209/1596066-20220917215650930-372126612.png)
 
