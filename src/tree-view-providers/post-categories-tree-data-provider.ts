@@ -1,5 +1,5 @@
 import { flattenDepth, take } from 'lodash-es'
-import { commands, EventEmitter, MessageOptions, ProviderResult, TreeDataProvider, TreeItem, window } from 'vscode'
+import { commands, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
 import { PostCategories } from '@/models/post-category'
 import { globalContext } from '@/services/global-state'
 import { postCategoryService } from '@/services/post-category.service'
