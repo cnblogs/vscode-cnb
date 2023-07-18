@@ -148,11 +148,14 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
     if (!validatePost(post)) return false
 
     const answer = await vscode.window.showWarningMessage(
-        '确认上传吗? 本地博文将对远程博文进行覆盖! 操作不可逆',
-        '确认',
-        '取消'
+        '确认上传吗?',
+        {
+            modal: true,
+            detail: '本地博文将对远程博文进行覆盖, 操作不可逆!',
+        },
+        '确认'
     )
-    if (answer === '取消') return false
+    if (answer !== '确认') return false
 
     return window.withProgress(
         {
