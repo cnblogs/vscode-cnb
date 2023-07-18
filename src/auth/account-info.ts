@@ -27,7 +27,6 @@ export class AccountInfo implements AuthenticationSessionAccountInformation {
 
     get blogApp(): string | null {
         this._blogApp ??= this.parseBlogApp()
-
         return this._blogApp
     }
 

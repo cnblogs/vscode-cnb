@@ -23,7 +23,8 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
     }
 
     protected get exportApi() {
-        return (this._exportApi ??= new BlogExportApi())
+        this._exportApi ??= new BlogExportApi()
+        return this._exportApi
     }
 
     parseInput(): BlogExportRecordTreeItem | null | undefined {

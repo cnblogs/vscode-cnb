@@ -58,6 +58,7 @@ export class PostService {
 
         const obj = <PostListModel>await response.json()
         const { zzkSearchResult } = obj
+
         return Object.assign(
             new PageModel(
                 obj.pageIndex,

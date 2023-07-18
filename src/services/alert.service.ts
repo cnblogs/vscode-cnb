@@ -33,6 +33,7 @@ export class AlertService {
     /**
      * alert that file not linked to the post
      * @param file the file path, could be a string or {@link Uri} object
+     * @param trimExt
      */
     static fileNotLinkedToPost(file: string | Uri, { trimExt = true } = {}) {
         file = file instanceof Uri ? file.fsPath : file

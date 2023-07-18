@@ -12,7 +12,6 @@ import {
     ExportPostsEntryTreeItem,
 } from './models/blog-export/downloaded'
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { ExportPostTreeItem } from './models/blog-export/post'
 import { AlertService } from '@/services/alert.service'
 import { BlogExportRecord } from '@/models/blog-export'
 
@@ -24,7 +23,8 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     private _downloadedExportEntry?: DownloadedExportsEntryTreeItem | null
 
     static get instance(): BlogExportProvider {
-        return (this._instance ??= new BlogExportProvider())
+        this._instance ??= new BlogExportProvider()
+        return this._instance
     }
 
     static get optionalInstance(): BlogExportProvider | undefined | null {
@@ -32,11 +32,13 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     }
 
     get onDidChangeTreeData(): Event<BlogExportTreeItem | null | undefined> {
-        return (this._treeDataChangedSource ??= new EventEmitter<BlogExportTreeItem | null | undefined>()).event
+        this._treeDataChangedSource ??= new EventEmitter<BlogExportTreeItem | null | undefined>()
+        return this._treeDataChangedSource.event
     }
 
     get store(): BlogExportRecordsStore {
-        return (this._store ??= new BlogExportRecordsStore())
+        this._store ??= new BlogExportRecordsStore()
+        return this._store
     }
 
     getTreeItem(element: BlogExportTreeItem): TreeItem | Thenable<TreeItem> {
@@ -59,7 +61,6 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
             element instanceof BlogExportRecordMetadata ||
             element instanceof DownloadedExportMetadata ||
             element instanceof DownloadedExportTreeItem ||
-            element instanceof ExportPostTreeItem ||
             element instanceof ExportPostsEntryTreeItem
         )
             return element.parent
@@ -90,7 +91,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
      */
     async refreshRecords({
         /**
-         * Tell if to raise a notify to the user when error response received during the refreshing process
+         * Tell if to raise notify to the user when error response received during the refreshing process
          */
         notifyOnError = true,
         /**
@@ -131,7 +132,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
             store: { cached },
         } = this
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        if (cached == null) this.refreshRecords()
+        if (cached == null) void this.refreshRecords()
         const items: BlogExportRecord[] = cached?.items ?? []
         return parseBlogExportRecords(this, items)
     }

@@ -6,8 +6,14 @@ import { isString } from 'lodash-es'
 const bearerTokenHook: BeforeRequestHook = async opt => {
     const { headers } = opt
 
-    if (Object.keys(headers).findIndex(x => x.toLowerCase() === AuthorizationHeaderKey.toLowerCase()) < 0) {
-        const token = await accountManager.acquireToken().catch((reason: unknown) => ({ reason }))
+    const keyIndex = Object.keys(headers).findIndex(x => x.toLowerCase() === AuthorizationHeaderKey.toLowerCase())
+
+    if (keyIndex < 0) {
+        const token = await accountManager.acquireToken().catch(e => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            return { e }
+        })
+
         if (isString(token)) headers[AuthorizationHeaderKey] = `Bearer ${token}`
     }
 }

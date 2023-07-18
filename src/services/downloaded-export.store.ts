@@ -13,7 +13,8 @@ export class DownloadedExportStore {
     private readonly _storage = globalContext.storage
 
     static get instance(): DownloadedExportStore {
-        return (this._instance ??= new DownloadedExportStore())
+        this._instance ??= new DownloadedExportStore()
+        return this._instance
     }
 
     async add(filePath: string, id?: number | null): Promise<void> {

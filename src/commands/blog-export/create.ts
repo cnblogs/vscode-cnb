@@ -10,7 +10,8 @@ export class CreateBlogExportCommandHandler extends CommandHandler {
     private _blogExportApi?: BlogExportApi | null
 
     protected get blogExportApi() {
-        return (this._blogExportApi ??= new BlogExportApi())
+        this._blogExportApi ??= new BlogExportApi()
+        return this._blogExportApi
     }
 
     async handle(): Promise<void> {

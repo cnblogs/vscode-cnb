@@ -28,7 +28,8 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
     }
 
     protected get blogExportApi() {
-        return (this._blogExportApi ??= new BlogExportApi())
+        this._blogExportApi ??= new BlogExportApi()
+        return this._blogExportApi
     }
 
     toTreeItem(): Promise<TreeItem> {

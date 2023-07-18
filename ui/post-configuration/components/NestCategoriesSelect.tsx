@@ -121,8 +121,12 @@ export default class NestCategoriesSelect extends React.Component<
 
         let expandedSet = this.state.expanded
 
-        if (isExpanded) expandedSet?.delete(category.categoryId)
-        else (expandedSet ??= new Set()).add(category.categoryId)
+        if (isExpanded) {
+            expandedSet?.delete(category.categoryId)
+        } else {
+            expandedSet ??= new Set()
+            expandedSet.add(category.categoryId)
+        }
 
         this.setState({ expanded: expandedSet && expandedSet.size > 0 ? new Set(expandedSet) : null })
         expandedSet?.clear()

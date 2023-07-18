@@ -18,21 +18,27 @@ import { Settings } from '@/services/settings.service'
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
     globalContext.extensionContext = context
-    accountManager.setup()
+
+    void accountManager.setup()
+
     context.subscriptions.push(accountManager)
 
     registerCommands()
     registerTreeViews()
-    setTimeout(() => {
+
+    const timeoutId = setTimeout(() => {
         IngsListWebviewProvider.ensureRegistered()
+        clearTimeout(timeoutId)
     }, 1000)
+
     observeConfigurationChange()
     observeWorkspaceFolderChange()
+
     Settings.migrateEnablePublishSelectionToIng().catch(console.warn)
+
     vscode.window.registerUriHandler(extensionUriHandler)
-    return {
-        extendMarkdownIt,
-    }
+
+    return { extendMarkdownIt }
 }
 
 // this method is called when your extension is deactivated

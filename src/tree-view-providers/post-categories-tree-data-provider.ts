@@ -20,7 +20,8 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
     private constructor() {}
 
     static get instance() {
-        return (this._instance ??= new PostCategoriesTreeDataProvider())
+        this._instance ??= new PostCategoriesTreeDataProvider()
+        return this._instance
     }
 
     get isRefreshing() {

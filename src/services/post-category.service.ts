@@ -39,7 +39,8 @@ export class PostCategoryService {
         const parentId = typeof option === 'object' ? option.parentId ?? -1 : -1
         const shouldForceRefresh =
             option === true || (typeof option === 'object' ? option.forceRefresh ?? false : false)
-        const map = (this._cache ??= new Map<number, PostCategories>())
+        this._cache ??= new Map<number, PostCategories>()
+        const map = this._cache
         const cachedCategories = map.get(parentId)
         if (cachedCategories && !shouldForceRefresh) return cachedCategories
 

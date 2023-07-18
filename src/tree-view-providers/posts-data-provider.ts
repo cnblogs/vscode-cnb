@@ -23,7 +23,8 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     protected constructor() {}
 
     static get instance() {
-        return (this._instance ??= new PostsDataProvider())
+        this._instance ??= new PostsDataProvider()
+        return this._instance
     }
 
     get onDidChangeTreeData() {
@@ -47,9 +48,9 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
             return PostMetadata.parseRoots({ post: parent })
         } else if (parent instanceof PostEntryMetadata || parent instanceof PostSearchResultEntry) {
             return parent.getChildrenAsync()
-        } else {
-            return []
         }
+
+        return []
     }
 
     getParent(el: PostsListTreeItem) {
@@ -63,12 +64,15 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     async loadPosts(): Promise<PageModel<Post> | null> {
         const { pageIndex } = postService.postsListState ?? {}
         const pageSize = Settings.postsListPageSize
-        this._pagedPosts = await postService.fetchPostsList({ pageIndex, pageSize }).catch(ex => {
-            if (ex instanceof Error) AlertService.err(ex.message)
-            else AlertService.err(`加载博文失败\n${JSON.stringify(ex)}`)
+
+        this._pagedPosts = await postService.fetchPostsList({ pageIndex, pageSize }).catch(e => {
+            if (e instanceof Error) AlertService.err(e.message)
+            else AlertService.err(`加载博文失败\n${JSON.stringify(e)}`)
             return undefined
         })
+
         this.fireTreeDataChangedEvent(undefined)
+
         return this._pagedPosts ?? null
     }
 
@@ -100,6 +104,7 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
 
     async refreshSearch(): Promise<void> {
         const { _searchResultEntry } = this
+
         if (_searchResultEntry) {
             const { searchKey } = _searchResultEntry
             this._searchResultEntry = null

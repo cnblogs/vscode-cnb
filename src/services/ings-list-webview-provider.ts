@@ -35,7 +35,8 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
     get observer(): IngWebviewMessageObserver {
         if (!this._view) throw Error('Cannot access the observer until the webviewView initialized!')
-        return (this._observer ??= new IngWebviewMessageObserver(this))
+        this._observer ??= new IngWebviewMessageObserver(this)
+        return this._observer
     }
 
     get pageIndex() {
@@ -51,7 +52,8 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     }
 
     get show() {
-        return (this._show ??= this._view ? this._view.show.bind(this._view) : undefined)
+        this._show ??= this._view ? this._view.show.bind(this._view) : undefined
+        return this._show
     }
 
     static get instance(): IngsListWebviewProvider | undefined {
@@ -63,7 +65,8 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     }
 
     private get ingApi() {
-        return (this._ingApi ??= new IngApi())
+        this._ingApi ??= new IngApi()
+        return this._ingApi
     }
 
     static ensureRegistered() {
