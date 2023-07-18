@@ -15,18 +15,16 @@ export class AuthSession implements AuthenticationSession {
     ) {}
 
     get isExpired() {
-        if (this._parsedAccessToken === null) return true
-        return this._parsedAccessToken.expireTime * 1000 <= Date.now()
+        if (this._parsedAccessToken == null) {
+            const buf = Buffer.from(this.accessToken.split('.')[1], 'base64')
+            this._parsedAccessToken ??= JSON.parse(buf.toString())
+        }
+
+        if (this._parsedAccessToken == null) return true
+        return this._parsedAccessToken.exp * 1000 <= Date.now()
     }
 
-    private get parsedAccessToken() {
-        const buf = Buffer.from(this.accessToken.split('.')[1], 'base64')
-        this._parsedAccessToken ??= JSON.parse(buf.toString())
-
-        return this._parsedAccessToken
-    }
-
-    static parse<T extends AuthenticationSession | Partial<AuthSession>>(t?: T) {
+    static from<T extends AuthenticationSession | Partial<AuthSession>>(t?: T) {
         const session = new AuthSession(AccountInfo.newAnonymous())
 
         merge(session, pick(t, keys(session)))

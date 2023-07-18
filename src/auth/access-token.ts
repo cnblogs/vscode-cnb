@@ -1,3 +1,3 @@
 export type AccessToken = {
-    expireTime: number
+    exp: number
 }

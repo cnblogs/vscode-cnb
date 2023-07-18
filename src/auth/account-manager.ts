@@ -12,14 +12,25 @@ import { AlertService } from '@/services/alert.service'
 
 const isAuthorizedStorageKey = 'isAuthorized'
 
-class AccountManager extends vscode.Disposable {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    static readonly ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED = 'unauthenticated'
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    static readonly ACQUIRE_TOKEN_REJECT_EXPIRED = 'expired'
+export const ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED = 'unauthenticated'
+export const ACQUIRE_TOKEN_REJECT_EXPIRED = 'expired'
 
-    private readonly _authProvider: AuthProvider
-    private readonly _disposable: vscode.Disposable
+class AccountManager extends vscode.Disposable {
+    private readonly _authProvider = AuthProvider.instance
+    private readonly _disposable = Disposable.from(
+        this._authProvider.onDidChangeSessions(async ({ added }) => {
+            this._session = null
+            if (added != null && added.length > 0) await this.ensureSession()
+
+            await this.updateAuthorizationStatus()
+
+            accountViewDataProvider.fireTreeDataChangedEvent()
+            postsDataProvider.fireTreeDataChangedEvent(undefined)
+            postCategoriesDataProvider.fireTreeDataChangedEvent()
+
+            BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
+        })
+    )
 
     private _oauthClient: OauthApi | null = null
     private _session: AuthSession | null = null
@@ -28,26 +39,6 @@ class AccountManager extends vscode.Disposable {
         super(() => {
             this._disposable.dispose()
         })
-
-        this._authProvider = AuthProvider.instance
-
-        this._disposable = Disposable.from(
-            this._authProvider,
-            this._authProvider.onDidChangeSessions(async ({ added }) => {
-                this._session = null
-                if (added != null && added.length > 0) await this.ensureSession()
-
-                await this.updateAuthorizationStatus()
-
-                accountViewDataProvider.fireTreeDataChangedEvent()
-                postsDataProvider.fireTreeDataChangedEvent(undefined)
-                postCategoriesDataProvider.fireTreeDataChangedEvent()
-
-                BlogExportProvider.optionalInstance
-                    ?.refreshRecords({ force: false, clearCache: true })
-                    .catch(console.warn)
-            })
-        )
     }
 
     get isAuthorized() {
@@ -59,7 +50,8 @@ class AccountManager extends vscode.Disposable {
     }
 
     protected get oauthClient() {
-        return (this._oauthClient ??= new OauthApi())
+        this._oauthClient ??= new OauthApi()
+        return this._oauthClient
     }
 
     /**
@@ -69,11 +61,12 @@ class AccountManager extends vscode.Disposable {
      */
     async acquireToken(): Promise<string> {
         const session = await this.ensureSession({ createIfNone: false })
-        return session == null
-            ? Promise.reject(AccountManager.ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED)
-            : session.isExpired
-            ? Promise.reject(AccountManager.ACQUIRE_TOKEN_REJECT_EXPIRED)
-            : session.accessToken
+
+        if (session == null) return Promise.reject(ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED)
+
+        if (session.isExpired) return Promise.reject(ACQUIRE_TOKEN_REJECT_EXPIRED)
+
+        return session.accessToken
     }
 
     async login() {
@@ -84,7 +77,7 @@ class AccountManager extends vscode.Disposable {
         if (!this.isAuthorized) return
 
         const session = await authentication.getSession(AuthProvider.providerId, [])
-        if (session) await this._authProvider.removeSession(session.id)
+        if (session !== undefined) await this._authProvider.removeSession(session.id)
 
         // For old version compatibility, **never** remove this line
         await globalContext.storage.update('user', undefined)
@@ -118,9 +111,9 @@ class AccountManager extends vscode.Disposable {
         }
     }
 
-    private async ensureSession(opt?: AuthenticationGetSessionOptions): Promise<AuthSession> {
+    private async ensureSession(opt?: AuthenticationGetSessionOptions): Promise<AuthSession | null> {
         const session = await authentication.getSession(this._authProvider.providerId, [], opt).then(
-            session => (session ? AuthSession.parse(session) : null),
+            session => (session ? AuthSession.from(session) : null),
             e => AlertService.err(`创建/获取 session 失败: ${e}`)
         )
 
@@ -131,7 +124,7 @@ class AccountManager extends vscode.Disposable {
             this._session = session
         }
 
-        return this._session ?? AuthSession.parse()
+        return this._session
     }
 }
 

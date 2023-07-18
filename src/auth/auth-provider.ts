@@ -76,7 +76,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         const parsedScopes = this.ensureScopes(scopes)
 
         return sessions
-            .map(x => AuthSession.parse(x))
+            .map(x => AuthSession.from(x))
             .filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
     }
 
@@ -179,7 +179,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
                 | null
                 | undefined
                 | unknown
-            this._allSessions = isArray(sessions) ? sessions.map(x => AuthSession.parse(x)) : []
+            this._allSessions = isArray(sessions) ? sessions.map(x => AuthSession.from(x)) : []
         }
 
         return this._allSessions
@@ -250,7 +250,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             session = ifNotCancelledThen(() => {
                 if (isUndefined(spec)) return
 
-                return AuthSession.parse({
+                return AuthSession.from({
                     accessToken,
                     refreshToken,
                     account: AccountInfo.from(spec),

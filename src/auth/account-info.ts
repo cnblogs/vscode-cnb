@@ -7,7 +7,7 @@ export class AccountInfo implements AuthenticationSessionAccountInformation {
     readonly label: string
     readonly id: string
 
-    private _blogApp?: string | null
+    private _blogApp: string | null = null
 
     private constructor(
         public readonly name: string,
