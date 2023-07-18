@@ -26,7 +26,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     static readonly providerId = 'cnblogs'
     static readonly providerName = '博客园Cnblogs'
 
-    private static _instance?: AuthProvider | null
+    private static _instance: AuthProvider | null
 
     readonly providerId = AuthProvider.providerId
     readonly providerName = AuthProvider.providerName
@@ -88,18 +88,16 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             location: ProgressLocation.Notification,
         }
 
-        let disposable: Disposable | undefined | null
+        let disposable: Disposable | null
         const cancelTokenSrc = new CancellationTokenSource()
 
         let isTimeout = false
 
-        {
-            const timeoutId = setTimeout(() => {
-                clearTimeout(timeoutId)
-                isTimeout = true
-                cancelTokenSrc.cancel()
-            }, 30 * 60 * 1000) // 30 min
-        }
+        const timeoutId = setTimeout(() => {
+            clearTimeout(timeoutId)
+            isTimeout = true
+            cancelTokenSrc.cancel()
+        }, 30 * 60 * 1000) // 30 min
 
         const codeVerifier = this.signInWithBrowser({ scopes: parsedScopes })
 
@@ -108,37 +106,38 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
             const fut = new Promise<AuthSession>((resolve, reject) => {
                 disposable = Disposable.from(
-                    cancelTokenSrc,
-                    extensionUriHandler.onUri(uri => {
-                        if (cancelTokenSrc.token.isCancellationRequested) return
-
-                        const authorizationCode = this.parseOauthCallbackUri(uri)
-                        if (authorizationCode == null) return
-
-                        progress.report({ message: '已获得授权, 正在获取令牌...' })
-
-                        this.oauthClient
-                            .fetchToken({
-                                codeVerifier,
-                                authorizationCode,
-                                cancellationToken: cancelTokenSrc.token,
-                            })
-                            .then(token =>
-                                this.onAccessTokenGranted(token, {
-                                    cancellationToken: cancelTokenSrc.token,
-                                    onStateChange(state) {
-                                        progress.report({ message: state })
-                                    },
-                                })
-                            )
-                            .then(resolve)
-                            .catch(reject)
-                    }),
                     cancelToken.onCancellationRequested(() => cancelTokenSrc.cancel()),
                     cancelTokenSrc.token.onCancellationRequested(() => {
                         reject(`${isTimeout ? '由于超时, ' : ''}登录操作已取消`)
-                    })
+                    }),
+                    cancelTokenSrc,
+                    extensionUriHandler
                 )
+                extensionUriHandler.onUri(uri => {
+                    if (cancelTokenSrc.token.isCancellationRequested) return
+
+                    const authorizationCode = this.parseOauthCallbackUri(uri)
+                    if (authorizationCode == null) return
+
+                    progress.report({ message: '已获得授权, 正在获取令牌...' })
+
+                    this.oauthClient
+                        .fetchToken({
+                            codeVerifier,
+                            authorizationCode,
+                            cancellationToken: cancelTokenSrc.token,
+                        })
+                        .then(token =>
+                            this.onAccessTokenGranted(token, {
+                                cancellationToken: cancelTokenSrc.token,
+                                onStateChange(state) {
+                                    progress.report({ message: state })
+                                },
+                            })
+                        )
+                        .then(resolve)
+                        .catch(reject)
+                })
             })
 
             try {

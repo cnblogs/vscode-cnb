@@ -114,7 +114,9 @@ class AccountManager extends vscode.Disposable {
     private async ensureSession(opt?: AuthenticationGetSessionOptions): Promise<AuthSession | null> {
         const session = await authentication.getSession(this._authProvider.providerId, [], opt).then(
             session => (session ? AuthSession.from(session) : null),
-            e => AlertService.err(`创建/获取 session 失败: ${e}`)
+            e => {
+                AlertService.err(`创建/获取 session 失败: ${e}`)
+            }
         )
 
         if (session != null && session.account.accountId < 0) {
