@@ -174,11 +174,12 @@ const mapToPostEditDto = async (posts: Post[]) =>
         .map(x => x?.post)
 
 const reportErrors = (errors: string[] | undefined) => {
-    if (errors && errors.length > 0)
+    if (errors && errors.length > 0) {
         void window.showErrorMessage('导出 PDF 时遇到错误', {
             modal: true,
             detail: errors.join('\n'),
         } as MessageOptions)
+    }
 }
 
 const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Promise<void> => {
