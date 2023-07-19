@@ -16,7 +16,7 @@
     ],
     "icon": "dist/assets/logo.png",
     "engines": {
-        "vscode": "^1.70.0"
+        "vscode": "^1.80.0"
     },
     "categories": [
         "Other"
@@ -419,7 +419,7 @@
             {
                 "title": "vscode-cnb",
                 "properties": {
-                    "cnblogsClientForVSCode.windows.workspace": {
+                    "cnblogsClient.workspace.windows": {
                         "order": 0,
                         "default": "~/Documents/Cnblogs",
                         "scope": "application",
@@ -427,7 +427,7 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "Windows 上存放博文的文件夹, 默认为 `~/Documents/Cnblogs`"
                     },
-                    "cnblogsClientForVSCode.macos.workspace": {
+                    "cnblogsClient.workspace.macos": {
                         "order": 1,
                         "default": "~/Documents/Cnblogs",
                         "scope": "application",
@@ -435,7 +435,7 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "macOS 上存放博文的文件夹, 默认为 `~/Documents/Cnblogs`"
                     },
-                    "cnblogsClientForVSCode.linux.workspace": {
+                    "cnblogsClient.workspace.linux": {
                         "order": 2,
                         "default": "~/Documents/Cnblogs",
                         "scope": "application",
@@ -443,7 +443,7 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "Linux 上存放博文的文件夹, 默认为 `~/Documents/Cnblogs`"
                     },
-                    "cnblogsClientForVSCode.windows.chromiumPath": {
+                    "cnblogsClient.windows.chromiumPath": {
                         "order": 3,
                         "default": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
                         "scope": "application",
@@ -451,7 +451,7 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "Windows 上 Chromium 可执行文件路径, 用于进行 PDF 导出等操作"
                     },
-                    "cnblogsClientForVSCode.macos.chromiumPath": {
+                    "cnblogsClient.macos.chromiumPath": {
                         "order": 4,
                         "default": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
                         "scope": "application",
@@ -459,21 +459,21 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "macOS 上 Chromium 可执行文件路径, 用于进行 PDF 导出等操作"
                     },
-                    "cnblogsClientForVSCode.createLocalPostFileWithCategory": {
+                    "cnblogsClient.createLocalPostFileWithCategory": {
                         "order": 5,
                         "default": true,
                         "scope": "application",
                         "type": "boolean",
                         "markdownDescription": "创建本地博文时, 是否根据博文分类保存到对应的文件夹中"
                     },
-                    "cnblogsClientForVSCode.automaticallyExtractImages": {
+                    "cnblogsClient.autoExtractImages": {
                         "order": 6,
                         "default": "disable",
                         "scope": "application",
                         "enum": [
                             "disable",
                             "local",
-                            "dataurl",
+                            "dataUrl",
                             "web",
                             "any"
                         ],
@@ -487,7 +487,7 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "提取图片, 配置上传到博客园时要自动提取上传到博客园的图片"
                     },
-                    "cnblogsClientForVSCode.pageSize.postsList": {
+                    "cnblogsClient.pageSize.postsList": {
                         "order": 7,
                         "default": 30,
                         "scope": "application",
@@ -507,21 +507,21 @@
                             100
                         ]
                     },
-                    "cnblogsClientForVSCode.markdown.enableEnhancement": {
+                    "cnblogsClient.markdown.enableEnhancement": {
                         "order": 8,
                         "markdownDescription": "启用博客园 Markdown 语法扩展",
                         "default": true,
                         "type": "boolean",
                         "scope": "application"
                     },
-                    "cnblogsClientForVSCode.markdown.enableFenceQuote": {
+                    "cnblogsClient.markdown.enableFenceQuote": {
                         "order": 9,
                         "type": "boolean",
                         "scope": "application",
                         "default": true,
                         "markdownDescription": "博客园 Markdown 语法扩展: 三箭头(`<<<`)栅栏引用\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n<<<\n一段引用文字\n\n一段引用文字\n<<<\n\n```"
                     },
-                    "cnblogsClientForVSCode.markdown.enableHighlightCodeLines": {
+                    "cnblogsClient.markdown.enableHighlightCodeLines": {
                         "order": 10,
                         "type": "boolean",
                         "scope": "application",
@@ -529,7 +529,7 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "博客园 Markdown 语法扩展: 代码块指定行高亮\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n```typescript {1, 3-4}\nconsole.log(1)\nconsole.log(2)\nconsole.log(3)\nconsole.log(4)\nconsole.log(5)\n```\n\n```"
                     },
-                    "cnblogsClientForVSCode.markdown.showConfirmMsgWhenUploadPost": {
+                    "cnblogsClient.markdown.showConfirmMsgWhenUploadPost": {
                         "order": 11,
                         "type": "boolean",
                         "scope": "application",
@@ -537,7 +537,7 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "在上传博文时显示确认消息"
                     },
-                    "cnblogsClientForVSCode.markdown.showConfirmMsgWhenPullPost": {
+                    "cnblogsClient.markdown.showConfirmMsgWhenPullPost": {
                         "order": 12,
                         "type": "boolean",
                         "scope": "application",
@@ -545,7 +545,8 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "在拉取博文时显示确认消息"
                     },
-                    "cnblogsClientForVSCode.menus.context.explorer": {
+                    "cnblogsClient.menus.context.explorer": {
+                        "order": 13,
                         "type": "object",
                         "additionalProperties": false,
                         "default": {
@@ -558,7 +559,6 @@
                             "copy-post-link": true
                         },
                         "markdownDescription": "控制要在资源管理器右键菜单中显示的命令",
-                        "order": 13,
                         "properties": {
                             "upload-post-file-to-cnblogs": {
                                 "description": "上传到博客园",
@@ -604,7 +604,8 @@
                             }
                         }
                     },
-                    "cnblogsClientForVSCode.menus.context.editor": {
+                    "cnblogsClient.menus.context.editor": {
+                        "order": 14,
                         "type": "object",
                         "default": {
                             "upload-post-file-to-cnblogs": true,
@@ -621,66 +622,102 @@
                         },
                         "properties": {
                             "upload-post-file-to-cnblogs": {
+                                "order": 0,
                                 "description": "上传到博客园",
-                                "type": "boolean",
-                                "order": 0
+                                "type": "boolean"
                             },
                             "pull-post-remote-updates": {
+                                "order": 1,
                                 "description": "拉取博文",
-                                "type": "boolean",
-                                "order": 1
+                                "type": "boolean"
                             },
                             "modify-post-settings": {
+                                "order": 2,
                                 "description": "博文设置",
-                                "type": "boolean",
-                                "order": 2
+                                "type": "boolean"
                             },
                             "show-post-to-local-file-info": {
+                                "order": 3,
                                 "description": "博客园关联博文",
-                                "type": "boolean",
-                                "order": 3
+                                "type": "boolean"
                             },
                             "open-post-in-blog-admin": {
+                                "order": 4,
                                 "description": "在博客后台中编辑",
                                 "type": "boolean",
-                                "default": true,
-                                "order": 4
+                                "default": true
                             },
                             "export-post-to-pdf": {
+                                "order": 5,
                                 "description": "导出 PDF",
-                                "type": "boolean",
-                                "order": 5
+                                "type": "boolean"
                             },
                             "copy-post-link": {
+                                "order": 6,
                                 "description": "复制博文链接",
-                                "type": "boolean",
-                                "order": 6
+                                "type": "boolean"
                             },
                             "upload-clipboard-image": {
+                                "order": 7,
                                 "description": "上传剪贴板图片到博客园",
-                                "type": "boolean",
-                                "order": 7
+                                "type": "boolean"
                             },
                             "upload-local-disk-image": {
+                                "order": 8,
                                 "description": "上传本地图片到博客园",
-                                "type": "boolean",
-                                "order": 8
+                                "type": "boolean"
                             },
                             "extract-images": {
+                                "order": 9,
                                 "description": "提取图片",
-                                "type": "boolean",
-                                "order": 9
+                                "type": "boolean"
                             },
                             "ing:publish-selection": {
+                                "order": 10,
                                 "description": "将选中内容发到闪存",
-                                "type": "boolean",
-                                "order": 10
+                                "type": "boolean"
                             }
                         },
                         "scope": "application",
                         "additionalProperties": false,
-                        "markdownDescription": "控制要在编辑器右键菜单中显示的命令",
-                        "order": 14
+                        "markdownDescription": "控制要在编辑器右键菜单中显示的命令"
+                    },
+                    "cnblogsClient.ui.symbolicIngEmoji": {
+                        "order": 15,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": false,
+                        "markdownDescription": "符号化闪存表情"
+                    },
+                    "cnblogsClient.ui.disableIngAvatar": {
+                        "order": 16,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": false,
+                        "markdownDescription": "禁用闪存头像"
+                    },
+                    "cnblogsClient.ui.explorerTitleStyle": {
+                        "order": 17,
+                        "scope": "application",
+                        "default": "normal",
+                        "markdownDescription": "侧栏标题风格",
+                        "enum": [
+                            "normal",
+                            "short",
+                            "short-english"
+                        ],
+                        "enumItemLabels": [
+                            "正常",
+                            "精简",
+                            "英文精简"
+                        ]
+                    },
+                    "cnblogsClient.ui.fakeExtIcon": {
+                        "order": 18,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": false,
+                        "markdownDescription": "伪装扩展图标"
                     }
                 }
             }
@@ -689,7 +726,7 @@
             "explorer": [
                 {
                     "id": "cnblogs-posts-list",
-                    "name": "博客园 - 随笔列表",
+                    "name": "随笔列表",
                     "when": "vscode-cnb.isAuthorized && vscode-cnb.isTargetWorkspace"
                 }
             ],
@@ -708,7 +745,7 @@
                 },
                 {
                     "id": "cnblogs-posts-list-another",
-                    "name": "博客园 - 随笔列表",
+                    "name": "随笔列表",
                     "when": "vscode-cnb.isAuthorized",
                     "visibility": "collapsed"
                 },
@@ -1107,53 +1144,53 @@
                 },
                 {
                     "command": "vscode-cnb.show-post-to-local-file-info",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.show-post-to-local-file-info",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.show-post-to-local-file-info",
                     "group": "cnblogs@1"
                 },
                 {
                     "command": "vscode-cnb.upload-post-file-to-cnblogs",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.upload-post-file-to-cnblogs",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-post-file-to-cnblogs",
                     "group": "cnblogs@2"
                 },
                 {
                     "command": "vscode-cnb.pull-post-remote-updates",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.pull-post-remote-updates",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.pull-post-remote-updates",
                     "group": "cnblogs@3"
                 },
                 {
                     "command": "vscode-cnb.modify-post-settings",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.modify-post-settings",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.modify-post-settings",
                     "group": "cnblogs@4"
                 },
                 {
                     "command": "vscode-cnb.open-post-in-blog-admin",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.open-post-in-blog-admin",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.open-post-in-blog-admin",
                     "group": "cnblogs@5"
                 },
                 {
                     "command": "vscode-cnb.upload-clipboard-image",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.upload-clipboard-image",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-clipboard-image",
                     "group": "cnblogs@6"
                 },
                 {
                     "command": "vscode-cnb.upload-local-disk-image",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.upload-local-disk-image",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-local-disk-image",
                     "group": "cnblogs@7"
                 },
                 {
                     "command": "vscode-cnb.export-post-to-pdf",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.export-post-to-pdf",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.export-post-to-pdf",
                     "group": "cnblogs@8"
                 },
                 {
                     "command": "vscode-cnb.extract-images",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.extract-images",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.extract-images",
                     "group": "cnblogs@9"
                 },
                 {
                     "command": "vscode-cnb.ing.publish-selection",
                     "group": "cnblogs@10",
-                    "when": "config.cnblogsClientForVSCode.menus.context.editor.ing:publish-selection"
+                    "when": "config.cnblogsClient.menus.context.editor.ing:publish-selection"
                 }
             ],
             "editor/title": [
@@ -1176,37 +1213,37 @@
                 },
                 {
                     "command": "vscode-cnb.upload-post-file-to-cnblogs",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer.upload-post-file-to-cnblogs",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.upload-post-file-to-cnblogs",
                     "group": "cnblogs@2"
                 },
                 {
                     "command": "vscode-cnb.pull-post-remote-updates",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer.pull-post-remote-updates",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.pull-post-remote-updates",
                     "group": "cnblogs@3"
                 },
                 {
                     "command": "vscode-cnb.modify-post-settings",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer.modify-post-settings",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.modify-post-settings",
                     "group": "cnblogs@4"
                 },
                 {
                     "command": "vscode-cnb.show-post-to-local-file-info",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer.show-post-to-local-file-info",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.show-post-to-local-file-info",
                     "group": "cnblogs@5"
                 },
                 {
                     "command": "vscode-cnb.open-post-in-blog-admin",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer.open-post-in-blog-admin",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.open-post-in-blog-admin",
                     "group": "cnblogs@6"
                 },
                 {
                     "command": "vscode-cnb.export-post-to-pdf",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer.export-post-to-pdf",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.export-post-to-pdf",
                     "group": "cnblogs@7"
                 },
                 {
                     "command": "vscode-cnb.copy-post-link",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer.copy-post-link",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.copy-post-link",
                     "group": "cnblogs@8"
                 }
             ]
