@@ -1,4 +1,4 @@
-import { globalCtx } from './global-state'
+import { globalContext } from './global-state'
 import { Readable } from 'stream'
 import { isString, merge, pick } from 'lodash-es'
 import httpClient from '@/utils/http-client'
@@ -7,18 +7,20 @@ import path from 'path'
 class ImageService {
     async upload<T extends Readable & { name?: string; fileName?: string; filename?: string; path?: string | Buffer }>(
         file: T
-    ): Promise<string> {
+    ) {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        const FormData = (await import('form-data')).default
-        const form = new FormData()
         const { name, fileName, filename, path: _path } = file
         const finalName = path.basename(isString(_path) ? _path : fileName || filename || name || 'image.png')
         const ext = path.extname(finalName)
+
         const mime = await import('mime')
         const mimeType = mime.lookup(ext, 'image/png')
-        form.append('image', file, { filename: finalName, contentType: mimeType })
-        const response = await httpClient.post(`${globalCtx.config.apiBaseUrl}/api/posts/body/images`, {
-            body: form,
+
+        const fd = new (await import('form-data')).default()
+        fd.append('image', file, { filename: finalName, contentType: mimeType })
+
+        const response = await httpClient.post(`${globalContext.config.apiBaseUrl}/api/posts/body/images`, {
+            body: fd,
         })
 
         return response.body
