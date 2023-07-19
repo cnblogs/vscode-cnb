@@ -466,24 +466,26 @@
                         "type": "boolean",
                         "markdownDescription": "创建本地博文时, 是否根据博文分类保存到对应的文件夹中"
                     },
-                    "cnblogsClientForVSCode.automaticallyExtractImages": {
+                    "cnblogsClientForVSCode.autoExtractImages": {
                         "order": 6,
                         "default": "disable",
                         "scope": "application",
                         "enum": [
                             "disable",
                             "local",
+                            "dataurl",
                             "web",
                             "any"
                         ],
                         "enumItemLabels": [
                             "禁用",
                             "自动提取本地图片",
+                            "自动提取由 Base64 编码的图片",
                             "自动提取网络图片",
                             "自动提取全部图片"
                         ],
                         "editPresentation": "singlelineText",
-                        "markdownDescription": "提取图片, 配置保存到博客园时要自动提取上传到博客园的图片"
+                        "markdownDescription": "提取图片, 配置上传到博客园时要自动提取上传到博客园的图片"
                     },
                     "cnblogsClientForVSCode.pageSize.postsList": {
                         "order": 7,
