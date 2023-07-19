@@ -529,6 +529,22 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "博客园 Markdown 语法扩展: 代码块指定行高亮\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n```typescript {1, 3-4}\nconsole.log(1)\nconsole.log(2)\nconsole.log(3)\nconsole.log(4)\nconsole.log(5)\n```\n\n```"
                     },
+                    "cnblogsClientForVSCode.markdown.showConfirmMsgWhenUploadPost": {
+                        "order": 11,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": true,
+                        "editPresentation": "singlelineText",
+                        "markdownDescription": "在上传博文时显示确认消息"
+                    },
+                    "cnblogsClientForVSCode.markdown.showConfirmMsgWhenPullPost": {
+                        "order": 12,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": true,
+                        "editPresentation": "singlelineText",
+                        "markdownDescription": "在拉取博文时显示确认消息"
+                    },
                     "cnblogsClientForVSCode.menus.context.explorer": {
                         "type": "object",
                         "additionalProperties": false,
@@ -542,7 +558,7 @@
                             "copy-post-link": true
                         },
                         "markdownDescription": "控制要在资源管理器右键菜单中显示的命令",
-                        "order": 12,
+                        "order": 13,
                         "properties": {
                             "upload-post-file-to-cnblogs": {
                                 "description": "上传到博客园",
@@ -664,7 +680,7 @@
                         "scope": "application",
                         "additionalProperties": false,
                         "markdownDescription": "控制要在编辑器右键菜单中显示的命令",
-                        "order": 13
+                        "order": 14
                     }
                 }
             }
