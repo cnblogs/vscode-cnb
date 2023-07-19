@@ -166,11 +166,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
     private async setPageIndex(value: number) {
         await commands
-            .executeCommand(
-                'setContext',
-                `${globalCtx.extName}.ingsList.pageIndex`,
-                value > 0 ? value : undefined
-            )
+            .executeCommand('setContext', `${globalCtx.extName}.ingsList.pageIndex`, value > 0 ? value : undefined)
             .then(undefined, () => undefined)
         this._pageIndex = value
     }

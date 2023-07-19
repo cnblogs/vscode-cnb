@@ -116,10 +116,6 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
     }
 
     private setIsDownloading(value: boolean) {
-        return commands.executeCommand(
-            'setContext',
-            `${globalCtx.extName}.blog-export.downloading`,
-            value || undefined
-        )
+        return commands.executeCommand('setContext', `${globalCtx.extName}.blog-export.downloading`, value || undefined)
     }
 }
