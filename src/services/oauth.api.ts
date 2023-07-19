@@ -2,7 +2,7 @@
 import { TokenInfo } from '@/models/token-info'
 import { AccountInfo } from '@/auth/account-info'
 import { convertObjectKeysToCamelCase } from '@/services/fetch-json-response-to-camel-case'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-state'
 import fetch from '@/utils/fetch-client'
 import got from '@/utils/http-client'
 import { CancellationToken } from 'vscode'
@@ -29,8 +29,8 @@ export class OauthApi {
         if (cancellationToken?.isCancellationRequested) abortControl.abort()
         cancellationToken?.onCancellationRequested(() => abortControl.abort())
 
-        const url = globalContext.config.oauth.authority + globalContext.config.oauth.tokenEndpoint
-        const { clientId, clientSecret } = globalContext.config.oauth
+        const url = globalCtx.config.oauth.authority + globalCtx.config.oauth.tokenEndpoint
+        const { clientId, clientSecret } = globalCtx.config.oauth
 
         const res = await got.post<TokenInfo>(url, {
             form: {
@@ -39,7 +39,7 @@ export class OauthApi {
                 grant_type: 'authorization_code',
                 client_id: clientId,
                 client_secret: clientSecret,
-                redirect_uri: globalContext.extensionUrl,
+                redirect_uri: globalCtx.extensionUrl,
             },
             responseType: 'json',
             signal: abortControl.signal,
@@ -58,7 +58,7 @@ export class OauthApi {
         token: string,
         { cancellationToken }: { cancellationToken?: CancellationToken | null } = {}
     ): Promise<UserInfoSpec> {
-        const { authority, userInfoEndpoint } = globalContext.config.oauth
+        const { authority, userInfoEndpoint } = globalCtx.config.oauth
         const abortController = new AbortController()
 
         if (cancellationToken?.isCancellationRequested) abortController.abort()
@@ -78,7 +78,7 @@ export class OauthApi {
     }
 
     async revoke(accessToken: string): Promise<boolean> {
-        const { clientId, revocationEndpoint, authority } = globalContext.config.oauth
+        const { clientId, revocationEndpoint, authority } = globalCtx.config.oauth
 
         const body = new URLSearchParams([
             ['client_id', clientId],

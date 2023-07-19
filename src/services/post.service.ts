@@ -1,6 +1,6 @@
 import fetch from '@/utils/fetch-client'
 import { Post } from '@/models/post'
-import { globalContext } from './global-state'
+import { globalCtx } from './global-state'
 import { PageModel } from '@/models/page-model'
 import { PostsListState } from '@/models/posts-list-state'
 import { PostEditDto } from '@/models/post-edit-dto'
@@ -23,7 +23,7 @@ export class PostService {
     protected constructor() {}
 
     protected get _baseUrl() {
-        return globalContext.config.apiBaseUrl
+        return globalCtx.config.apiBaseUrl
     }
 
     static get instance() {
@@ -31,7 +31,7 @@ export class PostService {
     }
 
     get postsListState(): PostsListState | undefined {
-        return globalContext.storage.get<PostsListState>('postsListState')
+        return globalCtx.storage.get<PostsListState>('postsListState')
     }
 
     async fetchPostsList({
@@ -141,7 +141,7 @@ export class PostService {
                       pageCount: state.pageCount,
                   }
                 : state
-        await globalContext.storage.update('postsListState', finalState)
+        await globalCtx.storage.update('postsListState', finalState)
     }
 
     async fetchPostEditTemplate(): Promise<PostEditDto | undefined> {

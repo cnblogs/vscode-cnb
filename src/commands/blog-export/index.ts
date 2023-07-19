@@ -1,5 +1,5 @@
 import { RefreshExportRecordsCommandHandler } from './refresh'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-state'
 import { commands, Disposable } from 'vscode'
 import { OpenLocalExportCommandHandler } from '@/commands/blog-export/open-local'
 import { EditExportPostCommandHandler } from '@/commands/blog-export/edit'
@@ -9,7 +9,7 @@ import { ViewPostCommandHandler } from '@/commands/blog-export/view-post'
 import { DeleteCommandHandler } from '@/commands/blog-export/delete'
 
 export function registerCommandsForBlogExport(disposables: Disposable[]) {
-    const { extensionName } = globalContext
+    const { extensionName } = globalCtx
     disposables.push(
         commands.registerCommand(`${extensionName}.blog-export.refresh-records`, () =>
             new RefreshExportRecordsCommandHandler().handle()

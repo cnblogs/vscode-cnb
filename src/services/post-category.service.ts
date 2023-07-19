@@ -1,6 +1,6 @@
 import fetch from '@/utils/fetch-client'
 import { PostCategories, PostCategory, PostCategoryAddDto } from '@/models/post-category'
-import { globalContext } from './global-state'
+import { globalCtx } from './global-state'
 import { URLSearchParams } from 'url'
 
 export class PostCategoryService {
@@ -45,7 +45,7 @@ export class PostCategoryService {
         if (cachedCategories && !shouldForceRefresh) return cachedCategories
 
         const res = await fetch(
-            `${globalContext.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${new URLSearchParams([
+            `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${new URLSearchParams([
                 ['parent', parentId <= 0 ? '' : `${parentId}`],
             ]).toString()}`
         )
@@ -59,7 +59,7 @@ export class PostCategoryService {
 
     async find(id: number) {
         const res = await fetch(
-            `${globalContext.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${new URLSearchParams([
+            `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${new URLSearchParams([
                 ['parent', id <= 0 ? '' : `${id}`],
             ]).toString()}`
         )
@@ -69,7 +69,7 @@ export class PostCategoryService {
     }
 
     async newCategory(categoryAddDto: PostCategoryAddDto) {
-        const res = await fetch(`${globalContext.config.apiBaseUrl}/api/category/blog/1`, {
+        const res = await fetch(`${globalCtx.config.apiBaseUrl}/api/category/blog/1`, {
             method: 'POST',
             body: JSON.stringify(categoryAddDto),
             headers: [['Content-Type', 'application/json']],
@@ -78,7 +78,7 @@ export class PostCategoryService {
     }
 
     async updateCategory(category: PostCategory) {
-        const res = await fetch(`${globalContext.config.apiBaseUrl}/api/category/blog/${category.categoryId}`, {
+        const res = await fetch(`${globalCtx.config.apiBaseUrl}/api/category/blog/${category.categoryId}`, {
             method: 'PUT',
             body: JSON.stringify(category),
             headers: [['Content-Type', 'application/json']],
@@ -89,7 +89,7 @@ export class PostCategoryService {
     async deleteCategory(categoryId: number) {
         if (categoryId <= 0) throw Error('Invalid param categoryId')
 
-        const res = await fetch(`${globalContext.config.apiBaseUrl}/api/category/blog/${categoryId}`, {
+        const res = await fetch(`${globalCtx.config.apiBaseUrl}/api/category/blog/${categoryId}`, {
             method: 'DELETE',
             headers: [['Content-Type', 'application/json']],
         })

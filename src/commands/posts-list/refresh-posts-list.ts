@@ -1,4 +1,4 @@
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-state'
 import { postService } from '@/services/post.service'
 import vscode, { window } from 'vscode'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
@@ -79,7 +79,7 @@ export const seekPostsList = async () => {
 
 let isRefreshing = false
 const setRefreshing = async (value = false) => {
-    const extName = globalContext.extensionName
+    const extName = globalCtx.extensionName
     await vscode.commands
         .executeCommand('setContext', `${extName}.posts-list.refreshing`, value)
         .then(undefined, () => false)
@@ -87,7 +87,7 @@ const setRefreshing = async (value = false) => {
 }
 
 const setPostListContext = async (pageCount: number, hasPrevious: boolean, hasNext: boolean) => {
-    const extName = globalContext.extensionName
+    const extName = globalCtx.extensionName
     await vscode.commands.executeCommand('setContext', `${extName}.posts-list.hasPrevious`, hasPrevious)
     await vscode.commands.executeCommand('setContext', `${extName}.posts-list.hasNext`, hasNext)
     await vscode.commands.executeCommand('setContext', `${extName}.posts-list.pageCount`, pageCount)

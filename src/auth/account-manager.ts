@@ -1,5 +1,5 @@
 import { AccountInfo } from './account-info'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-state'
 import vscode, { authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view-providers/account-view-data-provider'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
@@ -80,7 +80,7 @@ class AccountManager extends vscode.Disposable {
         if (session !== undefined) await this._authProvider.removeSession(session.id)
 
         // For old version compatibility, **never** remove this line
-        await globalContext.storage.update('user', undefined)
+        await globalCtx.storage.update('user', undefined)
 
         if (session) {
             return this.oauthClient
@@ -99,12 +99,12 @@ class AccountManager extends vscode.Disposable {
 
         await vscode.commands.executeCommand(
             'setContext',
-            `${globalContext.extensionName}.${isAuthorizedStorageKey}`,
+            `${globalCtx.extensionName}.${isAuthorizedStorageKey}`,
             this.isAuthorized
         )
 
         if (this.isAuthorized) {
-            await vscode.commands.executeCommand('setContext', `${globalContext.extensionName}.user`, {
+            await vscode.commands.executeCommand('setContext', `${globalCtx.extensionName}.user`, {
                 name: this.curUser.name,
                 avatar: this.curUser.avatar,
             })

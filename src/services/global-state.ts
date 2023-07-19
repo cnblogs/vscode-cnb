@@ -2,7 +2,7 @@ import { env, ExtensionContext, Uri } from 'vscode'
 import { defaultConfig, devConfig, IExtensionConfig, isDevEnv } from '@/models/config'
 import path from 'path'
 
-class GlobalContext {
+class GlobalCtx {
     private _extensionContext?: ExtensionContext
     private readonly _config: IExtensionConfig = defaultConfig
     private readonly _devConfig: IExtensionConfig = devConfig
@@ -43,7 +43,7 @@ class GlobalContext {
     }
 
     get assetsUri() {
-        return Uri.file(path.join(globalContext.extensionContext.extensionPath, 'dist', 'assets'))
+        return Uri.file(path.join(globalCtx.extensionContext.extensionPath, 'dist', 'assets'))
     }
 
     get extensionUrl() {
@@ -51,4 +51,4 @@ class GlobalContext {
     }
 }
 
-export const globalContext = new GlobalContext()
+export const globalCtx = new GlobalCtx()

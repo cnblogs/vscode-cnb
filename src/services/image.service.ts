@@ -1,4 +1,4 @@
-import { globalContext } from './global-state'
+import { globalCtx } from './global-state'
 import { Readable } from 'stream'
 import { isString, merge, pick } from 'lodash-es'
 import httpClient from '@/utils/http-client'
@@ -17,7 +17,7 @@ class ImageService {
         const mime = await import('mime')
         const mimeType = mime.lookup(ext, 'image/png')
         form.append('image', file, { filename: finalName, contentType: mimeType })
-        const response = await httpClient.post(`${globalContext.config.apiBaseUrl}/api/posts/body/images`, {
+        const response = await httpClient.post(`${globalCtx.config.apiBaseUrl}/api/posts/body/images`, {
             body: form,
         })
 

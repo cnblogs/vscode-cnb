@@ -1,13 +1,13 @@
 import { Ing, IngComment, IngPublishModel, IngType } from '@/models/ing'
 import { AlertService } from '@/services/alert.service'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-state'
 import fetch from '@/utils/fetch-client'
 import { URLSearchParams } from 'url'
 import { isArray, isNumber, isObject } from 'lodash-es'
 
 export class IngApi {
     async publishIng(ing: IngPublishModel): Promise<boolean> {
-        const resp = await fetch(`${globalContext.config.cnblogsOpenApiUrl}/api/statuses`, {
+        const resp = await fetch(`${globalCtx.config.cnblogsOpenApiUrl}/api/statuses`, {
             method: 'POST',
             body: JSON.stringify(ing),
             headers: [['Content-Type', 'application/json']],
@@ -20,7 +20,7 @@ export class IngApi {
 
     async list({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}): Promise<Ing[] | null> {
         const resp = await fetch(
-            `${globalContext.config.cnblogsOpenApiUrl}/api/statuses/@${type}?${new URLSearchParams({
+            `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/@${type}?${new URLSearchParams({
                 pageIndex: `${pageIndex}`,
                 pageSize: `${pageSize}`,
             }).toString()}`,
@@ -53,7 +53,7 @@ export class IngApi {
         const arr = isNumber(ingIds) ? [ingIds] : ingIds
         return Promise.all(
             arr.map(id =>
-                fetch(`${globalContext.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`, {
+                fetch(`${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`, {
                     method: 'GET',
                     headers: [['Content-Type', 'application/json']],
                 }).then(
@@ -72,7 +72,7 @@ export class IngApi {
     }
 
     comment(ingId: number, data: { replyTo?: number; parentCommentId?: number; content: string }) {
-        return fetch(`${globalContext.config.cnblogsOpenApiUrl}/api/statuses/${ingId}/comments`, {
+        return fetch(`${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${ingId}/comments`, {
             method: 'POST',
             headers: [['Content-Type', 'application/json']],
             body: JSON.stringify(data),

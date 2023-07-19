@@ -1,5 +1,5 @@
 import { DownloadedBlogExport } from '@/models/blog-export'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-state'
 import { exists, existsSync } from 'fs'
 import { take } from 'lodash-es'
 import { promisify } from 'util'
@@ -10,7 +10,7 @@ export class DownloadedExportStore {
     readonly listKey = 'downloadExports'
     readonly metadataKey = 'downloadedExport-'
 
-    private readonly _storage = globalContext.storage
+    private readonly _storage = globalCtx.storage
 
     static get instance(): DownloadedExportStore {
         this._instance ??= new DownloadedExportStore()

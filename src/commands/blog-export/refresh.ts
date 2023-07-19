@@ -1,5 +1,5 @@
 import { CommandHandler } from '@/commands/command-handler'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-state'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { commands } from 'vscode'
 
@@ -15,7 +15,7 @@ export class RefreshExportRecordsCommandHandler extends CommandHandler {
     private setIsRefreshing(value: boolean) {
         return commands.executeCommand(
             'setContext',
-            `${globalContext.extensionName}.blog-export.records.isRefreshing`,
+            `${globalCtx.extensionName}.blog-export.records.isRefreshing`,
             value || undefined
         )
     }

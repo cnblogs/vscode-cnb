@@ -1,6 +1,6 @@
 import got from '@/utils/http-client'
 import { PostTag } from '@/models/post-tag'
-import { globalContext } from './global-state'
+import { globalCtx } from './global-state'
 
 export class PostTagService {
     private static _instance: PostTagService
@@ -23,7 +23,7 @@ export class PostTagService {
             url,
             method,
             body,
-        } = await got.get<PostTag[]>(`${globalContext.config.apiBaseUrl}/api/tags/list`, { responseType: 'json' })
+        } = await got.get<PostTag[]>(`${globalCtx.config.apiBaseUrl}/api/tags/list`, { responseType: 'json' })
         if (!isOk) throw Error(`Failed to ${method} ${url}`)
 
         return Array.isArray(body)

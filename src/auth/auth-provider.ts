@@ -14,7 +14,7 @@ import {
     Uri,
     window,
 } from 'vscode'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-state'
 import RandomString from 'randomstring'
 import { OauthApi } from '@/services/oauth.api'
 import extensionUriHandler from '@/utils/uri-handler'
@@ -32,7 +32,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     readonly providerName = AuthProvider.providerName
 
     protected readonly sessionStorageKey = `${AuthProvider.providerId}.sessions`
-    protected readonly allScopes = globalContext.config.oauth.scope.split(' ')
+    protected readonly allScopes = globalCtx.config.oauth.scope.split(' ')
 
     private _allSessions?: AuthSession[] | null
     private _oauthClient?: OauthApi | null
@@ -55,15 +55,15 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     }
 
     protected get context() {
-        return globalContext.extensionContext
+        return globalCtx.extensionContext
     }
 
     protected get secretStorage() {
-        return globalContext.secretsStorage
+        return globalCtx.secretsStorage
     }
 
     protected get config() {
-        return globalContext.config
+        return globalCtx.config
     }
 
     protected get oauthClient() {
@@ -83,7 +83,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     createSession(scopes: readonly string[]): Thenable<AuthSession> {
         const parsedScopes = this.ensureScopes(scopes)
         const options = {
-            title: `${globalContext.displayName} - 登录`,
+            title: `${globalCtx.displayName} - 登录`,
             cancellable: true,
             location: ProgressLocation.Notification,
         }
@@ -191,7 +191,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         const search = new URLSearchParams([
             ['client_id', clientId],
             ['response_type', responseType],
-            ['redirect_uri', globalContext.extensionUrl],
+            ['redirect_uri', globalCtx.extensionUrl],
             ['nonce', RandomString.generate(32)],
             ['code_challenge', codeChallenge],
             ['code_challenge_method', 'S256'],
@@ -288,7 +288,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
 class LegacyTokenStore {
     static getAccessToken = () =>
-        globalContext.storage.get<Optional<{ authorizationInfo?: TokenInfo }>>('user')?.authorizationInfo?.accessToken
+        globalCtx.storage.get<Optional<{ authorizationInfo?: TokenInfo }>>('user')?.authorizationInfo?.accessToken
 
-    static remove = () => globalContext.storage.update('user', undefined).then(undefined, console.error)
+    static remove = () => globalCtx.storage.update('user', undefined).then(undefined, console.error)
 }
