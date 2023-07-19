@@ -2,7 +2,7 @@ import os from 'os'
 import { commands, workspace } from 'vscode'
 import { refreshPostCategoriesList } from '@/commands/post-category/refresh-post-categories-list'
 import { refreshPostsList } from '@/commands/posts-list/refresh-posts-list'
-import { globalCtx } from './global-state'
+import { globalCtx } from './global-ctx'
 import { PostFileMapManager } from './post-file-map'
 import { Settings } from './settings.service'
 
@@ -20,12 +20,12 @@ export const isTargetWorkspace = (): boolean => {
         targetFolder = targetFolder.replace(diskSymbolRegex, replacer)
     }
     const isTarget = !!currentFolder && currentFolder === targetFolder
-    void commands.executeCommand('setContext', `${globalCtx.extensionName}.isTargetWorkspace`, isTarget)
+    void commands.executeCommand('setContext', `${globalCtx.extName}.isTargetWorkspace`, isTarget)
     return isTarget
 }
 
 export const observeConfigurationChange = () => {
-    globalCtx.extensionContext?.subscriptions.push(
+    globalCtx.extCtx?.subscriptions.push(
         workspace.onDidChangeConfiguration(ev => {
             if (ev.affectsConfiguration(Settings.prefix)) isTargetWorkspace()
 
@@ -43,7 +43,7 @@ export const observeConfigurationChange = () => {
 }
 
 export const observeWorkspaceFolderAndFileChange = () => {
-    globalCtx.extensionContext?.subscriptions.push(
+    globalCtx.extCtx?.subscriptions.push(
         workspace.onDidRenameFiles(e => {
             for (const item of e.files) {
                 const { oldUri, newUri } = item

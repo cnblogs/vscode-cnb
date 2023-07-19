@@ -3,7 +3,7 @@ import path from 'path'
 import { FileSystemError, MessageOptions, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
 import { AlertService } from '@/services/alert.service'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { Settings } from '@/services/settings.service'
 import { openPostFile } from './open-post-file'
@@ -51,7 +51,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
         mappedPostFilePath = undefined
     }
 
-    const postEditDto = await postService.fetchPostEditDto(postId)
+    const postEditDto = await PostService.fetchPostEditDto(postId)
     if (!postEditDto) return false
 
     const post = postEditDto.post

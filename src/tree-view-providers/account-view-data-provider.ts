@@ -24,7 +24,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     getChildren(element?: TreeItem): ProviderResult<TreeItem[]> {
         if (!accountManager.isAuthorized || element) return []
 
-        const u = accountManager.curUser
+        const u = accountManager.currentUser
         return [
             { label: u.name, tooltip: '用户名', iconPath: new ThemeIcon('account') },
             {

@@ -2,7 +2,7 @@ import { escapeRegExp } from 'lodash-es'
 import path from 'path'
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { revealPostsListItem } from '@/services/posts-list-view'
@@ -55,7 +55,7 @@ export const renamePost = async (arg: Post | PostTreeItem) => {
             },
             async progress => {
                 progress.report({ increment: 10 })
-                const editDto = await postService.fetchPostEditDto(post.id)
+                const editDto = await PostService.fetchPostEditDto(post.id)
                 if (!editDto) return false
 
                 progress.report({ increment: 60 })
@@ -64,7 +64,7 @@ export const renamePost = async (arg: Post | PostTreeItem) => {
                 editingPost.title = input
                 let hasUpdated = false
                 try {
-                    await postService.updatePost(editingPost)
+                    await PostService.updatePost(editingPost)
                     post.title = input
                     postsDataProvider.fireTreeDataChangedEvent(post)
                     hasUpdated = true

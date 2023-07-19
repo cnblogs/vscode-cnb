@@ -2,7 +2,7 @@
 import { TokenInfo } from '@/models/token-info'
 import { AccountInfo } from '@/auth/account-info'
 import { convertObjectKeysToCamelCase } from '@/services/fetch-json-response-to-camel-case'
-import { globalCtx } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import fetch from '@/utils/fetch-client'
 import got from '@/utils/http-client'
 import { CancellationToken } from 'vscode'
@@ -15,27 +15,19 @@ export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
     readonly picture: string
 }
 
-export class OauthApi {
-    async fetchToken({
-        codeVerifier,
-        authorizationCode,
-        cancellationToken,
-    }: {
-        codeVerifier: string
-        authorizationCode: string
-        cancellationToken?: CancellationToken
-    }): Promise<TokenInfo> {
+export namespace Oauth {
+    export async function fetchToken(verifyCode: string, authCode: string, cancelToken?: CancellationToken) {
         const abortControl = new AbortController()
-        if (cancellationToken?.isCancellationRequested) abortControl.abort()
-        cancellationToken?.onCancellationRequested(() => abortControl.abort())
+        if (cancelToken?.isCancellationRequested) abortControl.abort()
+        cancelToken?.onCancellationRequested(() => abortControl.abort())
 
         const url = globalCtx.config.oauth.authority + globalCtx.config.oauth.tokenEndpoint
         const { clientId, clientSecret } = globalCtx.config.oauth
 
         const res = await got.post<TokenInfo>(url, {
             form: {
-                code: authorizationCode,
-                code_verifier: codeVerifier,
+                code: authCode,
+                code_verifier: verifyCode,
                 grant_type: 'authorization_code',
                 client_id: clientId,
                 client_secret: clientSecret,
@@ -47,6 +39,7 @@ export class OauthApi {
                 [AuthorizationHeaderKey]: '',
             },
         })
+
         if (res.statusCode === 200) return convertObjectKeysToCamelCase(res.body)
 
         throw Error(
@@ -54,35 +47,33 @@ export class OauthApi {
         )
     }
 
-    async fetchUserInfo(
-        token: string,
-        { cancellationToken }: { cancellationToken?: CancellationToken | null } = {}
-    ): Promise<UserInfoSpec> {
+    export async function fetchUserInfo(token: string, cancelToken?: CancellationToken) {
         const { authority, userInfoEndpoint } = globalCtx.config.oauth
         const abortController = new AbortController()
 
-        if (cancellationToken?.isCancellationRequested) abortController.abort()
-        const cancellationSubscribe = cancellationToken?.onCancellationRequested(() => abortController.abort())
+        if (cancelToken?.isCancellationRequested) abortController.abort()
 
-        const { body } = await got<UserInfoSpec>(`${authority}${userInfoEndpoint}`, {
+        const cancelSub = cancelToken?.onCancellationRequested(() => abortController.abort())
+
+        const res = await got<UserInfoSpec>(`${authority}${userInfoEndpoint}`, {
             method: 'GET',
             // eslint-disable-next-line @typescript-eslint/naming-convention
             headers: { Authorization: `Bearer ${token}` },
             signal: abortController.signal,
             responseType: 'json',
         }).finally(() => {
-            cancellationSubscribe?.dispose()
+            cancelSub?.dispose()
         })
 
-        return body
+        return res.body
     }
 
-    async revoke(accessToken: string): Promise<boolean> {
+    export async function revokeToken(token: string): Promise<boolean> {
         const { clientId, revocationEndpoint, authority } = globalCtx.config.oauth
 
         const body = new URLSearchParams([
             ['client_id', clientId],
-            ['token', accessToken],
+            ['token', token],
             ['token_type_hint', 'access_token'],
         ])
         const url = `${authority}${revocationEndpoint}`
@@ -91,6 +82,7 @@ export class OauthApi {
             body: body,
             headers: [['Content-Type', 'application/x-www-form-urlencoded']],
         })
+
         return res.ok
     }
 }

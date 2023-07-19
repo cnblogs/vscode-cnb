@@ -1,6 +1,6 @@
 import fetch from '@/utils/fetch-client'
 import { PostCategories, PostCategory, PostCategoryAddDto } from '@/models/post-category'
-import { globalCtx } from './global-state'
+import { globalCtx } from './global-ctx'
 import { URLSearchParams } from 'url'
 
 export class PostCategoryService {

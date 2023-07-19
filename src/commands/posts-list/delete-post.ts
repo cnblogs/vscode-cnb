@@ -1,7 +1,7 @@
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
 import { AlertService } from '@/services/alert.service'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { extensionViews } from '@/tree-view-providers/tree-view-registration'
@@ -72,7 +72,7 @@ export const deleteSelectedPosts = async (arg: unknown) => {
             increment: 0,
         })
         try {
-            await postService.deletePosts(selectedPosts.map(p => p.id))
+            await PostService.deletePosts(selectedPosts.map(p => p.id))
             if (isToDeleteLocalFile) {
                 selectedPosts
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')

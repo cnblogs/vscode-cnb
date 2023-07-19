@@ -1,4 +1,4 @@
-import { globalCtx } from 'src/services/global-state'
+import { globalCtx } from 'src/services/global-ctx'
 import {
     CancellationToken,
     commands,
@@ -20,7 +20,7 @@ import { CommentIngCommandHandler } from '@/commands/ing/comment-ing'
 export class IngsListWebviewProvider implements WebviewViewProvider {
     private static _instance?: IngsListWebviewProvider
 
-    readonly viewId = `${globalCtx.extensionName}.ings-list-webview`
+    readonly viewId = `${globalCtx.extName}.ings-list-webview`
 
     private readonly _baseTitle = '闪存'
     private _view?: WebviewView
@@ -72,7 +72,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     static ensureRegistered() {
         if (!this._instance) {
             this._instance = new IngsListWebviewProvider()
-            globalCtx.extensionContext.subscriptions.push(
+            globalCtx.extCtx.subscriptions.push(
                 window.registerWebviewViewProvider(this._instance.viewId, this._instance)
             )
         }
@@ -159,7 +159,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
     private async setIsRefreshing(value: boolean) {
         await commands
-            .executeCommand('setContext', `${globalCtx.extensionName}.ingsList.isRefreshing`, value ? true : undefined)
+            .executeCommand('setContext', `${globalCtx.extName}.ingsList.isRefreshing`, value ? true : undefined)
             .then(undefined, () => undefined)
         this._isRefreshing = value
     }
@@ -168,7 +168,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         await commands
             .executeCommand(
                 'setContext',
-                `${globalCtx.extensionName}.ingsList.pageIndex`,
+                `${globalCtx.extName}.ingsList.pageIndex`,
                 value > 0 ? value : undefined
             )
             .then(undefined, () => undefined)

@@ -1,5 +1,5 @@
-import { AuthSession } from '@/auth/session'
-import { genCodePair } from '@/services/code-challenge.service'
+import { AuthSession } from '@/auth/auth-session'
+import { genVerifyChallengePair } from '@/services/code-challenge.service'
 import { isArray, isUndefined } from 'lodash-es'
 import {
     authentication,
@@ -14,9 +14,9 @@ import {
     Uri,
     window,
 } from 'vscode'
-import { globalCtx } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import RandomString from 'randomstring'
-import { OauthApi } from '@/services/oauth.api'
+import { Oauth } from '@/services/oauth.api'
 import extensionUriHandler from '@/utils/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
 import { TokenInfo } from '@/models/token-info'
@@ -35,14 +35,16 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     protected readonly allScopes = globalCtx.config.oauth.scope.split(' ')
 
     private _allSessions?: AuthSession[] | null
-    private _oauthClient?: OauthApi | null
+
     private readonly _sessionChangeEmitter = new EventEmitter<VscAuthProviderAuthSessionChEv>()
     private readonly _disposable = Disposable.from(
         this._sessionChangeEmitter,
         authentication.registerAuthenticationProvider(AuthProvider.providerId, AuthProvider.providerName, this, {
             supportsMultipleAccounts: false,
         }),
-        this.onDidChangeSessions(() => (this._allSessions = null))
+        this.onDidChangeSessions(() => {
+            this._allSessions = null
+        })
     )
 
     static get instance() {
@@ -55,7 +57,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     }
 
     protected get context() {
-        return globalCtx.extensionContext
+        return globalCtx.extCtx
     }
 
     protected get secretStorage() {
@@ -64,11 +66,6 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
     protected get config() {
         return globalCtx.config
-    }
-
-    protected get oauthClient() {
-        this._oauthClient ??= new OauthApi()
-        return this._oauthClient
     }
 
     async getSessions(scopes?: readonly string[] | undefined): Promise<readonly AuthSession[]> {
@@ -99,7 +96,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             cancelTokenSrc.cancel()
         }, 30 * 60 * 1000) // 30 min
 
-        const codeVerifier = this.signInWithBrowser({ scopes: parsedScopes })
+        const verifyCode = this.signInWithBrowser({ scopes: parsedScopes })
 
         return window.withProgress<AuthSession>(options, async (progress, cancelToken) => {
             progress.report({ message: '等待用户在浏览器中进行授权...' })
@@ -121,15 +118,10 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
                     progress.report({ message: '已获得授权, 正在获取令牌...' })
 
-                    this.oauthClient
-                        .fetchToken({
-                            codeVerifier,
-                            authorizationCode,
-                            cancellationToken: cancelTokenSrc.token,
-                        })
+                    Oauth.fetchToken(verifyCode, authorizationCode, cancelTokenSrc.token)
                         .then(token =>
                             this.onAccessTokenGranted(token, {
-                                cancellationToken: cancelTokenSrc.token,
+                                cancelToken: cancelTokenSrc.token,
                                 onStateChange(state) {
                                     progress.report({ message: state })
                                 },
@@ -185,7 +177,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     }
 
     private signInWithBrowser({ scopes }: { scopes: readonly string[] }) {
-        const { codeVerifier, codeChallenge } = genCodePair()
+        const [verifyCode, challengeCode] = genVerifyChallengePair()
         const { clientId, responseType, authorizeEndpoint, authority, clientSecret } = this.config.oauth
 
         const search = new URLSearchParams([
@@ -193,7 +185,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             ['response_type', responseType],
             ['redirect_uri', globalCtx.extensionUrl],
             ['nonce', RandomString.generate(32)],
-            ['code_challenge', codeChallenge],
+            ['code_challenge', challengeCode],
             ['code_challenge_method', 'S256'],
             ['scope', scopes.join(' ')],
             ['client_secret', clientSecret],
@@ -204,7 +196,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             console.warn
         )
 
-        return codeVerifier
+        return verifyCode
     }
 
     private ensureScopes(
@@ -219,17 +211,17 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     private async onAccessTokenGranted(
         { accessToken, refreshToken }: TokenInfo,
         {
-            cancellationToken,
+            cancelToken,
             onStateChange,
             shouldFireSessionAddedEvent = true,
         }: {
             onStateChange?: (state: string) => void
-            cancellationToken?: CancellationToken
+            cancelToken?: CancellationToken
             shouldFireSessionAddedEvent?: boolean
         } = {}
     ) {
         const ifNotCancelledThen = <TR>(f: () => TR): TR | undefined => {
-            if (cancellationToken?.isCancellationRequested) return
+            if (cancelToken?.isCancellationRequested) return
             return f()
         }
 
@@ -238,11 +230,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         try {
             onStateChange?.('正在获取账户信息...')
 
-            const spec = await ifNotCancelledThen(() =>
-                this.oauthClient.fetchUserInfo(accessToken, {
-                    cancellationToken: cancellationToken,
-                })
-            )
+            const spec = await ifNotCancelledThen(() => Oauth.fetchUserInfo(accessToken, cancelToken))
 
             onStateChange?.('即将完成...')
 
@@ -277,7 +265,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
                 })
             })
         } finally {
-            if (session != null && cancellationToken?.isCancellationRequested) await this.removeSession(session.id)
+            if (session != null && cancelToken?.isCancellationRequested) await this.removeSession(session.id)
         }
 
         if (session == null) throw new Error('Failed to create session')

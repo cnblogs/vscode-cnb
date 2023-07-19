@@ -1,12 +1,12 @@
 import { AccountInfo } from './account-info'
-import { globalCtx } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import vscode, { authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view-providers/account-view-data-provider'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
-import { OauthApi } from '@/services/oauth.api'
+import { Oauth } from '@/services/oauth.api'
 import { AuthProvider } from '@/auth/auth-provider'
-import { AuthSession } from '@/auth/session'
+import { AuthSession } from '@/auth/auth-session'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { AlertService } from '@/services/alert.service'
 
@@ -16,13 +16,12 @@ export const ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED = 'unauthenticated'
 export const ACQUIRE_TOKEN_REJECT_EXPIRED = 'expired'
 
 class AccountManager extends vscode.Disposable {
-    private readonly _authProvider = AuthProvider.instance
     private readonly _disposable = Disposable.from(
-        this._authProvider.onDidChangeSessions(async ({ added }) => {
+        AuthProvider.instance.onDidChangeSessions(async ({ added }) => {
             this._session = null
             if (added != null && added.length > 0) await this.ensureSession()
 
-            await this.updateAuthorizationStatus()
+            await this.updateAuthStatus()
 
             accountViewDataProvider.fireTreeDataChangedEvent()
             postsDataProvider.fireTreeDataChangedEvent(undefined)
@@ -32,7 +31,6 @@ class AccountManager extends vscode.Disposable {
         })
     )
 
-    private _oauthClient: OauthApi | null = null
     private _session: AuthSession | null = null
 
     constructor() {
@@ -45,13 +43,8 @@ class AccountManager extends vscode.Disposable {
         return this._session !== null
     }
 
-    get curUser(): AccountInfo {
+    get currentUser(): AccountInfo {
         return this._session?.account ?? AccountInfo.newAnonymous()
-    }
-
-    protected get oauthClient() {
-        this._oauthClient ??= new OauthApi()
-        return this._oauthClient
     }
 
     /**
@@ -77,51 +70,48 @@ class AccountManager extends vscode.Disposable {
         if (!this.isAuthorized) return
 
         const session = await authentication.getSession(AuthProvider.providerId, [])
-        if (session !== undefined) await this._authProvider.removeSession(session.id)
 
-        // For old version compatibility, **never** remove this line
+        // WRN: For old version compatibility, **never** remove this line
         await globalCtx.storage.update('user', undefined)
 
-        if (session) {
-            return this.oauthClient
-                .revoke(session.accessToken)
-                .catch(console.warn)
-                .then(ok => (!ok ? console.warn('Revocation failed') : undefined))
+        if (session === undefined) return
+
+        try {
+            await AuthProvider.instance.removeSession(session.id)
+            await Oauth.revokeToken(session.accessToken)
+        } catch (e: any) {
+            AlertService.err(`登出发生错误: ${e}`)
         }
     }
 
-    setup = async () => {
-        await this.updateAuthorizationStatus()
-    }
-
-    private async updateAuthorizationStatus() {
+    async updateAuthStatus() {
         await this.ensureSession({ createIfNone: false })
 
         await vscode.commands.executeCommand(
             'setContext',
-            `${globalCtx.extensionName}.${isAuthorizedStorageKey}`,
+            `${globalCtx.extName}.${isAuthorizedStorageKey}`,
             this.isAuthorized
         )
 
         if (this.isAuthorized) {
-            await vscode.commands.executeCommand('setContext', `${globalCtx.extensionName}.user`, {
-                name: this.curUser.name,
-                avatar: this.curUser.avatar,
+            await vscode.commands.executeCommand('setContext', `${globalCtx.extName}.user`, {
+                name: this.currentUser.name,
+                avatar: this.currentUser.avatar,
             })
         }
     }
 
     private async ensureSession(opt?: AuthenticationGetSessionOptions): Promise<AuthSession | null> {
-        const session = await authentication.getSession(this._authProvider.providerId, [], opt).then(
+        const session = await authentication.getSession(AuthProvider.instance.providerId, [], opt).then(
             session => (session ? AuthSession.from(session) : null),
             e => {
-                AlertService.err(`创建/获取 session 失败: ${e}`)
+                AlertService.err(`创建/获取 Session 失败: ${e}`)
             }
         )
 
         if (session != null && session.account.accountId < 0) {
             this._session = null
-            await this._authProvider.removeSession(session.id)
+            await AuthProvider.instance.removeSession(session.id)
         } else {
             this._session = session
         }

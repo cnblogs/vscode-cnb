@@ -5,7 +5,7 @@ import path from 'path'
 import fs from 'fs'
 import os from 'os'
 import isWsl from 'is-wsl'
-import { globalCtx } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import { AlertService } from '@/services/alert.service'
 import { IClipboardImage } from '@/models/clipboard-image'
 import format from 'date-fns/format'
@@ -30,7 +30,7 @@ const getCurrentPlatform = (): Platform => {
 const readClipboardScript = (
     scriptName: 'mac.applescript' | 'linux.sh' | 'windows.ps1' | 'windows10.ps1' | 'wsl.sh'
 ) => {
-    const filePath = globalCtx.extensionContext.asAbsolutePath(`dist/assets/scripts/clipboard/${scriptName}`)
+    const filePath = globalCtx.extCtx.asAbsolutePath(`dist/assets/scripts/clipboard/${scriptName}`)
     return fs.readFileSync(filePath).toString()
 }
 
@@ -59,7 +59,7 @@ const platform2ScriptFilename: {
 
 const getClipboardImage = (): Promise<IClipboardImage> => {
     const imagePath = path.join(
-        globalCtx.extensionContext?.asAbsolutePath('./') ?? '',
+        globalCtx.extCtx?.asAbsolutePath('./') ?? '',
         `${format(new Date(), 'yyyyMMddHHmmss')}.png`
     )
     return new Promise<IClipboardImage>((resolve, reject): void => {

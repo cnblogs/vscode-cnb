@@ -1,6 +1,6 @@
 import fetch from '@/utils/fetch-client'
 import { SiteCategories, SiteCategory } from '@/models/site-category'
-import { globalCtx } from './global-state'
+import { globalCtx } from './global-ctx'
 
 export namespace siteCategoryService {
     let cached: SiteCategories | undefined

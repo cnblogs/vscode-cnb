@@ -1,6 +1,6 @@
 import fetch from '@/utils/fetch-client'
 import { Post } from '@/models/post'
-import { globalCtx } from './global-state'
+import { globalCtx } from './global-ctx'
 import { PageModel } from '@/models/page-model'
 import { PostsListState } from '@/models/posts-list-state'
 import { PostEditDto } from '@/models/post-edit-dto'
@@ -17,24 +17,12 @@ import iconv from 'iconv-lite'
 const defaultPageSize = 30
 let newPostTemplate: PostEditDto | undefined
 
-export class PostService {
-    private static _instance = new PostService()
+export namespace PostService {
+    const getBaseUrl = () => globalCtx.config.apiBaseUrl
 
-    protected constructor() {}
+    export const getPostsListState = () => globalCtx.storage.get<PostsListState>('postsListState')
 
-    protected get _baseUrl() {
-        return globalCtx.config.apiBaseUrl
-    }
-
-    static get instance() {
-        return this._instance
-    }
-
-    get postsListState(): PostsListState | undefined {
-        return globalCtx.storage.get<PostsListState>('postsListState')
-    }
-
-    async fetchPostsList({
+    export async function fetchPostsList({
         search = '',
         pageIndex = 1,
         pageSize = defaultPageSize,
@@ -51,7 +39,7 @@ export class PostService {
             ['search', search],
             ['cid', categoryId != null && categoryId > 0 ? `${categoryId}` : ''],
         ])
-        const response = await fetch(`${this._baseUrl}/api/posts/list?${s.toString()}`, {
+        const response = await fetch(`${getBaseUrl()}/api/posts/list?${s.toString()}`, {
             method: 'GET',
         })
         if (!response.ok) throw Error(`请求博文列表失败: ${response.status}, ${await response.text()}`)
@@ -70,8 +58,11 @@ export class PostService {
         )
     }
 
-    async fetchPostEditDto(postId: number, muteErrorNotification = false): Promise<PostEditDto | undefined> {
-        const response = await httpClient.get(`${this._baseUrl}/api/posts/${postId}`, {
+    export async function fetchPostEditDto(
+        postId: number,
+        muteErrorNotification = false
+    ): Promise<PostEditDto | undefined> {
+        const response = await httpClient.get(`${getBaseUrl()}/api/posts/${postId}`, {
             throwHttpErrors: false,
             responseType: 'buffer',
         })
@@ -99,22 +90,22 @@ export class PostService {
         return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined
     }
 
-    async deletePost(postId: number) {
-        const res = await fetch(`${this._baseUrl}/api/posts/${postId}`, {
+    export async function deletePost(postId: number) {
+        const res = await fetch(`${getBaseUrl()}/api/posts/${postId}`, {
             method: 'DELETE',
         })
         if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
     }
 
-    async deletePosts(postIds: number[]) {
+    export async function deletePosts(postIds: number[]) {
         const searchParams = new URLSearchParams(postIds.map<[string, string]>(id => ['postIds', `${id}`]))
-        const res = await fetch(`${this._baseUrl}/api/bulk-operation/post?${searchParams.toString()}`, {
+        const res = await fetch(`${getBaseUrl()}/api/bulk-operation/post?${searchParams.toString()}`, {
             method: 'DELETE',
         })
         if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
     }
 
-    async updatePost(post: Post): Promise<PostUpdatedResponse> {
+    export async function updatePost(post: Post): Promise<PostUpdatedResponse> {
         const {
             ok: isOk,
             url,
@@ -122,12 +113,12 @@ export class PostService {
             body,
             statusCode,
             statusMessage,
-        } = await got.post<PostUpdatedResponse>(`${this._baseUrl}/api/posts`, { json: post, responseType: 'json' })
+        } = await got.post<PostUpdatedResponse>(`${getBaseUrl()}/api/posts`, { json: post, responseType: 'json' })
         if (!isOk) throw new Error(`Failed to ${method} ${url}, ${statusCode} - ${statusMessage}`)
         return PostUpdatedResponse.parse(body)
     }
 
-    async updatePostsListState(state: PostsListState | undefined | PageModel<Post>) {
+    export async function updatePostsListState(state: PostsListState | undefined | PageModel<Post>) {
         const finalState: PostsListState | undefined =
             state instanceof PageModel
                 ? {
@@ -144,8 +135,8 @@ export class PostService {
         await globalCtx.storage.update('postsListState', finalState)
     }
 
-    async fetchPostEditTemplate(): Promise<PostEditDto | undefined> {
-        if (!newPostTemplate) newPostTemplate = await this.fetchPostEditDto(-1)
+    export async function fetchPostEditTemplate(): Promise<PostEditDto | undefined> {
+        if (!newPostTemplate) newPostTemplate = await fetchPostEditDto(-1)
 
         return newPostTemplate
             ? new PostEditDto(
@@ -155,8 +146,6 @@ export class PostService {
             : undefined
     }
 }
-
-export const postService = PostService.instance
 
 interface PostListModel {
     categoryName: string

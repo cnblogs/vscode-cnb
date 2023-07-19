@@ -5,7 +5,7 @@ import os from 'os'
 import { MessageOptions, Progress, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { extensionViews } from '@/tree-view-providers/tree-view-registration'
 import { chromiumPathProvider } from '@/utils/chromium-path-provider'
 import { Settings } from '@/services/settings.service'
@@ -151,7 +151,7 @@ const handleUriInput = async (uri: Uri): Promise<Post[]> => {
     const posts: Post[] = []
     const { fsPath } = uri
     const postId = PostFileMapManager.getPostId(fsPath)
-    const { post: inputPost } = (await postService.fetchPostEditDto(postId && postId > 0 ? postId : -1)) ?? {}
+    const { post: inputPost } = (await PostService.fetchPostEditDto(postId && postId > 0 ? postId : -1)) ?? {}
 
     if (!inputPost) {
         return []
@@ -169,7 +169,7 @@ const handleUriInput = async (uri: Uri): Promise<Post[]> => {
 }
 
 const mapToPostEditDto = async (posts: Post[]) =>
-    (await Promise.all(posts.map(p => postService.fetchPostEditDto(p.id))))
+    (await Promise.all(posts.map(p => PostService.fetchPostEditDto(p.id))))
         .filter((x): x is PostEditDto => x != null)
         .map(x => x?.post)
 
@@ -189,7 +189,7 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
     if (!chromiumPath) return
 
     const {
-        curUser: { blogApp },
+        currentUser: { blogApp },
     } = accountManager
 
     if (!blogApp) return AlertService.warn('无法获取到博客地址, 请检查登录状态')

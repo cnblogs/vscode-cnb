@@ -1,5 +1,5 @@
 import { DownloadedBlogExport } from '@/models/blog-export'
-import { globalCtx } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import { exists, existsSync } from 'fs'
 import { take } from 'lodash-es'
 import { promisify } from 'util'

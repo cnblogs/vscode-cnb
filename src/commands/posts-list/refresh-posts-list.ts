@@ -1,5 +1,5 @@
-import { globalCtx } from '@/services/global-state'
-import { postService } from '@/services/post.service'
+import { globalCtx } from '@/services/global-ctx'
+import { PostService } from '@/services/post.service'
 import vscode, { window } from 'vscode'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { AlertService } from '@/services/alert.service'
@@ -34,8 +34,7 @@ export const refreshPostsList = async ({ queue = false } = {}): Promise<boolean>
                 if (pagedPosts == null) {
                     return Promise.resolve(false).finally(() => AlertService.err('刷新博文列表失败'))
                 } else {
-                    return postService
-                        .updatePostsListState(pagedPosts)
+                    return PostService.updatePostsListState(pagedPosts)
                         .then(() => updatePostsListViewTitle())
                         .then(() => true)
                 }
@@ -65,7 +64,7 @@ export const seekPostsList = async () => {
             const n = Number.parseInt(i)
             if (isNaN(n) || !n) return '请输入正确格式的页码'
 
-            const state = postService.postsListState
+            const state = PostService.getPostsListState()
             if (!state) return '博文列表尚未加载'
 
             if (isPageIndexInRange(n, state)) return undefined
@@ -79,7 +78,7 @@ export const seekPostsList = async () => {
 
 let isRefreshing = false
 const setRefreshing = async (value = false) => {
-    const extName = globalCtx.extensionName
+    const extName = globalCtx.extName
     await vscode.commands
         .executeCommand('setContext', `${extName}.posts-list.refreshing`, value)
         .then(undefined, () => false)
@@ -87,7 +86,7 @@ const setRefreshing = async (value = false) => {
 }
 
 const setPostListContext = async (pageCount: number, hasPrevious: boolean, hasNext: boolean) => {
-    const extName = globalCtx.extensionName
+    const extName = globalCtx.extName
     await vscode.commands.executeCommand('setContext', `${extName}.posts-list.hasPrevious`, hasPrevious)
     await vscode.commands.executeCommand('setContext', `${extName}.posts-list.hasNext`, hasNext)
     await vscode.commands.executeCommand('setContext', `${extName}.posts-list.pageCount`, pageCount)
@@ -102,7 +101,7 @@ const gotoPage = async (pageIndex: (currentIndex: number) => number) => {
         alertRefreshing()
         return
     }
-    const state = postService.postsListState
+    const state = PostService.getPostsListState()
     if (!state) {
         console.warn('Cannot goto previous page posts list because post list state not defined')
         return
@@ -115,14 +114,14 @@ const gotoPage = async (pageIndex: (currentIndex: number) => number) => {
         return
     }
     state.pageIndex = idx
-    await postService.updatePostsListState(state)
+    await PostService.updatePostsListState(state)
     await refreshPostsList()
 }
 
 const isPageIndexInRange = (pageIndex: number, state: PostsListState) => pageIndex <= state.pageCount && pageIndex >= 1
 
 const updatePostsListViewTitle = () => {
-    const state = postService.postsListState
+    const state = PostService.getPostsListState()
     if (!state) return
 
     const { pageIndex, pageCount } = state

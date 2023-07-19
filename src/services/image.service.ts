@@ -1,4 +1,4 @@
-import { globalCtx } from './global-state'
+import { globalCtx } from './global-ctx'
 import { Readable } from 'stream'
 import { isString, merge, pick } from 'lodash-es'
 import httpClient from '@/utils/http-client'

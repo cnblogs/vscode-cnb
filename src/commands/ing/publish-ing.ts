@@ -1,7 +1,7 @@
 import { CommandHandler } from '@/commands/command-handler'
 import { IngPublishModel, IngType } from '@/models/ing'
 import { AlertService } from '@/services/alert.service'
-import { globalCtx } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import { IngApi } from '@/services/ing.api'
 import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'

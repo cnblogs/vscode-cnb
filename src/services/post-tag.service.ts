@@ -1,6 +1,6 @@
 import got from '@/utils/http-client'
 import { PostTag } from '@/models/post-tag'
-import { globalCtx } from './global-state'
+import { globalCtx } from './global-ctx'
 
 export class PostTagService {
     private static _instance: PostTagService

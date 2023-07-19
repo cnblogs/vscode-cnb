@@ -1,12 +1,11 @@
 import path from 'path'
-import { isString, merge, pick } from 'lodash-es'
+import { isString } from 'lodash-es'
 import fs from 'fs'
 import { Uri, workspace } from 'vscode'
 import { imageService } from './image.service'
 import { isErrorResponse } from '@/models/error-response'
 import { promisify } from 'util'
 import { Readable } from 'stream'
-import httpClient from '@/utils/http-client'
 import { tmpdir } from 'os'
 
 export const enum DataType {

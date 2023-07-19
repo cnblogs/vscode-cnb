@@ -1,5 +1,5 @@
 import { CommandHandler } from '@/commands/command-handler'
-import { globalCtx } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import { commands, Uri } from 'vscode'
 
 export class OpenIngInBrowser extends CommandHandler {

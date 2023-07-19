@@ -2,7 +2,7 @@ import vscode, { Uri, workspace, window, ProgressLocation, MessageOptions } from
 import { Post } from '@/models/post'
 import { LocalDraft } from '@/services/local-draft.service'
 import { AlertService } from '@/services/alert.service'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { openPostInVscode } from './open-post-in-vscode'
@@ -41,7 +41,7 @@ export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
     const { fsPath: filePath } = fileUri
     const postId = PostFileMapManager.getPostId(filePath)
     if (postId && postId >= 0) {
-        await uploadPostToCnblogs(await postService.fetchPostEditDto(postId))
+        await uploadPostToCnblogs(await PostService.fetchPostEditDto(postId))
     } else {
         const options = [`新建博文`, `关联已有博文`]
         const selected = await window.showInformationMessage(
@@ -61,7 +61,7 @@ export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
                     })
                     if (selectedPost) {
                         await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
-                        const postEditDto = await postService.fetchPostEditDto(selectedPost.id)
+                        const postEditDto = await PostService.fetchPostEditDto(selectedPost.id)
                         if (postEditDto) {
                             const fileContent = Buffer.from(await workspace.fs.readFile(fileUri)).toString()
                             if (!fileContent)
@@ -87,7 +87,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
         AlertService.warn('不受支持的文件格式! 只支持markdown格式')
         return
     }
-    const editDto = await postService.fetchPostEditTemplate()
+    const editDto = await PostService.fetchPostEditTemplate()
     if (!editDto) return
 
     const { post } = editDto
@@ -130,7 +130,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
         input instanceof PostEditDto
             ? input.post
             : input
-            ? (await postService.fetchPostEditDto(input.id))?.post
+            ? (await PostService.fetchPostEditDto(input.id))?.post
             : undefined
     if (!post) return
 
@@ -171,7 +171,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
             })
             let hasSaved = false
             try {
-                const { id: postId } = await postService.updatePost(post)
+                const { id: postId } = await PostService.updatePost(post)
                 await openPostInVscode(postId)
                 post.id = postId
 

@@ -1,7 +1,7 @@
 import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
 import fs from 'fs'
-import { blogSettingsService } from '@/services/blog-settings.service'
+import { BlogSettingsService } from '@/services/blog-settings.service'
 import { accountManager } from '@/auth/account-manager'
 import { postCategoryService } from '@/services/post-category.service'
 import { PostCategory } from '@/models/post-category'
@@ -61,8 +61,8 @@ export namespace postPdfTemplateBuilder {
             codeHighlightTheme,
             enableCodeLineNumber: isCodeLineNumberEnabled,
             blogId,
-        } = await blogSettingsService.getBlogSettings()
-        const { userId } = accountManager.curUser
+        } = await BlogSettingsService.getBlogSettings()
+        const { userId } = accountManager.currentUser
         return `<html>
         <head>
             <title>${post.title}</title>

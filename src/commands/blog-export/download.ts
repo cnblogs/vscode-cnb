@@ -2,7 +2,7 @@ import { TreeViewCommandHandler } from '@/commands/command-handler'
 import { AlertService } from '@/services/alert.service'
 import { BlogExportApi } from '@/services/blog-export.api'
 import { DownloadedExportStore } from '@/services/downloaded-export.store'
-import { globalCtx } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import { Settings } from '@/services/settings.service'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { BlogExportRecordTreeItem } from '@/tree-view-providers/models/blog-export'
@@ -118,7 +118,7 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
     private setIsDownloading(value: boolean) {
         return commands.executeCommand(
             'setContext',
-            `${globalCtx.extensionName}.blog-export.downloading`,
+            `${globalCtx.extName}.blog-export.downloading`,
             value || undefined
         )
     }
