@@ -17,7 +17,7 @@
 	- [拉取远程博文内容更新本地文件](#拉取远程博文内容更新本地文件)
 	- [图片上传](#图片上传)
 	- [博文分类管理](#博文分类管理)
-	- [导出 pdf](#导出-pdf)
+	- [导出 PDF](#导出-PDF)
 	- [提取图片](#提取图片)
 	- [博文设置面板](#博文设置面板)
 	- [闪存](#闪存)
@@ -47,13 +47,13 @@
 
 若本地文件已经关联到一篇博客园博文，那么会直接更新这篇博文。
 
-也通过 vscode 的 `Command Palette`（唤起 `Command Palette` 快捷键，windows：`ctrl+shift+p`，macos：`command+shift+p`）调用 `Cnblogs: 保存到博客园`命令，将当前正在编辑的 markdown 文件保存到博客园上
+也通过 vscode 的 `Command Palette`（唤起 `Command Palette` 快捷键，windows：`ctrl+shift+p`，macos：`command+shift+p`）调用 `Cnblogs: 上传到博客园`命令，将当前正在编辑的 markdown 文件上传到博客园上
 
 <kbd><img src="https://img2022.cnblogs.com/blog/1596066/202204/1596066-20220415194545998-874211959.png" height="550"></kbd>
 
 ### 博客园博文列表
 
-当点击列表中的博文时，会自动将博文内容下载到工作空间一个本地文件中（此时这个本地文件就关联到了这篇博文），完成编辑后可以再将本地的内容保存到博客园博文
+当点击列表中的博文时，会自动将博文内容下载到工作空间一个本地文件中（此时这个本地文件就关联到了这篇博文），完成编辑后可以再将本地的内容上传到博客园
 
 <kbd><img src="https://img2020.cnblogs.com/blog/3/202112/3-20211227184342642-1938639868.png" height="550"></kbd>
 
@@ -75,23 +75,23 @@
 
 ### 拉取远程博文内容更新本地文件
 
-本地文件和博文关联后，如果通过博客后台更新了这篇博文，此时本地文件是不会自动更新的，但是可以通过 `Cnblogs: 拉取远程更新`命令来更新本地博文
+本地文件和博文关联后，如果通过博客后台更新了这篇博文，此时本地文件是不会自动更新的，但是可以通过 `Cnblogs: 拉取博文`命令来更新本地博文
 
-可以在下面这些地方可以调用 `Cnblogs: 拉取远程更新`
+可以在下面这些地方可以调用 `Cnblogs: 拉取博文`
 
-- 博客园随笔列表视图中的博文的上下文菜单`拉取远程更新`（仅已关联本地文件的博文）
+- 博客园随笔列表视图中的博文的上下文菜单`拉取博文`（仅已关联本地文件的博文）
   
   <kbd><img src="https://img2022.cnblogs.com/blog/1596066/202204/1596066-20220415195826898-1477642941.png" height="350"></kbd>
 
-- 编辑器上下文菜单中的`拉取远程更新`（仅针对 markdown 文件）
+- 编辑器上下文菜单中的`拉取博文`（仅针对 markdown 文件）
   
   <kbd><img src="https://img2022.cnblogs.com/blog/1596066/202204/1596066-20220415195920100-1395377363.png" height="550"></kbd>
 
-- 文件浏览器上下文菜单中的`拉取远程更新`（仅针对 markdown 文件）
+- 文件浏览器上下文菜单中的`拉取博文`（仅针对 markdown 文件）
   
   <kbd><img src="https://img2022.cnblogs.com/blog/1596066/202204/1596066-20220401183918962-2083221618.png" height="550"></kbd>
 
-- vscode 命令面板 `Cnblogs: 拉取远程更新`，此时会尝试去寻找当前正在编辑的文件对其进行更新
+- vscode 命令面板 `Cnblogs: 拉取博文`，此时会尝试去寻找当前正在编辑的文件对其进行更新
   
   <kbd><img src="https://img2022.cnblogs.com/blog/1596066/202204/1596066-20220401184013947-1481430186.png?v=20220424" height="550"></kbd>
 
@@ -109,9 +109,9 @@
 
 <kbd><img src="https://img2020.cnblogs.com/blog/1596066/202112/1596066-20211228130552877-1788018336.png" height="300"></kbd>
 
-### 导出 pdf
+### 导出 PDF
 
-支持将博文导出为 pdf 格式的文件到本地，此功能依赖于 [Chromium](https://www.chromium.org/chromium-projects/)，vscode-cnb 默认会先从本地寻找是否有已安装的 Chrome 或基于 Chromium 的 Edge 浏览器，若有的话则会直接使用本地的 Chrome 或基于 Chromium 的 Edge; 若未找到，那么会提示用户手动选择本地的 Chromium 或其他基于 Chromium 的浏览器
+支持将博文导出为 PDF 格式的文件到本地，此功能依赖于 [Chromium](https://www.chromium.org/chromium-projects/)，vscode-cnb 默认会先从本地寻找是否有已安装的 Chrome 或基于 Chromium 的 Edge 浏览器，若有的话则会直接使用本地的 Chrome 或基于 Chromium 的 Edge; 若未找到，那么会提示用户手动选择本地的 Chromium 或其他基于 Chromium 的浏览器
 
 <kbd><img src="https://img2022.cnblogs.com/blog/1596066/202203/1596066-20220323135717910-1090211493.png" height="550"></kbd>
 
@@ -129,7 +129,7 @@
 
 ![image](https://img2022.cnblogs.com/blog/1596066/202209/1596066-20220917215536822-836105648.png)
 
-也可以在设置中配置保存到博客园时自动提取图片
+也可以在设置中配置上传到博客园时自动提取图片
 
 ![image](https://img2022.cnblogs.com/blog/1596066/202209/1596066-20220917215650930-372126612.png)
 

@@ -17,7 +17,7 @@ export interface IExtensionConfig {
     readonly cnblogsOpenApiUrl: string
 }
 
-export const isDev = () => process.env.NODE_ENV === 'Development'
+export const isDevEnv = () => process.env.NODE_ENV === 'Development'
 
 declare const CNBLOGS_CLIENTID: string
 declare const CNBLOGS_CLIENTSECRET: string

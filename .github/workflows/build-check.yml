@@ -3,7 +3,7 @@ name: Build and check the code format
 on:
     push:
         branches:
-            - main
+            - '*'
     pull_request_target:
         types:
             - opened

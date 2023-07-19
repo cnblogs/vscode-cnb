@@ -19,7 +19,7 @@ export const uploadImage = async (autoInsertToActiveEditor = true, from?: 'local
 
     let imageUrl: string | undefined
     const caughtFailedUpload = (e: unknown) =>
-        void AlertService.httpError(typeof e === 'object' && e != null ? e : {}, { message: '上传图片失败' })
+        void AlertService.httpErr(typeof e === 'object' && e != null ? e : {}, { message: '上传图片失败' })
     switch (selected) {
         case 'local':
         case options[0]:

@@ -1,6 +1,6 @@
 import { QuickPickItem, window } from 'vscode'
 import { Post } from '@/models/post'
-import { postService } from './post.service'
+import { PostService } from './post.service'
 
 class PostPickItem implements QuickPickItem {
     label: string
@@ -27,7 +27,7 @@ export const searchPostsByTitle = ({ postTitle = '', quickPickTitle = '按标题
             const value = quickPick.value
             try {
                 quickPick.busy = true
-                const paged = await postService.fetchPostsList({ search: value })
+                const paged = await PostService.fetchPostsList({ search: value })
                 const posts = paged.items
                 const pickItems = posts.map(p => new PostPickItem(p))
                 if (value === quickPick.value) quickPick.items = pickItems

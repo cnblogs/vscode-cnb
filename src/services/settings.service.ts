@@ -1,7 +1,7 @@
 import os, { homedir } from 'os'
 import fs from 'fs'
 import { ConfigurationTarget, Uri, workspace } from 'vscode'
-import { ImageSrc, MarkdownImagesExtractor } from './images-extractor.service'
+import { ImageSrc } from './mkd-img-extractor.service'
 import { isNumber } from 'lodash-es'
 import { untildify } from '@/utils/untildify'
 
@@ -41,7 +41,10 @@ export class Settings {
 
     static get platformConfiguration() {
         const { platformPrefix, prefix } = this
-        return platformPrefix ? workspace.getConfiguration(`${prefix}.${platformPrefix}`) : null
+
+        if (platformPrefix != null) return workspace.getConfiguration(`${prefix}.${platformPrefix}`)
+
+        return null
     }
 
     static get workspaceUri(): Uri {
@@ -74,11 +77,13 @@ export class Settings {
     }
 
     static get automaticallyExtractImagesType(): ImageSrc | null {
-        const cfg = this.configuration.get<'disable' | 'web' | 'local' | 'any'>('automaticallyExtractImages') ?? null
+        const cfg =
+            this.configuration.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('automaticallyExtractImages') ?? null
 
-        if (cfg === 'local') return ImageSrc.local
-        if (cfg === 'any') return ImageSrc.any
+        if (cfg === 'fs') return ImageSrc.fs
+        if (cfg === 'dataUrl') return ImageSrc.dataUrl
         if (cfg === 'web') return ImageSrc.web
+        if (cfg === 'any') return ImageSrc.any
 
         return null // 'disable' case
     }
@@ -86,6 +91,14 @@ export class Settings {
     static get postsListPageSize() {
         const size = this.configuration.get<number>(this.postsListPageSizeKey)
         return isNumber(size) ? size : 30
+    }
+
+    static get showConfirmMsgWhenUploadPost() {
+        return this.configuration.get<boolean>('markdown.showConfirmMsgWhenUploadPost') ?? true
+    }
+
+    static get showConfirmMsgWhenPullPost() {
+        return this.configuration.get<boolean>('markdown.showConfirmMsgWhenPullPost') ?? true
     }
 
     static get isEnableMarkdownEnhancement() {
@@ -113,8 +126,6 @@ export class Settings {
     }
 
     static async setChromiumPath(value: string) {
-        if (!value) return
-
         await this.platformConfiguration?.update(this.chromiumPathKey, value, ConfigurationTarget.Global)
     }
 
@@ -126,15 +137,14 @@ export class Settings {
         const oldKey = 'ing.enablePublishSelectionToIng'
         const isEnablePublishSelectionToIng = this.configuration.get(oldKey)
         if (isEnablePublishSelectionToIng === true) {
-            if (
-                await this.configuration
-                    .update('menus.context.editor', { 'ing:publish-selection': true }, ConfigurationTarget.Global)
-                    .then(
-                        () => true,
-                        () => false
-                    )
-            )
-                await this.configuration.update(oldKey, undefined, ConfigurationTarget.Global)
+            const isOk = await this.configuration
+                .update('menus.context.editor', { 'ing:publish-selection': true }, ConfigurationTarget.Global)
+                .then(
+                    () => true,
+                    () => false
+                )
+
+            if (isOk) await this.configuration.update(oldKey, undefined, ConfigurationTarget.Global)
         }
     }
 

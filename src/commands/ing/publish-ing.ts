@@ -1,7 +1,7 @@
 import { CommandHandler } from '@/commands/command-handler'
 import { IngPublishModel, IngType } from '@/models/ing'
 import { AlertService } from '@/services/alert.service'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import { IngApi } from '@/services/ing.api'
 import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'
@@ -147,7 +147,7 @@ export class PublishIngCommandHandler extends CommandHandler {
     }
 
     private warnNoSelection() {
-        AlertService.warning(`无法${this.operation}, 当前没有选中的内容`)
+        AlertService.warn(`无法${this.operation}, 当前没有选中的内容`)
     }
 
     private async onPublished(isPublished: boolean): Promise<void> {
@@ -163,26 +163,22 @@ export class PublishIngCommandHandler extends CommandHandler {
             const options = [
                 [
                     '打开闪存',
-                    (): Thenable<void> =>
-                        commands.executeCommand('vscode.open', Uri.parse(globalContext.config.ingSite)),
+                    (): Thenable<void> => commands.executeCommand('vscode.open', Uri.parse(globalCtx.config.ingSite)),
                 ],
                 [
                     '我的闪存',
                     (): Thenable<void> =>
-                        commands.executeCommand('vscode.open', Uri.parse(globalContext.config.ingSite + '/#my')),
+                        commands.executeCommand('vscode.open', Uri.parse(globalCtx.config.ingSite + '/#my')),
                 ],
                 [
                     '新回应',
                     (): Thenable<void> =>
-                        commands.executeCommand(
-                            'vscode.open',
-                            Uri.parse(globalContext.config.ingSite + '/#recentcomment')
-                        ),
+                        commands.executeCommand('vscode.open', Uri.parse(globalCtx.config.ingSite + '/#recentcomment')),
                 ],
                 [
                     '提到我',
                     (): Thenable<void> =>
-                        commands.executeCommand('vscode.open', Uri.parse(globalContext.config.ingSite + '/#mention')),
+                        commands.executeCommand('vscode.open', Uri.parse(globalCtx.config.ingSite + '/#mention')),
                 ],
             ] as const
             const option = await window.showInformationMessage(

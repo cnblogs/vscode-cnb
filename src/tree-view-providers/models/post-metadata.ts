@@ -7,7 +7,7 @@ import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
 import { AccessPermission, Post, formatAccessPermission } from '@/models/post'
 import { PostEditDto } from '@/models/post-edit-dto'
 import { postCategoryService } from '@/services/post-category.service'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { BaseEntryTreeItem } from './base-entry-tree-item'
 import { BaseTreeItemSource } from './base-tree-item-source'
 import { PostTreeItem } from './post-tree-item'
@@ -62,7 +62,7 @@ export abstract class PostMetadata extends BaseTreeItemSource {
         exclude?: RootPostMetadataType[]
     }): Promise<PostMetadata[]> {
         let parsedPost = post instanceof PostTreeItem ? post.post : post
-        const postEditDto = await postService.fetchPostEditDto(parsedPost.id)
+        const postEditDto = await PostService.fetchPostEditDto(parsedPost.id)
         parsedPost = postEditDto?.post || parsedPost
         return Promise.all(
             rootMetadataMap(parsedPost, postEditDto)
@@ -124,7 +124,7 @@ export class PostCategoryMetadata extends PostMetadata {
     }
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCategoryMetadata[]> {
-        editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id)
+        editDto = editDto ? editDto : await PostService.fetchPostEditDto(parent.id)
         if (editDto == null) return []
 
         const {
@@ -158,7 +158,7 @@ export class PostTagMetadata extends PostMetadata {
     }
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostMetadata[]> {
-        editDto = editDto ? editDto : await postService.fetchPostEditDto(parent.id)
+        editDto = editDto ? editDto : await PostService.fetchPostEditDto(parent.id)
         if (editDto == null) return []
 
         const {

@@ -1,4 +1,4 @@
-import { globalContext } from 'src/services/global-state'
+import { globalCtx } from 'src/services/global-ctx'
 import {
     CancellationToken,
     commands,
@@ -20,7 +20,7 @@ import { CommentIngCommandHandler } from '@/commands/ing/comment-ing'
 export class IngsListWebviewProvider implements WebviewViewProvider {
     private static _instance?: IngsListWebviewProvider
 
-    readonly viewId = `${globalContext.extensionName}.ings-list-webview`
+    readonly viewId = `${globalCtx.extName}.ings-list-webview`
 
     private readonly _baseTitle = '闪存'
     private _view?: WebviewView
@@ -35,7 +35,8 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
     get observer(): IngWebviewMessageObserver {
         if (!this._view) throw Error('Cannot access the observer until the webviewView initialized!')
-        return (this._observer ??= new IngWebviewMessageObserver(this))
+        this._observer ??= new IngWebviewMessageObserver(this)
+        return this._observer
     }
 
     get pageIndex() {
@@ -51,7 +52,8 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     }
 
     get show() {
-        return (this._show ??= this._view ? this._view.show.bind(this._view) : undefined)
+        this._show ??= this._view ? this._view.show.bind(this._view) : undefined
+        return this._show
     }
 
     static get instance(): IngsListWebviewProvider | undefined {
@@ -59,17 +61,18 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     }
 
     private get assetsUri() {
-        return globalContext.assetsUri
+        return globalCtx.assetsUri
     }
 
     private get ingApi() {
-        return (this._ingApi ??= new IngApi())
+        this._ingApi ??= new IngApi()
+        return this._ingApi
     }
 
     static ensureRegistered() {
         if (!this._instance) {
             this._instance = new IngsListWebviewProvider()
-            globalContext.extensionContext.subscriptions.push(
+            globalCtx.extCtx.subscriptions.push(
                 window.registerWebviewViewProvider(this._instance.viewId, this._instance)
             )
         }
@@ -156,22 +159,14 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
     private async setIsRefreshing(value: boolean) {
         await commands
-            .executeCommand(
-                'setContext',
-                `${globalContext.extensionName}.ingsList.isRefreshing`,
-                value ? true : undefined
-            )
+            .executeCommand('setContext', `${globalCtx.extName}.ingsList.isRefreshing`, value ? true : undefined)
             .then(undefined, () => undefined)
         this._isRefreshing = value
     }
 
     private async setPageIndex(value: number) {
         await commands
-            .executeCommand(
-                'setContext',
-                `${globalContext.extensionName}.ingsList.pageIndex`,
-                value > 0 ? value : undefined
-            )
+            .executeCommand('setContext', `${globalCtx.extName}.ingsList.pageIndex`, value > 0 ? value : undefined)
             .then(undefined, () => undefined)
         this._pageIndex = value
     }

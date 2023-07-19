@@ -5,11 +5,11 @@ import os from 'os'
 import { MessageOptions, Progress, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { extensionViews } from '@/tree-view-providers/tree-view-registration'
 import { chromiumPathProvider } from '@/utils/chromium-path-provider'
 import { Settings } from '@/services/settings.service'
-import { accountManager } from '@/authentication/account-manager'
+import { accountManager } from '@/auth/account-manager'
 import { AlertService } from '@/services/alert.service'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { PostEditDto } from '@/models/post-edit-dto'
@@ -125,7 +125,7 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
         path = op ? await op[1]() : undefined
     }
 
-    if (path && path !== Settings.chromiumPath) await Settings.setChromiumPath(path)
+    if (path !== undefined && path !== Settings.chromiumPath) await Settings.setChromiumPath(path)
 
     return path
 }
@@ -135,7 +135,7 @@ const inputTargetFolder = async (): Promise<Uri | undefined> =>
         canSelectFiles: false,
         canSelectFolders: true,
         canSelectMany: false,
-        title: '请选择用于保存pdf的目录',
+        title: '请选择用于保存 PDF 的目录',
     })) ?? [])[0]
 
 const handlePostInput = (post: Post | PostTreeItem): Promise<Post[]> => {
@@ -151,7 +151,7 @@ const handleUriInput = async (uri: Uri): Promise<Post[]> => {
     const posts: Post[] = []
     const { fsPath } = uri
     const postId = PostFileMapManager.getPostId(fsPath)
-    const { post: inputPost } = (await postService.fetchPostEditDto(postId && postId > 0 ? postId : -1)) ?? {}
+    const { post: inputPost } = (await PostService.fetchPostEditDto(postId && postId > 0 ? postId : -1)) ?? {}
 
     if (!inputPost) {
         return []
@@ -169,13 +169,17 @@ const handleUriInput = async (uri: Uri): Promise<Post[]> => {
 }
 
 const mapToPostEditDto = async (posts: Post[]) =>
-    (await Promise.all(posts.map(p => postService.fetchPostEditDto(p.id))))
+    (await Promise.all(posts.map(p => PostService.fetchPostEditDto(p.id))))
         .filter((x): x is PostEditDto => x != null)
         .map(x => x?.post)
 
 const reportErrors = (errors: string[] | undefined) => {
-    if (errors && errors.length > 0)
-        void window.showErrorMessage('导出pdf时遇到错误', { modal: true, detail: errors.join('\n') } as MessageOptions)
+    if (errors && errors.length > 0) {
+        void window.showErrorMessage('导出 PDF 时遇到错误', {
+            modal: true,
+            detail: errors.join('\n'),
+        } as MessageOptions)
+    }
 }
 
 const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Promise<void> => {
@@ -185,10 +189,10 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
     if (!chromiumPath) return
 
     const {
-        curUser: { blogApp },
+        currentUser: { blogApp },
     } = accountManager
 
-    if (!blogApp) return AlertService.warning('无法获取到博客地址, 请检查登录状态')
+    if (!blogApp) return AlertService.warn('无法获取到博客地址, 请检查登录状态')
 
     reportErrors(
         await window.withProgress<string[] | undefined>(
@@ -197,7 +201,7 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
             },
             async progress => {
                 const errors: string[] = []
-                progress.report({ message: '导出pdf - 处理博文数据' })
+                progress.report({ message: '导出 PDF - 处理博文数据' })
                 let selectedPosts = await (input instanceof Post || input instanceof PostTreeItem
                     ? handlePostInput(input)
                     : handleUriInput(input))
@@ -208,9 +212,9 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
                 const dir = await inputTargetFolder()
                 if (!dir || !chromiumPath) return
 
-                progress.report({ message: '启动Chromium' })
+                progress.report({ message: '启动 Chromium' })
                 const { browser, page } = (await launchBrowser(chromiumPath)) ?? {}
-                if (!browser || !page) return ['启动Chromium失败']
+                if (!browser || !page) return ['启动 Chromium 失败']
 
                 let idx = 0
                 const { length: total } = selectedPosts

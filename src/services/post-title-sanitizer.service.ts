@@ -1,7 +1,7 @@
 import path from 'path'
 import sanitize from 'sanitize-filename'
 import { Post } from '@/models/post'
-import { globalContext } from './global-state'
+import { globalCtx } from './global-ctx'
 import { PostFileMapManager } from './post-file-map'
 
 type InvalidPostFileNameMap = [postId: number, invalidName: string | undefined | null]
@@ -18,13 +18,13 @@ class InvalidPostTitleStore {
     store(map: InvalidPostFileNameMap): Thenable<void> {
         const [postId, invalidName] = map
         const key = buildStorageKey(postId)
-        if (invalidName) return globalContext.storage.update(key, invalidName)
-        else return globalContext.storage.update(key, undefined)
+        if (invalidName) return globalCtx.storage.update(key, invalidName)
+        else return globalCtx.storage.update(key, undefined)
     }
 
     get(postId: number): string | undefined {
         const key = buildStorageKey(postId)
-        return globalContext.storage.get<string>(key)
+        return globalCtx.storage.get<string>(key)
     }
 }
 

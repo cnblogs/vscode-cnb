@@ -4,14 +4,14 @@ import { openMyWebBlogConsole } from './open-my-blog-management-background'
 import { openMyHomePage } from './open-my-home-page'
 import { login, logout } from './login'
 import { openMyBlog } from './open-my-blog'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import {
     gotoNextPostsList,
     gotoPreviousPostsList,
     refreshPostsList,
     seekPostsList,
 } from './posts-list/refresh-posts-list'
-import { savePostFileToCnblogs, savePostToCnblogs } from './posts-list/save-post'
+import { uploadPostFileToCnblogs, uploadPostToCnblogs } from './posts-list/upload-post'
 import { createLocalDraft } from './posts-list/create-local-draft'
 import { deleteSelectedPosts } from './posts-list/delete-post'
 import { modifyPostSettings } from './posts-list/modify-post-settings'
@@ -39,8 +39,10 @@ import { CopyPostLinkCommandHandler } from '@/commands/posts-list/copy-link'
 import { registerCommandsForBlogExport } from '@/commands/blog-export'
 
 export const registerCommands = () => {
-    const context = globalContext.extensionContext
-    const appName = globalContext.extensionName
+    const context = globalCtx.extCtx
+    const appName = globalCtx.extName
+
+    // TODO: simplify register
     const disposables = [
         commands.registerCommand(`${appName}.login`, login),
         commands.registerCommand(`${appName}.open-my-blog`, openMyBlog),
@@ -53,11 +55,11 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.seek-posts-list`, seekPostsList),
         commands.registerCommand(`${appName}.next-posts-list`, gotoNextPostsList),
         commands.registerCommand(`${appName}.edit-post`, openPostInVscode),
-        commands.registerCommand(`${appName}.save-post`, savePostToCnblogs),
+        commands.registerCommand(`${appName}.upload-post`, uploadPostToCnblogs),
         commands.registerCommand(`${appName}.modify-post-settings`, modifyPostSettings),
         commands.registerCommand(`${appName}.delete-post`, deleteSelectedPosts),
         commands.registerCommand(`${appName}.create-local-draft`, createLocalDraft),
-        commands.registerCommand(`${appName}.save-post-file-to-cnblogs`, savePostFileToCnblogs),
+        commands.registerCommand(`${appName}.upload-post-file-to-cnblogs`, uploadPostFileToCnblogs),
         commands.registerCommand(`${appName}.pull-post-remote-updates`, pullPostRemoteUpdates),
         commands.registerCommand(`${appName}.upload-clipboard-image`, () => uploadImage(true, 'clipboard')),
         commands.registerCommand(`${appName}.upload-local-disk-image`, () => uploadImage(true, 'local')),
@@ -88,7 +90,9 @@ export const registerCommands = () => {
             new PublishIngCommandHandler('selection').handle()
         ),
     ]
+
     registerCommandsForIngsList(disposables)
     registerCommandsForBlogExport(disposables)
+
     context?.subscriptions.push(...disposables)
 }

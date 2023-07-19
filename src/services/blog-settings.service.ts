@@ -1,29 +1,21 @@
 import fetch from '@/utils/fetch-client'
 import { BlogSettings, BlogSiteDto, BlogSiteExtendDto } from '@/models/blog-settings'
-import { globalContext } from './global-state'
+import { globalCtx } from './global-ctx'
 
-export class BlogSettingsService {
-    private static _instance?: BlogSettingsService
+let settingCache: BlogSettings | null = null
 
-    private _settings?: BlogSettings
+export namespace BlogSettingsService {
+    export async function getBlogSettings(refresh = false) {
+        if (settingCache != null && !refresh) return settingCache
 
-    protected constructor() {}
-
-    static get instance() {
-        if (!this._instance) this._instance = new BlogSettingsService()
-        return this._instance
-    }
-
-    async getBlogSettings(forceRefresh = false): Promise<BlogSettings> {
-        if (this._settings && !forceRefresh) return this._settings
-
-        const url = `${globalContext.config.apiBaseUrl}/api/settings`
+        const url = `${globalCtx.config.apiBaseUrl}/api/settings`
         const res = await fetch(url)
         if (!res.ok) throw Error(`Failed to request ${url}, statusCode: ${res.status}, detail: ${await res.text()}`)
 
         const data = (await res.json()) as { blogSite: BlogSiteDto; extend: BlogSiteExtendDto }
-        return new BlogSettings(data.blogSite, data.extend)
+
+        settingCache ??= new BlogSettings(data.blogSite, data.extend)
+
+        return settingCache
     }
 }
-
-export const blogSettingsService = BlogSettingsService.instance

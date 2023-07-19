@@ -1,6 +1,6 @@
 import { commands, Uri, window } from 'vscode'
 import { Post } from '@/models/post'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 
@@ -10,7 +10,7 @@ export const viewPostOnline = async (input?: Post | PostTreeItem | Uri) => {
 
     if (input instanceof Uri) {
         const postId = PostFileMapManager.getPostId(input.fsPath)
-        if (postId) post = (await postService.fetchPostEditDto(postId))?.post
+        if (postId !== undefined) post = (await PostService.fetchPostEditDto(postId))?.post
     }
 
     if (!post) return

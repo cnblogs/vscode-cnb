@@ -2,7 +2,7 @@ import { TreeViewCommandHandler } from '@/commands/command-handler'
 import { AlertService } from '@/services/alert.service'
 import { BlogExportApi } from '@/services/blog-export.api'
 import { DownloadedExportStore } from '@/services/downloaded-export.store'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import { Settings } from '@/services/settings.service'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { BlogExportRecordTreeItem } from '@/tree-view-providers/models/blog-export'
@@ -23,7 +23,8 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
     }
 
     protected get exportApi() {
-        return (this._exportApi ??= new BlogExportApi())
+        this._exportApi ??= new BlogExportApi()
+        return this._exportApi
     }
 
     parseInput(): BlogExportRecordTreeItem | null | undefined {
@@ -53,7 +54,7 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
         await this.setIsDownloading(true)
 
         const onError = (msg?: string | null) => {
-            if (msg) AlertService.warning(msg)
+            if (msg) AlertService.warn(msg)
             if (!isFileExist) fs.rmSync(zipFilePath)
             blogExportProvider?.refreshItem(treeItem)
             this.setIsDownloading(false).then(undefined, console.warn)
@@ -115,10 +116,6 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
     }
 
     private setIsDownloading(value: boolean) {
-        return commands.executeCommand(
-            'setContext',
-            `${globalContext.extensionName}.blog-export.downloading`,
-            value || undefined
-        )
+        return commands.executeCommand('setContext', `${globalCtx.extName}.blog-export.downloading`, value || undefined)
     }
 }

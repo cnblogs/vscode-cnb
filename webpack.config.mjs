@@ -116,8 +116,8 @@ export default (env, { mode }) => {
                 ],
             }),
             new webpack.DefinePlugin({
-                CNBLOGS_CLIENTID: JSON.stringify(env.CLIENTID || 'vscode-cnb'),
-                CNBLOGS_CLIENTSECRET: JSON.stringify(env.CLIENTSECRET || ''),
+                CNBLOGS_CLIENTID: JSON.stringify(env.CLIENTID || 'UNSET'),
+                CNBLOGS_CLIENTSECRET: JSON.stringify(env.CLIENTSECRET || 'UNSET'),
             }),
         ],
         optimization: {
