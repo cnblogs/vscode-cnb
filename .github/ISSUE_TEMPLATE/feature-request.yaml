@@ -1,5 +1,5 @@
 name: "新功能建议"
-description: 给vscode-cnb提一个新功能建议
+description: 给博客园扩展提一个新功能建议
 labels:
   - "feature"
 
@@ -7,7 +7,7 @@ body:
   - type: dropdown
     id: affected-ui-area
     attributes:
-      label: ui上的哪部分与此新功能有关?
+      label: UI 上的哪个部分与此新功能有关?
       options:
         - 侧边栏控制台
         - 侧边栏控制台随笔列表
@@ -18,8 +18,8 @@ body:
         - 侧边栏控制台随笔列表右键上下文菜单
         - 侧边栏控制台分类列表右键上下文菜单
         - 设置面板
-        - markdown编辑器右键上下文菜单
-        - markdown编辑器工具栏
+        - Markdown 编辑器右键上下文菜单
+        - Markdown 编辑器工具栏
         - 侧边栏文件浏览右键上下文菜单
         - 其他
       multiple: true
