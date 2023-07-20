@@ -2,10 +2,11 @@ import { MessageOptions, ProgressLocation, window } from 'vscode'
 import { PostCategory } from '@/models/post-category'
 import { postCategoryService } from '@/services/post-category.service'
 import { PostCategoriesListTreeItem } from '@/tree-view-providers/models/categories-list-tree-item'
-import { BaseMultiSelectablePostCategoryTreeViewCommandHandler } from './base-tree-view-command-handler'
+import { BaseMultiSelectablePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
 import { refreshPostCategoriesList } from './refresh-post-categories-list'
+import { AlertService } from '@/services/alert.service'
 
-export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategoryTreeViewCommandHandler {
+export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategoryTreeViewCmdHandler {
     constructor(input: PostCategoriesListTreeItem) {
         super(input)
     }
@@ -44,7 +45,7 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
 
                 p.report({ increment: 100 })
                 if (errs.length > 0) {
-                    await window.showErrorMessage('删除博文分类时发生了一些错误', {
+                    await AlertService.err('删除博文分类时发生了一些错误', {
                         detail: errs
                             .map(
                                 err =>
@@ -62,7 +63,7 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
 
     private async confirm() {
         const options = ['确定']
-        const clicked = await window.showWarningMessage(
+        const clicked = await AlertService.warn(
             '确定要删除这些博文分类吗',
             {
                 detail: `${this.selections.map(x => `📂${x.title}`).join(', ')} 将被永久删除! 请谨慎操作!`,

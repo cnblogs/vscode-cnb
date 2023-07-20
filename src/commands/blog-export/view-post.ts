@@ -1,11 +1,11 @@
-import { TreeViewCommandHandler } from '@/commands/command-handler'
+import { TreeViewCmdHandler } from '@/commands/cmd-handler'
 import { DownloadedBlogExport } from '@/models/blog-export'
 import { ExportPost } from '@/models/blog-export/export-post'
 import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post'
 import { URLSearchParams } from 'url'
 import { languages, TextDocumentContentProvider, Uri, window, workspace } from 'vscode'
 
-export class ViewPostCommandHandler extends TreeViewCommandHandler<ExportPostTreeItem> {
+export class ViewPostCmdHandler extends TreeViewCmdHandler<ExportPostTreeItem> {
     static readonly commandName = 'vscode-cnb.blog-export.view-post'
     static readonly schema = 'vscode-cnb.blog-export.post'
 
@@ -30,7 +30,7 @@ export class ViewPostCommandHandler extends TreeViewCommandHandler<ExportPostTre
     }
 
     private async provide(downloadedExport: DownloadedBlogExport, { id: postId, title, isMarkdown }: ExportPost) {
-        const schema = `${ViewPostCommandHandler.schema}-${postId}`
+        const schema = `${ViewPostCmdHandler.schema}-${postId}`
 
         const matchedEditor = window.visibleTextEditors.find(({ document }) => {
             if (document.uri.scheme === schema && !document.isClosed) {

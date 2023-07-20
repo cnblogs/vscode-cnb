@@ -2,8 +2,8 @@ import { BlogExportRecordList } from '@/models/blog-export'
 import { BlogExportApi } from '@/services/blog-export.api'
 
 export class BlogExportRecordsStore {
-    private _cachedList?: Promise<BlogExportRecordList> | null
-    private _cached?: BlogExportRecordList | null
+    private _cachedList: Promise<BlogExportRecordList> | null = null
+    private _cached: BlogExportRecordList | null = null
 
     get cached() {
         return this._cached

@@ -11,7 +11,7 @@ import { searchPostsByTitle } from '@/services/search-post-by-title'
 import * as path from 'path'
 import { refreshPostsList } from './refresh-posts-list'
 import { PostEditDto } from '@/models/post-edit-dto'
-import { postConfigurationPanel } from '@/services/post-configuration-panel.service'
+import { PostCfgPanel } from '@/services/post-cfg-panel.service'
 import { saveFilePendingChanges } from '@/utils/save-file-pending-changes'
 import { extractImages } from '../extract-images'
 import { Settings } from '@/services/settings.service'
@@ -44,7 +44,7 @@ export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
         await uploadPostToCnblogs(await PostService.fetchPostEditDto(postId))
     } else {
         const options = [`新建博文`, `关联已有博文`]
-        const selected = await window.showInformationMessage(
+        const selected = await AlertService.info(
             '本地文件尚未关联到博客园博文',
             {
                 modal: true,
@@ -94,7 +94,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
     post.title = localDraft.fileNameWithoutExt
     post.isMarkdown = true
     post.categoryIds ??= []
-    void postConfigurationPanel.open({
+    void PostCfgPanel.open({
         panelTitle: '',
         localFileUri: localDraft.filePathUri,
         breadcrumbs: ['新建博文', '博文设置', post.title],
@@ -148,7 +148,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
     if (!validatePost(post)) return false
 
     if (Settings.showConfirmMsgWhenUploadPost) {
-        const answer = await vscode.window.showWarningMessage(
+        const answer = await AlertService.warn(
             '确认上传吗?',
             {
                 modal: true,

@@ -1,7 +1,7 @@
 import vscode from 'vscode'
 import { globalCtx } from 'src/services/global-ctx'
 
-export type WebviewEntryName = 'ing' | 'post-configuration'
+export type WebviewEntryName = 'ing' | 'post-cfg'
 
 export async function parseWebviewHtml(entry: WebviewEntryName, webview: vscode.Webview) {
     const path = vscode.Uri.joinPath(globalCtx.assetsUri, 'ui', entry, 'index.html')

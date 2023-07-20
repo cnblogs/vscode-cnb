@@ -1,11 +1,11 @@
 import { PostCategory } from '@/models/post-category'
 import { PostCategoriesListTreeItem } from '@/tree-view-providers/models/categories-list-tree-item'
 import { PostCategoryTreeItem } from '@/tree-view-providers/models/post-category-tree-item'
-import { extensionViews } from '@/tree-view-providers/tree-view-registration'
-import { MultiSelectableTreeViewCommandHandler, TreeViewCommandHandler } from '../command-handler'
+import { extViews } from '@/tree-view-providers/tree-view-registration'
+import { MultiSelectableTreeViewCmdHandler, TreeViewCmdHandler } from '../cmd-handler'
 
-export abstract class BasePostCategoryTreeViewCommandHandler implements TreeViewCommandHandler<PostCategory> {
-    protected readonly view = extensionViews.postCategoriesList
+export abstract class BasePostCategoryTreeViewCmdHandler implements TreeViewCmdHandler<PostCategory> {
+    protected readonly view = extViews.postCategoriesList
 
     constructor(public readonly input: unknown) {}
 
@@ -23,12 +23,12 @@ export abstract class BasePostCategoryTreeViewCommandHandler implements TreeView
     abstract handle(): void | Promise<void>
 }
 
-export abstract class BaseMultiSelectablePostCategoryTreeViewCommandHandler extends MultiSelectableTreeViewCommandHandler<
+export abstract class BaseMultiSelectablePostCategoryTreeViewCmdHandler extends MultiSelectableTreeViewCmdHandler<
     PostCategoriesListTreeItem,
     PostCategory
 > {
     protected get view() {
-        return extensionViews.postCategoriesList
+        return extViews.postCategoriesList
     }
 
     protected parseSelections() {

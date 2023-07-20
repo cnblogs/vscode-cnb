@@ -1,4 +1,3 @@
-import { commands } from 'vscode'
+import { execCmd } from '@/utils/cmd'
 
-export const revealActiveFileInExplorer = () =>
-    commands.executeCommand('workbench.files.action.showActiveFileInExplorer')
+export const revealActiveFileInExplorer = () => execCmd('workbench.files.action.showActiveFileInExplorer')

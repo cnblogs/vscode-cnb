@@ -1,8 +1,8 @@
 import { PostCategories } from '@/models/post-category'
 
-export namespace webviewCommands {
-    export enum UiCommands {
-        editPostConfiguration = 'editPostConfiguration',
+export namespace WebviewCmd {
+    export enum UiCmd {
+        editPostCfg = 'editPostCfg',
         showErrorResponse = 'showErrorResponse',
         updateBreadcrumbs = 'updateBreadcrumbs',
         updateImageUploadStatus = 'updateImageUploadStatus',
@@ -11,7 +11,7 @@ export namespace webviewCommands {
         updateChildCategories = 'updateChildCategories',
     }
 
-    export enum ExtensionCommands {
+    export enum ExtCmd {
         uploadPost = 'uploadPost',
         disposePanel = 'disposePanel',
         uploadImage = 'uploadImage',
@@ -28,18 +28,18 @@ export namespace webviewCommands {
         value: PostCategories
     }
 
-    export namespace ingCommands {
-        export enum UiCommands {
+    export namespace IngCmd {
+        export enum UiCmd {
             setAppState = 'setAppState',
             updateTheme = 'updateTheme',
         }
 
-        export enum ExtensionCommands {
+        export enum ExtCmd {
             refreshIngsList = 'refreshIngsList',
             comment = 'comment',
         }
 
-        export type CommentCommandPayload = {
+        export type CommentCmdPayload = {
             ingId: number
             atUser?: { id: number; displayName: string }
             parentCommentId?: number
@@ -48,17 +48,17 @@ export namespace webviewCommands {
     }
 }
 
-export interface WebviewCommonCommand<T> {
+export interface WebviewCommonCmd<T> {
     payload: T
     command: unknown
 }
 
-export interface IngWebviewUiCommand<T extends Record<string, unknown> = Record<string, unknown>>
-    extends WebviewCommonCommand<T> {
-    command: webviewCommands.ingCommands.UiCommands
+export interface IngWebviewUiCmd<T extends Record<string, unknown> = Record<string, unknown>>
+    extends WebviewCommonCmd<T> {
+    command: WebviewCmd.IngCmd.UiCmd
 }
 
-export interface IngWebviewHostCommand<T extends Record<string, unknown> = Record<string, unknown>>
-    extends WebviewCommonCommand<T> {
-    command: webviewCommands.ingCommands.ExtensionCommands
+export interface IngWebviewHostCmd<T extends Record<string, unknown> = Record<string, unknown>>
+    extends WebviewCommonCmd<T> {
+    command: WebviewCmd.IngCmd.ExtCmd
 }

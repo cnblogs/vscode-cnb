@@ -16,7 +16,7 @@ import { AlertService } from '@/services/alert.service'
 import { BlogExportRecord } from '@/models/blog-export'
 
 export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> {
-    private static _instance?: BlogExportProvider | null
+    private static _instance: BlogExportProvider | null = null
 
     private _treeDataChangedSource?: EventEmitter<BlogExportTreeItem | null | undefined> | null
     private _store?: BlogExportRecordsStore | null

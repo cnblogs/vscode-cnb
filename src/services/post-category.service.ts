@@ -4,14 +4,14 @@ import { globalCtx } from './global-ctx'
 import { URLSearchParams } from 'url'
 
 export class PostCategoryService {
-    private static _instance: PostCategoryService
+    private static _instance: PostCategoryService | null = null
 
     private _cache?: Map<number, PostCategories>
 
     private constructor() {}
 
     static get instance(): PostCategoryService {
-        if (!this._instance) this._instance = new PostCategoryService()
+        this._instance ??= new PostCategoryService()
 
         return this._instance
     }

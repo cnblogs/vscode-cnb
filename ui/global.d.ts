@@ -1,13 +1,13 @@
-type WebviewCommonCommand<TPayload> = import('@models/webview-commands').WebviewCommonCommand<TPayload>
+type WebviewCommonCmd<TPayload> = import('@models/webview-cmd').WebviewCommonCmd<TPayload>
 
 declare interface VsCodeApi {
-    postMessage<T extends WebviewCommonCommand<unknown> = WebviewCommonCommand<{}>>(message: Object | T): any
+    postMessage<T extends WebviewCommonCmd<unknown> = WebviewCommonCmd<{}>>(message: Object | T): any
 }
 
 declare interface Window {
-    addEventListener<TCommand extends WebviewCommonCommand<unknown>>(
+    addEventListener<TCmd extends WebviewCommonCmd<unknown>>(
         type: 'message',
-        callback: (event: { data: TCommand }) => unknown
+        callback: (event: { data: TCmd }) => unknown
     ): void
 }
 

@@ -1,9 +1,9 @@
 import { ActionButton, Label, MessageBar, MessageBarType, Stack, TextField, Text } from '@fluentui/react'
 import { ImageUploadStatusId } from '@models/image-upload-status'
-import { webviewCommands } from '@models/webview-commands'
-import { webviewMessage } from '@models/webview-message'
+import { WebviewCmd } from '@models/webview-cmd'
+import { webviewMessage } from '@models/webview-msg'
 import React from 'react'
-import { vsCodeApi } from 'share/vscode-api'
+import { getVsCodeApiSingleton } from 'share/vscode-api'
 
 export interface IInputSummaryProps {
     summary?: string
@@ -105,7 +105,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
         const data = ev.data as webviewMessage.Message
         const { command } = data
         switch (command) {
-            case webviewCommands.UiCommands.updateImageUploadStatus:
+            case WebviewCmd.UiCmd.updateImageUploadStatus:
                 {
                     const { imageId, status } = data as webviewMessage.UpdateImageUpdateStatusMessage
                     if (imageId === this.uploadingImageId) {
@@ -120,8 +120,8 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
 
     private uploadFeatureImage() {
         this.uploadingImageId = `${Date.now()}`
-        vsCodeApi.getInstance().postMessage({
-            command: webviewCommands.ExtensionCommands.uploadImage,
+        getVsCodeApiSingleton().postMessage({
+            command: WebviewCmd.ExtCmd.uploadImage,
             imageId: this.uploadingImageId,
         } as webviewMessage.UploadImageMessage)
     }

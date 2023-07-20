@@ -17,7 +17,7 @@ import {
 import { globalCtx } from '@/services/global-ctx'
 import RandomString from 'randomstring'
 import { Oauth } from '@/services/oauth.api'
-import extensionUriHandler from '@/utils/uri-handler'
+import { extUriHandler } from '@/utils/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
 import { TokenInfo } from '@/models/token-info'
 import { Optional } from 'utility-types'
@@ -108,9 +108,9 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
                         reject(`${isTimeout ? '由于超时, ' : ''}登录操作已取消`)
                     }),
                     cancelTokenSrc,
-                    extensionUriHandler
+                    extUriHandler
                 )
-                extensionUriHandler.onUri(uri => {
+                extUriHandler.onUri(uri => {
                     if (cancelTokenSrc.token.isCancellationRequested) return
 
                     const authorizationCode = this.parseOauthCallbackUri(uri)

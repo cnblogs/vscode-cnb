@@ -1,4 +1,5 @@
-import { commands, TextDocumentShowOptions, Uri } from 'vscode'
+import { TextDocumentShowOptions, Uri } from 'vscode'
+import { execCmd } from '@/utils/cmd'
 import { Post } from '@/models/post'
 import { LocalDraft } from '@/services/local-draft.service'
 import { PostFileMapManager } from '@/services/post-file-map'
@@ -11,7 +12,7 @@ export const openPostFile = async (post: LocalDraft | Post | string, options?: T
 
     if (!filePath) return
 
-    await commands.executeCommand(
+    await execCmd(
         'vscode.open',
         Uri.file(filePath),
         Object.assign({ preview: false } as TextDocumentShowOptions, options ?? {})

@@ -1,4 +1,5 @@
-import { commands, Uri, window } from 'vscode'
+import { Uri, window } from 'vscode'
+import { execCmd } from '@/utils/cmd'
 import { Post } from '@/models/post'
 import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
@@ -15,5 +16,5 @@ export const viewPostOnline = async (input?: Post | PostTreeItem | Uri) => {
 
     if (!post) return
 
-    await commands.executeCommand('vscode.open', Uri.parse(post.url))
+    await execCmd('vscode.open', Uri.parse(post.url))
 }

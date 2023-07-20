@@ -1,4 +1,4 @@
-import { ViewPostCommandHandler } from '@/commands/blog-export/view-post'
+import { ViewPostCmdHandler } from '@/commands/blog-export/view-post'
 import type { ExportPost } from '@/models/blog-export/export-post'
 import { Settings } from '@/services/settings.service'
 import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-source'
@@ -24,7 +24,7 @@ export class ExportPostTreeItem extends BaseTreeItemSource {
             collapsibleState: TreeItemCollapsibleState.None,
             command: {
                 title: '查看博文',
-                command: ViewPostCommandHandler.commandName,
+                command: ViewPostCmdHandler.commandName,
                 arguments: [this],
             },
             resourceUri: Uri.joinPath(Settings.workspaceUri, title + (isMarkdown ? '.md' : '.html')),

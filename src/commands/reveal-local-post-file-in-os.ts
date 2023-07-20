@@ -1,4 +1,5 @@
-import { commands, Uri } from 'vscode'
+import { Uri } from 'vscode'
+import { execCmd } from '@/utils/cmd'
 import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
 
@@ -8,5 +9,5 @@ export const revealLocalPostFileInOs = (post: Post) => {
     const postFilePath = PostFileMapManager.getFilePath(post.id)
     if (!postFilePath) return
 
-    return commands.executeCommand('revealFileInOS', Uri.file(postFilePath))
+    return execCmd('revealFileInOS', Uri.file(postFilePath))
 }

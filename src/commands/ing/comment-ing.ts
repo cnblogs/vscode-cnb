@@ -1,9 +1,9 @@
-import { CommandHandler } from '@/commands/command-handler'
+import { CmdHandler } from '@/commands/cmd-handler'
 import { IngApi } from '@/services/ing.api'
 import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { ProgressLocation, window } from 'vscode'
 
-export class CommentIngCommandHandler extends CommandHandler {
+export class CommentIngCmdHandler extends CmdHandler {
     private _content = ''
 
     constructor(

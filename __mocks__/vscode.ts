@@ -65,9 +65,9 @@ const debug = {
 }
 
 const commands = {
-    executeCommand: jest.fn(),
-    registerCommand: jest.fn(),
-    registerTextEditorCommand: jest.fn(),
+    execCmd: jest.fn(),
+    regCmd: jest.fn(),
+    regTextEditorCmd: jest.fn(),
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function

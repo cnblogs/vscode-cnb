@@ -1,4 +1,4 @@
-import { TreeViewCommandHandler } from '@/commands/command-handler'
+import { TreeViewCmdHandler } from '@/commands/cmd-handler'
 import { AlertService } from '@/services/alert.service'
 import { BlogExportApi } from '@/services/blog-export.api'
 import { DownloadedExportStore } from '@/services/downloaded-export.store'
@@ -6,14 +6,15 @@ import { globalCtx } from '@/services/global-ctx'
 import { Settings } from '@/services/settings.service'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { BlogExportRecordTreeItem } from '@/tree-view-providers/models/blog-export'
-import { extensionViews } from '@/tree-view-providers/tree-view-registration'
+import { extViews } from '@/tree-view-providers/tree-view-registration'
 import fs from 'fs'
 import { Progress } from 'got'
 import path from 'path'
 import { promisify } from 'util'
 import { commands } from 'vscode'
+import { execCmd } from '@/utils/cmd'
 
-export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExportRecordTreeItem> {
+export class DownloadExportCmdHandler extends TreeViewCmdHandler<BlogExportRecordTreeItem> {
     static readonly commandName = 'vscode-cnb.blog-export.download'
 
     constructor(public readonly input: unknown) {
@@ -40,7 +41,7 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
         const downloadStream = BlogExportApi.download(blogId, exportId)
         const isFileExist = await promisify(fs.exists)(zipFilePath)
 
-        extensionViews.blogExport.reveal(treeItem, { expand: true }).then(undefined, console.warn)
+        extViews.blogExport.reveal(treeItem, { expand: true }).then(undefined, console.warn)
 
         const { optionalInstance: blogExportProvider } = BlogExportProvider
         await this.setIsDownloading(true)
@@ -107,6 +108,6 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
     }
 
     private setIsDownloading(value: boolean) {
-        return commands.executeCommand('setContext', `${globalCtx.extName}.blog-export.downloading`, value || undefined)
+        return execCmd('setContext', `${globalCtx.extName}.blog-export.downloading`, value || undefined)
     }
 }

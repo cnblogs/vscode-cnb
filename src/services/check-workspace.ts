@@ -1,9 +1,10 @@
 import os from 'os'
-import { commands, workspace } from 'vscode'
+import { workspace } from 'vscode'
 import { refreshPostCategoriesList } from '@/commands/post-category/refresh-post-categories-list'
 import { refreshPostsList } from '@/commands/posts-list/refresh-posts-list'
 import { globalCtx } from './global-ctx'
 import { PostFileMapManager } from './post-file-map'
+import { execCmd } from '@/utils/cmd'
 import { Settings } from './settings.service'
 
 const diskSymbolRegex = /^(\S{1,5}:)(.*)/
@@ -20,7 +21,7 @@ export const isTargetWorkspace = (): boolean => {
         targetFolder = targetFolder.replace(diskSymbolRegex, replacer)
     }
     const isTarget = !!currentFolder && currentFolder === targetFolder
-    void commands.executeCommand('setContext', `${globalCtx.extName}.isTargetWorkspace`, isTarget)
+    void execCmd('setContext', `${globalCtx.extName}.isTargetWorkspace`, isTarget)
     return isTarget
 }
 
@@ -36,7 +37,7 @@ export const observeConfigurationChange = () => {
                 refreshPostsList({ queue: true }).catch(() => undefined)
 
             if (ev.affectsConfiguration(`${Settings.prefix}.markdown`))
-                commands.executeCommand('markdown.preview.refresh').then(undefined, () => undefined)
+                execCmd('markdown.preview.refresh').then(undefined, () => undefined)
         })
     )
     isTargetWorkspace()

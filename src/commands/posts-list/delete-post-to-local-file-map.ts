@@ -3,11 +3,12 @@ import { Post } from '@/models/post'
 import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
 import { revealPostsListItem } from '@/services/posts-list-view'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
-import { extensionViews } from '@/tree-view-providers/tree-view-registration'
+import { extViews } from '@/tree-view-providers/tree-view-registration'
+import { AlertService } from '@/services/alert.service'
 
 const confirm = async (posts: Post[]): Promise<boolean> => {
     const options = ['确定']
-    const input = await window.showInformationMessage(
+    const input = await AlertService.info(
         '确定要取消这些博文与本地文件的关联吗?',
         {
             detail: posts.map(x => x.title).join(', '),
@@ -20,7 +21,7 @@ const confirm = async (posts: Post[]): Promise<boolean> => {
 
 export const deletePostToLocalFileMap = async (post: Post | PostTreeItem) => {
     post = post instanceof PostTreeItem ? post.post : post
-    const view = extensionViews.postsList
+    const view = extViews.postsList
     let selectedPosts = view.selection
         .map(x => (x instanceof Post ? x : x instanceof PostTreeItem ? x.post : null))
         .filter((x): x is Post => x != null)

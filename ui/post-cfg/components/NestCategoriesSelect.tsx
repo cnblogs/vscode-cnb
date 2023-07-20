@@ -1,7 +1,7 @@
 import { ActionButton, Checkbox, Icon, Link, Spinner, Stack } from '@fluentui/react'
 import { PostCategories, PostCategory } from '@models/post-category'
 import { take } from 'lodash-es'
-import { personalCategoriesStore } from 'post-configuration/services/personal-categories-store'
+import { personalCategoriesStore } from 'post-cfg/services/personal-categories-store'
 import React from 'react'
 
 export interface INestCategoriesSelectProps {

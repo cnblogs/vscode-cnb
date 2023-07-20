@@ -7,6 +7,7 @@ import { PostCategoriesListTreeItem } from './models/categories-list-tree-item'
 import { IDisposable } from '@fluentui/react'
 import { BlogExportTreeItem } from '@/tree-view-providers/models/blog-export'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
+import { regTreeView } from '@/utils/tree-view'
 
 const _views: {
     postsList?: vscode.TreeView<PostsListTreeItem>
@@ -23,29 +24,26 @@ const _views: {
 }
 let _hasRegistered = false
 
-export const registerTreeViews = () => {
-    if (_hasRegistered) return extensionViews
+export function setupExtTreeView() {
+    if (_hasRegistered) return extViews
 
-    _views.account = vscode.window.createTreeView('cnblogs-account', {
+    _views.account = regTreeView('cnblogs-account', {
         treeDataProvider: accountViewDataProvider,
         canSelectMany: false,
     })
-    _views.postsList = vscode.window.createTreeView('cnblogs-posts-list', {
+    _views.postsList = regTreeView('cnblogs-posts-list', {
         treeDataProvider: postsDataProvider,
         canSelectMany: true,
     })
-    _views.anotherPostsList = vscode.window.createTreeView('cnblogs-posts-list-another', {
+    _views.anotherPostsList = regTreeView('cnblogs-posts-list-another', {
         treeDataProvider: postsDataProvider,
         canSelectMany: true,
     })
-    _views.postCategoriesList = vscode.window.createTreeView<PostCategoriesListTreeItem>(
-        'cnblogs-post-categories-list',
-        {
-            treeDataProvider: postCategoriesDataProvider,
-            canSelectMany: true,
-        }
-    )
-    _views.blogExport = vscode.window.createTreeView<BlogExportTreeItem>('vscode-cnb.blog-export', {
+    _views.postCategoriesList = regTreeView<PostCategoriesListTreeItem>('cnblogs-post-categories-list', {
+        treeDataProvider: postCategoriesDataProvider,
+        canSelectMany: true,
+    })
+    _views.blogExport = regTreeView<BlogExportTreeItem>('vscode-cnb.blog-export', {
         canSelectMany: false,
         treeDataProvider: BlogExportProvider.instance,
     })
@@ -56,10 +54,10 @@ export const registerTreeViews = () => {
 
     globalCtx.extCtx.subscriptions.push(...disposables)
 
-    return extensionViews
+    return extViews
 }
 
-class ExtensionViews implements Required<typeof _views> {
+class ExtViews implements Required<typeof _views> {
     postsLists = _views.postsLists
     visiblePostsList = _views.visiblePostsList
 
@@ -92,4 +90,4 @@ class ExtensionViews implements Required<typeof _views> {
     }
 }
 
-export const extensionViews = new ExtensionViews()
+export const extViews = new ExtViews()

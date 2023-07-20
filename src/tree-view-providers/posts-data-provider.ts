@@ -13,7 +13,7 @@ import { PostTreeItem } from './models/post-tree-item'
 export type PostsListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
 
 export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
-    private static _instance?: PostsDataProvider
+    private static _instance: PostsDataProvider | null = null
 
     protected _pagedPosts?: PageModel<Post>
     protected _onDidChangeTreeData = new EventEmitter<PostsListTreeItem | undefined>()

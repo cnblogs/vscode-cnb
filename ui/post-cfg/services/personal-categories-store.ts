@@ -1,6 +1,6 @@
 import { PostCategories } from '@/models/post-category'
-import { WebviewCommonCommand, webviewCommands } from '@models/webview-commands'
-import { vsCodeApi } from 'share/vscode-api'
+import { WebviewCommonCmd, WebviewCmd } from '@models/webview-cmd'
+import { getVsCodeApiSingleton } from 'share/vscode-api'
 
 let children: Map<number, PostCategories>
 let pendingChildrenQuery: Map<number, Promise<PostCategories>> | undefined | null
@@ -12,7 +12,7 @@ export namespace personalCategoriesStore {
     export const getByParent = async (parent: number): Promise<PostCategories> => {
         children ??= new Map()
         let result = children.get(parent)
-        const vscode = vsCodeApi.getInstance()
+        const vscode = getVsCodeApiSingleton()
 
         if (!result) {
             let promise = pendingChildrenQuery?.get(parent)
@@ -28,7 +28,7 @@ export namespace personalCategoriesStore {
                     const onUpdate = ({
                         data: message,
                     }: {
-                        data: WebviewCommonCommand<webviewCommands.UpdateChildCategoriesPayload>
+                        data: WebviewCommonCmd<WebviewCmd.UpdateChildCategoriesPayload>
                     }) => {
                         console.log('onUpdate', message)
                         if (message.payload.parentId === parent) {
@@ -40,14 +40,14 @@ export namespace personalCategoriesStore {
                         }
                     }
 
-                    window.addEventListener<WebviewCommonCommand<webviewCommands.UpdateChildCategoriesPayload>>(
+                    window.addEventListener<WebviewCommonCmd<WebviewCmd.UpdateChildCategoriesPayload>>(
                         'message',
                         onUpdate
                     )
                 }).finally(() => pendingChildrenQuery?.delete(parent))
 
-                vscode.postMessage<WebviewCommonCommand<webviewCommands.GetChildCategoriesPayload>>({
-                    command: webviewCommands.ExtensionCommands.getChildCategories,
+                vscode.postMessage<WebviewCommonCmd<WebviewCmd.GetChildCategoriesPayload>>({
+                    command: WebviewCmd.ExtCmd.getChildCategories,
                     payload: { parentId: parent },
                 })
             }

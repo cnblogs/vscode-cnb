@@ -1,5 +1,6 @@
 import { MessageItem, MessageOptions, ProgressLocation, Range, Uri, window, workspace, WorkspaceEdit } from 'vscode'
 import { ImageInfo, ImageSrc, MkdImgExtractor, newImageSrcFilter } from '@/services/mkd-img-extractor.service'
+import { AlertService } from '@/services/alert.service'
 
 type ExtractOption = MessageItem & Partial<{ imageSrc: ImageSrc }>
 
@@ -16,8 +17,7 @@ export async function extractImages(arg: unknown, inputImageSrc?: ImageSrc) {
     const extractor = new MkdImgExtractor(markdown, arg)
 
     const images = extractor.findImages()
-    if (images.length <= 0)
-        void (!inputImageSrc != null ? window.showWarningMessage('没有找到可以提取的图片') : undefined)
+    if (images.length <= 0) void (!inputImageSrc != null ? AlertService.warn('没有找到可以提取的图片') : undefined)
 
     const getExtractOption = () => {
         const webImgCount = images.filter(newImageSrcFilter(ImageSrc.web)).length
@@ -36,7 +36,7 @@ export async function extractImages(arg: unknown, inputImageSrc?: ImageSrc) {
             return Promise.resolve(displayOptions.find(ent => ent.imageSrc === inputImageSrc))
 
         // if src is not specified:
-        return window.showInformationMessage<ExtractOption>(
+        return AlertService.info<ExtractOption>(
             '要提取哪些图片? 此操作会替换源文件中的图片链接!',
             {
                 modal: true,
@@ -113,6 +113,6 @@ export async function extractImages(arg: unknown, inputImageSrc?: ImageSrc) {
         const info = failedImages
             .map(info => [info.data, extractor.errors.find(([link]) => link === info.data)?.[1] ?? ''].join(','))
             .join('\n')
-        window.showErrorMessage(`${failedImages.length} 张图片提取失败: ${info}`).then(undefined, console.warn)
+        AlertService.err(`${failedImages.length} 张图片提取失败: ${info}`).then(undefined, console.warn)
     }
 }

@@ -1,7 +1,7 @@
 import { Disposable, EventEmitter, ProviderResult, Uri, UriHandler, Event } from 'vscode'
 import { openPostInVscode } from '@/commands/posts-list/open-post-in-vscode'
 
-class ExtensionUriHandler implements UriHandler, Disposable {
+class ExtUriHandler implements UriHandler, Disposable {
     private _uriEventEmitter?: EventEmitter<Uri>
     private readonly _disposable: Disposable
     private _onUri?: Event<Uri>
@@ -38,6 +38,4 @@ class ExtensionUriHandler implements UriHandler, Disposable {
     }
 }
 
-const extensionUriHandler = new ExtensionUriHandler()
-
-export default extensionUriHandler
+export const extUriHandler = new ExtUriHandler()

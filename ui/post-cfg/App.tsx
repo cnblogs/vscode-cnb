@@ -6,12 +6,12 @@ import { Post } from '@models/post'
 import { personalCategoriesStore } from './services/personal-categories-store'
 import { siteCategoriesStore } from './services/site-categories-store'
 import { tagsStore } from './services/tags-store'
-import { webviewMessage } from '@models/webview-message'
-import { webviewCommands } from '@models/webview-commands'
+import { webviewMessage } from '@models/webview-msg'
+import { WebviewCmd } from '@models/webview-cmd'
 import { PostFormContextProvider } from './components/PostFormContextProvider'
 import { activeThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
-import { vsCodeApi } from 'share/vscode-api'
+import { getVsCodeApiSingleton } from 'share/vscode-api'
 
 interface AppState {
     post?: Post
@@ -28,7 +28,7 @@ class App extends Component<AppProps, AppState> {
         super(props)
         this.state = { theme: activeThemeProvider.activeTheme(), fileName: '', useNestCategoriesSelect: false }
         this.observerMessages()
-        vsCodeApi.getInstance().postMessage({ command: webviewCommands.ExtensionCommands.refreshPost })
+        getVsCodeApiSingleton().postMessage({ command: WebviewCmd.ExtCmd.refreshPost })
     }
 
     render() {
@@ -87,9 +87,9 @@ class App extends Component<AppProps, AppState> {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const message = ev.data as any
 
-            if (command === webviewCommands.UiCommands.editPostConfiguration) {
+            if (command === WebviewCmd.UiCmd.editPostCfg) {
                 const { post, activeTheme, personalCategories, siteCategories, tags, breadcrumbs, fileName } =
-                    message as webviewMessage.EditPostConfigurationMessage
+                    message as webviewMessage.EditPostCfgMessage
                 personalCategoriesStore.set(personalCategories)
                 siteCategoriesStore.set(siteCategories)
                 tagsStore.set(tags)
@@ -101,13 +101,13 @@ class App extends Component<AppProps, AppState> {
                     fileName,
                     useNestCategoriesSelect: personalCategories.some(c => c.childCount > 0),
                 })
-            } else if (command === webviewCommands.UiCommands.updateBreadcrumbs) {
+            } else if (command === WebviewCmd.UiCmd.updateBreadcrumbs) {
                 const { breadcrumbs } = message as webviewMessage.UpdateBreadcrumbsMessage
                 this.setState({ breadcrumbs })
-            } else if (command === webviewCommands.UiCommands.setFluentIconBaseUrl) {
+            } else if (command === WebviewCmd.UiCmd.setFluentIconBaseUrl) {
                 const { baseUrl } = message as webviewMessage.SetFluentIconBaseUrlMessage
                 initializeIcons(baseUrl)
-            } else if (command === webviewCommands.UiCommands.updateTheme) {
+            } else if (command === WebviewCmd.UiCmd.updateTheme) {
                 this.setState({ theme: activeThemeProvider.activeTheme() })
             }
         })

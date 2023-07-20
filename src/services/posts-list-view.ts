@@ -1,5 +1,5 @@
 import { Post } from '@/models/post'
-import { extensionViews } from '@/tree-view-providers/tree-view-registration'
+import { extViews } from '@/tree-view-providers/tree-view-registration'
 
 export const revealPostsListItem = async (
     post: Post,
@@ -7,6 +7,6 @@ export const revealPostsListItem = async (
 ) => {
     if (!post) return
 
-    const view = extensionViews.visiblePostsList()
+    const view = extViews.visiblePostsList()
     await view?.reveal(post, options)
 }

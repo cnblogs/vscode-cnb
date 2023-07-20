@@ -1,9 +1,10 @@
-import { CommandHandler } from '@/commands/command-handler'
+import { CmdHandler } from '@/commands/cmd-handler'
+import { execCmd } from '@/utils/cmd'
 import { globalCtx } from '@/services/global-ctx'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { commands } from 'vscode'
 
-export class RefreshExportRecordsCommandHandler extends CommandHandler {
+export class RefreshExportRecordsCmdHandler extends CmdHandler {
     async handle(): Promise<void> {
         await this.setIsRefreshing(true)
 
@@ -13,10 +14,6 @@ export class RefreshExportRecordsCommandHandler extends CommandHandler {
     }
 
     private setIsRefreshing(value: boolean) {
-        return commands.executeCommand(
-            'setContext',
-            `${globalCtx.extName}.blog-export.records.isRefreshing`,
-            value || undefined
-        )
+        return execCmd('setContext', `${globalCtx.extName}.blog-export.records.isRefreshing`, value || undefined)
     }
 }

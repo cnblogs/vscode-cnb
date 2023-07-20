@@ -6,7 +6,7 @@ import { MessageOptions, Progress, ProgressLocation, Uri, window, workspace } fr
 import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { PostService } from '@/services/post.service'
-import { extensionViews } from '@/tree-view-providers/tree-view-registration'
+import { extViews } from '@/tree-view-providers/tree-view-registration'
 import { chromiumPathProvider } from '@/utils/chromium-path-provider'
 import { Settings } from '@/services/settings.service'
 import { accountManager } from '@/auth/account-manager'
@@ -114,7 +114,7 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
 
     if (!path) {
         const { Options: options } = chromiumPathProvider
-        const input = await window.showWarningMessage(
+        const input = await AlertService.warn(
             '未找到Chromium可执行文件',
             {
                 modal: true,
@@ -140,7 +140,7 @@ const inputTargetFolder = async (): Promise<Uri | undefined> =>
 
 const handlePostInput = (post: Post | PostTreeItem): Promise<Post[]> => {
     const posts: Post[] = [post instanceof PostTreeItem ? post.post : post]
-    extensionViews.visiblePostsList()?.selection.map(item => {
+    extViews.visiblePostsList()?.selection.map(item => {
         item = item instanceof PostTreeItem ? item.post : item
         if (item instanceof Post && !posts.includes(item)) posts.push(item)
     })
@@ -175,7 +175,7 @@ const mapToPostEditDto = async (posts: Post[]) =>
 
 const reportErrors = (errors: string[] | undefined) => {
     if (errors && errors.length > 0) {
-        void window.showErrorMessage('导出 PDF 时遇到错误', {
+        void AlertService.err('导出 PDF 时遇到错误', {
             modal: true,
             detail: errors.join('\n'),
         } as MessageOptions)
@@ -192,7 +192,7 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
         currentUser: { blogApp },
     } = accountManager
 
-    if (!blogApp) return AlertService.warn('无法获取到博客地址, 请检查登录状态')
+    if (!blogApp) return void AlertService.warn('无法获取到博客地址, 请检查登录状态')
 
     reportErrors(
         await window.withProgress<string[] | undefined>(

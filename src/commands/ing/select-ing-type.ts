@@ -1,10 +1,10 @@
-import { CommandHandler } from '@/commands/command-handler'
+import { CmdHandler } from '@/commands/cmd-handler'
 import { IngType, IngTypesMetadata } from '@/models/ing'
 import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { IDisposable } from '@fluentui/react'
 import { QuickPickItem, window } from 'vscode'
 
-export class SelectIngType extends CommandHandler {
+export class SelectIngType extends CmdHandler {
     handle(): Promise<void> {
         const { ingType: curIngType } = IngsListWebviewProvider.ensureRegistered()
         const options: (QuickPickItem & { ingType: IngType })[] = IngTypesMetadata.map(

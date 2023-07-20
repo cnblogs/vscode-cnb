@@ -1,34 +1,23 @@
-import { RefreshExportRecordsCommandHandler } from './refresh'
+import { RefreshExportRecordsCmdHandler } from './refresh'
 import { globalCtx } from '@/services/global-ctx'
-import { commands, Disposable } from 'vscode'
-import { OpenLocalExportCommandHandler } from '@/commands/blog-export/open-local'
-import { EditExportPostCommandHandler } from '@/commands/blog-export/edit'
-import { CreateBlogExportCommandHandler } from '@/commands/blog-export/create'
-import { DownloadExportCommandHandler } from '@/commands/blog-export/download'
-import { ViewPostCommandHandler } from '@/commands/blog-export/view-post'
-import { DeleteCommandHandler } from '@/commands/blog-export/delete'
+import { OpenLocalExportCmdHandler } from '@/commands/blog-export/open-local'
+import { EditExportPostCmdHandler } from '@/commands/blog-export/edit'
+import { CreateBlogExportCmdHandler } from '@/commands/blog-export/create'
+import { DownloadExportCmdHandler } from '@/commands/blog-export/download'
+import { ViewPostCmdHandler } from '@/commands/blog-export/view-post'
+import { DeleteCmdHandler } from '@/commands/blog-export/delete'
+import { regCmd } from '@/utils/cmd'
 
-export function registerCommandsForBlogExport(disposables: Disposable[]) {
+export function regBlogExportCmds() {
     const { extName } = globalCtx
-    disposables.push(
-        commands.registerCommand(`${extName}.blog-export.refresh-records`, () =>
-            new RefreshExportRecordsCommandHandler().handle()
-        ),
-        commands.registerCommand(OpenLocalExportCommandHandler.commandName, () =>
-            new OpenLocalExportCommandHandler().handle()
-        ),
-        commands.registerCommand(EditExportPostCommandHandler.commandName, input =>
-            new EditExportPostCommandHandler(input).handle()
-        ),
-        commands.registerCommand(CreateBlogExportCommandHandler.commandName, () =>
-            new CreateBlogExportCommandHandler().handle()
-        ),
-        commands.registerCommand(DownloadExportCommandHandler.commandName, input =>
-            new DownloadExportCommandHandler(input).handle()
-        ),
-        commands.registerCommand(ViewPostCommandHandler.commandName, input =>
-            new ViewPostCommandHandler(input).handle()
-        ),
-        commands.registerCommand(DeleteCommandHandler.commandName, input => new DeleteCommandHandler(input).handle())
-    )
+
+    return [
+        regCmd(`${extName}.blog-export.refresh-records`, () => new RefreshExportRecordsCmdHandler().handle()),
+        regCmd(OpenLocalExportCmdHandler.commandName, () => new OpenLocalExportCmdHandler().handle()),
+        regCmd(EditExportPostCmdHandler.commandName, input => new EditExportPostCmdHandler(input).handle()),
+        regCmd(CreateBlogExportCmdHandler.commandName, () => new CreateBlogExportCmdHandler().handle()),
+        regCmd(DownloadExportCmdHandler.commandName, input => new DownloadExportCmdHandler(input).handle()),
+        regCmd(ViewPostCmdHandler.commandName, input => new ViewPostCmdHandler(input).handle()),
+        regCmd(DeleteCmdHandler.commandName, input => new DeleteCmdHandler(input).handle()),
+    ]
 }

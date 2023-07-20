@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { TokenInfo } from '@/models/token-info'
 import { AccountInfo } from '@/auth/account-info'
-import { convertObjectKeysToCamelCase } from '@/services/fetch-json-response-to-camel-case'
+import { convertObjectKeysToCamelCase } from '@/services/converter'
 import { globalCtx } from '@/services/global-ctx'
 import fetch from '@/utils/fetch-client'
 import got from '@/utils/http-client'
 import { CancellationToken } from 'vscode'
 import { AbortController } from 'node-abort-controller'
-import { AuthorizationHeaderKey } from '@/utils/constants'
 
 export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
     readonly blog_id: string
@@ -16,6 +15,7 @@ export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
 }
 
 export namespace Oauth {
+    export const AuthHeaderKey = 'Authorization'
     export async function fetchToken(verifyCode: string, authCode: string, cancelToken?: CancellationToken) {
         const abortControl = new AbortController()
         if (cancelToken?.isCancellationRequested) abortControl.abort()
@@ -36,7 +36,7 @@ export namespace Oauth {
             responseType: 'json',
             signal: abortControl.signal,
             headers: {
-                [AuthorizationHeaderKey]: '',
+                [AuthHeaderKey]: '',
             },
         })
 

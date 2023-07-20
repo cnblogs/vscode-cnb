@@ -4,7 +4,7 @@ import { AlertService } from '@/services/alert.service'
 import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { revealPostsListItem } from '@/services/posts-list-view'
-import { postConfigurationPanel } from '@/services/post-configuration-panel.service'
+import { PostCfgPanel } from '@/services/post-cfg-panel.service'
 import fs from 'fs'
 import { LocalDraft } from '@/services/local-draft.service'
 import { saveFilePendingChanges } from '@/utils/save-file-pending-changes'
@@ -34,7 +34,7 @@ export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
 
     const postEditDto = editDto.post
     const localFilePath = PostFileMapManager.getFilePath(postId)
-    await postConfigurationPanel.open({
+    await PostCfgPanel.open({
         panelTitle: '',
         breadcrumbs: ['更新博文设置', editDto.post.title],
         post: postEditDto,

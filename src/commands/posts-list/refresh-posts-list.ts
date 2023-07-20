@@ -4,7 +4,8 @@ import vscode, { window } from 'vscode'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { AlertService } from '@/services/alert.service'
 import { PostsListState } from '@/models/posts-list-state'
-import { extensionViews } from '@/tree-view-providers/tree-view-registration'
+import { extViews } from '@/tree-view-providers/tree-view-registration'
+import { execCmd } from '@/utils/cmd'
 
 let refreshTask: Promise<boolean> | null = null
 
@@ -79,17 +80,15 @@ export const seekPostsList = async () => {
 let isRefreshing = false
 const setRefreshing = async (value = false) => {
     const extName = globalCtx.extName
-    await vscode.commands
-        .executeCommand('setContext', `${extName}.posts-list.refreshing`, value)
-        .then(undefined, () => false)
+    await execCmd('setContext', `${extName}.posts-list.refreshing`, value).then(undefined, () => false)
     isRefreshing = value
 }
 
 const setPostListContext = async (pageCount: number, hasPrevious: boolean, hasNext: boolean) => {
     const extName = globalCtx.extName
-    await vscode.commands.executeCommand('setContext', `${extName}.posts-list.hasPrevious`, hasPrevious)
-    await vscode.commands.executeCommand('setContext', `${extName}.posts-list.hasNext`, hasNext)
-    await vscode.commands.executeCommand('setContext', `${extName}.posts-list.pageCount`, pageCount)
+    await execCmd('setContext', `${extName}.posts-list.hasPrevious`, hasPrevious)
+    await execCmd('setContext', `${extName}.posts-list.hasNext`, hasNext)
+    await execCmd('setContext', `${extName}.posts-list.pageCount`, pageCount)
 }
 
 const alertRefreshing = () => {
@@ -125,7 +124,7 @@ const updatePostsListViewTitle = () => {
     if (!state) return
 
     const { pageIndex, pageCount } = state
-    const views = [extensionViews.postsList, extensionViews.anotherPostsList]
+    const views = [extViews.postsList, extViews.anotherPostsList]
     for (const view of views) {
         let title = view.title ?? ''
         const idx = title.indexOf('(')

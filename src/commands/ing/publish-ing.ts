@@ -1,13 +1,14 @@
-import { CommandHandler } from '@/commands/command-handler'
+import { CmdHandler } from '@/commands/cmd-handler'
+import { execCmd } from '@/utils/cmd'
 import { IngPublishModel, IngType } from '@/models/ing'
 import { AlertService } from '@/services/alert.service'
 import { globalCtx } from '@/services/global-ctx'
 import { IngApi } from '@/services/ing.api'
 import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'
-import { commands, MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode'
+import { MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode'
 
-export class PublishIngCommandHandler extends CommandHandler {
+export class PublishIngCmdHandler extends CmdHandler {
     readonly maxLength = 0
     readonly operation = '发布闪存'
     readonly editingText = '编辑闪存'
@@ -133,7 +134,7 @@ export class PublishIngCommandHandler extends CommandHandler {
             ['编辑访问权限', async () => (await this.acquireInputContent(this.inputStep.access)) !== false],
             ['编辑标签', async () => (await this.acquireInputContent(this.inputStep.tags)) !== false],
         ] as const
-        const selected = await window.showInformationMessage(
+        const selected = await AlertService.info(
             '确定要发布闪存吗?',
             {
                 modal: true,
@@ -159,27 +160,22 @@ export class PublishIngCommandHandler extends CommandHandler {
             }
 
             const options = [
-                [
-                    '打开闪存',
-                    (): Thenable<void> => commands.executeCommand('vscode.open', Uri.parse(globalCtx.config.ingSite)),
-                ],
+                ['打开闪存', (): Thenable<void> => execCmd('vscode.open', Uri.parse(globalCtx.config.ingSite))],
                 [
                     '我的闪存',
-                    (): Thenable<void> =>
-                        commands.executeCommand('vscode.open', Uri.parse(globalCtx.config.ingSite + '/#my')),
+                    (): Thenable<void> => execCmd('vscode.open', Uri.parse(globalCtx.config.ingSite + '/#my')),
                 ],
                 [
                     '新回应',
                     (): Thenable<void> =>
-                        commands.executeCommand('vscode.open', Uri.parse(globalCtx.config.ingSite + '/#recentcomment')),
+                        execCmd('vscode.open', Uri.parse(globalCtx.config.ingSite + '/#recentcomment')),
                 ],
                 [
                     '提到我',
-                    (): Thenable<void> =>
-                        commands.executeCommand('vscode.open', Uri.parse(globalCtx.config.ingSite + '/#mention')),
+                    (): Thenable<void> => execCmd('vscode.open', Uri.parse(globalCtx.config.ingSite + '/#mention')),
                 ],
             ] as const
-            const option = await window.showInformationMessage(
+            const option = await AlertService.info(
                 '闪存已发布, 快去看看吧',
                 { modal: false },
                 ...options.map(v => ({ title: v[0], id: v[0] }))

@@ -7,7 +7,7 @@ import { uploadLocalDiskImage } from './upload-local-disk-image'
 export const uploadImage = async (autoInsertToActiveEditor = true, from?: 'local' | 'clipboard') => {
     const options = ['本地图片文件', '剪贴板图片']
     const selected = !from
-        ? await window.showInformationMessage(
+        ? await AlertService.info(
               '上传图片到博客园',
               {
                   modal: true,

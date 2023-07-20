@@ -11,14 +11,14 @@ import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { Settings } from '@/services/settings.service'
 
 const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefined | null): Promise<void> => {
-    const ctxs: CommandContext[] = []
+    const ctxs: CmdCtx[] = []
     let uri: Uri | undefined
     input = input instanceof PostTreeItem ? input.post : input
     if (parsePostInput(input) && input.id > 0) await handlePostInput(input, ctxs)
     else if ((uri = parseUriInput(input))) await handleUriInput(uri, ctxs)
 
     if (Settings.showConfirmMsgWhenPullPost) {
-        const answer = await window.showWarningMessage(
+        const answer = await AlertService.warn(
             '确认要拉取远程博文吗?',
             {
                 modal: true,
@@ -39,11 +39,11 @@ const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefine
 export { pullPostRemoteUpdates }
 
 type InputType = Post | Uri | undefined | null
-type CommandContext = { postId: number; fileUri: Uri }
+type CmdCtx = { postId: number; fileUri: Uri }
 
 const parsePostInput = (input: InputType): input is Post => input instanceof Post
 
-const handlePostInput = async (post: Post, contexts: CommandContext[]) => {
+const handlePostInput = async (post: Post, contexts: CmdCtx[]) => {
     const { id: postId } = post
     let filePath = PostFileMapManager.getFilePath(postId)
     if (filePath && !fs.existsSync(filePath)) {
@@ -68,7 +68,7 @@ const parseUriInput = (input: InputType): Uri | undefined => {
     if (document && !document.isUntitled) return document.uri
 }
 
-const handleUriInput = (fileUri: Uri, contexts: CommandContext[]): Promise<void> => {
+const handleUriInput = (fileUri: Uri, contexts: CmdCtx[]): Promise<void> => {
     const postId = PostFileMapManager.getPostId(fileUri.fsPath)
     if (!postId) return Promise.resolve().then(() => AlertService.fileNotLinkedToPost(fileUri))
 
@@ -76,7 +76,7 @@ const handleUriInput = (fileUri: Uri, contexts: CommandContext[]): Promise<void>
     return Promise.resolve()
 }
 
-const update = async (contexts: CommandContext[]) => {
+const update = async (contexts: CmdCtx[]) => {
     for (const ctx of contexts) {
         const { fileUri, postId } = ctx
         const { post } = (await PostService.fetchPostEditDto(postId)) ?? {}
@@ -88,4 +88,4 @@ const update = async (contexts: CommandContext[]) => {
     }
 }
 
-const resolveFileNames = (ctxs: CommandContext[]) => `"${ctxs.map(x => path.basename(x.fileUri.fsPath)).join('", ')}"`
+const resolveFileNames = (ctxs: CmdCtx[]) => `"${ctxs.map(x => path.basename(x.fileUri.fsPath)).join('", ')}"`

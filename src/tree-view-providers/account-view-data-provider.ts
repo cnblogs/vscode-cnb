@@ -2,13 +2,13 @@ import { accountManager } from '@/auth/account-manager'
 import { EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode'
 
 export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
-    private static _instance?: AccountViewDataProvider
+    private static _instance: AccountViewDataProvider | null = null
     protected _onDidChangeTreeData = new EventEmitter<null | undefined>()
 
     protected constructor() {}
 
     static get instance() {
-        if (!this._instance) this._instance = new AccountViewDataProvider()
+        this._instance ??= new AccountViewDataProvider()
 
         return this._instance
     }
@@ -42,7 +42,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 tooltip: '博客后台',
                 command: {
                     title: '打开博客后台',
-                    command: 'vscode-cnb.open-my-blog-management-background',
+                    command: 'vscode-cnb.open-my-blog-console',
                     tooltip: '浏览器中打开我的博客后台',
                 },
                 iconPath: new ThemeIcon('console'),

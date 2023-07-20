@@ -5,9 +5,9 @@ import { postCategoryService } from '@/services/post-category.service'
 import { inputPostCategory } from './input-post-category'
 import { refreshPostCategoriesList } from './refresh-post-categories-list'
 import { Settings } from '@/services/settings.service'
-import { BasePostCategoryTreeViewCommandHandler } from './base-tree-view-command-handler'
+import { BasePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
 
-class UpdatePostCategoryTreeViewCommandHandler extends BasePostCategoryTreeViewCommandHandler {
+class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHandler {
     async handle(): Promise<void> {
         const category = this.parseInput()
         if (category == null) return
@@ -60,4 +60,4 @@ class UpdatePostCategoryTreeViewCommandHandler extends BasePostCategoryTreeViewC
     }
 }
 
-export const handleUpdatePostCategory = (arg: unknown) => new UpdatePostCategoryTreeViewCommandHandler(arg).handle()
+export const handleUpdatePostCategory = (arg: unknown) => new UpdatePostCategoryTreeViewCmdHandler(arg).handle()

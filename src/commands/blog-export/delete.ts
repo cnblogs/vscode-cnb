@@ -1,4 +1,4 @@
-import { TreeViewCommandHandler } from '@/commands/command-handler'
+import { TreeViewCmdHandler } from '@/commands/cmd-handler'
 import { DownloadedBlogExport } from '@/models/blog-export'
 import { AlertService } from '@/services/alert.service'
 import { BlogExportApi } from '@/services/blog-export.api'
@@ -10,7 +10,7 @@ import path from 'path'
 import { promisify } from 'util'
 import { MessageItem, window } from 'vscode'
 
-export class DeleteCommandHandler extends TreeViewCommandHandler<DownloadedExportTreeItem | BlogExportRecordTreeItem> {
+export class DeleteCmdHandler extends TreeViewCmdHandler<DownloadedExportTreeItem | BlogExportRecordTreeItem> {
     static readonly commandName = 'vscode-cnb.blog-export.delete'
 
     constructor(private readonly _input: unknown) {
@@ -35,7 +35,7 @@ export class DeleteCommandHandler extends TreeViewCommandHandler<DownloadedExpor
         detail: string | undefined | null = '数据可能无法恢复, 请谨慎操作!'
     ): Thenable<null | { shouldDeleteLocal: boolean } | undefined> {
         const options: (MessageItem & {
-            result: ReturnType<DeleteCommandHandler['confirm']> extends Thenable<infer R> ? R : never
+            result: ReturnType<DeleteCmdHandler['confirm']> extends Thenable<infer R> ? R : never
         })[] = [
             { title: '确定' + (hasLocalFile ? '(保留本地文件)' : ''), result: { shouldDeleteLocal: false } },
             ...(hasLocalFile ? [{ title: '确定(同时删除本地文件)', result: { shouldDeleteLocal: true } }] : []),

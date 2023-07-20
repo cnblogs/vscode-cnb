@@ -1,4 +1,5 @@
 import vscode from 'vscode'
+import { execCmd } from '@/utils/cmd'
 
 export const openMyAccountSettings = () =>
-    vscode.commands.executeCommand('vscode.open', vscode.Uri.parse('https://account.cnblogs.com/settings/account'))
+    execCmd('vscode.open', vscode.Uri.parse('https://account.cnblogs.com/settings/account'))

@@ -3,7 +3,7 @@ import { Stack } from '@fluentui/react/lib/Stack'
 import React from 'react'
 import { CategoriesSelect } from './CategoriesSelect'
 import { SiteHomeContributionOptionsSelector } from './SiteHomeContributionOptionsSelector'
-import { PostConfiguration } from '@models/post-configuration'
+import { PostCfg } from '@models/post-cfg'
 import { Post } from '@models/post'
 import { Label, Spinner } from '@fluentui/react'
 import { SiteCategoriesSelector } from './SiteCategoriesSelector'
@@ -11,25 +11,25 @@ import { TagsInput } from './TagsInput'
 import { CommonOptions } from './CommonOptions'
 import { AccessPermissionSelector } from './AccessPermissionSelector'
 import { PasswordInput } from './PasswordInput'
-import { vsCodeApi } from '../../share/vscode-api'
+import { getVsCodeApiSingleton } from '../../share/vscode-api'
 import { ErrorResponse } from './ErrorResponse'
-import { webviewCommands } from '@models/webview-commands'
-import { webviewMessage } from '@models/webview-message'
+import { WebviewCmd } from '@models/webview-cmd'
+import { webviewMessage } from '@models/webview-msg'
 import { InputSummary } from './InputSummary'
 import { IPostFormContext, PostFormContext } from './PostFormContext'
 import PostEntryNameInput from './PostEntryNameInput'
-import PostTitleInput from 'post-configuration/components/PostTitleInput'
-import NestCategoriesSelect from 'post-configuration/components/NestCategoriesSelect'
+import PostTitleInput from 'post-cfg/components/PostTitleInput'
+import NestCategoriesSelect from 'post-cfg/components/NestCategoriesSelect'
 
 export interface IPostFormProps {
     post?: Post
     fileName?: string
     useNestCategoriesSelect: boolean
-    onConfirm?: (postConfiguration: PostConfiguration) => void
+    onConfirm?: (postCfg: PostCfg) => void
     onTitleChange?: (title: string) => void
 }
 
-export interface IPostFormState extends PostConfiguration {}
+export interface IPostFormState extends PostCfg {}
 
 export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
     static contextType?: React.Context<IPostFormContext> | undefined = PostFormContext
@@ -146,15 +146,13 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
     private onConfirm() {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         this.context.set({ disabled: true, status: 'submitting' })
-        vsCodeApi.getInstance().postMessage({
-            command: webviewCommands.ExtensionCommands.uploadPost,
+        getVsCodeApiSingleton().postMessage({
+            command: WebviewCmd.ExtCmd.uploadPost,
             post: Object.assign({}, this.props.post, this.state),
         } as webviewMessage.UploadPostMessage)
     }
 
     private onCancel() {
-        vsCodeApi
-            .getInstance()
-            .postMessage({ command: webviewCommands.ExtensionCommands.disposePanel } as webviewMessage.Message)
+        getVsCodeApiSingleton().postMessage({ command: WebviewCmd.ExtCmd.disposePanel } as webviewMessage.Message)
     }
 }

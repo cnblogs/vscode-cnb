@@ -1,9 +1,10 @@
-import { CommandHandler } from '@/commands/command-handler'
+import { CmdHandler } from '@/commands/cmd-handler'
+import { execCmd } from '@/utils/cmd'
 import { globalCtx } from '@/services/global-ctx'
-import { commands, Uri } from 'vscode'
+import { Uri } from 'vscode'
 
-export class OpenIngInBrowser extends CommandHandler {
+export class OpenIngInBrowser extends CmdHandler {
     async handle(): Promise<void> {
-        await commands.executeCommand('vscode.open', Uri.parse(globalCtx.config.ingSite))
+        await execCmd('vscode.open', Uri.parse(globalCtx.config.ingSite))
     }
 }

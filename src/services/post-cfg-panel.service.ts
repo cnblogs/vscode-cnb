@@ -7,8 +7,8 @@ import { siteCategoryService } from './site-category.service'
 import { PostTagService } from './post-tag.service'
 import { PostService } from './post.service'
 import { isErrorResponse } from '@/models/error-response'
-import { webviewMessage } from '@/models/webview-message'
-import { WebviewCommonCommand, webviewCommands } from 'src/models/webview-commands'
+import { webviewMessage } from '@/models/webview-msg'
+import { WebviewCommonCmd, WebviewCmd } from 'src/models/webview-cmd'
 import { uploadImage } from '@/commands/upload-image/upload-image'
 import { ImageUploadStatusId } from '@/models/image-upload-status'
 import { openPostFile } from '@/commands/posts-list/open-post-file'
@@ -17,8 +17,8 @@ import path from 'path'
 
 const panels: Map<string, vscode.WebviewPanel> = new Map()
 
-export namespace postConfigurationPanel {
-    interface PostConfigurationPanelOpenOption {
+export namespace PostCfgPanel {
+    interface PostCfgPanelOpenOption {
         post: Post
         panelTitle?: string
         localFileUri?: Uri
@@ -30,12 +30,12 @@ export namespace postConfigurationPanel {
     const resourceRootUri = () => globalCtx.assetsUri
 
     const setHtml = async (webview: vscode.Webview): Promise<void> => {
-        webview.html = await parseWebviewHtml('post-configuration', webview)
+        webview.html = await parseWebviewHtml('post-cfg', webview)
     }
 
     export const buildPanelId = (postId: number, postTitle: string): string => `${postId}-${postTitle}`
     export const findPanelById = (panelId: string) => panels.get(panelId)
-    export const open = async (option: PostConfigurationPanelOpenOption) => {
+    export const open = async (option: PostCfgPanelOpenOption) => {
         const { post, breadcrumbs, localFileUri } = option
         const panelTitle = option.panelTitle ? option.panelTitle : `博文设置 - ${post.title}`
         await openPostFile(post, {
@@ -51,13 +51,13 @@ export namespace postConfigurationPanel {
 
         disposables.push(
             webview.onDidReceiveMessage(async ({ command }: webviewMessage.Message) => {
-                if (command === webviewCommands.ExtensionCommands.refreshPost) {
+                if (command === WebviewCmd.ExtCmd.refreshPost) {
                     await webview.postMessage({
-                        command: webviewCommands.UiCommands.setFluentIconBaseUrl,
+                        command: WebviewCmd.UiCmd.setFluentIconBaseUrl,
                         baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
                     } as webviewMessage.SetFluentIconBaseUrlMessage)
                     await webview.postMessage({
-                        command: webviewCommands.UiCommands.editPostConfiguration,
+                        command: WebviewCmd.UiCmd.editPostCfg,
                         post: cloneDeep(post),
                         activeTheme: vscode.window.activeColorTheme.kind,
                         personalCategories: cloneDeep(await postCategoryService.listCategories()),
@@ -67,7 +67,7 @@ export namespace postConfigurationPanel {
                         fileName: localFileUri
                             ? path.basename(localFileUri.fsPath, path.extname(localFileUri?.fsPath))
                             : '',
-                    } as webviewMessage.EditPostConfigurationMessage)
+                    } as webviewMessage.EditPostCfgMessage)
                 }
             }),
             observeWebviewMessages(panel, option),
@@ -78,7 +78,7 @@ export namespace postConfigurationPanel {
 
     const tryRevealPanel = (
         panelId: string | undefined,
-        options: PostConfigurationPanelOpenOption
+        options: PostCfgPanelOpenOption
     ): vscode.WebviewPanel | undefined => {
         if (!panelId) return
 
@@ -89,7 +89,7 @@ export namespace postConfigurationPanel {
             const { breadcrumbs } = options
             const { webview } = panel
             void webview.postMessage({
-                command: webviewCommands.UiCommands.updateBreadcrumbs,
+                command: WebviewCmd.UiCmd.updateBreadcrumbs,
                 breadcrumbs,
             } as webviewMessage.UpdateBreadcrumbsMessage)
             panel.reveal()
@@ -113,14 +113,14 @@ export namespace postConfigurationPanel {
         return panel
     }
 
-    const onUploadImageCommand = async (
+    const onUploadImageCmd = async (
         panel: vscode.WebviewPanel | undefined,
         message: webviewMessage.UploadImageMessage
     ) => {
         if (panel) {
             const { webview } = panel
             await webview.postMessage({
-                command: webviewCommands.UiCommands.updateImageUploadStatus,
+                command: WebviewCmd.UiCmd.updateImageUploadStatus,
                 status: {
                     id: ImageUploadStatusId.uploading,
                 },
@@ -129,7 +129,7 @@ export namespace postConfigurationPanel {
             try {
                 const imageUrl = await uploadImage(false)
                 await webview.postMessage({
-                    command: webviewCommands.UiCommands.updateImageUploadStatus,
+                    command: WebviewCmd.UiCmd.updateImageUploadStatus,
                     status: {
                         imageUrl,
                         id: ImageUploadStatusId.uploaded,
@@ -139,7 +139,7 @@ export namespace postConfigurationPanel {
             } catch (err) {
                 if (isErrorResponse(err)) {
                     await webview.postMessage({
-                        command: webviewCommands.UiCommands.updateImageUploadStatus,
+                        command: WebviewCmd.UiCmd.updateImageUploadStatus,
                         status: {
                             id: ImageUploadStatusId.failed,
                             errors: err.errors,
@@ -157,7 +157,7 @@ export namespace postConfigurationPanel {
         const { webview } = panel
         return vscode.window.onDidChangeActiveColorTheme(async theme => {
             await webview.postMessage({
-                command: webviewCommands.UiCommands.updateTheme,
+                command: WebviewCmd.UiCmd.updateTheme,
                 colorThemeKind: theme.kind,
             } as webviewMessage.ChangeThemeMessage)
         })
@@ -165,7 +165,7 @@ export namespace postConfigurationPanel {
 
     const observeWebviewMessages = (
         panel: vscode.WebviewPanel | undefined,
-        options: PostConfigurationPanelOpenOption
+        options: PostCfgPanelOpenOption
     ): vscode.Disposable | undefined => {
         if (!panel) return
 
@@ -174,7 +174,7 @@ export namespace postConfigurationPanel {
         return webview.onDidReceiveMessage(async message => {
             const { command } = (message ?? {}) as webviewMessage.Message
             switch (command) {
-                case webviewCommands.ExtensionCommands.uploadPost:
+                case WebviewCmd.ExtCmd.uploadPost:
                     try {
                         if (!panel) return
 
@@ -191,7 +191,7 @@ export namespace postConfigurationPanel {
                     } catch (err) {
                         if (isErrorResponse(err)) {
                             await webview.postMessage({
-                                command: webviewCommands.UiCommands.showErrorResponse,
+                                command: WebviewCmd.UiCmd.showErrorResponse,
                                 errorResponse: err,
                             } as webviewMessage.ShowErrorResponseMessage)
                         } else {
@@ -199,24 +199,24 @@ export namespace postConfigurationPanel {
                         }
                     }
                     break
-                case webviewCommands.ExtensionCommands.disposePanel:
+                case WebviewCmd.ExtCmd.disposePanel:
                     panel?.dispose()
                     break
-                case webviewCommands.ExtensionCommands.uploadImage:
-                    await onUploadImageCommand(panel, <webviewMessage.UploadImageMessage>message)
+                case WebviewCmd.ExtCmd.uploadImage:
+                    await onUploadImageCmd(panel, <webviewMessage.UploadImageMessage>message)
                     break
-                case webviewCommands.ExtensionCommands.getChildCategories:
+                case WebviewCmd.ExtCmd.getChildCategories:
                     {
-                        const { payload } = message as WebviewCommonCommand<webviewCommands.GetChildCategoriesPayload>
+                        const { payload } = message as WebviewCommonCmd<WebviewCmd.GetChildCategoriesPayload>
                         await webview.postMessage({
-                            command: webviewCommands.UiCommands.updateChildCategories,
+                            command: WebviewCmd.UiCmd.updateChildCategories,
                             payload: {
                                 value: await postCategoryService
                                     .listCategories({ parentId: payload.parentId })
                                     .catch(() => []),
                                 parentId: payload.parentId,
                             },
-                        } as WebviewCommonCommand<webviewCommands.UpdateChildCategoriesPayload>)
+                        } as WebviewCommonCmd<WebviewCmd.UpdateChildCategoriesPayload>)
                     }
                     break
             }

@@ -1,7 +1,6 @@
 import { globalCtx } from 'src/services/global-ctx'
 import {
     CancellationToken,
-    commands,
     Disposable,
     Webview,
     WebviewView,
@@ -10,25 +9,26 @@ import {
     window,
 } from 'vscode'
 import { parseWebviewHtml } from 'src/services/parse-webview-html'
-import { IngWebviewHostCommand, IngWebviewUiCommand, webviewCommands } from 'src/models/webview-commands'
+import { IngWebviewHostCmd, IngWebviewUiCmd, WebviewCmd } from 'src/models/webview-cmd'
 import { IngApi } from 'src/services/ing.api'
 import { IngAppState } from 'src/models/ing-view'
 import { IngType, IngTypesMetadata } from 'src/models/ing'
 import { isNumber } from 'lodash-es'
-import { CommentIngCommandHandler } from '@/commands/ing/comment-ing'
+import { CommentIngCmdHandler } from '@/commands/ing/comment-ing'
+import { execCmd } from '@/utils/cmd'
 
 export class IngsListWebviewProvider implements WebviewViewProvider {
-    private static _instance?: IngsListWebviewProvider
+    private static _instance: IngsListWebviewProvider | null = null
 
     readonly viewId = `${globalCtx.extName}.ings-list-webview`
 
     private readonly _baseTitle = '闪存'
-    private _view?: WebviewView
-    private _observer?: IngWebviewMessageObserver
+    private _view: WebviewView | null = null
+    private _observer: IngWebviewMessageObserver | null = null
     private _pageIndex = 1
     private _isRefreshing = false
     private _ingType = IngType.all
-    private _show?: WebviewView['show']
+    private _show: WebviewView['show'] | null = null
 
     private constructor() {}
 
@@ -51,11 +51,12 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     }
 
     get show() {
-        this._show ??= this._view ? this._view.show.bind(this._view) : undefined
+        this._show ??= this._view ? this._view.show.bind(this._view) : null
         return this._show
     }
 
-    static get instance(): IngsListWebviewProvider | undefined {
+    static get instance() {
+        this._instance ??= new IngsListWebviewProvider()
         return this._instance
     }
 
@@ -79,20 +80,22 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         if (this._view && this._view === webviewView) return
 
         this._view = webviewView
+
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [this.assetsUri],
         }
+
         const disposables: Disposable[] = []
         webviewView.webview.onDidReceiveMessage(this.observer.observer, disposables)
         webviewView.webview.html = await this.provideHtml(webviewView.webview)
         window.onDidChangeActiveColorTheme(
-            () => webviewView.webview.postMessage(webviewCommands.UiCommands.updateTheme),
+            () => webviewView.webview.postMessage(WebviewCmd.UiCmd.updateTheme),
             disposables
         )
         webviewView.onDidDispose(() => {
             disposables.forEach(d => void d.dispose())
-            this._view = undefined
+            this._view = null
             this.setIsRefreshing(false).catch(() => undefined)
         }, disposables)
     }
@@ -107,8 +110,8 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
             await this._view.webview
                 .postMessage({
                     payload: { isRefreshing: true },
-                    command: webviewCommands.ingCommands.UiCommands.setAppState,
-                } as IngWebviewUiCommand<Partial<IngAppState>>)
+                    command: WebviewCmd.IngCmd.UiCmd.setAppState,
+                } as IngWebviewUiCmd<Partial<IngAppState>>)
                 .then(undefined, () => undefined)
             const ings = await IngApi.list({
                 type: ingType,
@@ -118,13 +121,13 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
             const comments = await IngApi.listComments(...ings.map(x => x.id))
             await this._view.webview
                 .postMessage({
-                    command: webviewCommands.ingCommands.UiCommands.setAppState,
+                    command: WebviewCmd.IngCmd.UiCmd.setAppState,
                     payload: {
                         ings,
                         isRefreshing: false,
                         comments,
                     },
-                } as IngWebviewUiCommand<Omit<IngAppState, ''>>)
+                } as IngWebviewUiCmd<Omit<IngAppState, ''>>)
                 .then(undefined, () => undefined)
         } else {
             this.show()
@@ -140,11 +143,11 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         if (!this._view || !this._view.visible) return
         const comments = await IngApi.listComments(...ingIds)
         await this._view.webview.postMessage({
-            command: webviewCommands.ingCommands.UiCommands.setAppState,
+            command: WebviewCmd.IngCmd.UiCmd.setAppState,
             payload: {
                 comments,
             },
-        } as IngWebviewUiCommand<Omit<IngAppState, ''>>)
+        } as IngWebviewUiCmd<Omit<IngAppState, ''>>)
     }
 
     private provideHtml(webview: Webview) {
@@ -152,16 +155,18 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     }
 
     private async setIsRefreshing(value: boolean) {
-        await commands
-            .executeCommand('setContext', `${globalCtx.extName}.ingsList.isRefreshing`, value ? true : undefined)
-            .then(undefined, () => undefined)
+        await execCmd('setContext', `${globalCtx.extName}.ingsList.isRefreshing`, value ? true : undefined).then(
+            undefined,
+            () => undefined
+        )
         this._isRefreshing = value
     }
 
     private async setPageIndex(value: number) {
-        await commands
-            .executeCommand('setContext', `${globalCtx.extName}.ingsList.pageIndex`, value > 0 ? value : undefined)
-            .then(undefined, () => undefined)
+        await execCmd('setContext', `${globalCtx.extName}.ingsList.pageIndex`, value > 0 ? value : undefined).then(
+            undefined,
+            () => undefined
+        )
         this._pageIndex = value
     }
 
@@ -181,9 +186,9 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 class IngWebviewMessageObserver {
     constructor(private _provider: IngsListWebviewProvider) {}
 
-    observer = ({ command, payload }: IngWebviewHostCommand) => {
+    observer = ({ command, payload }: IngWebviewHostCmd) => {
         switch (command) {
-            case webviewCommands.ingCommands.ExtensionCommands.refreshIngsList: {
+            case WebviewCmd.IngCmd.ExtCmd.refreshIngsList: {
                 const { ingType, pageIndex } = payload
                 return this._provider.refreshIngsList({
                     ingType:
@@ -193,10 +198,9 @@ class IngWebviewMessageObserver {
                     pageIndex: isNumber(pageIndex) ? pageIndex : undefined,
                 })
             }
-            case webviewCommands.ingCommands.ExtensionCommands.comment: {
-                const { atUser, ingId, ingContent, parentCommentId } =
-                    payload as webviewCommands.ingCommands.CommentCommandPayload
-                return new CommentIngCommandHandler(ingId, ingContent, parentCommentId, atUser).handle()
+            case WebviewCmd.IngCmd.ExtCmd.comment: {
+                const { atUser, ingId, ingContent, parentCommentId } = payload as WebviewCmd.IngCmd.CommentCmdPayload
+                return new CommentIngCmdHandler(ingId, ingContent, parentCommentId, atUser).handle()
             }
         }
     }

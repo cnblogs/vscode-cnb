@@ -9,6 +9,7 @@ import { AuthProvider } from '@/auth/auth-provider'
 import { AuthSession } from '@/auth/auth-session'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { AlertService } from '@/services/alert.service'
+import { execCmd } from '@/utils/cmd'
 
 const isAuthorizedStorageKey = 'isAuthorized'
 
@@ -87,14 +88,10 @@ class AccountManager extends vscode.Disposable {
     async updateAuthStatus() {
         await this.ensureSession({ createIfNone: false })
 
-        await vscode.commands.executeCommand(
-            'setContext',
-            `${globalCtx.extName}.${isAuthorizedStorageKey}`,
-            this.isAuthorized
-        )
+        await execCmd('setContext', `${globalCtx.extName}.${isAuthorizedStorageKey}`, this.isAuthorized)
 
         if (this.isAuthorized) {
-            await vscode.commands.executeCommand('setContext', `${globalCtx.extName}.user`, {
+            await execCmd('setContext', `${globalCtx.extName}.user`, {
                 name: this.currentUser.name,
                 avatar: this.currentUser.avatar,
             })

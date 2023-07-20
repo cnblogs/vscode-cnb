@@ -1,4 +1,4 @@
-import { TreeViewCommandHandler } from '@/commands/command-handler'
+import { TreeViewCmdHandler } from '@/commands/cmd-handler'
 import { Post } from '@/models/post'
 import { AlertService } from '@/services/alert.service'
 import { PostFileMapManager } from '@/services/post-file-map'
@@ -12,7 +12,7 @@ interface CopyStrategy {
     provideContent: (post: Post) => Thenable<string>
 }
 
-export class CopyPostLinkCommandHandler extends TreeViewCommandHandler<Thenable<Post | null | undefined>> {
+export class CopyPostLinkCmdHandler extends TreeViewCmdHandler<Thenable<Post | null | undefined>> {
     private readonly _strategies: { [key in LinkFormat]: CopyStrategy } = {
         raw: {
             name: '复制链接',

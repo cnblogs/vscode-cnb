@@ -1,4 +1,4 @@
-import { TreeViewCommandHandler } from '@/commands/command-handler'
+import { TreeViewCmdHandler } from '@/commands/cmd-handler'
 import { openPostFile } from '@/commands/posts-list/open-post-file'
 import { AlertService } from '@/services/alert.service'
 import { Settings } from '@/services/settings.service'
@@ -8,7 +8,7 @@ import path from 'path'
 import sanitizeFileName from 'sanitize-filename'
 import { promisify } from 'util'
 
-export class EditExportPostCommandHandler extends TreeViewCommandHandler<ExportPostTreeItem> {
+export class EditExportPostCmdHandler extends TreeViewCmdHandler<ExportPostTreeItem> {
     static readonly commandName = 'vscode-cnb.blog-export.edit'
 
     constructor(public readonly input: unknown) {
@@ -21,7 +21,7 @@ export class EditExportPostCommandHandler extends TreeViewCommandHandler<ExportP
 
     async handle(): Promise<void> {
         const target = this.parseInput()
-        if (!target) return AlertService.warn('不支持的参数输入')
+        if (!target) return void AlertService.warn('不支持的参数输入')
 
         const {
             post: { title, isMarkdown, id: postId },
