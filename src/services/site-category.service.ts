@@ -3,7 +3,7 @@ import { SiteCategories, SiteCategory } from '@/models/site-category'
 import { globalCtx } from './global-ctx'
 
 export namespace siteCategoryService {
-    let cached: SiteCategories | undefined
+    let cached: SiteCategories | null = null
 
     export const fetchAll = async (forceRefresh = false): Promise<SiteCategories> => {
         if (cached && !forceRefresh) return cached

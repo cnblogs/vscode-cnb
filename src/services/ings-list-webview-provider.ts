@@ -25,7 +25,6 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     private readonly _baseTitle = '闪存'
     private _view?: WebviewView
     private _observer?: IngWebviewMessageObserver
-    private _ingApi?: IngApi
     private _pageIndex = 1
     private _isRefreshing = false
     private _ingType = IngType.all
@@ -62,11 +61,6 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
     private get assetsUri() {
         return globalCtx.assetsUri
-    }
-
-    private get ingApi() {
-        this._ingApi ??= new IngApi()
-        return this._ingApi
     }
 
     static ensureRegistered() {
@@ -116,12 +110,12 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
                     command: webviewCommands.ingCommands.UiCommands.setAppState,
                 } as IngWebviewUiCommand<Partial<IngAppState>>)
                 .then(undefined, () => undefined)
-            const ings = await this.ingApi.list({
+            const ings = await IngApi.list({
                 type: ingType,
                 pageIndex,
                 pageSize: 30,
             })
-            const comments = await this.ingApi.listComments(ings?.map(x => x.id) ?? [])
+            const comments = await IngApi.listComments(...ings.map(x => x.id))
             await this._view.webview
                 .postMessage({
                     command: webviewCommands.ingCommands.UiCommands.setAppState,
@@ -144,7 +138,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
     async updateComments(ingIds: number[]) {
         if (!this._view || !this._view.visible) return
-        const comments = await this.ingApi.listComments(ingIds)
+        const comments = await IngApi.listComments(...ingIds)
         await this._view.webview.postMessage({
             command: webviewCommands.ingCommands.UiCommands.setAppState,
             payload: {

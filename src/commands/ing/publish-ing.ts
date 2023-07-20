@@ -86,12 +86,10 @@ export class PublishIngCommandHandler extends CommandHandler {
     }
 
     private async publish(model: IngPublishModel): Promise<void> {
-        const api = new IngApi()
-
         return this.onPublished(
             await window.withProgress({ location: ProgressLocation.Notification, title: '正在发闪, 请稍候...' }, p => {
                 p.report({ increment: 30 })
-                return api.publishIng(model).then(isPublished => {
+                return IngApi.publishIng(model).then(isPublished => {
                     p.report({ increment: 70 })
                     return isPublished
                 })

@@ -73,7 +73,7 @@ export class DeleteCommandHandler extends TreeViewCommandHandler<DownloadedExpor
 
     private async deleteExportRecordItem(item: BlogExportRecordTreeItem) {
         const { record } = item
-        const downloaded = await DownloadedExportStore.instance.findById(record.id)
+        const downloaded = await DownloadedExportStore.findById(record.id)
 
         const confirmResult = await this.confirm(
             `云端博客备份-${record.fileName}`,
@@ -83,8 +83,7 @@ export class DeleteCommandHandler extends TreeViewCommandHandler<DownloadedExpor
         if (confirmResult == null) return
 
         const { shouldDeleteLocal } = confirmResult
-        const hasDeleted = await new BlogExportApi()
-            .delete(record.id)
+        const hasDeleted = await BlogExportApi.del(record.id)
             .then(() => true)
             .catch((e: unknown) => {
                 AlertService.httpErr(typeof e === 'object' && e != null ? e : {})
@@ -96,9 +95,9 @@ export class DeleteCommandHandler extends TreeViewCommandHandler<DownloadedExpor
     }
 
     private async removeDownloadedBlogExport(downloaded: DownloadedBlogExport, { shouldDeleteLocal = false }) {
-        await DownloadedExportStore.instance
-            .remove(downloaded, { shouldRemoveExportRecordMap: shouldDeleteLocal })
-            .catch(console.warn)
+        await DownloadedExportStore.remove(downloaded, { shouldRemoveExportRecordMap: shouldDeleteLocal }).catch(
+            console.warn
+        )
         if (shouldDeleteLocal) await promisify(fs.rm)(downloaded.filePath).catch(console.warn)
     }
 }

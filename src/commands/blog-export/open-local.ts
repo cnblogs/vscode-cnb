@@ -62,7 +62,7 @@ export class OpenLocalExportCommandHandler extends CommandHandler {
         const exportRecord = await treeProvider?.store
             .list()
             .then(x => x.items.find(i => i.fileName === dbFileName && i.fileBytes === dbFileSize))
-        await DownloadedExportStore.instance.add(dbFilePath, exportRecord?.id)
+        await DownloadedExportStore.add(dbFilePath, exportRecord?.id)
 
         if (exportRecord) await treeProvider?.refreshRecords({ force: false })
         else await treeProvider?.refreshDownloadedExports()

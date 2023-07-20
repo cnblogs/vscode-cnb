@@ -98,7 +98,7 @@ export class DownloadedExportsEntryTreeItem
     }
 
     getChildrenAsync: () => Promise<DownloadedExportTreeItem[]> = async () => {
-        this._children ??= parseDownloadedExports(this, await DownloadedExportStore.instance.list())
+        this._children ??= parseDownloadedExports(this, await DownloadedExportStore.list())
         return this._children
     }
 

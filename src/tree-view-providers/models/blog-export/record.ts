@@ -15,7 +15,7 @@ import { BlogExportApi } from '@/services/blog-export.api'
 
 export class BlogExportRecordTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<BlogExportTreeItem> {
     static readonly contextValue = 'cnblogs-export-record'
-    private _blogExportApi?: BlogExportApi | null
+
     private _downloadingProgress?: {
         percentage?: number
         transferred?: number
@@ -25,11 +25,6 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
 
     constructor(private readonly _treeDataProvider: BlogExportProvider, public record: BlogExportRecord) {
         super()
-    }
-
-    protected get blogExportApi() {
-        this._blogExportApi ??= new BlogExportApi()
-        return this._blogExportApi
     }
 
     toTreeItem(): Promise<TreeItem> {
@@ -60,11 +55,9 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
     }
 
     private pollingStatus() {
-        const { blogExportApi } = this
         const timeoutId = setTimeout(() => {
             clearTimeout(timeoutId)
-            blogExportApi
-                .getById(this.record.id)
+            BlogExportApi.getById(this.record.id)
                 .then(record => {
                     this.record = record
                 })
@@ -82,7 +75,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
         } = this
         const formattedFileSize = filesize(fileBytes)
         const dateTimeFormat = 'yyyy MM-dd HH:mm'
-        const localExport = await DownloadedExportStore.instance.findById(id)
+        const localExport = await DownloadedExportStore.findById(id)
         const items = [
             new BlogExportRecordMetadata(
                 this,

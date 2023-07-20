@@ -7,18 +7,11 @@ import { MessageItem, window } from 'vscode'
 export class CreateBlogExportCommandHandler extends CommandHandler {
     static readonly commandName = 'vscode-cnb.blog-export.create'
 
-    private _blogExportApi?: BlogExportApi | null
-
-    protected get blogExportApi() {
-        this._blogExportApi ??= new BlogExportApi()
-        return this._blogExportApi
-    }
-
     async handle(): Promise<void> {
         if (!(await this.confirm())) return
 
         if (
-            (await this.blogExportApi.create().catch((e: unknown) => {
+            (await BlogExportApi.create().catch((e: unknown) => {
                 AlertService.httpErr(typeof e === 'object' && e ? e : {}, { message: '创建博客备份失败' })
                 return false
             })) !== false

@@ -5,53 +5,57 @@ import got from '@/utils/http-client'
 const basePath = `${globalCtx.config.apiBaseUrl}/api/blogExports`
 const downloadOrigin = 'https://export.cnblogs.com'
 
-export class BlogExportApi {
-    list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }): Promise<BlogExportRecordList> {
-        return got
-            .get<BlogExportRecordList>(`${basePath}`, {
-                searchParams: new URLSearchParams({ pageIndex: `${pageIndex ?? ''}`, pageSize: `${pageSize ?? ''}` }),
-                responseType: 'json',
-            })
-            .then(r => r.body)
+export namespace BlogExportApi {
+    export async function list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }) {
+        const para = new URLSearchParams({ pageIndex: `${pageIndex ?? ''}`, pageSize: `${pageSize ?? ''}` })
+
+        const res = await got.get<BlogExportRecordList>(`${basePath}`, {
+            searchParams: para,
+            responseType: 'json',
+        })
+
+        return res.body
     }
 
-    create(): Promise<BlogExportRecord> {
-        return got.post<BlogExportRecord>(`${basePath}`, { responseType: 'json' }).then(r => r.body)
+    export async function create() {
+        const res = await got.post<BlogExportRecord>(`${basePath}`, { responseType: 'json' })
+
+        return res.body
     }
 
-    delete(id: number): Promise<void> {
-        return got.delete(`${basePath}/${id}`).then(() => undefined)
+    export async function del(id: number): Promise<void> {
+        await got.delete(`${basePath}/${id}`).then(() => undefined)
     }
 
-    getById(id: number): Promise<BlogExportRecord> {
-        return got
-            .get<BlogExportRecord>(`${basePath}/${id}`, {
-                responseType: 'json',
-                timeout: {
-                    request: 500,
-                },
-                retry: {
-                    limit: 0,
-                },
-            })
-            .then(x => x.body)
+    export async function getById(id: number): Promise<BlogExportRecord> {
+        const res = await got.get<BlogExportRecord>(`${basePath}/${id}`, {
+            responseType: 'json',
+            timeout: {
+                request: 500,
+            },
+            retry: {
+                limit: 0,
+            },
+        })
+
+        return res.body
     }
 
-    download(blogId: number, exportId: number) {
-        return got
-            .extend({
-                hooks: {
-                    beforeRedirect: [
-                        (opt, resp) => {
-                            const location = resp.headers.location
-                            if (location && location.includes('account.cnblogs.com')) throw new Error('未授权')
-                        },
-                    ],
-                },
-            })
-            .stream.get(`${downloadOrigin}/blogs/${blogId}/exports/${exportId}`, {
-                throwHttpErrors: true,
-                followRedirect: true,
-            })
+    export function download(blogId: number, exportId: number) {
+        const g = got.extend({
+            hooks: {
+                beforeRedirect: [
+                    (opt, resp) => {
+                        const location = resp.headers.location
+                        if (location && location.includes('account.cnblogs.com')) throw new Error('未授权')
+                    },
+                ],
+            },
+        })
+
+        return g.stream.get(`${downloadOrigin}/blogs/${blogId}/exports/${exportId}`, {
+            throwHttpErrors: true,
+            followRedirect: true,
+        })
     }
 }

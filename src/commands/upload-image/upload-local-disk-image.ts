@@ -1,5 +1,5 @@
 import { ProgressLocation, window } from 'vscode'
-import { imageService } from '@/services/image.service'
+import { ImageService } from '@/services/image.service'
 import fs from 'fs'
 
 export const uploadLocalDiskImage = async () => {
@@ -25,7 +25,7 @@ export const uploadLocalDiskImage = async () => {
             })
             const readStream = fs.createReadStream(imageFilePath)
             try {
-                return await imageService.upload(readStream)
+                return await ImageService.upload(readStream)
             } finally {
                 p.report({
                     increment: 100,

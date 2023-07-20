@@ -4,7 +4,7 @@ import { Post } from '@/models/post'
 import { globalCtx } from './global-ctx'
 import { postCategoryService } from './post-category.service'
 import { siteCategoryService } from './site-category.service'
-import { postTagService } from './post-tag.service'
+import { PostTagService } from './post-tag.service'
 import { PostService } from './post.service'
 import { isErrorResponse } from '@/models/error-response'
 import { webviewMessage } from '@/models/webview-message'
@@ -62,7 +62,7 @@ export namespace postConfigurationPanel {
                         activeTheme: vscode.window.activeColorTheme.kind,
                         personalCategories: cloneDeep(await postCategoryService.listCategories()),
                         siteCategories: cloneDeep(await siteCategoryService.fetchAll()),
-                        tags: cloneDeep(await postTagService.fetchTags()),
+                        tags: cloneDeep(await PostTagService.fetchTags()),
                         breadcrumbs,
                         fileName: localFileUri
                             ? path.basename(localFileUri.fsPath, path.extname(localFileUri?.fsPath))

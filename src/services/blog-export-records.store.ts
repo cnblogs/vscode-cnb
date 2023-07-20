@@ -2,7 +2,6 @@ import { BlogExportRecordList } from '@/models/blog-export'
 import { BlogExportApi } from '@/services/blog-export.api'
 
 export class BlogExportRecordsStore {
-    private readonly _api = new BlogExportApi()
     private _cachedList?: Promise<BlogExportRecordList> | null
     private _cached?: BlogExportRecordList | null
 
@@ -24,7 +23,7 @@ export class BlogExportRecordsStore {
         this._cached = null
     }
 
-    list({
+    async list({
         pageIndex = 1,
         pageSize = 500,
     }: {
@@ -32,6 +31,9 @@ export class BlogExportRecordsStore {
         pageSize?: number
         shouldRefresh?: boolean
     } = {}): Promise<BlogExportRecordList> {
-        return (this._cachedList ??= this._api.list({ pageIndex, pageSize })).then(d => (this._cached = d))
+        this._cachedList ??= BlogExportApi.list({ pageIndex, pageSize })
+        this._cached = await this._cachedList
+
+        return this._cached
     }
 }

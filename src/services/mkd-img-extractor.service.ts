@@ -2,7 +2,7 @@ import path from 'path'
 import { isString } from 'lodash-es'
 import fs from 'fs'
 import { Uri, workspace } from 'vscode'
-import { imageService } from './image.service'
+import { ImageService } from './image.service'
 import { isErrorResponse } from '@/models/error-response'
 import { promisify } from 'util'
 import { Readable } from 'stream'
@@ -115,7 +115,7 @@ export class MkdImgExtractor {
             const dstInfo = await (async () => {
                 if (streamOrLink === undefined) return null
                 try {
-                    const newLink = isString(streamOrLink) ? streamOrLink : await imageService.upload(streamOrLink)
+                    const newLink = isString(streamOrLink) ? streamOrLink : await ImageService.upload(streamOrLink)
 
                     return {
                         ...srcInfo,
@@ -175,7 +175,7 @@ export class MkdImgExtractor {
 
     private async resolveWebImg(url: string) {
         try {
-            return await imageService.download(url)
+            return await ImageService.download(url)
         } catch (e) {
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             this._errors.push([url, `无法下载网络图片: ${e}`])

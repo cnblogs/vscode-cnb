@@ -16,15 +16,8 @@ import { commands } from 'vscode'
 export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExportRecordTreeItem> {
     static readonly commandName = 'vscode-cnb.blog-export.download'
 
-    private _exportApi?: BlogExportApi | null
-
     constructor(public readonly input: unknown) {
         super()
-    }
-
-    protected get exportApi() {
-        this._exportApi ??= new BlogExportApi()
-        return this._exportApi
     }
 
     parseInput(): BlogExportRecordTreeItem | null | undefined {
@@ -40,12 +33,11 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
 
         if (blogId < 0 || exportId <= 0) return
 
-        const { exportApi } = this
         const targetDir = path.join(Settings.workspaceUri.fsPath, '博客备份')
         await promisify(fs.mkdir)(targetDir, { recursive: true })
         const nonZipFilePath = path.join(targetDir, treeItem.record.fileName)
         const zipFilePath = nonZipFilePath + '.zip'
-        const downloadStream = exportApi.download(blogId, exportId)
+        const downloadStream = BlogExportApi.download(blogId, exportId)
         const isFileExist = await promisify(fs.exists)(zipFilePath)
 
         extensionViews.blogExport.reveal(treeItem, { expand: true }).then(undefined, console.warn)
@@ -97,8 +89,7 @@ export class DownloadExportCommandHandler extends TreeViewCommandHandler<BlogExp
                                         ).then(() => promisify(fs.rm)(zipFilePath))
                                     })
                                     .then(() => {
-                                        DownloadedExportStore.instance
-                                            .add(nonZipFilePath, exportId)
+                                        DownloadedExportStore.add(nonZipFilePath, exportId)
                                             .then(() => treeItem.reportDownloadingProgress(null))
                                             .then(() => blogExportProvider?.refreshItem(treeItem))
                                             .then(() => blogExportProvider?.refreshDownloadedExports())

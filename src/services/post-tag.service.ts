@@ -2,21 +2,11 @@ import got from '@/utils/http-client'
 import { PostTag } from '@/models/post-tag'
 import { globalCtx } from './global-ctx'
 
-export class PostTagService {
-    private static _instance: PostTagService
+let cachedTags: PostTag[] | null = null
 
-    private _cachedTags?: PostTag[]
-
-    private constructor() {}
-
-    static get instance() {
-        if (!this._instance) this._instance = new PostTagService()
-
-        return this._instance
-    }
-
-    async fetchTags(forceRefresh = false): Promise<PostTag[]> {
-        if (this._cachedTags && !forceRefresh) return this._cachedTags
+export namespace PostTagService {
+    export async function fetchTags(forceRefresh = false): Promise<PostTag[]> {
+        if (cachedTags && !forceRefresh) return cachedTags
 
         const {
             ok: isOk,
@@ -24,12 +14,16 @@ export class PostTagService {
             method,
             body,
         } = await got.get<PostTag[]>(`${globalCtx.config.apiBaseUrl}/api/tags/list`, { responseType: 'json' })
+
         if (!isOk) throw Error(`Failed to ${method} ${url}`)
 
-        return Array.isArray(body)
-            ? body.map((x: PostTag) => Object.assign(new PostTag(), x)).filter(({ name: tagName }) => tagName)
-            : []
+        if (Array.isArray(body)) {
+            cachedTags = body
+                .map((x: PostTag) => Object.assign(new PostTag(), x))
+                .filter(({ name: tagName }) => tagName)
+            return cachedTags
+        }
+
+        return []
     }
 }
-
-export const postTagService = PostTagService.instance

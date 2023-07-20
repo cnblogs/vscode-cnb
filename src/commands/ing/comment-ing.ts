@@ -4,7 +4,6 @@ import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { ProgressLocation, window } from 'vscode'
 
 export class CommentIngCommandHandler extends CommandHandler {
-    private _ingApi?: IngApi
     private _content = ''
 
     constructor(
@@ -14,11 +13,6 @@ export class CommentIngCommandHandler extends CommandHandler {
         private _atUser?: { id: number; displayName: string }
     ) {
         super()
-    }
-
-    private get ingApi() {
-        this._ingApi ??= new IngApi()
-        return this._ingApi
     }
 
     async handle(): Promise<void> {
@@ -42,13 +36,11 @@ export class CommentIngCommandHandler extends CommandHandler {
                 { location: ProgressLocation.Notification, title: '正在发表评论, 请稍后...' },
                 p => {
                     p.report({ increment: 30 })
-                    return this.ingApi
-                        .comment(this._ingId, {
-                            replyTo: atUserId,
-                            content: atContent + this._content,
-                            parentCommentId: this._parentCommentId ?? 0,
-                        })
-                        .then(hasCommented => (hasCommented ? this.onCommented() : undefined))
+                    return IngApi.comment(this._ingId, {
+                        replyTo: atUserId,
+                        content: atContent + this._content,
+                        parentCommentId: this._parentCommentId ?? 0,
+                    }).then(hasCommented => (hasCommented ? this.onCommented() : undefined))
                 }
             )
         }
