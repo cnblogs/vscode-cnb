@@ -1,13 +1,13 @@
+import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
-import { Alert } from '@/services/alert.service'
-import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
+import { AlertService } from '@/services/alert.service'
 import { PostService } from '@/services/post.service'
-import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
-import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
+import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { extViews } from '@/tree-view-providers/tree-view-registration'
-import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { refreshPostsList } from './refresh-posts-list'
+import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
+import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
 
 let isDeleting = false
 
@@ -18,7 +18,7 @@ const confirmDelete = async (
     if (!selectedPosts || selectedPosts.length <= 0) return result
 
     const items = ['确定(保留本地文件)', '确定(同时删除本地文件)']
-    const clicked = await Alert.warn(
+    const clicked = await AlertService.warn(
         '确定要删除吗?',
         {
             detail: `确认后将会删除 ${selectedPosts.map(x => x.title).join(', ')} 这${selectedPosts.length}篇博文吗?`,
@@ -55,7 +55,7 @@ export const deleteSelectedPosts = async (arg: unknown) => {
     if (selectedPosts.length <= 0) return
 
     if (isDeleting) {
-        void Alert.warn('休息会儿再点吧~')
+        AlertService.warn('休息会儿再点吧~')
         return
     }
 
@@ -91,7 +91,7 @@ export const deleteSelectedPosts = async (arg: unknown) => {
                 postIds: selectedPosts.map(({ id }) => id),
             })
         } catch (err) {
-            void Alert.err('删除博文失败', {
+            void AlertService.err('删除博文失败', {
                 detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
             } as MessageOptions)
         } finally {

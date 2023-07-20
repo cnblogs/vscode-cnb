@@ -1,5 +1,5 @@
-import { globalCtx } from 'src/services/global-ctx'
 import vscode from 'vscode'
+import { globalCtx } from 'src/services/global-ctx'
 
 export type WebviewEntryName = 'ing' | 'post-cfg'
 

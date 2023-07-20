@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { cpSync, existsSync, readdirSync, rmSync } from 'fs'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import { rmSync, readdirSync, cpSync, existsSync } from 'fs'
 import { resolve } from 'path'
-import TerserPlugin from 'terser-webpack-plugin'
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import tailwindConfig from './tailwind.config.js'
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+import TerserPlugin from 'terser-webpack-plugin'
 
 const isDevEnv = process.env.ASPNETCORE_ENVIRONMENT === 'Development' || process.env.NODE_ENV === 'development'
 

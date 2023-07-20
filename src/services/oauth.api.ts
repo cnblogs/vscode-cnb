@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { AccountInfo } from '@/auth/account-info'
 import { TokenInfo } from '@/models/token-info'
+import { AccountInfo } from '@/auth/account-info'
 import { convertObjectKeysToCamelCase } from '@/services/converter'
 import { globalCtx } from '@/services/global-ctx'
 import fetch from '@/utils/fetch-client'
 import got from '@/utils/http-client'
-import { AbortController } from 'node-abort-controller'
 import { CancellationToken } from 'vscode'
+import { AbortController } from 'node-abort-controller'
 
 export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
     readonly blog_id: string

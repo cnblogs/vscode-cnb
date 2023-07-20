@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { defaultPostFormContext, IPostFormContext, PostFormContext } from './PostFormContext'
+import { PostFormContext, IPostFormContext, defaultPostFormContext } from './PostFormContext'
 
 export interface IPostFormContextProviderProps {
     value?: Partial<IPostFormContext>

@@ -1,6 +1,6 @@
 import { TreeViewCmdHandler } from '@/commands/cmd-handler'
 import { openPostFile } from '@/commands/posts-list/open-post-file'
-import { Alert } from '@/services/alert.service'
+import { AlertService } from '@/services/alert.service'
 import { Settings } from '@/services/settings.service'
 import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post'
 import fs from 'fs'
@@ -21,7 +21,7 @@ export class EditExportPostCmdHandler extends TreeViewCmdHandler<ExportPostTreeI
 
     async handle(): Promise<void> {
         const target = this.parseInput()
-        if (!target) return void Alert.warn('不支持的参数输入')
+        if (!target) return void AlertService.warn('不支持的参数输入')
 
         const {
             post: { title, isMarkdown, id: postId },

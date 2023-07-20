@@ -1,10 +1,10 @@
+import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
 import { refreshPostsList } from '@/commands/posts-list/refresh-posts-list'
-import { PageModel } from '@/models/page-model'
 import { Post } from '@/models/post'
-import { Alert } from '@/services/alert.service'
+import { PageModel } from '@/models/page-model'
+import { AlertService } from '@/services/alert.service'
 import { PostService } from '@/services/post.service'
 import { Settings } from '@/services/settings.service'
-import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
 import { toTreeItem } from './converters'
 import { PostEntryMetadata, PostMetadata } from './models/post-metadata'
 import { PostSearchResultEntry } from './models/post-search-result-entry'
@@ -66,8 +66,8 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
         const pageSize = Settings.postsListPageSize
 
         this._pagedPosts = await PostService.fetchPostsList({ pageIndex, pageSize }).catch(e => {
-            if (e instanceof Error) void Alert.err(e.message)
-            else void Alert.err(`加载博文失败\n${JSON.stringify(e)}`)
+            if (e instanceof Error) AlertService.err(e.message)
+            else AlertService.err(`加载博文失败\n${JSON.stringify(e)}`)
             return undefined
         })
 

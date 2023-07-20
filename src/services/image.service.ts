@@ -1,8 +1,8 @@
-import httpClient from '@/utils/http-client'
-import { isString, merge, pick } from 'lodash-es'
-import path from 'path'
-import { Readable } from 'stream'
 import { globalCtx } from './global-ctx'
+import { Readable } from 'stream'
+import { isString, merge, pick } from 'lodash-es'
+import httpClient from '@/utils/http-client'
+import path from 'path'
 
 export namespace ImageService {
     export async function upload<

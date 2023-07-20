@@ -1,15 +1,15 @@
+import { AccountInfo } from './account-info'
+import { globalCtx } from '@/services/global-ctx'
+import vscode, { authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
+import { accountViewDataProvider } from '@/tree-view-providers/account-view-data-provider'
+import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
+import { Oauth } from '@/services/oauth.api'
 import { AuthProvider } from '@/auth/auth-provider'
 import { AuthSession } from '@/auth/auth-session'
-import { Alert } from '@/services/alert.service'
-import { globalCtx } from '@/services/global-ctx'
-import { Oauth } from '@/services/oauth.api'
-import { accountViewDataProvider } from '@/tree-view-providers/account-view-data-provider'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
-import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { AlertService } from '@/services/alert.service'
 import { execCmd } from '@/utils/cmd'
-import vscode, { authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
-import { AccountInfo } from './account-info'
 
 const isAuthorizedStorageKey = 'isAuthorized'
 
@@ -81,7 +81,7 @@ class AccountManager extends vscode.Disposable {
             await AuthProvider.instance.removeSession(session.id)
             await Oauth.revokeToken(session.accessToken)
         } catch (e: any) {
-            void Alert.err(`登出发生错误: ${e}`)
+            AlertService.err(`登出发生错误: ${e}`)
         }
     }
 
@@ -102,7 +102,7 @@ class AccountManager extends vscode.Disposable {
         const session = await authentication.getSession(AuthProvider.instance.providerId, [], opt).then(
             session => (session ? AuthSession.from(session) : null),
             e => {
-                void Alert.err(`创建/获取 Session 失败: ${e}`)
+                AlertService.err(`创建/获取 Session 失败: ${e}`)
             }
         )
 

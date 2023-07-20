@@ -1,8 +1,8 @@
 import { DownloadedBlogExport } from '@/models/blog-export'
 import { ExportPost, ExportPostModel } from '@/models/blog-export/export-post'
 import { DataTypes, Op, Sequelize } from 'sequelize'
-import sqlite3 from 'sqlite3'
 import { Disposable } from 'vscode'
+import sqlite3 from 'sqlite3'
 
 export class ExportPostStore implements Disposable {
     private _sequelize?: null | Sequelize

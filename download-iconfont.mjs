@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import AdmZip from 'adm-zip'
-import fs from 'fs'
 import fetch from 'node-fetch'
+import fs from 'fs'
+import AdmZip from 'adm-zip'
 const url =
     'https://www.iconfont.cn/api/project/download.zip?spm=a313x.7781069.1998910419.d7543c303&pid=2996691&ctoken=ndNRCUzYy381Rxk59b1LjTrg'
 const cookie =

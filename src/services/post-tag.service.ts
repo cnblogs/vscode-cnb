@@ -1,5 +1,5 @@
-import { PostTag } from '@/models/post-tag'
 import got from '@/utils/http-client'
+import { PostTag } from '@/models/post-tag'
 import { globalCtx } from './global-ctx'
 
 let cachedTags: PostTag[] | null = null

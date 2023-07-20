@@ -1,12 +1,12 @@
-import { Alert } from '@/services/alert.service'
-import { postCategoryService } from '@/services/post-category.service'
-import { PostFileMapManager } from '@/services/post-file-map'
-import { PostService } from '@/services/post.service'
-import { searchPostsByTitle } from '@/services/search-post-by-title'
-import format from 'date-fns/format'
 import path from 'path'
 import { MessageOptions, Uri, window } from 'vscode'
+import { AlertService } from '@/services/alert.service'
+import { PostService } from '@/services/post.service'
+import { postCategoryService } from '@/services/post-category.service'
+import { PostFileMapManager } from '@/services/post-file-map'
+import { searchPostsByTitle } from '@/services/search-post-by-title'
 import { viewPostOnline } from './view-post-online'
+import format from 'date-fns/format'
 
 /**
  * 本地文件所关联的博文信息
@@ -22,7 +22,7 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
         filePath = input.fsPath
         if (!postId) {
             const options = ['现在去关联']
-            const selected = await Alert.info(
+            const selected = await AlertService.info(
                 '本地文件尚未关联到博文',
                 {
                     modal: true,
@@ -37,7 +37,7 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
                 })
                 if (selectedPost) {
                     await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
-                    void Alert.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`)
+                    AlertService.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`)
                 }
             }
             return
@@ -58,7 +58,7 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
     const tagsDesc = post.tags?.length ?? 0 > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : ''
     const options = ['在线查看博文', '取消关联']
     const postUrl = post.url.startsWith('//') ? `https:${post.url}` : post.url
-    const selected = await Alert.info(
+    const selected = await AlertService.info(
         `关联博文 - ${post.title}(Id: ${post.id})`,
         {
             modal: true,
@@ -75,6 +75,6 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
         await viewPostOnline(post)
     } else if (selected === options[1]) {
         await PostFileMapManager.updateOrCreate(postId, '')
-        void Alert.info(`博文 ${post.title} 已与 ${filePath} 取消关联`)
+        AlertService.info(`博文 ${post.title} 已与 ${filePath} 取消关联`)
     }
 }

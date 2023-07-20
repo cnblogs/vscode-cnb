@@ -1,11 +1,11 @@
+import fs from 'fs'
+import { MessageOptions, ProgressLocation, window, Uri, workspace } from 'vscode'
 import { PostCategory } from '@/models/post-category'
 import { postCategoryService } from '@/services/post-category.service'
-import { Settings } from '@/services/settings.service'
-import fs from 'fs'
-import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
-import { BasePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
 import { inputPostCategory } from './input-post-category'
 import { refreshPostCategoriesList } from './refresh-post-categories-list'
+import { Settings } from '@/services/settings.service'
+import { BasePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
 
 class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHandler {
     async handle(): Promise<void> {

@@ -1,9 +1,9 @@
-import { Post } from '@/models/post'
-import { PostFileMapManager } from '@/services/post-file-map'
-import { PostService } from '@/services/post.service'
-import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
-import { execCmd } from '@/utils/cmd'
 import { Uri, window } from 'vscode'
+import { execCmd } from '@/utils/cmd'
+import { Post } from '@/models/post'
+import { PostService } from '@/services/post.service'
+import { PostFileMapManager } from '@/services/post-file-map'
+import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 
 export const viewPostOnline = async (input?: Post | PostTreeItem | Uri) => {
     let post: Post | undefined = input instanceof Post ? input : input instanceof PostTreeItem ? input.post : undefined

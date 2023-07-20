@@ -1,5 +1,5 @@
 import { TreeViewCmdHandler } from '@/commands/cmd-handler'
-import { Alert } from '@/services/alert.service'
+import { AlertService } from '@/services/alert.service'
 import { BlogExportApi } from '@/services/blog-export.api'
 import { DownloadedExportStore } from '@/services/downloaded-export.store'
 import { globalCtx } from '@/services/global-ctx'
@@ -7,12 +7,12 @@ import { Settings } from '@/services/settings.service'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { BlogExportRecordTreeItem } from '@/tree-view-providers/models/blog-export'
 import { extViews } from '@/tree-view-providers/tree-view-registration'
-import { execCmd } from '@/utils/cmd'
 import fs from 'fs'
 import { Progress } from 'got'
 import path from 'path'
 import { promisify } from 'util'
 import { commands } from 'vscode'
+import { execCmd } from '@/utils/cmd'
 
 export class DownloadExportCmdHandler extends TreeViewCmdHandler<BlogExportRecordTreeItem> {
     static readonly commandName = 'vscode-cnb.blog-export.download'
@@ -47,7 +47,7 @@ export class DownloadExportCmdHandler extends TreeViewCmdHandler<BlogExportRecor
         await this.setIsDownloading(true)
 
         const onError = (msg?: string | null) => {
-            if (msg) void Alert.warn(msg)
+            if (msg) AlertService.warn(msg)
             if (!isFileExist) fs.rmSync(zipFilePath)
             blogExportProvider?.refreshItem(treeItem)
             this.setIsDownloading(false).then(undefined, console.warn)

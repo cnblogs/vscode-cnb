@@ -1,7 +1,7 @@
 import { CmdHandler } from '@/commands/cmd-handler'
+import { execCmd } from '@/utils/cmd'
 import { globalCtx } from '@/services/global-ctx'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
-import { execCmd } from '@/utils/cmd'
 import { commands } from 'vscode'
 
 export class RefreshExportRecordsCmdHandler extends CmdHandler {

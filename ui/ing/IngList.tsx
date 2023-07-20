@@ -1,7 +1,7 @@
-import { Stack } from '@fluentui/react'
+import React, { Component } from 'react'
 import { Ing, IngComment } from '@models/ing'
 import { IngItem } from 'ing/IngItem'
-import React, { Component } from 'react'
+import { Stack } from '@fluentui/react'
 
 interface IngListProps {
     ings: Ing[]

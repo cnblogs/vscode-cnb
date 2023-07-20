@@ -1,7 +1,7 @@
-import { PostCategories, PostCategory, PostCategoryAddDto } from '@/models/post-category'
 import fetch from '@/utils/fetch-client'
-import { URLSearchParams } from 'url'
+import { PostCategories, PostCategory, PostCategoryAddDto } from '@/models/post-category'
 import { globalCtx } from './global-ctx'
+import { URLSearchParams } from 'url'
 
 export class PostCategoryService {
     private static _instance: PostCategoryService | null = null

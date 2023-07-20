@@ -1,5 +1,5 @@
 import { PostCategories } from '@/models/post-category'
-import { WebviewCmd, WebviewCommonCmd } from '@models/webview-cmd'
+import { WebviewCommonCmd, WebviewCmd } from '@models/webview-cmd'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 
 let children: Map<number, PostCategories>

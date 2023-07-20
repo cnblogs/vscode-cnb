@@ -1,6 +1,6 @@
 import { accountManager } from '@/auth/account-manager'
-import { execCmd } from '@/utils/cmd'
 import vscode from 'vscode'
+import { execCmd } from '@/utils/cmd'
 
 export const openMyBlog = () => {
     const userBlogUrl = accountManager.currentUser?.website

@@ -1,12 +1,12 @@
-import { isErrorResponse } from '@/models/error-response'
-import fs from 'fs'
-import { isString } from 'lodash-es'
-import { tmpdir } from 'os'
 import path from 'path'
-import { Readable } from 'stream'
-import { promisify } from 'util'
+import { isString } from 'lodash-es'
+import fs from 'fs'
 import { Uri, workspace } from 'vscode'
 import { ImageService } from './image.service'
+import { isErrorResponse } from '@/models/error-response'
+import { promisify } from 'util'
+import { Readable } from 'stream'
+import { tmpdir } from 'os'
 
 export const enum DataType {
     dataUrl,

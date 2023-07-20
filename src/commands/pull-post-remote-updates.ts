@@ -1,14 +1,14 @@
-import { Post } from '@/models/post'
-import { Alert } from '@/services/alert.service'
-import { PostFileMapManager } from '@/services/post-file-map'
-import { PostService } from '@/services/post.service'
-import { revealPostsListItem } from '@/services/posts-list-view'
-import { Settings } from '@/services/settings.service'
-import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
-import fs from 'fs'
-import path from 'path'
 import { MessageOptions, Uri, window, workspace } from 'vscode'
+import { Post } from '@/models/post'
+import { PostFileMapManager } from '@/services/post-file-map'
 import { openPostInVscode } from './posts-list/open-post-in-vscode'
+import fs from 'fs'
+import { PostService } from '@/services/post.service'
+import { AlertService } from '@/services/alert.service'
+import path from 'path'
+import { revealPostsListItem } from '@/services/posts-list-view'
+import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
+import { Settings } from '@/services/settings.service'
 
 const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefined | null): Promise<void> => {
     const ctxs: CmdCtx[] = []
@@ -18,7 +18,7 @@ const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefine
     else if ((uri = parseUriInput(input))) await handleUriInput(uri, ctxs)
 
     if (Settings.showConfirmMsgWhenPullPost) {
-        const answer = await Alert.warn(
+        const answer = await AlertService.warn(
             '确认要拉取远程博文吗?',
             {
                 modal: true,
@@ -33,7 +33,7 @@ const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefine
 
     await update(ctxs)
 
-    void Alert.info(`本地文件${resolveFileNames(ctxs)}已更新`)
+    AlertService.info(`本地文件${resolveFileNames(ctxs)}已更新`)
 }
 
 export { pullPostRemoteUpdates }
@@ -70,7 +70,7 @@ const parseUriInput = (input: InputType): Uri | undefined => {
 
 const handleUriInput = (fileUri: Uri, contexts: CmdCtx[]): Promise<void> => {
     const postId = PostFileMapManager.getPostId(fileUri.fsPath)
-    if (!postId) return Promise.resolve().then(() => void Alert.fileNotLinkedToPost(fileUri))
+    if (!postId) return Promise.resolve().then(() => AlertService.fileNotLinkedToPost(fileUri))
 
     contexts.push({ postId, fileUri })
     return Promise.resolve()

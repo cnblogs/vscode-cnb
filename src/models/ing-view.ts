@@ -1,5 +1,5 @@
-import { PartialTheme, Theme } from '@fluentui/react'
 import { Ing, IngComment } from './ing'
+import { PartialTheme, Theme } from '@fluentui/react'
 
 export interface IngAppState {
     ings?: Ing[]

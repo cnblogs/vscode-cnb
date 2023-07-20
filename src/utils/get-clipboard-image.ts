@@ -1,14 +1,14 @@
 // reference: https://github.com/PicGo/PicGo-Core/blob/dev/src/utils/getClipboardImage.ts
 
-import { IClipboardImage } from '@/models/clipboard-image'
-import { Alert } from '@/services/alert.service'
-import { globalCtx } from '@/services/global-ctx'
 import { spawn } from 'child_process'
-import format from 'date-fns/format'
-import fs from 'fs'
-import isWsl from 'is-wsl'
-import os from 'os'
 import path from 'path'
+import fs from 'fs'
+import os from 'os'
+import isWsl from 'is-wsl'
+import { globalCtx } from '@/services/global-ctx'
+import { AlertService } from '@/services/alert.service'
+import { IClipboardImage } from '@/models/clipboard-image'
+import format from 'date-fns/format'
 
 export type Platform = 'darwin' | 'win32' | 'win10' | 'linux' | 'wsl'
 
@@ -94,7 +94,7 @@ const getClipboardImage = (): Promise<IClipboardImage> => {
         execution.stdout.on('data', (data: Buffer) => {
             if (platform === 'linux') {
                 if (data.toString().trim() === 'no xclip') {
-                    void Alert.warn('xclip not found, Please install xclip first')
+                    AlertService.warn('xclip not found, Please install xclip first')
                     return reject(new Error('Please install xclip first'))
                 }
             }

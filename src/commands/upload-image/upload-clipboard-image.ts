@@ -1,15 +1,15 @@
-import { Alert } from '@/services/alert.service'
-import { ImageService } from '@/services/image.service'
-import getClipboardImage from '@/utils/get-clipboard-image'
 import fs from 'fs'
 import { ProgressLocation, Uri, window, workspace } from 'vscode'
+import { AlertService } from '@/services/alert.service'
+import { ImageService } from '@/services/image.service'
+import getClipboardImage from '@/utils/get-clipboard-image'
 
 const noImagePath = 'no image'
 
 export const uploadImageFromClipboard = async () => {
     const clipboardImage = await getClipboardImage()
     if (clipboardImage.imgPath === noImagePath) {
-        void Alert.warn('剪贴板中没有找到图片')
+        AlertService.warn('剪贴板中没有找到图片')
         return
     }
 

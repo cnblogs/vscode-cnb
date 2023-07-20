@@ -1,6 +1,6 @@
+import { QuickPickItem } from 'vscode'
 import { PostCategory, PostCategoryAddDto } from '@/models/post-category'
 import { InputStep, MultiStepInput } from '@/services/multi-step-input'
-import { QuickPickItem } from 'vscode'
 
 class InputOption {
     title = '编辑分类'

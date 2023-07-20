@@ -1,7 +1,7 @@
+import { Uri } from 'vscode'
+import { execCmd } from '@/utils/cmd'
 import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { execCmd } from '@/utils/cmd'
-import { Uri } from 'vscode'
 
 export const revealLocalPostFileInOs = (post: Post) => {
     if (!post) return

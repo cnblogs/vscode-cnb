@@ -1,10 +1,10 @@
-import { refreshPostCategoriesList } from '@/commands/post-category/refresh-post-categories-list'
-import { refreshPostsList } from '@/commands/posts-list/refresh-posts-list'
-import { execCmd } from '@/utils/cmd'
 import os from 'os'
 import { workspace } from 'vscode'
+import { refreshPostCategoriesList } from '@/commands/post-category/refresh-post-categories-list'
+import { refreshPostsList } from '@/commands/posts-list/refresh-posts-list'
 import { globalCtx } from './global-ctx'
 import { PostFileMapManager } from './post-file-map'
+import { execCmd } from '@/utils/cmd'
 import { Settings } from './settings.service'
 
 const diskSymbolRegex = /^(\S{1,5}:)(.*)/

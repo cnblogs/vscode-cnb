@@ -1,3 +1,5 @@
-import { window } from 'vscode'
+import vscode, { TreeViewOptions } from 'vscode'
 
-export const regTreeView = window.createTreeView
+export function regTreeView<T>(id: string, opt: TreeViewOptions<T>) {
+    return vscode.window.createTreeView(id, opt)
+}

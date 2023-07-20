@@ -1,13 +1,13 @@
-import { Post } from '@/models/post'
-import { Alert } from '@/services/alert.service'
-import { PostFileMapManager } from '@/services/post-file-map'
-import { PostService } from '@/services/post.service'
-import { revealPostsListItem } from '@/services/posts-list-view'
-import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { escapeRegExp } from 'lodash-es'
 import path from 'path'
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
+import { Post } from '@/models/post'
+import { PostService } from '@/services/post.service'
+import { PostFileMapManager } from '@/services/post-file-map'
+import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { revealPostsListItem } from '@/services/posts-list-view'
+import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
+import { AlertService } from '@/services/alert.service'
 
 const renameLinkedFile = async (post: Post): Promise<void> => {
     const filePath = PostFileMapManager.getFilePath(post.id)
@@ -17,7 +17,7 @@ const renameLinkedFile = async (post: Post): Promise<void> => {
     const fileUri = Uri.file(filePath)
 
     const options = ['是']
-    const input = await Alert.info(
+    const input = await AlertService.info(
         '重命名博文成功, 发现与博文关联的本地文件, 是否要重名本地文件',
         {
             modal: true,
@@ -70,7 +70,7 @@ export const renamePost = async (arg: Post | PostTreeItem) => {
                     postsDataProvider.fireTreeDataChangedEvent(post)
                     hasUpdated = true
                 } catch (err) {
-                    void Alert.err('更新博文失败', {
+                    void AlertService.err('更新博文失败', {
                         modal: true,
                         detail: err instanceof Error ? err.message : '服务器返回异常',
                     } as MessageOptions)

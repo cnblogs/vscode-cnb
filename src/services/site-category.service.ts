@@ -1,5 +1,5 @@
-import { SiteCategories, SiteCategory } from '@/models/site-category'
 import fetch from '@/utils/fetch-client'
+import { SiteCategories, SiteCategory } from '@/models/site-category'
 import { globalCtx } from './global-ctx'
 
 export namespace siteCategoryService {
