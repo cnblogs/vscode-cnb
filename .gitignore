@@ -1,8 +1,9 @@
 out
 dist
 node_modules
-.vscode-test/
+.vscode-test
 *.vsix
 .DS_Store
 .idea
 .vscode/api-key.txt
+with-key-build.sh
