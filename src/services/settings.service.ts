@@ -75,15 +75,17 @@ export class Settings {
         return this.configuration.get<boolean>('createLocalPostFileWithCategory') ?? false
     }
 
-    static get autoExtractImgType(): ImageSrc | null {
-        const cfg = this.configuration.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('autoExtractImages') ?? null
+    static get autoExtractImgType(): ImageSrc | undefined {
+        const cfg = this.configuration.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('autoExtractImages')
 
-        if (cfg === 'fs') return ImageSrc.fs
-        if (cfg === 'dataUrl') return ImageSrc.dataUrl
+        console.log(this.configuration)
+        console.log(cfg)
+
+        if (cfg === 'disable') return
         if (cfg === 'web') return ImageSrc.web
+        if (cfg === 'dataUrl') return ImageSrc.dataUrl
+        if (cfg === 'fs') return ImageSrc.fs
         if (cfg === 'any') return ImageSrc.any
-
-        return null // 'disable' case
     }
 
     static get postsListPageSize() {

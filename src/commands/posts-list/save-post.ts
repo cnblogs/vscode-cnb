@@ -115,7 +115,10 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
                 AlertService.warning('本地文件已删除, 无法新建博文')
                 return false
             }
-            if (Settings.autoExtractImgType)
+
+            console.log(Settings.autoExtractImgType)
+
+            if (Settings.autoExtractImgType !== undefined)
                 await extractImages(localDraft.filePathUri, Settings.autoExtractImgType).catch(console.warn)
 
             postToSave.postBody = await localDraft.readAllText()
@@ -138,7 +141,9 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
     const localFilePath = PostFileMapManager.getFilePath(postId)
     if (!localFilePath) return AlertService.warning('本地无该博文的编辑记录')
 
-    if (Settings.autoExtractImgType)
+    console.log(Settings.autoExtractImgType)
+
+    if (Settings.autoExtractImgType !== undefined)
         await extractImages(Uri.file(localFilePath), Settings.autoExtractImgType).catch(console.warn)
 
     await saveFilePendingChanges(localFilePath)

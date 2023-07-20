@@ -472,8 +472,8 @@
                         "scope": "application",
                         "enum": [
                             "disable",
-                            "local",
-                            "dataurl",
+                            "fs",
+                            "dataUrl",
                             "web",
                             "any"
                         ],
