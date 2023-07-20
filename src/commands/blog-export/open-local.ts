@@ -28,8 +28,7 @@ export class OpenLocalExportCmdHandler extends CmdHandler {
             })) ?? []
         if (fileUri == null) return
         const filePath = fileUri.fsPath
-        if (filePath.endsWith('.zip') && !filePath.endsWith('.db.zip'))
-            return void Alert.warn('不支持的博客备份文件')
+        if (filePath.endsWith('.zip') && !filePath.endsWith('.db.zip')) return void Alert.warn('不支持的博客备份文件')
 
         const fileName = path.basename(filePath.replace(/\.db(\.zip)?$/, ''))
         const dirname = path.dirname(filePath)

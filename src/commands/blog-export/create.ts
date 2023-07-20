@@ -21,11 +21,7 @@ export class CreateBlogExportCmdHandler extends CmdHandler {
 
     private async confirm(): Promise<boolean> {
         const items: MessageItem[] = [{ title: '确定', isCloseAffordance: false }]
-        const result = await Alert.info(
-            '确定要创建备份吗?',
-            { modal: true, detail: '一天可以创建一次备份' },
-            ...items
-        )
+        const result = await Alert.info('确定要创建备份吗?', { modal: true, detail: '一天可以创建一次备份' }, ...items)
         return result != null
     }
 }
