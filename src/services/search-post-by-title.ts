@@ -1,5 +1,5 @@
-import { QuickPickItem, window } from 'vscode'
 import { Post } from '@/models/post'
+import { QuickPickItem, window } from 'vscode'
 import { PostService } from './post.service'
 
 class PostPickItem implements QuickPickItem {

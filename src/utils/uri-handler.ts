@@ -1,5 +1,5 @@
-import { Disposable, EventEmitter, ProviderResult, Uri, UriHandler, Event } from 'vscode'
 import { openPostInVscode } from '@/commands/posts-list/open-post-in-vscode'
+import { Disposable, Event, EventEmitter, ProviderResult, Uri, UriHandler } from 'vscode'
 
 class ExtUriHandler implements UriHandler, Disposable {
     private _uriEventEmitter?: EventEmitter<Uri>

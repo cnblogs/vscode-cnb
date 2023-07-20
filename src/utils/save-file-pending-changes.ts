@@ -1,4 +1,4 @@
-import { window, Uri } from 'vscode'
+import { Uri, window } from 'vscode'
 
 export const saveFilePendingChanges = async (filePath: Uri | string | undefined) => {
     const localPath = typeof filePath === 'string' ? filePath : filePath?.fsPath

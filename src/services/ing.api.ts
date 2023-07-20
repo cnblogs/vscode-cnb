@@ -1,9 +1,9 @@
 import { Ing, IngComment, IngPublishModel, IngType } from '@/models/ing'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { globalCtx } from '@/services/global-ctx'
 import fetch from '@/utils/fetch-client'
-import { URLSearchParams } from 'url'
 import { isArray, isObject } from 'lodash-es'
+import { URLSearchParams } from 'url'
 
 export namespace IngApi {
     export async function publishIng(ing: IngPublishModel): Promise<boolean> {
@@ -11,10 +11,10 @@ export namespace IngApi {
             method: 'POST',
             body: JSON.stringify(ing),
             headers: [['Content-Type', 'application/json']],
-        }).catch(reason => void AlertService.warn(JSON.stringify(reason)))
+        }).catch(reason => void Alert.warn(JSON.stringify(reason)))
 
         if (!res || !res.ok)
-            AlertService.err(`闪存发布失败, ${res?.statusText ?? ''} ${JSON.stringify((await res?.text()) ?? '')}`)
+            void Alert.err(`闪存发布失败, ${res?.statusText ?? ''} ${JSON.stringify((await res?.text()) ?? '')}`)
 
         return res != null && res.ok
     }
@@ -29,10 +29,10 @@ export namespace IngApi {
                 method: 'GET',
                 headers: [['Content-Type', 'application/json']],
             }
-        ).catch(e => void AlertService.warn(JSON.stringify(e)))
+        ).catch(e => void Alert.warn(JSON.stringify(e)))
 
         if (!res || !res.ok) {
-            AlertService.err(`获取闪存列表失败, ${res?.statusText ?? ''} ${JSON.stringify((await res?.text()) ?? '')}`)
+            void Alert.err(`获取闪存列表失败, ${res?.statusText ?? ''} ${JSON.stringify((await res?.text()) ?? '')}`)
             return []
         }
 
@@ -40,9 +40,9 @@ export namespace IngApi {
 
         try {
             if (isArray(arr) && arr.every(isObject)) return arr.map(Ing.parse)
-            AlertService.err('获取闪存列表失败, 无法读取响应')
+            void Alert.err('获取闪存列表失败, 无法读取响应')
         } catch (e) {
-            AlertService.err(JSON.stringify(e))
+            void Alert.err(JSON.stringify(e))
         }
 
         return []
@@ -57,7 +57,7 @@ export namespace IngApi {
                 resp =>
                     resp?.json().then(obj => [id, obj as IngComment[] | null | undefined] as const) ??
                     Promise.resolve(undefined),
-                reason => void AlertService.warn(JSON.stringify(reason))
+                reason => void Alert.warn(JSON.stringify(reason))
             )
         )
 
@@ -85,12 +85,12 @@ export namespace IngApi {
             })
 
             if (!res.ok) {
-                AlertService.err(`发表评论失败, ${await res.text()}`)
+                void Alert.err(`发表评论失败, ${await res.text()}`)
                 return false
             }
         } catch (e) {
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            AlertService.err(`发表评论失败, ${e}`)
+            void Alert.err(`发表评论失败, ${e}`)
             return false
         }
 

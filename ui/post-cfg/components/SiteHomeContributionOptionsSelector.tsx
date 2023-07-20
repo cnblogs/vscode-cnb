@@ -1,8 +1,8 @@
+import { ActionButton, Checkbox, Label } from '@fluentui/react'
+import { Stack } from '@fluentui/react/lib/Stack'
+import { Text } from '@fluentui/react/lib/Text'
 import React from 'react'
 import { SiteHomeContributionOptions as ISiteHomeContributionOptions } from '../models/site-home-contribution-options'
-import { Text } from '@fluentui/react/lib/Text'
-import { Stack } from '@fluentui/react/lib/Stack'
-import { ActionButton, Checkbox, Label } from '@fluentui/react'
 
 export interface ISiteHomeContributionOptionsSelectorProps extends ISiteHomeContributionOptions {
     onInSiteHomeChange: (value: boolean) => void

@@ -1,28 +1,29 @@
-import { Uri } from 'vscode'
 import { Post } from '@/models/post'
-import { AlertService } from '@/services/alert.service'
-import { PostService } from '@/services/post.service'
-import { PostFileMapManager } from '@/services/post-file-map'
-import { revealPostsListItem } from '@/services/posts-list-view'
-import { PostCfgPanel } from '@/services/post-cfg-panel.service'
-import fs from 'fs'
+import { Alert } from '@/services/alert.service'
 import { LocalDraft } from '@/services/local-draft.service'
-import { saveFilePendingChanges } from '@/utils/save-file-pending-changes'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { PostCfgPanel } from '@/services/post-cfg-panel.service'
+import { PostFileMapManager } from '@/services/post-file-map'
+import { PostService } from '@/services/post.service'
+import { revealPostsListItem } from '@/services/posts-list-view'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
+import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { saveFilePendingChanges } from '@/utils/save-file-pending-changes'
+import fs from 'fs'
+import { Uri } from 'vscode'
 
 export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
     let post: Post | undefined
-    let postId = -1
+    let postId: number
     input = input instanceof PostTreeItem ? input.post : input
 
     if (input instanceof Post) {
         post = input
         postId = input.id
-    } else if (input instanceof Uri) {
+    } else {
+        // input is Uri
         postId = PostFileMapManager.getPostId(input.fsPath) ?? -1
-        if (postId < 0) return AlertService.fileNotLinkedToPost(input)
+        if (postId < 0) return void Alert.fileNotLinkedToPost(input)
     }
 
     if (!(postId >= 0)) return
@@ -40,15 +41,14 @@ export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
         post: postEditDto,
         localFileUri: localFilePath ? Uri.file(localFilePath) : undefined,
         successCallback: ({ id }) => {
-            AlertService.info('博文已更新')
+            void Alert.info('博文已更新')
             postsDataProvider.fireTreeDataChangedEvent(id)
             postCategoriesDataProvider.onPostUpdated({ refreshPosts: false, postIds: [id] })
         },
         beforeUpdate: async post => {
             if (localFilePath && fs.existsSync(localFilePath)) {
                 await saveFilePendingChanges(localFilePath)
-                const content = await new LocalDraft(localFilePath).readAllText()
-                post.postBody = content
+                post.postBody = await new LocalDraft(localFilePath).readAllText()
             }
             return true
         },

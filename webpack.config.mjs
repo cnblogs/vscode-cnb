@@ -4,8 +4,8 @@
 
 'use strict'
 
-import path from 'path'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
+import path from 'path'
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin'
 import { fileURLToPath } from 'url'
 import webpack from 'webpack'

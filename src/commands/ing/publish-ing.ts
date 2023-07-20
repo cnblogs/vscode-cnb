@@ -1,11 +1,11 @@
 import { CmdHandler } from '@/commands/cmd-handler'
-import { execCmd } from '@/utils/cmd'
 import { IngPublishModel, IngType } from '@/models/ing'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { globalCtx } from '@/services/global-ctx'
 import { IngApi } from '@/services/ing.api'
 import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'
+import { execCmd } from '@/utils/cmd'
 import { MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode'
 
 export class PublishIngCmdHandler extends CmdHandler {
@@ -134,7 +134,7 @@ export class PublishIngCmdHandler extends CmdHandler {
             ['编辑访问权限', async () => (await this.acquireInputContent(this.inputStep.access)) !== false],
             ['编辑标签', async () => (await this.acquireInputContent(this.inputStep.tags)) !== false],
         ] as const
-        const selected = await AlertService.info(
+        const selected = await Alert.info(
             '确定要发布闪存吗?',
             {
                 modal: true,
@@ -146,7 +146,7 @@ export class PublishIngCmdHandler extends CmdHandler {
     }
 
     private warnNoSelection() {
-        AlertService.warn(`无法${this.operation}, 当前没有选中的内容`)
+        void Alert.warn(`无法${this.operation}, 当前没有选中的内容`)
     }
 
     private async onPublished(isPublished: boolean): Promise<void> {
@@ -175,7 +175,7 @@ export class PublishIngCmdHandler extends CmdHandler {
                     (): Thenable<void> => execCmd('vscode.open', Uri.parse(globalCtx.config.ingSite + '/#mention')),
                 ],
             ] as const
-            const option = await AlertService.info(
+            const option = await Alert.info(
                 '闪存已发布, 快去看看吧',
                 { modal: false },
                 ...options.map(v => ({ title: v[0], id: v[0] }))

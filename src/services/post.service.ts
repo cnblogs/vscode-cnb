@@ -1,18 +1,17 @@
-import fetch from '@/utils/fetch-client'
-import { Post } from '@/models/post'
-import { globalCtx } from './global-ctx'
+import { IErrorResponse } from '@/models/error-response'
 import { PageModel } from '@/models/page-model'
-import { PostsListState } from '@/models/posts-list-state'
+import { Post } from '@/models/post'
 import { PostEditDto } from '@/models/post-edit-dto'
 import { PostUpdatedResponse } from '@/models/post-updated-response'
-import { throwIfNotOkGotResponse } from '@/utils/throw-if-not-ok-response'
-import { IErrorResponse } from '@/models/error-response'
-import { AlertService } from './alert.service'
-import { PostFileMapManager } from './post-file-map'
+import { PostsListState } from '@/models/posts-list-state'
 import { ZzkSearchResult } from '@/models/zzk-search-result'
-import got from '@/utils/http-client'
-import httpClient from '@/utils/http-client'
+import fetch from '@/utils/fetch-client'
+import { default as got, default as httpClient } from '@/utils/http-client'
+import { throwIfNotOkGotResponse } from '@/utils/throw-if-not-ok-response'
 import iconv from 'iconv-lite'
+import { Alert } from './alert.service'
+import { globalCtx } from './global-ctx'
+import { PostFileMapManager } from './post-file-map'
 
 const defaultPageSize = 30
 let newPostTemplate: PostEditDto | undefined
@@ -73,11 +72,11 @@ export namespace PostService {
             const { statusCode, errors } = e as IErrorResponse
             if (!muteErrorNotification) {
                 if (statusCode === 404) {
-                    AlertService.err('博文不存在')
+                    void Alert.err('博文不存在')
                     const postFilePath = PostFileMapManager.getFilePath(postId)
                     if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '')
                 } else {
-                    AlertService.err(errors.join('\n'))
+                    void Alert.err(errors.join('\n'))
                 }
             }
             return undefined

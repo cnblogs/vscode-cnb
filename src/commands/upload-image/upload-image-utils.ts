@@ -1,6 +1,6 @@
-import { env, MessageOptions, SnippetString, window } from 'vscode'
+import { Alert } from '@/services/alert.service'
 import { formatImageLink } from '@/utils/format-image-link'
-import { AlertService } from '@/services/alert.service'
+import { env, MessageOptions, SnippetString, window } from 'vscode'
 
 /**
  * 显示上传成功对话框, 支持复制不同格式的图片链接
@@ -10,7 +10,7 @@ import { AlertService } from '@/services/alert.service'
  */
 export const showUploadSuccessModel = async (imgLink: string): Promise<void> => {
     const copyOptions = ['复制链接', '复制链接(markdown)', '复制链接(html)']
-    const option = await AlertService.info(
+    const option = await Alert.info(
         '上传图片成功',
         {
             modal: true,

@@ -1,16 +1,16 @@
-import { flattenDepth, take } from 'lodash-es'
-import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
 import { PostCategories } from '@/models/post-category'
+import { Alert } from '@/services/alert.service'
 import { globalCtx } from '@/services/global-ctx'
 import { postCategoryService } from '@/services/post-category.service'
 import { PostService } from '@/services/post.service'
+import { execCmd } from '@/utils/cmd'
+import { flattenDepth, take } from 'lodash-es'
+import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
 import { toTreeItem } from './converters'
 import { PostCategoriesListTreeItem } from './models/categories-list-tree-item'
 import { PostCategoryTreeItem } from './models/post-category-tree-item'
 import { PostEntryMetadata, PostMetadata, RootPostMetadataType } from './models/post-metadata'
 import { PostTreeItem } from './models/post-tree-item'
-import { AlertService } from '@/services/alert.service'
-import { execCmd } from '@/utils/cmd'
 
 export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {
     private static _instance: PostCategoriesTreeDataProvider | null = null
@@ -135,7 +135,7 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
                 parentId: parentId ?? undefined,
             })
         } catch (e) {
-            AlertService.err(`获取博文分类失败: ${(<Error>e).message}`)
+            void Alert.err(`获取博文分类失败: ${(<Error>e).message}`)
         } finally {
             await this.setIsRefreshing(false)
         }

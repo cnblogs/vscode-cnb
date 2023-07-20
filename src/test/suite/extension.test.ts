@@ -1,4 +1,4 @@
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import assert from 'assert'
 
 // You can import and use all API from the 'vscode' module
@@ -6,7 +6,7 @@ import assert from 'assert'
 // import * as myExtension from '../../extension';
 
 suite('Extension Test Suite', () => {
-    AlertService.info('Start all tests.')
+    void Alert.info('Start all tests.')
 
     test('Sample test', () => {
         assert.strictEqual(-1, [1, 2, 3].indexOf(5))

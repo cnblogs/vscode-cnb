@@ -1,6 +1,6 @@
-import { ProgressLocation, window } from 'vscode'
 import { ImageService } from '@/services/image.service'
 import fs from 'fs'
+import { ProgressLocation, window } from 'vscode'
 
 export const uploadLocalDiskImage = async () => {
     const imageFileUri = ((await window.showOpenDialog({

@@ -1,19 +1,19 @@
-import type puppeteer from 'puppeteer-core'
-import fs from 'fs'
-import path from 'path'
-import os from 'os'
-import { MessageOptions, Progress, ProgressLocation, Uri, window, workspace } from 'vscode'
+import { accountManager } from '@/auth/account-manager'
+import { postPdfTemplateBuilder } from '@/commands/pdf/post-pdf-template-builder'
 import { Post } from '@/models/post'
+import { PostEditDto } from '@/models/post-edit-dto'
+import { Alert } from '@/services/alert.service'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { PostService } from '@/services/post.service'
+import { Settings } from '@/services/settings.service'
+import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { extViews } from '@/tree-view-providers/tree-view-registration'
 import { chromiumPathProvider } from '@/utils/chromium-path-provider'
-import { Settings } from '@/services/settings.service'
-import { accountManager } from '@/auth/account-manager'
-import { AlertService } from '@/services/alert.service'
-import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
-import { PostEditDto } from '@/models/post-edit-dto'
-import { postPdfTemplateBuilder } from '@/commands/pdf/post-pdf-template-builder'
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
+import type puppeteer from 'puppeteer-core'
+import { MessageOptions, Progress, ProgressLocation, Uri, window, workspace } from 'vscode'
 
 const launchBrowser = async (
     chromiumPath: string
@@ -114,7 +114,7 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
 
     if (!path) {
         const { Options: options } = chromiumPathProvider
-        const input = await AlertService.warn(
+        const input = await Alert.warn(
             '未找到Chromium可执行文件',
             {
                 modal: true,
@@ -175,7 +175,7 @@ const mapToPostEditDto = async (posts: Post[]) =>
 
 const reportErrors = (errors: string[] | undefined) => {
     if (errors && errors.length > 0) {
-        void AlertService.err('导出 PDF 时遇到错误', {
+        void Alert.err('导出 PDF 时遇到错误', {
             modal: true,
             detail: errors.join('\n'),
         } as MessageOptions)
@@ -192,7 +192,7 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
         currentUser: { blogApp },
     } = accountManager
 
-    if (!blogApp) return void AlertService.warn('无法获取到博客地址, 请检查登录状态')
+    if (!blogApp) return void Alert.warn('无法获取到博客地址, 请检查登录状态')
 
     reportErrors(
         await window.withProgress<string[] | undefined>(

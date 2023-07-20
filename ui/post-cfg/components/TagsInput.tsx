@@ -7,12 +7,12 @@ import {
     TagItem,
     TagItemSuggestion,
     TagPicker,
-    ValidationState,
     Text,
+    ValidationState,
 } from '@fluentui/react'
+import { PostTag, PostTags } from '@models/post-tag'
 import React from 'react'
 import { tagsStore } from '../services/tags-store'
-import { PostTags, PostTag } from '@models/post-tag'
 
 export interface ITagsInputProps {
     selectedTagNames?: string[]

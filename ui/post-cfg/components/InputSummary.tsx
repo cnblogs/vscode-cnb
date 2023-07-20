@@ -1,4 +1,4 @@
-import { ActionButton, Label, MessageBar, MessageBarType, Stack, TextField, Text } from '@fluentui/react'
+import { ActionButton, Label, MessageBar, MessageBarType, Stack, Text, TextField } from '@fluentui/react'
 import { ImageUploadStatusId } from '@models/image-upload-status'
 import { WebviewCmd } from '@models/webview-cmd'
 import { webviewMessage } from '@models/webview-msg'

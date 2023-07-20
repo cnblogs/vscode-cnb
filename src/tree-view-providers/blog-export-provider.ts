@@ -1,7 +1,10 @@
+import { BlogExportRecord } from '@/models/blog-export'
+import { Alert } from '@/services/alert.service'
 import { BlogExportRecordsStore } from '@/services/blog-export-records.store'
+import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
 import {
-    BlogExportRecordTreeItem,
     BlogExportRecordMetadata,
+    BlogExportRecordTreeItem,
     BlogExportTreeItem,
     parseBlogExportRecords,
 } from './models/blog-export'
@@ -11,9 +14,6 @@ import {
     DownloadedExportTreeItem,
     ExportPostsEntryTreeItem,
 } from './models/blog-export/downloaded'
-import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { AlertService } from '@/services/alert.service'
-import { BlogExportRecord } from '@/models/blog-export'
 
 export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> {
     private static _instance: BlogExportProvider | null = null
@@ -109,7 +109,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
                   ?.refresh()
                   .then(() => true)
                   .catch(e => {
-                      if (notifyOnError) AlertService.err(`刷新博客备份记录失败: ${e.message}`)
+                      if (notifyOnError) void Alert.err(`刷新博客备份记录失败: ${e.message}`)
                   })
             : clearCache
             ? await this._store?.clearCache().then(

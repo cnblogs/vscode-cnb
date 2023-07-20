@@ -1,11 +1,11 @@
+import { PostsListState } from '@/models/posts-list-state'
+import { Alert } from '@/services/alert.service'
 import { globalCtx } from '@/services/global-ctx'
 import { PostService } from '@/services/post.service'
-import vscode, { window } from 'vscode'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
-import { AlertService } from '@/services/alert.service'
-import { PostsListState } from '@/models/posts-list-state'
 import { extViews } from '@/tree-view-providers/tree-view-registration'
 import { execCmd } from '@/utils/cmd'
+import { window } from 'vscode'
 
 let refreshTask: Promise<boolean> | null = null
 
@@ -33,7 +33,7 @@ export const refreshPostsList = async ({ queue = false } = {}): Promise<boolean>
             )
             .then(pagedPosts => {
                 if (pagedPosts == null) {
-                    return Promise.resolve(false).finally(() => AlertService.err('刷新博文列表失败'))
+                    return Promise.resolve(false).finally(() => void Alert.err('刷新博文列表失败'))
                 } else {
                     return PostService.updatePostsListState(pagedPosts)
                         .then(() => updatePostsListViewTitle())
@@ -92,7 +92,7 @@ const setPostListContext = async (pageCount: number, hasPrevious: boolean, hasNe
 }
 
 const alertRefreshing = () => {
-    AlertService.info('正在刷新, 请勿重复操作')
+    void Alert.info('正在刷新, 请勿重复操作')
 }
 
 const gotoPage = async (pageIndex: (currentIndex: number) => number) => {

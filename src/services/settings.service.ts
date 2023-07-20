@@ -1,9 +1,9 @@
-import os, { homedir } from 'os'
+import { untildify } from '@/utils/untildify'
 import fs from 'fs'
+import { isNumber } from 'lodash-es'
+import os, { homedir } from 'os'
 import { ConfigurationTarget, Uri, workspace } from 'vscode'
 import { ImageSrc } from './mkd-img-extractor.service'
-import { isNumber } from 'lodash-es'
-import { untildify } from '@/utils/untildify'
 
 export class Settings {
     static readonly postsListPageSizeKey = 'pageSize.postsList'

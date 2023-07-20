@@ -1,21 +1,21 @@
-import vscode, { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
 import { Post } from '@/models/post'
-import { LocalDraft } from '@/services/local-draft.service'
-import { AlertService } from '@/services/alert.service'
-import { PostService } from '@/services/post.service'
-import { PostFileMapManager } from '@/services/post-file-map'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
-import { openPostInVscode } from './open-post-in-vscode'
-import { openPostFile } from './open-post-file'
-import { searchPostsByTitle } from '@/services/search-post-by-title'
-import * as path from 'path'
-import { refreshPostsList } from './refresh-posts-list'
 import { PostEditDto } from '@/models/post-edit-dto'
+import { Alert } from '@/services/alert.service'
+import { LocalDraft } from '@/services/local-draft.service'
 import { PostCfgPanel } from '@/services/post-cfg-panel.service'
-import { saveFilePendingChanges } from '@/utils/save-file-pending-changes'
-import { extractImages } from '../extract-images'
+import { PostFileMapManager } from '@/services/post-file-map'
+import { PostService } from '@/services/post.service'
+import { searchPostsByTitle } from '@/services/search-post-by-title'
 import { Settings } from '@/services/settings.service'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
+import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { saveFilePendingChanges } from '@/utils/save-file-pending-changes'
+import * as path from 'path'
+import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
+import { extractImages } from '../extract-images'
+import { openPostFile } from './open-post-file'
+import { openPostInVscode } from './open-post-in-vscode'
+import { refreshPostsList } from './refresh-posts-list'
 
 const parseFileUri = async (fileUri: Uri | undefined): Promise<Uri | undefined> => {
     if (fileUri && fileUri.scheme !== 'file') {
@@ -44,7 +44,7 @@ export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
         await uploadPostToCnblogs(await PostService.fetchPostEditDto(postId))
     } else {
         const options = [`新建博文`, `关联已有博文`]
-        const selected = await AlertService.info(
+        const selected = await Alert.info(
             '本地文件尚未关联到博客园博文',
             {
                 modal: true,
@@ -84,7 +84,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
 
     // check format
     if (!['.md'].some(x => localDraft.fileExt === x)) {
-        AlertService.warn('不受支持的文件格式! 只支持markdown格式')
+        void Alert.warn('不受支持的文件格式! 只支持markdown格式')
         return
     }
     const editDto = await PostService.fetchPostEditTemplate()
@@ -106,13 +106,13 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
             await PostFileMapManager.updateOrCreate(savedPost.id, localDraft.filePath)
             await openPostFile(localDraft)
             postsDataProvider.fireTreeDataChangedEvent(undefined)
-            AlertService.info('博文已创建')
+            void Alert.info('博文已创建')
         },
         beforeUpdate: async (postToSave, panel) => {
             await saveFilePendingChanges(localDraft.filePath)
             // 本地文件已经被删除了
             if (!localDraft.exist && panel) {
-                AlertService.warn('本地文件已删除, 无法新建博文')
+                void Alert.warn('本地文件已删除, 无法新建博文')
                 return false
             }
             if (Settings.automaticallyExtractImagesType)
@@ -136,7 +136,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
 
     const { id: postId } = post
     const localFilePath = PostFileMapManager.getFilePath(postId)
-    if (!localFilePath) return AlertService.warn('本地无该博文的编辑记录')
+    if (!localFilePath) return Alert.warn('本地无该博文的编辑记录')
 
     if (Settings.automaticallyExtractImagesType)
         await extractImages(Uri.file(localFilePath), Settings.automaticallyExtractImagesType).catch(console.warn)
@@ -148,7 +148,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
     if (!validatePost(post)) return false
 
     if (Settings.showConfirmMsgWhenUploadPost) {
-        const answer = await AlertService.warn(
+        const answer = await Alert.warn(
             '确认上传吗?',
             {
                 modal: true,
@@ -177,11 +177,11 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
 
                 hasSaved = true
                 progress.report({ increment: 100 })
-                AlertService.info('上传成功')
+                void Alert.info('上传成功')
                 await refreshPostsList()
             } catch (err) {
                 progress.report({ increment: 100 })
-                AlertService.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
+                void Alert.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
                 console.error(err)
             }
             return hasSaved
@@ -191,7 +191,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
 
 const validatePost = (post: Post): boolean => {
     if (!post.postBody) {
-        AlertService.warn('文件内容为空!')
+        void Alert.warn('文件内容为空!')
         return false
     }
 

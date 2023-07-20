@@ -1,5 +1,5 @@
-import { TreeItem, TreeItemCollapsibleState } from 'vscode'
 import { Post } from '@/models/post'
+import { TreeItem, TreeItemCollapsibleState } from 'vscode'
 import { toTreeItem } from '../converters'
 import { BaseTreeItemSource } from './base-tree-item-source'
 

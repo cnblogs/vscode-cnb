@@ -1,6 +1,13 @@
+import { AccountInfo } from '@/auth/account-info'
 import { AuthSession } from '@/auth/auth-session'
+import { TokenInfo } from '@/models/token-info'
 import { genVerifyChallengePair } from '@/services/code-challenge.service'
+import { globalCtx } from '@/services/global-ctx'
+import { Oauth } from '@/services/oauth.api'
+import { extUriHandler } from '@/utils/uri-handler'
 import { isArray, isUndefined } from 'lodash-es'
+import RandomString from 'randomstring'
+import { Optional } from 'utility-types'
 import {
     authentication,
     AuthenticationProvider,
@@ -14,13 +21,6 @@ import {
     Uri,
     window,
 } from 'vscode'
-import { globalCtx } from '@/services/global-ctx'
-import RandomString from 'randomstring'
-import { Oauth } from '@/services/oauth.api'
-import { extUriHandler } from '@/utils/uri-handler'
-import { AccountInfo } from '@/auth/account-info'
-import { TokenInfo } from '@/models/token-info'
-import { Optional } from 'utility-types'
 
 export class AuthProvider implements AuthenticationProvider, Disposable {
     static readonly providerId = 'cnblogs'

@@ -1,13 +1,13 @@
-import { RefreshIngsList } from 'src/commands/ing/refresh-ings-list'
-import { globalCtx } from 'src/services/global-ctx'
+import { OpenIngInBrowser } from '@/commands/ing/open-ing-in-browser'
+import { SelectIngType } from '@/commands/ing/select-ing-type'
+import { regCmd } from '@/utils/cmd'
 import {
     GotoIngsListFirstPage,
     GotoIngsListNextPage,
     GotoIngsListPreviousPage,
 } from 'src/commands/ing/goto-ings-list-page'
-import { SelectIngType } from '@/commands/ing/select-ing-type'
-import { OpenIngInBrowser } from '@/commands/ing/open-ing-in-browser'
-import { regCmd } from '@/utils/cmd'
+import { RefreshIngsList } from 'src/commands/ing/refresh-ings-list'
+import { globalCtx } from 'src/services/global-ctx'
 
 export const regIngListCmds = () => {
     const appName = globalCtx.extName

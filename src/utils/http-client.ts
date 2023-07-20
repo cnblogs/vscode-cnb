@@ -1,7 +1,7 @@
 import { accountManager } from '@/auth/account-manager'
+import { Oauth } from '@/services/oauth.api'
 import got, { BeforeRequestHook } from 'got'
 import { isString } from 'lodash-es'
-import { Oauth } from '@/services/oauth.api'
 
 const bearerTokenHook: BeforeRequestHook = async opt => {
     const { headers } = opt
@@ -24,6 +24,6 @@ const httpClient = got.extend({
     https: { rejectUnauthorized: false },
 })
 
-export { got }
 export * from 'got'
+export { got }
 export default httpClient

@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
+import { ActivityItem, IPersonaProps, Link, Text } from '@fluentui/react'
 import { Ing, IngComment, IngSendFromType } from '@models/ing'
 import { IngItemState } from '@models/ing-view'
-import { take } from 'lodash-es'
-import { ActivityItem, IPersonaProps, Link, Text } from '@fluentui/react'
+import { IngWebviewHostCmd, WebviewCmd } from '@models/webview-cmd'
 import { format, formatDistanceStrict } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
+import { take } from 'lodash-es'
+import React, { Component } from 'react'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
-import { IngWebviewHostCmd, WebviewCmd } from '@models/webview-cmd'
 
 interface IngItemProps {
     ing: Ing

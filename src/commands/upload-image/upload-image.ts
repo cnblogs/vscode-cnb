@@ -1,5 +1,4 @@
-import { AlertService } from '@/services/alert.service'
-import { window } from 'vscode'
+import { Alert } from '@/services/alert.service'
 import { uploadImageFromClipboard } from './upload-clipboard-image'
 import { insertImageLinkToActiveEditor, showUploadSuccessModel } from './upload-image-utils'
 import { uploadLocalDiskImage } from './upload-local-disk-image'
@@ -7,7 +6,7 @@ import { uploadLocalDiskImage } from './upload-local-disk-image'
 export const uploadImage = async (autoInsertToActiveEditor = true, from?: 'local' | 'clipboard') => {
     const options = ['本地图片文件', '剪贴板图片']
     const selected = !from
-        ? await AlertService.info(
+        ? await Alert.info(
               '上传图片到博客园',
               {
                   modal: true,
@@ -19,7 +18,7 @@ export const uploadImage = async (autoInsertToActiveEditor = true, from?: 'local
 
     let imageUrl: string | undefined
     const caughtFailedUpload = (e: unknown) =>
-        void AlertService.httpErr(typeof e === 'object' && e != null ? e : {}, { message: '上传图片失败' })
+        void Alert.httpErr(typeof e === 'object' && e != null ? e : {}, { message: '上传图片失败' })
     switch (selected) {
         case 'local':
         case options[0]:

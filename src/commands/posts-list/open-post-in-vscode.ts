@@ -1,15 +1,15 @@
+import { Post } from '@/models/post'
+import { Alert } from '@/services/alert.service'
+import { postCategoryService } from '@/services/post-category.service'
+import { PostFileMapManager } from '@/services/post-file-map'
+import { PostTitleSanitizer } from '@/services/post-title-sanitizer.service'
+import { PostService } from '@/services/post.service'
+import { Settings } from '@/services/settings.service'
 import fs from 'fs'
 import path from 'path'
-import { FileSystemError, MessageOptions, Uri, window, workspace } from 'vscode'
-import { Post } from '@/models/post'
-import { AlertService } from '@/services/alert.service'
-import { PostService } from '@/services/post.service'
-import { PostFileMapManager } from '@/services/post-file-map'
-import { Settings } from '@/services/settings.service'
-import { openPostFile } from './open-post-file'
-import { PostTitleSanitizer } from '@/services/post-title-sanitizer.service'
-import { postCategoryService } from '@/services/post-category.service'
 import sanitizeFileName from 'sanitize-filename'
+import { FileSystemError, MessageOptions, Uri, window, workspace } from 'vscode'
+import { openPostFile } from './open-post-file'
 
 const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise<Uri> => {
     const workspaceUri = Settings.workspaceUri
@@ -68,7 +68,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
                 '保留本地文件(这会新建另一个文件名中包含博文id的文件)',
                 '覆盖本地文件(会导致本地文件中内容丢失)',
             ]
-            const selectedOption = await AlertService.info(
+            const selectedOption = await Alert.info(
                 `无法新建博文与本地文件的关联, 文件名冲突`,
                 { detail: `本地已存在名为"${path.basename(fileUri.fsPath)}"的文件`, modal: true } as MessageOptions,
                 ...conflictOptions
@@ -97,7 +97,7 @@ const createDirectoryIfNotExist = async (uri: Uri) => {
     } catch (err) {
         if (err instanceof FileSystemError) await workspace.fs.createDirectory(uri)
 
-        AlertService.err('Create workspace directory failed')
+        void Alert.err('Create workspace directory failed')
         console.error(err)
     }
 }

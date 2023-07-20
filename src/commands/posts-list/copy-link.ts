@@ -1,6 +1,6 @@
 import { TreeViewCmdHandler } from '@/commands/cmd-handler'
 import { Post } from '@/models/post'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { PostService } from '@/services/post.service'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
@@ -53,7 +53,7 @@ export class CopyPostLinkCmdHandler extends TreeViewCmdHandler<Thenable<Post | n
         } else if (input instanceof Uri) {
             const postId = PostFileMapManager.findByFilePath(input.fsPath)?.[0]
             return postId == null || postId <= 0
-                ? Promise.resolve(undefined).then(() => void AlertService.fileNotLinkedToPost(input))
+                ? Promise.resolve(undefined).then(() => void Alert.fileNotLinkedToPost(input))
                 : PostService.fetchPostEditDto(postId).then(v => v?.post)
         }
 

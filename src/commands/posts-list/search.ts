@@ -1,5 +1,5 @@
-import { window } from 'vscode'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { window } from 'vscode'
 
 export const searchPosts = async () => {
     const searchKey = await window.showInputBox({

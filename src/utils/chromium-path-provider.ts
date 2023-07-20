@@ -1,8 +1,8 @@
-import { window, ProgressLocation } from 'vscode'
+import { Alert } from '@/services/alert.service'
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
-import { AlertService } from '@/services/alert.service'
+import { ProgressLocation, window } from 'vscode'
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
 const download: (arg: Record<string, unknown>) => Promise<string> = require('download-chromium')
 
@@ -74,7 +74,7 @@ namespace chromiumPathProvider {
                 }
             }
         )
-        if (chromiumPath) AlertService.info(`Chromium已下载至${chromiumPath}`)
+        if (chromiumPath) void Alert.info(`Chromium已下载至${chromiumPath}`)
 
         return chromiumPath
     }
