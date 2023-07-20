@@ -3,7 +3,7 @@ import { postCategoryService } from '@/services/post-category.service'
 import { extViews } from '@/tree-view-providers/tree-view-registration'
 import { inputPostCategory } from './input-post-category'
 import { refreshPostCategoriesList } from './refresh-post-categories-list'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 
 export const newPostCategory = async () => {
     const input = await inputPostCategory({
@@ -29,7 +29,7 @@ export const newPostCategory = async () => {
                 const newCategory = (await postCategoryService.listCategories()).find(x => x.title === input.title)
                 if (newCategory) await extViews.postCategoriesList.reveal(newCategory)
             } catch (err) {
-                void AlertService.err('新建博文分类时遇到了错误', {
+                void Alert.err('新建博文分类时遇到了错误', {
                     modal: true,
                     detail: `服务器反回了错误\n${err instanceof Error ? err.message : JSON.stringify(err)}`,
                 } as MessageOptions)

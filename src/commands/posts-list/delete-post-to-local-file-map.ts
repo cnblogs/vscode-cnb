@@ -4,11 +4,11 @@ import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
 import { revealPostsListItem } from '@/services/posts-list-view'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { extViews } from '@/tree-view-providers/tree-view-registration'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 
 const confirm = async (posts: Post[]): Promise<boolean> => {
     const options = ['确定']
-    const input = await AlertService.info(
+    const input = await Alert.info(
         '确定要取消这些博文与本地文件的关联吗?',
         {
             detail: posts.map(x => x.title).join(', '),

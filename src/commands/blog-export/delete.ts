@@ -1,6 +1,6 @@
 import { TreeViewCmdHandler } from '@/commands/cmd-handler'
 import { DownloadedBlogExport } from '@/models/blog-export'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { BlogExportApi } from '@/services/blog-export.api'
 import { DownloadedExportStore } from '@/services/downloaded-export.store'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
@@ -86,7 +86,7 @@ export class DeleteCmdHandler extends TreeViewCmdHandler<DownloadedExportTreeIte
         const hasDeleted = await BlogExportApi.del(record.id)
             .then(() => true)
             .catch((e: unknown) => {
-                AlertService.httpErr(typeof e === 'object' && e != null ? e : {})
+                Alert.httpErr(typeof e === 'object' && e != null ? e : {})
                 return false
             })
         if (hasDeleted) if (downloaded) await this.removeDownloadedBlogExport(downloaded, { shouldDeleteLocal })

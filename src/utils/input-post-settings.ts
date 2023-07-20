@@ -1,7 +1,7 @@
 import { QuickPickItem } from 'vscode'
 import { AccessPermission, Post } from '@/models/post'
 import { PostCategories, PostCategory } from '@/models/post-category'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { InputFlowAction, InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'
 import { postCategoryService } from '@/services/post-category.service'
 
@@ -102,7 +102,7 @@ export const inputPostSettings = (
         try {
             categories = await postCategoryService.listCategories()
         } catch (err) {
-            AlertService.err(err instanceof Error ? err.message : JSON.stringify(err))
+            Alert.err(err instanceof Error ? err.message : JSON.stringify(err))
             // 取消
             throw InputFlowAction.cancel
         }

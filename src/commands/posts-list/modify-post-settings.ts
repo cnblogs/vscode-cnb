@@ -1,6 +1,6 @@
 import { Uri } from 'vscode'
 import { Post } from '@/models/post'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { revealPostsListItem } from '@/services/posts-list-view'
@@ -22,7 +22,7 @@ export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
         postId = input.id
     } else if (input instanceof Uri) {
         postId = PostFileMapManager.getPostId(input.fsPath) ?? -1
-        if (postId < 0) return AlertService.fileNotLinkedToPost(input)
+        if (postId < 0) return Alert.fileNotLinkedToPost(input)
     }
 
     if (!(postId >= 0)) return
@@ -40,7 +40,7 @@ export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
         post: postEditDto,
         localFileUri: localFilePath ? Uri.file(localFilePath) : undefined,
         successCallback: ({ id }) => {
-            AlertService.info('博文已更新')
+            Alert.info('博文已更新')
             postsDataProvider.fireTreeDataChangedEvent(id)
             postCategoriesDataProvider.onPostUpdated({ refreshPosts: false, postIds: [id] })
         },

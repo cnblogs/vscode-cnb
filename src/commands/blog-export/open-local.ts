@@ -3,7 +3,7 @@ import { window } from 'vscode'
 import path from 'path'
 import fs from 'fs'
 import { promisify } from 'util'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { DownloadedExportStore } from '@/services/downloaded-export.store'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 
@@ -29,7 +29,7 @@ export class OpenLocalExportCmdHandler extends CmdHandler {
         if (fileUri == null) return
         const filePath = fileUri.fsPath
         if (filePath.endsWith('.zip') && !filePath.endsWith('.db.zip'))
-            return void AlertService.warn('不支持的博客备份文件')
+            return void Alert.warn('不支持的博客备份文件')
 
         const fileName = path.basename(filePath.replace(/\.db(\.zip)?$/, ''))
         const dirname = path.dirname(filePath)
@@ -37,7 +37,7 @@ export class OpenLocalExportCmdHandler extends CmdHandler {
         isConfirmedToUnzip = filePath.endsWith('.db.zip')
         // if (!confirmUnzip && fileUri.fsPath.endsWith('db.zip')) {
         //     const options: (MessageItem & { confirmed: boolean })[] = [{ title: '确定', confirmed: true }];
-        //     const selected = await AlertService.info(
+        //     const selected = await Alert.info(
         //         '浏览博客备份需要解决, 确定要解压吗?',
         //         { modal: true },
         //         ...options
@@ -56,7 +56,7 @@ export class OpenLocalExportCmdHandler extends CmdHandler {
         const dbFileName = path.basename(dbFilePath)
 
         const isExist = await promisify(fs.exists)(dbFilePath)
-        if (!isExist) return void AlertService.warn('文件不存在')
+        if (!isExist) return void Alert.warn('文件不存在')
 
         const treeProvider = BlogExportProvider.optionalInstance
         const dbFileSize = (await promisify(fs.stat)(dbFilePath)).size

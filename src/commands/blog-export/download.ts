@@ -1,5 +1,5 @@
 import { TreeViewCmdHandler } from '@/commands/cmd-handler'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { BlogExportApi } from '@/services/blog-export.api'
 import { DownloadedExportStore } from '@/services/downloaded-export.store'
 import { globalCtx } from '@/services/global-ctx'
@@ -47,7 +47,7 @@ export class DownloadExportCmdHandler extends TreeViewCmdHandler<BlogExportRecor
         await this.setIsDownloading(true)
 
         const onError = (msg?: string | null) => {
-            if (msg) AlertService.warn(msg)
+            if (msg) Alert.warn(msg)
             if (!isFileExist) fs.rmSync(zipFilePath)
             blogExportProvider?.refreshItem(treeItem)
             this.setIsDownloading(false).then(undefined, console.warn)

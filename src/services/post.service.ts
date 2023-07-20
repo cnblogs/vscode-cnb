@@ -7,7 +7,7 @@ import { PostEditDto } from '@/models/post-edit-dto'
 import { PostUpdatedResponse } from '@/models/post-updated-response'
 import { throwIfNotOkGotResponse } from '@/utils/throw-if-not-ok-response'
 import { IErrorResponse } from '@/models/error-response'
-import { AlertService } from './alert.service'
+import { Alert } from './alert.service'
 import { PostFileMapManager } from './post-file-map'
 import { ZzkSearchResult } from '@/models/zzk-search-result'
 import got from '@/utils/http-client'
@@ -73,11 +73,11 @@ export namespace PostService {
             const { statusCode, errors } = e as IErrorResponse
             if (!muteErrorNotification) {
                 if (statusCode === 404) {
-                    AlertService.err('博文不存在')
+                    Alert.err('博文不存在')
                     const postFilePath = PostFileMapManager.getFilePath(postId)
                     if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '')
                 } else {
-                    AlertService.err(errors.join('\n'))
+                    Alert.err(errors.join('\n'))
                 }
             }
             return undefined

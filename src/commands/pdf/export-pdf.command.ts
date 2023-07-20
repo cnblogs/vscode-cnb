@@ -10,7 +10,7 @@ import { extViews } from '@/tree-view-providers/tree-view-registration'
 import { chromiumPathProvider } from '@/utils/chromium-path-provider'
 import { Settings } from '@/services/settings.service'
 import { accountManager } from '@/auth/account-manager'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { PostEditDto } from '@/models/post-edit-dto'
 import { postPdfTemplateBuilder } from '@/commands/pdf/post-pdf-template-builder'
@@ -114,7 +114,7 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
 
     if (!path) {
         const { Options: options } = chromiumPathProvider
-        const input = await AlertService.warn(
+        const input = await Alert.warn(
             '未找到Chromium可执行文件',
             {
                 modal: true,
@@ -175,7 +175,7 @@ const mapToPostEditDto = async (posts: Post[]) =>
 
 const reportErrors = (errors: string[] | undefined) => {
     if (errors && errors.length > 0) {
-        void AlertService.err('导出 PDF 时遇到错误', {
+        void Alert.err('导出 PDF 时遇到错误', {
             modal: true,
             detail: errors.join('\n'),
         } as MessageOptions)
@@ -192,7 +192,7 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
         currentUser: { blogApp },
     } = accountManager
 
-    if (!blogApp) return void AlertService.warn('无法获取到博客地址, 请检查登录状态')
+    if (!blogApp) return void Alert.warn('无法获取到博客地址, 请检查登录状态')
 
     reportErrors(
         await window.withProgress<string[] | undefined>(

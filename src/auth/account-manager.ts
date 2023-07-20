@@ -8,7 +8,7 @@ import { Oauth } from '@/services/oauth.api'
 import { AuthProvider } from '@/auth/auth-provider'
 import { AuthSession } from '@/auth/auth-session'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { execCmd } from '@/utils/cmd'
 
 const isAuthorizedStorageKey = 'isAuthorized'
@@ -81,7 +81,7 @@ class AccountManager extends vscode.Disposable {
             await AuthProvider.instance.removeSession(session.id)
             await Oauth.revokeToken(session.accessToken)
         } catch (e: any) {
-            AlertService.err(`登出发生错误: ${e}`)
+            Alert.err(`登出发生错误: ${e}`)
         }
     }
 
@@ -102,7 +102,7 @@ class AccountManager extends vscode.Disposable {
         const session = await authentication.getSession(AuthProvider.instance.providerId, [], opt).then(
             session => (session ? AuthSession.from(session) : null),
             e => {
-                AlertService.err(`创建/获取 Session 失败: ${e}`)
+                Alert.err(`创建/获取 Session 失败: ${e}`)
             }
         )
 

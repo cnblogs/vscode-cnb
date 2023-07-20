@@ -1,5 +1,5 @@
 import { window } from 'vscode'
-import { AlertService } from '@/services/alert.service'
+import { Alert } from '@/services/alert.service'
 import { Settings } from '@/services/settings.service'
 
 export const setWorkspace = async () => {
@@ -14,5 +14,5 @@ export const setWorkspace = async () => {
     if (!input) return
 
     await Settings.setWorkspaceUri(input)
-    AlertService.info(`工作空间成功修改为: "${Settings.workspaceUri.fsPath}"`)
+    Alert.info(`工作空间成功修改为: "${Settings.workspaceUri.fsPath}"`)
 }
