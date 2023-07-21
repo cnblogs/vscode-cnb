@@ -9,7 +9,7 @@ import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import path from 'path'
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from 'vscode'
 
-export type DownloadedExportChildTreeItem = PostTreeItem<DownloadedExportTreeItem> | TreeItem | ExportPostsEntryTreeItem
+export type DownloadedExportChildTreeItem = PostTreeItem<DownloadedExportTreeItem> | TreeItem | ExportPostEntryTreeItem
 
 export class DownloadedExportMetadata extends TreeItem {
     readonly parent?: DownloadedExportTreeItem | null
@@ -21,7 +21,7 @@ export class DownloadedExportMetadata extends TreeItem {
     }
 }
 
-export class ExportPostsEntryTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<ExportPostTreeItem> {
+export class ExportPostEntryTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<ExportPostTreeItem> {
     constructor(public readonly parent: BlogExportTreeItem, public readonly downloadedExport: DownloadedBlogExport) {
         super()
     }
@@ -69,7 +69,7 @@ export class DownloadedExportTreeItem
     }
 
     getChildrenAsync: () => Promise<DownloadedExportChildTreeItem[]> = () =>
-        Promise.resolve([new ExportPostsEntryTreeItem(this, this.downloadedExport)])
+        Promise.resolve([new ExportPostEntryTreeItem(this, this.downloadedExport)])
 
     toTreeItem(): TreeItem | Promise<TreeItem> {
         const {

@@ -1,47 +1,47 @@
 import { globalCtx } from '@/services/global-ctx'
 import { PostService } from '@/services/post.service'
 import vscode, { window } from 'vscode'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { postDataProvider } from '@/tree-view-providers/post-data-provider'
 import { Alert } from '@/services/alert.service'
-import { PostsListState } from '@/models/posts-list-state'
+import { PostListState } from '@/models/post-list-state'
 import { extViews } from '@/tree-view-providers/tree-view-registration'
 import { execCmd } from '@/utils/cmd'
 
 let refreshTask: Promise<boolean> | null = null
 
-export const refreshPostsList = async ({ queue = false } = {}): Promise<boolean> => {
+export const refreshPostList = async ({ queue = false } = {}): Promise<boolean> => {
     if (isRefreshing && !queue) {
         alertRefreshing()
         await refreshTask
         return false
     } else if (isRefreshing && refreshTask != null) {
         await refreshTask
-        return refreshPostsList()
+        return refreshPostList()
     }
 
     refreshTask = setRefreshing(true).then(() =>
-        postsDataProvider
-            .loadPosts()
-            .then(pagedPosts =>
+        postDataProvider
+            .loadPost()
+            .then(pagedPost =>
                 setPostListContext(
-                    pagedPosts?.pageCount ?? 0,
-                    pagedPosts?.hasPrevious ?? false,
-                    pagedPosts?.hasNext ?? false
+                    pagedPost?.pageCount ?? 0,
+                    pagedPost?.hasPrevious ?? false,
+                    pagedPost?.hasNext ?? false
                 )
                     .catch()
-                    .then(() => pagedPosts)
+                    .then(() => pagedPost)
             )
-            .then(pagedPosts => {
-                if (pagedPosts == null) {
+            .then(pagedPost => {
+                if (pagedPost == null) {
                     return Promise.resolve(false).finally(() => Alert.err('刷新博文列表失败'))
                 } else {
-                    return PostService.updatePostsListState(pagedPosts)
-                        .then(() => updatePostsListViewTitle())
+                    return PostService.updatePostListState(pagedPost)
+                        .then(() => updatePostListViewTitle())
                         .then(() => true)
                 }
             })
             // TODO: impl `always` fn
-            .then(ok => postsDataProvider.refreshSearch().then(() => ok))
+            .then(ok => postDataProvider.refreshSearch().then(() => ok))
             .then(ok => setRefreshing(false).then(() => ok))
             .catch(() => false)
             .finally(() => (refreshTask = null))
@@ -50,22 +50,22 @@ export const refreshPostsList = async ({ queue = false } = {}): Promise<boolean>
     return refreshTask
 }
 
-export const gotoNextPostsList = async () => {
+export const gotoNextPostList = async () => {
     await gotoPage(c => c + 1)
 }
 
-export const gotoPreviousPostsList = async () => {
+export const gotoPreviousPostList = async () => {
     await gotoPage(c => c - 1)
 }
 
-export const seekPostsList = async () => {
+export const seekPostList = async () => {
     const input = await window.showInputBox({
         placeHolder: '请输入页码',
         validateInput: i => {
             const n = Number.parseInt(i)
             if (isNaN(n) || !n) return '请输入正确格式的页码'
 
-            const state = PostService.getPostsListState()
+            const state = PostService.getPostListState()
             if (!state) return '博文列表尚未加载'
 
             if (isPageIndexInRange(n, state)) return undefined
@@ -80,15 +80,15 @@ export const seekPostsList = async () => {
 let isRefreshing = false
 const setRefreshing = async (value = false) => {
     const extName = globalCtx.extName
-    await execCmd('setContext', `${extName}.posts-list.refreshing`, value).then(undefined, () => false)
+    await execCmd('setContext', `${extName}.post-list.refreshing`, value).then(undefined, () => false)
     isRefreshing = value
 }
 
 const setPostListContext = async (pageCount: number, hasPrevious: boolean, hasNext: boolean) => {
     const extName = globalCtx.extName
-    await execCmd('setContext', `${extName}.posts-list.hasPrevious`, hasPrevious)
-    await execCmd('setContext', `${extName}.posts-list.hasNext`, hasNext)
-    await execCmd('setContext', `${extName}.posts-list.pageCount`, pageCount)
+    await execCmd('setContext', `${extName}.post-list.hasPrevious`, hasPrevious)
+    await execCmd('setContext', `${extName}.post-list.hasNext`, hasNext)
+    await execCmd('setContext', `${extName}.post-list.pageCount`, pageCount)
 }
 
 const alertRefreshing = () => {
@@ -100,31 +100,31 @@ const gotoPage = async (pageIndex: (currentIndex: number) => number) => {
         alertRefreshing()
         return
     }
-    const state = PostService.getPostsListState()
+    const state = PostService.getPostListState()
     if (!state) {
-        console.warn('Cannot goto previous page posts list because post list state not defined')
+        console.warn('Cannot goto previous page post list because post list state not defined')
         return
     }
     const idx = pageIndex(state.pageIndex)
     if (!isPageIndexInRange(idx, state)) {
         console.warn(
-            `Cannot goto page posts list, page index out of range, max value of page index is ${state.pageCount}`
+            `Cannot goto page post list, page index out of range, max value of page index is ${state.pageCount}`
         )
         return
     }
     state.pageIndex = idx
-    await PostService.updatePostsListState(state)
-    await refreshPostsList()
+    await PostService.updatePostListState(state)
+    await refreshPostList()
 }
 
-const isPageIndexInRange = (pageIndex: number, state: PostsListState) => pageIndex <= state.pageCount && pageIndex >= 1
+const isPageIndexInRange = (pageIndex: number, state: PostListState) => pageIndex <= state.pageCount && pageIndex >= 1
 
-const updatePostsListViewTitle = () => {
-    const state = PostService.getPostsListState()
+const updatePostListViewTitle = () => {
+    const state = PostService.getPostListState()
     if (!state) return
 
     const { pageIndex, pageCount } = state
-    const views = [extViews.postsList, extViews.anotherPostsList]
+    const views = [extViews.postList, extViews.anotherPostList]
     for (const view of views) {
         let title = view.title ?? ''
         const idx = title.indexOf('(')

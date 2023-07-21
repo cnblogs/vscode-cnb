@@ -11,7 +11,7 @@ import { webviewMessage } from '@/models/webview-msg'
 import { WebviewCommonCmd, WebviewCmd } from 'src/models/webview-cmd'
 import { uploadImage } from '@/commands/upload-image/upload-image'
 import { ImageUploadStatusId } from '@/models/image-upload-status'
-import { openPostFile } from '@/commands/posts-list/open-post-file'
+import { openPostFile } from '@/commands/post-list/open-post-file'
 import { parseWebviewHtml } from 'src/services/parse-webview-html'
 import path from 'path'
 

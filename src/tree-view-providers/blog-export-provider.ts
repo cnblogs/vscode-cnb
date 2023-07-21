@@ -9,7 +9,7 @@ import {
     DownloadedExportMetadata,
     DownloadedExportsEntryTreeItem,
     DownloadedExportTreeItem,
-    ExportPostsEntryTreeItem,
+    ExportPostEntryTreeItem,
 } from './models/blog-export/downloaded'
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
 import { Alert } from '@/services/alert.service'
@@ -49,7 +49,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         if (element instanceof BlogExportRecordTreeItem) return element.getChildrenAsync()
         else if (element instanceof DownloadedExportsEntryTreeItem) return element.getChildrenAsync()
         else if (element instanceof DownloadedExportTreeItem) return element.getChildrenAsync()
-        else if (element instanceof ExportPostsEntryTreeItem) return element.getChildrenAsync()
+        else if (element instanceof ExportPostEntryTreeItem) return element.getChildrenAsync()
         else if (element == null)
             return [(this._downloadedExportEntry = new DownloadedExportsEntryTreeItem()), ...this.listRecords()]
 
@@ -61,7 +61,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
             element instanceof BlogExportRecordMetadata ||
             element instanceof DownloadedExportMetadata ||
             element instanceof DownloadedExportTreeItem ||
-            element instanceof ExportPostsEntryTreeItem
+            element instanceof ExportPostEntryTreeItem
         )
             return element.parent
 

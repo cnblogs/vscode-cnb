@@ -2,7 +2,7 @@ import { AccountInfo } from './account-info'
 import { globalCtx } from '@/services/global-ctx'
 import vscode, { authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view-providers/account-view-data-provider'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { postDataProvider } from '@/tree-view-providers/post-data-provider'
 import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
 import { Oauth } from '@/services/oauth.api'
 import { authProvider } from '@/auth/auth-provider'
@@ -25,7 +25,7 @@ class AccountManager extends vscode.Disposable {
             await this.updateAuthStatus()
 
             accountViewDataProvider.fireTreeDataChangedEvent()
-            postsDataProvider.fireTreeDataChangedEvent(undefined)
+            postDataProvider.fireTreeDataChangedEvent(undefined)
             postCategoriesDataProvider.fireTreeDataChangedEvent()
 
             BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)

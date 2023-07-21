@@ -1,12 +1,12 @@
 import { MessageOptions, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { openPostInVscode } from './posts-list/open-post-in-vscode'
+import { openPostInVscode } from './post-list/open-post-in-vscode'
 import fs from 'fs'
 import { PostService } from '@/services/post.service'
 import { Alert } from '@/services/alert.service'
 import path from 'path'
-import { revealPostsListItem } from '@/services/posts-list-view'
+import { revealPostListItem } from '@/services/post-list-view'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { Settings } from '@/services/settings.service'
 
@@ -57,7 +57,7 @@ const handlePostInput = async (post: Post, contexts: CmdCtx[]) => {
         return void (await openPostInVscode(postId, false))
     }
 
-    await revealPostsListItem(post)
+    await revealPostListItem(post)
     contexts.push({ postId: postId, fileUri: Uri.file(filePath) })
 }
 

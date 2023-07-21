@@ -10,7 +10,7 @@ export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEnt
 
     constructor(
         public searchKey: string,
-        public readonly posts: Post[],
+        public readonly postList: Post[],
         public readonly totalCount: number,
         public readonly zzkSearchResult?: ZzkSearchResult
     ) {
@@ -26,9 +26,9 @@ export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEnt
 
     toTreeItem = (): TreeItem | Promise<TreeItem> =>
         Object.assign<TreeItem, TreeItem>(new TreeItem(`搜索结果: "${this.searchKey}"`), {
-            iconPath: new ThemeIcon('vscode-cnb-posts-list-search'),
+            iconPath: new ThemeIcon('vscode-cnb-post-list-search'),
             collapsibleState: TreeItemCollapsibleState.Expanded,
-            contextValue: 'cnblogs-posts-search-results-entry',
+            contextValue: 'cnblogs-post-search-results-entry',
         })
 
     getChildren = () => this.children
@@ -36,7 +36,7 @@ export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEnt
 
     private readonly parseChildren = () => [
         this.buildSummaryTreeItem(),
-        ...this.posts.map(post => new PostTreeItem(post, false)),
+        ...this.postList.map(post => new PostTreeItem(post, false)),
     ]
 
     private readonly buildSummaryTreeItem = (): TreeItem =>
@@ -45,6 +45,6 @@ export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEnt
                 `共找到 ${this.totalCount} 篇随笔` +
                     (this.zzkCount > 0 ? `, ${this.zzkSearchResult?.postIds.length} 篇来自找找看` : '')
             ),
-            { iconPath: new ThemeIcon('vscode-cnb-posts-list-search-result-summary') }
+            { iconPath: new ThemeIcon('vscode-cnb-post-list-search-result-summary') }
         )
 }

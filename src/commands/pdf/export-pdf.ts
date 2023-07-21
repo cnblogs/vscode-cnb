@@ -139,16 +139,16 @@ const inputTargetFolder = async (): Promise<Uri | undefined> =>
     })) ?? [])[0]
 
 const handlePostInput = (post: Post | PostTreeItem): Promise<Post[]> => {
-    const posts: Post[] = [post instanceof PostTreeItem ? post.post : post]
-    extViews.visiblePostsList()?.selection.map(item => {
+    const postList: Post[] = [post instanceof PostTreeItem ? post.post : post]
+    extViews.visiblePostList()?.selection.map(item => {
         item = item instanceof PostTreeItem ? item.post : item
-        if (item instanceof Post && !posts.includes(item)) posts.push(item)
+        if (item instanceof Post && !postList.includes(item)) postList.push(item)
     })
-    return Promise.resolve(posts)
+    return Promise.resolve(postList)
 }
 
 const handleUriInput = async (uri: Uri): Promise<Post[]> => {
-    const posts: Post[] = []
+    const postList: Post[] = []
     const { fsPath } = uri
     const postId = PostFileMapManager.getPostId(fsPath)
     const { post: inputPost } = (await PostService.fetchPostEditDto(postId && postId > 0 ? postId : -1)) ?? {}
@@ -163,13 +163,13 @@ const handleUriInput = async (uri: Uri): Promise<Post[]> => {
         } as Post)
     }
 
-    posts.push(inputPost)
+    postList.push(inputPost)
 
-    return posts
+    return postList
 }
 
-const mapToPostEditDto = async (posts: Post[]) =>
-    (await Promise.all(posts.map(p => PostService.fetchPostEditDto(p.id))))
+const mapToPostEditDto = async (postList: Post[]) =>
+    (await Promise.all(postList.map(p => PostService.fetchPostEditDto(p.id))))
         .filter((x): x is PostEditDto => x != null)
         .map(x => x?.post)
 
@@ -202,12 +202,12 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
             async progress => {
                 const errors: string[] = []
                 progress.report({ message: '导出 PDF - 处理博文数据' })
-                let selectedPosts = await (input instanceof Post || input instanceof PostTreeItem
+                let selectedPost = await (input instanceof Post || input instanceof PostTreeItem
                     ? handlePostInput(input)
                     : handleUriInput(input))
-                if (selectedPosts.length <= 0) return
+                if (selectedPost.length <= 0) return
 
-                selectedPosts = input instanceof Post ? await mapToPostEditDto(selectedPosts) : selectedPosts
+                selectedPost = input instanceof Post ? await mapToPostEditDto(selectedPost) : selectedPost
                 progress.report({ message: '选择输出文件夹' })
                 const dir = await inputTargetFolder()
                 if (!dir || !chromiumPath) return
@@ -217,8 +217,8 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
                 if (!browser || !page) return ['启动 Chromium 失败']
 
                 let idx = 0
-                const { length: total } = selectedPosts
-                for (const post of selectedPosts) {
+                const { length: total } = selectedPost
+                for (const post of selectedPost) {
                     try {
                         await exportOne(idx++, total, post, page, dir, progress, blogApp)
                     } catch (err) {

@@ -1,7 +1,7 @@
 import os from 'os'
 import { workspace } from 'vscode'
 import { refreshPostCategoriesList } from '@/commands/post-category/refresh-post-categories-list'
-import { refreshPostsList } from '@/commands/posts-list/refresh-posts-list'
+import { refreshPostList } from '@/commands/post-list/refresh-post-list'
 import { globalCtx } from './global-ctx'
 import { PostFileMapManager } from './post-file-map'
 import { execCmd } from '@/utils/cmd'
@@ -33,8 +33,8 @@ export const observeCfgUpdate = () => {
             if (ev.affectsConfiguration(`${Settings.iconThemePrefix}.${Settings.iconThemeKey}`))
                 refreshPostCategoriesList()
 
-            if (ev.affectsConfiguration(`${Settings.cfgPrefix}.${Settings.postsListPageSizeKey}`))
-                refreshPostsList({ queue: true }).catch(() => undefined)
+            if (ev.affectsConfiguration(`${Settings.cfgPrefix}.${Settings.postListPageSizeKey}`))
+                refreshPostList({ queue: true }).catch(() => undefined)
 
             if (ev.affectsConfiguration(`${Settings.cfgPrefix}.markdown`))
                 execCmd('markdown.preview.refresh').then(undefined, () => undefined)

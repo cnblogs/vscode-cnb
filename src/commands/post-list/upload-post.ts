@@ -4,12 +4,12 @@ import { LocalDraft } from '@/services/local-draft.service'
 import { Alert } from '@/services/alert.service'
 import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { postDataProvider } from '@/tree-view-providers/post-data-provider'
 import { openPostInVscode } from './open-post-in-vscode'
 import { openPostFile } from './open-post-file'
-import { searchPostsByTitle } from '@/services/search-post-by-title'
+import { searchPostByTitle } from '@/services/search-post-by-title'
 import * as path from 'path'
-import { refreshPostsList } from './refresh-posts-list'
+import { refreshPostList } from './refresh-post-list'
 import { PostEditDto } from '@/models/post-edit-dto'
 import { PostCfgPanel } from '@/services/post-cfg-panel.service'
 import { saveFilePendingChanges } from '@/utils/save-file-pending-changes'
@@ -55,7 +55,7 @@ export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
         switch (selected) {
             case options[1]:
                 {
-                    const selectedPost = await searchPostsByTitle({
+                    const selectedPost = await searchPostByTitle({
                         postTitle: path.basename(filePath, path.extname(filePath)),
                         quickPickTitle: '搜索要关联的博文',
                     })
@@ -100,12 +100,12 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
         breadcrumbs: ['新建博文', '博文设置', post.title],
         post,
         successCallback: async savedPost => {
-            await refreshPostsList()
+            await refreshPostList()
             await openPostFile(localDraft)
 
             await PostFileMapManager.updateOrCreate(savedPost.id, localDraft.filePath)
             await openPostFile(localDraft)
-            postsDataProvider.fireTreeDataChangedEvent(undefined)
+            postDataProvider.fireTreeDataChangedEvent(undefined)
             void Alert.info('博文已创建')
         },
         beforeUpdate: async (postToSave, panel) => {
@@ -178,7 +178,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
                 hasSaved = true
                 progress.report({ increment: 100 })
                 void Alert.info('上传成功')
-                await refreshPostsList()
+                await refreshPostList()
             } catch (err) {
                 progress.report({ increment: 100 })
                 void Alert.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)

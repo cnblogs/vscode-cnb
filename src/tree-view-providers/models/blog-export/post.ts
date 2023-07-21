@@ -2,13 +2,13 @@ import { ViewPostCmdHandler } from '@/commands/blog-export/view-post'
 import type { ExportPost } from '@/models/blog-export/export-post'
 import { Settings } from '@/services/settings.service'
 import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-source'
-import { ExportPostsEntryTreeItem } from '@/tree-view-providers/models/blog-export'
+import { ExportPostEntryTreeItem } from '@/tree-view-providers/models/blog-export'
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from 'vscode'
 
 export class ExportPostTreeItem extends BaseTreeItemSource {
     readonly contextValue = 'cnblogs-export-post'
 
-    constructor(public readonly parent: ExportPostsEntryTreeItem, public readonly post: ExportPost) {
+    constructor(public readonly parent: ExportPostEntryTreeItem, public readonly post: ExportPost) {
         super()
     }
 

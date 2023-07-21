@@ -1,7 +1,7 @@
 import { globalCtx } from '@/services/global-ctx'
 import vscode from 'vscode'
 import { accountViewDataProvider } from './account-view-data-provider'
-import { PostsListTreeItem, postsDataProvider } from './posts-data-provider'
+import { PostListTreeItem, postDataProvider } from './post-data-provider'
 import { postCategoriesDataProvider } from './post-categories-tree-data-provider'
 import { PostCategoriesListTreeItem } from './models/categories-list-tree-item'
 import { IDisposable } from '@fluentui/react'
@@ -10,17 +10,17 @@ import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { regTreeView } from '@/utils/tree-view'
 
 const _views: {
-    postsList?: vscode.TreeView<PostsListTreeItem>
-    anotherPostsList?: vscode.TreeView<PostsListTreeItem>
+    postList?: vscode.TreeView<PostListTreeItem>
+    anotherPostList?: vscode.TreeView<PostListTreeItem>
     account?: vscode.TreeView<vscode.TreeItem>
     postCategoriesList?: vscode.TreeView<PostCategoriesListTreeItem>
     blogExport?: vscode.TreeView<BlogExportTreeItem>
-    postsLists: () => vscode.TreeView<PostsListTreeItem>[]
-    visiblePostsList: () => vscode.TreeView<PostsListTreeItem> | undefined
+    postLists: () => vscode.TreeView<PostListTreeItem>[]
+    visiblePostList: () => vscode.TreeView<PostListTreeItem> | undefined
 } = {
-    postsLists: () =>
-        [_views.postsList, _views.anotherPostsList].filter((x): x is vscode.TreeView<PostsListTreeItem> => x != null),
-    visiblePostsList: () => _views.postsLists().find(x => x.visible),
+    postLists: () =>
+        [_views.postList, _views.anotherPostList].filter((x): x is vscode.TreeView<PostListTreeItem> => x != null),
+    visiblePostList: () => _views.postLists().find(x => x.visible),
 }
 let _hasRegistered = false
 
@@ -31,12 +31,12 @@ export function setupExtTreeView() {
         treeDataProvider: accountViewDataProvider,
         canSelectMany: false,
     })
-    _views.postsList = regTreeView('cnblogs-posts-list', {
-        treeDataProvider: postsDataProvider,
+    _views.postList = regTreeView('cnblogs-post-list', {
+        treeDataProvider: postDataProvider,
         canSelectMany: true,
     })
-    _views.anotherPostsList = regTreeView('cnblogs-posts-list-another', {
-        treeDataProvider: postsDataProvider,
+    _views.anotherPostList = regTreeView('cnblogs-post-list-another', {
+        treeDataProvider: postDataProvider,
         canSelectMany: true,
     })
     _views.postCategoriesList = regTreeView<PostCategoriesListTreeItem>('cnblogs-post-categories-list', {
@@ -58,15 +58,15 @@ export function setupExtTreeView() {
 }
 
 class ExtViews implements Required<typeof _views> {
-    postsLists = _views.postsLists
-    visiblePostsList = _views.visiblePostsList
+    postLists = _views.postLists
+    visiblePostList = _views.visiblePostList
 
-    get postsList(): vscode.TreeView<PostsListTreeItem> {
-        return this.getTreeView('postsList')
+    get postList(): vscode.TreeView<PostListTreeItem> {
+        return this.getTreeView('postList')
     }
 
-    get anotherPostsList() {
-        return this.getTreeView('anotherPostsList')
+    get anotherPostList() {
+        return this.getTreeView('anotherPostList')
     }
 
     get account() {
@@ -81,7 +81,7 @@ class ExtViews implements Required<typeof _views> {
         return this.getTreeView('blogExport')
     }
 
-    private getTreeView<TKey extends keyof Omit<typeof _views, 'postsLists' | 'visiblePostsList'>>(
+    private getTreeView<TKey extends keyof Omit<typeof _views, 'postLists' | 'visiblePostList'>>(
         name: TKey
     ): NonNullable<(typeof _views)[TKey]> {
         const value = _views[name]

@@ -15,7 +15,7 @@ class PostPickItem implements QuickPickItem {
     }
 }
 
-export const searchPostsByTitle = ({ postTitle = '', quickPickTitle = '按标题搜索博文' }): Promise<Post | undefined> =>
+export const searchPostByTitle = ({ postTitle = '', quickPickTitle = '按标题搜索博文' }): Promise<Post | undefined> =>
     new Promise<Post | undefined>(resolve => {
         const quickPick = window.createQuickPick<PostPickItem>()
         quickPick.title = quickPickTitle
@@ -27,9 +27,8 @@ export const searchPostsByTitle = ({ postTitle = '', quickPickTitle = '按标题
             const value = quickPick.value
             try {
                 quickPick.busy = true
-                const paged = await PostService.fetchPostsList({ search: value })
-                const posts = paged.items
-                const pickItems = posts.map(p => new PostPickItem(p))
+                const paged = await PostService.fetchPostList({ search: value })
+                const pickItems = paged.items.map(p => new PostPickItem(p))
                 if (value === quickPick.value) quickPick.items = pickItems
             } finally {
                 quickPick.busy = false

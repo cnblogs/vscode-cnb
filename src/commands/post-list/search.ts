@@ -1,7 +1,7 @@
 import { window } from 'vscode'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { postDataProvider } from '@/tree-view-providers/post-data-provider'
 
-export const searchPosts = async () => {
+export const searchPost = async () => {
     const searchKey = await window.showInputBox({
         ignoreFocusOut: true,
         title: '搜索博文',
@@ -11,9 +11,9 @@ export const searchPosts = async () => {
     })
     if (!searchKey) return
 
-    await postsDataProvider.search({ key: searchKey })
+    await postDataProvider.search({ key: searchKey })
 }
 
-export const clearPostsSearchResults = () => postsDataProvider.clearSearch()
+export const clearPostSearchResults = () => postDataProvider.clearSearch()
 
-export const refreshPostsSearchResults = () => postsDataProvider.refreshSearch()
+export const refreshPostSearchResults = () => postDataProvider.refreshSearch()

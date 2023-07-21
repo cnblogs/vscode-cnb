@@ -3,12 +3,12 @@ import { Post } from '@/models/post'
 import { Alert } from '@/services/alert.service'
 import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { revealPostsListItem } from '@/services/posts-list-view'
+import { revealPostListItem } from '@/services/post-list-view'
 import { PostCfgPanel } from '@/services/post-cfg-panel.service'
 import fs from 'fs'
 import { LocalDraft } from '@/services/local-draft.service'
 import { saveFilePendingChanges } from '@/utils/save-file-pending-changes'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { postDataProvider } from '@/tree-view-providers/post-data-provider'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
 
@@ -27,7 +27,7 @@ export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
 
     if (!(postId >= 0)) return
 
-    if (post) await revealPostsListItem(post)
+    if (post) await revealPostListItem(post)
 
     const editDto = await PostService.fetchPostEditDto(postId)
     if (!editDto) return
@@ -41,8 +41,8 @@ export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
         localFileUri: localFilePath ? Uri.file(localFilePath) : undefined,
         successCallback: ({ id }) => {
             Alert.info('博文已更新')
-            postsDataProvider.fireTreeDataChangedEvent(id)
-            postCategoriesDataProvider.onPostUpdated({ refreshPosts: false, postIds: [id] })
+            postDataProvider.fireTreeDataChangedEvent(id)
+            postCategoriesDataProvider.onPostUpdated({ refreshPost: false, postIds: [id] })
         },
         beforeUpdate: async post => {
             if (localFilePath && fs.existsSync(localFilePath)) {

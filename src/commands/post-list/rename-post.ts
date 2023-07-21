@@ -4,8 +4,8 @@ import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode
 import { Post } from '@/models/post'
 import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
-import { revealPostsListItem } from '@/services/posts-list-view'
+import { postDataProvider } from '@/tree-view-providers/post-data-provider'
+import { revealPostListItem } from '@/services/post-list-view'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { Alert } from '@/services/alert.service'
 
@@ -30,7 +30,7 @@ const renameLinkedFile = async (post: Post): Promise<void> => {
         const newFilePath = filePath.replace(new RegExp(`${escapeRegExp(fileName)}$`), `${post.title}${ext}`)
         await workspace.fs.rename(fileUri, Uri.file(newFilePath))
         await PostFileMapManager.updateOrCreate(post.id, newFilePath)
-        postsDataProvider.fireTreeDataChangedEvent(post)
+        postDataProvider.fireTreeDataChangedEvent(post)
     }
 }
 
@@ -38,7 +38,7 @@ export const renamePost = async (arg: Post | PostTreeItem) => {
     const post = arg instanceof PostTreeItem ? arg.post : arg
     if (!post) return
 
-    await revealPostsListItem(post)
+    await revealPostListItem(post)
 
     const input = await window.showInputBox({
         title: '请输入新的博文标题',
@@ -67,7 +67,7 @@ export const renamePost = async (arg: Post | PostTreeItem) => {
                 try {
                     await PostService.updatePost(editingPost)
                     post.title = input
-                    postsDataProvider.fireTreeDataChangedEvent(post)
+                    postDataProvider.fireTreeDataChangedEvent(post)
                     hasUpdated = true
                 } catch (err) {
                     void Alert.err('更新博文失败', {

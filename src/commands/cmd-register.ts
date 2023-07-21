@@ -4,25 +4,20 @@ import { openMyHomePage } from './open-my-home-page'
 import { login, logout } from './login'
 import { openMyBlog } from './open-my-blog'
 import { globalCtx } from '@/services/global-ctx'
-import {
-    gotoNextPostsList,
-    gotoPreviousPostsList,
-    refreshPostsList,
-    seekPostsList,
-} from './posts-list/refresh-posts-list'
-import { uploadPostFileToCnblogs, uploadPostToCnblogs } from './posts-list/upload-post'
-import { createLocalDraft } from './posts-list/create-local-draft'
-import { deleteSelectedPosts } from './posts-list/delete-post'
-import { modifyPostSettings } from './posts-list/modify-post-settings'
+import { gotoNextPostList, gotoPreviousPostList, refreshPostList, seekPostList } from './post-list/refresh-post-list'
+import { uploadPostFileToCnblogs, uploadPostToCnblogs } from './post-list/upload-post'
+import { createLocalDraft } from './post-list/create-local-draft'
+import { deleteSelectedPost } from './post-list/delete-post'
+import { modifyPostSettings } from './post-list/modify-post-settings'
 import { uploadImage } from './upload-image/upload-image'
 import { revealLocalPostFileInOs } from './reveal-local-post-file-in-os'
 import { showLocalFileToPostInfo } from './show-local-file-to-post-info'
 import { newPostCategory } from './post-category/new-post-category'
 import { refreshPostCategoriesList } from './post-category/refresh-post-categories-list'
 import { handleUpdatePostCategory } from './post-category/update-post-category'
-import { openPostInVscode } from './posts-list/open-post-in-vscode'
-import { deletePostToLocalFileMap } from './posts-list/delete-post-to-local-file-map'
-import { renamePost } from './posts-list/rename-post'
+import { openPostInVscode } from './post-list/open-post-in-vscode'
+import { deletePostToLocalFileMap } from './post-list/delete-post-to-local-file-map'
+import { renamePost } from './post-list/rename-post'
 import { openPostInBlogAdmin } from './open-post-in-blog-admin'
 import { openWorkspace } from './open-workspace'
 import { setWorkspace } from './set-workspace'
@@ -30,11 +25,11 @@ import { revealWorkspaceInOs } from './reveal-workspace-in-os'
 import { viewPostOnline } from './view-post-online'
 import { pullPostRemoteUpdates } from './pull-post-remote-updates'
 import { extractImages } from './extract-images'
-import { clearPostsSearchResults, refreshPostsSearchResults, searchPosts } from './posts-list/search'
+import { clearPostSearchResults, refreshPostSearchResults, searchPost } from './post-list/search'
 import { handleDeletePostCategories } from './post-category/delete-selected-categories'
 import { PublishIngCmdHandler } from '@/commands/ing/publish-ing'
 import { regIngListCmds } from 'src/commands/ing/ing-list-cmd-register'
-import { CopyPostLinkCmdHandler } from '@/commands/posts-list/copy-link'
+import { CopyPostLinkCmdHandler } from '@/commands/post-list/copy-link'
 import { regBlogExportCmds } from '@/commands/blog-export'
 import { regCmd } from '@/utils/cmd'
 import { exportPostToPdf } from '@/commands/pdf/export-pdf'
@@ -51,14 +46,14 @@ export function setupExtCmd() {
         regCmd(`${appName}.open-my-blog-console`, openMyWebBlogConsole),
         regCmd(`${appName}.open-my-account-settings`, openMyAccountSettings),
         regCmd(`${appName}.logout`, logout),
-        regCmd(`${appName}.refresh-posts-list`, refreshPostsList),
-        regCmd(`${appName}.previous-posts-list`, gotoPreviousPostsList),
-        regCmd(`${appName}.seek-posts-list`, seekPostsList),
-        regCmd(`${appName}.next-posts-list`, gotoNextPostsList),
+        regCmd(`${appName}.refresh-post-list`, refreshPostList),
+        regCmd(`${appName}.previous-post-list`, gotoPreviousPostList),
+        regCmd(`${appName}.seek-post-list`, seekPostList),
+        regCmd(`${appName}.next-post-list`, gotoNextPostList),
         regCmd(`${appName}.edit-post`, openPostInVscode),
         regCmd(`${appName}.upload-post`, uploadPostToCnblogs),
         regCmd(`${appName}.modify-post-settings`, modifyPostSettings),
-        regCmd(`${appName}.delete-post`, deleteSelectedPosts),
+        regCmd(`${appName}.delete-post`, deleteSelectedPost),
         regCmd(`${appName}.create-local-draft`, createLocalDraft),
         regCmd(`${appName}.upload-post-file-to-cnblogs`, uploadPostFileToCnblogs),
         regCmd(`${appName}.pull-post-remote-updates`, pullPostRemoteUpdates),
@@ -80,9 +75,9 @@ export function setupExtCmd() {
         regCmd(`${appName}.view-post-online`, viewPostOnline),
         regCmd(`${appName}.export-post-to-pdf`, (input: unknown) => exportPostToPdf(input)),
         regCmd(`${appName}.extract-images`, extractImages),
-        regCmd(`${appName}.search-posts`, searchPosts),
-        regCmd(`${appName}.clear-posts-search-results`, clearPostsSearchResults),
-        regCmd(`${appName}.refresh-posts-search-results`, refreshPostsSearchResults),
+        regCmd(`${appName}.search-post`, searchPost),
+        regCmd(`${appName}.clear-post-search-results`, clearPostSearchResults),
+        regCmd(`${appName}.refresh-post-search-results`, refreshPostSearchResults),
         regCmd(`${appName}.copy-post-link`, input => new CopyPostLinkCmdHandler(input).handle()),
         regCmd(`${appName}.ing.publish`, () => new PublishIngCmdHandler('input').handle()),
         regCmd(`${appName}.ing.publish-selection`, () => new PublishIngCmdHandler('selection').handle()),

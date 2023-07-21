@@ -6,13 +6,12 @@ import { QuickPickItem, window } from 'vscode'
 
 export class SelectIngType extends CmdHandler {
     handle(): Promise<void> {
-        const { ingType: curIngType } = getIngListWebviewProvider()
         const options: (QuickPickItem & { ingType: IngType })[] = IngTypesMetadata.map(
             ([ingType, { displayName, description }]) => ({
                 label: displayName,
                 ingType: ingType,
                 description: description,
-                picked: ingType === curIngType,
+                picked: ingType === getIngListWebviewProvider().ingType,
             })
         )
         const quickPick = window.createQuickPick<(typeof options)[0]>()

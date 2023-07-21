@@ -3,25 +3,25 @@ import { Post } from '@/models/post'
 import { Alert } from '@/services/alert.service'
 import { PostService } from '@/services/post.service'
 import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { postDataProvider } from '@/tree-view-providers/post-data-provider'
 import { extViews } from '@/tree-view-providers/tree-view-registration'
-import { refreshPostsList } from './refresh-posts-list'
+import { refreshPostList } from './refresh-post-list'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
 
 let isDeleting = false
 
 const confirmDelete = async (
-    selectedPosts: Post[]
+    selectedPost: Post[]
 ): Promise<{ confirmed: boolean; deleteLocalFileAtSameTime: boolean }> => {
     const result = { confirmed: false, deleteLocalFileAtSameTime: false }
-    if (!selectedPosts || selectedPosts.length <= 0) return result
+    if (!selectedPost || selectedPost.length <= 0) return result
 
     const items = ['确定(保留本地文件)', '确定(同时删除本地文件)']
     const clicked = await Alert.warn(
         '确定要删除吗?',
         {
-            detail: `确认后将会删除 ${selectedPosts.map(x => x.title).join(', ')} 这${selectedPosts.length}篇博文吗?`,
+            detail: `确认后将会删除 ${selectedPost.map(x => x.title).join(', ')} 这${selectedPost.length}篇博文吗?`,
             modal: true,
         } as MessageOptions,
         ...items
@@ -38,21 +38,21 @@ const confirmDelete = async (
     return result
 }
 
-export const deleteSelectedPosts = async (arg: unknown) => {
+export const deleteSelectedPost = async (arg: unknown) => {
     let post: Post
     if (arg instanceof Post) post = arg
     else if (arg instanceof PostTreeItem) post = arg.post
     else return
 
-    const selectedPosts: Post[] = post ? [post] : []
-    extViews.visiblePostsList()?.selection.map(item => {
+    const selectedPost: Post[] = post ? [post] : []
+    extViews.visiblePostList()?.selection.map(item => {
         const post = item instanceof PostTreeItem ? item.post : item
-        if (post instanceof Post && !selectedPosts.includes(post)) {
-            postsDataProvider.pagedPosts?.items.find(item => item === post)
-            selectedPosts.push(post)
+        if (post instanceof Post && !selectedPost.includes(post)) {
+            postDataProvider.pagedPost?.items.find(item => item === post)
+            selectedPost.push(post)
         }
     })
-    if (selectedPosts.length <= 0) return
+    if (selectedPost.length <= 0) return
 
     if (isDeleting) {
         Alert.warn('休息会儿再点吧~')
@@ -60,7 +60,7 @@ export const deleteSelectedPosts = async (arg: unknown) => {
     }
 
     const { confirmed: hasConfirmed, deleteLocalFileAtSameTime: isToDeleteLocalFile } = await confirmDelete(
-        selectedPosts
+        selectedPost
     )
     if (!hasConfirmed) return
 
@@ -72,9 +72,9 @@ export const deleteSelectedPosts = async (arg: unknown) => {
             increment: 0,
         })
         try {
-            await PostService.deletePosts(selectedPosts.map(p => p.id))
+            await PostService.deletePost(...selectedPost.map(p => p.id))
             if (isToDeleteLocalFile) {
-                selectedPosts
+                selectedPost
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')
                     .filter(x => !!x)
                     .forEach(path => {
@@ -83,12 +83,12 @@ export const deleteSelectedPosts = async (arg: unknown) => {
             }
             await PostFileMapManager.updateOrCreateMany({
                 emitEvent: false,
-                maps: selectedPosts.map<PostFileMap>(p => [p.id, '']),
+                maps: selectedPost.map<PostFileMap>(p => [p.id, '']),
             })
-            await refreshPostsList().catch()
+            await refreshPostList().catch()
             postCategoriesDataProvider.onPostUpdated({
-                refreshPosts: true,
-                postIds: selectedPosts.map(({ id }) => id),
+                refreshPost: true,
+                postIds: selectedPost.map(({ id }) => id),
             })
         } catch (err) {
             void Alert.err('删除博文失败', {

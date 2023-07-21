@@ -6,7 +6,7 @@ import { isNumber } from 'lodash-es'
 import { untildify } from '@/utils/untildify'
 
 export class Settings {
-    static postsListPageSizeKey = 'pageSize.postsList'
+    static postListPageSizeKey = 'pageSize.postList'
     static cfgPrefix = `cnblogsClient`
     static iconThemePrefix = 'workbench'
     static iconThemeKey = 'iconTheme'
@@ -75,8 +75,8 @@ export class Settings {
         if (cfg === 'any') return ImageSrc.any
     }
 
-    static get postsListPageSize() {
-        const size = Settings.cfg.get<number>(Settings.postsListPageSizeKey)
+    static get postListPageSize() {
+        const size = Settings.cfg.get<number>(Settings.postListPageSizeKey)
         return isNumber(size) ? size : 30
     }
 

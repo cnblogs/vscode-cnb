@@ -1,4 +1,4 @@
-export interface PostsListState {
+export interface PostListState {
     pageIndex: number
     pageSize: number
     itemsCount: number

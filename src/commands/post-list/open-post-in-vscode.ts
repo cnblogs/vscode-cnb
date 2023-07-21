@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { FileSystemError, MessageOptions, Uri, window, workspace } from 'vscode'
+import { FileSystemError, MessageOptions, Uri, workspace } from 'vscode'
 import { Post } from '@/models/post'
 import { Alert } from '@/services/alert.service'
 import { PostService } from '@/services/post.service'

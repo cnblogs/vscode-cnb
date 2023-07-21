@@ -72,7 +72,7 @@ export enum IngType {
     following = 1,
     my = 4,
     all = 5,
-    mycomment = 7,
+    myComment = 7,
     comment = 13,
     mention = 14,
 }

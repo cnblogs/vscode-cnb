@@ -1,5 +1,5 @@
 import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
-import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
+import { postDataProvider } from '@/tree-view-providers/post-data-provider'
 import { globalCtx } from './global-ctx'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && !!map[1]
@@ -40,8 +40,8 @@ export class PostFileMapManager {
 
         await globalCtx.storage.update(this.storageKey, maps.filter(validatePostFileMap))
         if (emitEvent) {
-            postsDataProvider.fireTreeDataChangedEvent(postId)
-            postCategoriesDataProvider.onPostUpdated({ refreshPosts: false, postIds: [postId] })
+            postDataProvider.fireTreeDataChangedEvent(postId)
+            postCategoriesDataProvider.onPostUpdated({ refreshPost: false, postIds: [postId] })
         }
     }
 

@@ -4,7 +4,7 @@ import { Alert } from '@/services/alert.service'
 import { PostService } from '@/services/post.service'
 import { postCategoryService } from '@/services/post-category.service'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { searchPostsByTitle } from '@/services/search-post-by-title'
+import { searchPostByTitle } from '@/services/search-post-by-title'
 import { viewPostOnline } from './view-post-online'
 import format from 'date-fns/format'
 
@@ -31,7 +31,7 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
                 ...options
             )
             if (selected === options[0]) {
-                const selectedPost = await searchPostsByTitle({
+                const selectedPost = await searchPostByTitle({
                     postTitle: path.basename(filePath, path.extname(filePath)),
                     quickPickTitle: '搜索要关联的博文',
                 })

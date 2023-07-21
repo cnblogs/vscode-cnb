@@ -2,7 +2,7 @@ import fetch from '@/utils/fetch-client'
 import { Post } from '@/models/post'
 import { globalCtx } from './global-ctx'
 import { PageModel } from '@/models/page-model'
-import { PostsListState } from '@/models/posts-list-state'
+import { PostListState } from '@/models/post-list-state'
 import { PostEditDto } from '@/models/post-edit-dto'
 import { PostUpdatedResponse } from '@/models/post-updated-response'
 import { throwIfNotOkGotResponse } from '@/utils/throw-if-not-ok-response'
@@ -20,9 +20,9 @@ let newPostTemplate: PostEditDto | undefined
 export namespace PostService {
     const getBaseUrl = () => globalCtx.config.apiBaseUrl
 
-    export const getPostsListState = () => globalCtx.storage.get<PostsListState>('postsListState')
+    export const getPostListState = () => globalCtx.storage.get<PostListState>('postListState')
 
-    export async function fetchPostsList({
+    export async function fetchPostList({
         search = '',
         pageIndex = 1,
         pageSize = defaultPageSize,
@@ -51,7 +51,7 @@ export namespace PostService {
             new PageModel(
                 obj.pageIndex,
                 obj.pageSize,
-                obj.postsCount,
+                obj.postCount,
                 obj.postList.map(x => Object.assign(new Post(), x))
             ),
             { zzkSearchResult: ZzkSearchResult.parse(zzkSearchResult) || undefined }
@@ -73,11 +73,11 @@ export namespace PostService {
             const { statusCode, errors } = e as IErrorResponse
             if (!muteErrorNotification) {
                 if (statusCode === 404) {
-                    Alert.err('博文不存在')
+                    void Alert.err('博文不存在')
                     const postFilePath = PostFileMapManager.getFilePath(postId)
                     if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '')
                 } else {
-                    Alert.err(errors.join('\n'))
+                    void Alert.err(errors.join('\n'))
                 }
             }
             return undefined
@@ -90,19 +90,19 @@ export namespace PostService {
         return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined
     }
 
-    export async function deletePost(postId: number) {
-        const res = await fetch(`${getBaseUrl()}/api/posts/${postId}`, {
-            method: 'DELETE',
-        })
-        if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
-    }
-
-    export async function deletePosts(postIds: number[]) {
-        const searchParams = new URLSearchParams(postIds.map<[string, string]>(id => ['postIds', `${id}`]))
-        const res = await fetch(`${getBaseUrl()}/api/bulk-operation/post?${searchParams.toString()}`, {
-            method: 'DELETE',
-        })
-        if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
+    export async function deletePost(...postIds: number[]) {
+        if (postIds.length === 1) {
+            const res = await fetch(`${getBaseUrl()}/api/posts/${postIds[0]}`, {
+                method: 'DELETE',
+            })
+            if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
+        } else {
+            const searchParams = new URLSearchParams(postIds.map<[string, string]>(id => ['postIds', `${id}`]))
+            const res = await fetch(`${getBaseUrl()}/api/bulk-operation/post?${searchParams.toString()}`, {
+                method: 'DELETE',
+            })
+            if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
+        }
     }
 
     export async function updatePost(post: Post): Promise<PostUpdatedResponse> {
@@ -118,8 +118,8 @@ export namespace PostService {
         return PostUpdatedResponse.parse(body)
     }
 
-    export async function updatePostsListState(state: PostsListState | undefined | PageModel<Post>) {
-        const finalState: PostsListState | undefined =
+    export async function updatePostListState(state: PostListState | undefined | PageModel<Post>) {
+        const finalState: PostListState | undefined =
             state instanceof PageModel
                 ? {
                       pageIndex: state.pageIndex,
@@ -132,7 +132,7 @@ export namespace PostService {
                       pageCount: state.pageCount,
                   }
                 : state
-        await globalCtx.storage.update('postsListState', finalState)
+        await globalCtx.storage.update('postListState', finalState)
     }
 
     export async function fetchPostEditTemplate(): Promise<PostEditDto | undefined> {
@@ -152,6 +152,6 @@ interface PostListModel {
     pageIndex: number
     pageSize: number
     postList: []
-    postsCount: number
+    postCount: number
     zzkSearchResult?: ZzkSearchResult
 }

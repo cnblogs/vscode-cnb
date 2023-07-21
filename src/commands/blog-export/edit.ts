@@ -1,5 +1,5 @@
 import { TreeViewCmdHandler } from '@/commands/cmd-handler'
-import { openPostFile } from '@/commands/posts-list/open-post-file'
+import { openPostFile } from '@/commands/post-list/open-post-file'
 import { Alert } from '@/services/alert.service'
 import { Settings } from '@/services/settings.service'
 import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/post'

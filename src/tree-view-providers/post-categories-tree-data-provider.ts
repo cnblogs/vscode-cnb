@@ -64,8 +64,8 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
             if (parent == null) {
                 return this.getCategories()
             } else if (parent instanceof PostCategoryTreeItem) {
-                return Promise.all([this.getCategories(parent.category.categoryId), this.getPosts(parent)]).then(
-                    ([childCategories, childPosts]) => (parent.children = [...childCategories, ...childPosts])
+                return Promise.all([this.getCategories(parent.category.categoryId), this.getPost(parent)]).then(
+                    ([childCategories, childPost]) => (parent.children = [...childCategories, ...childPost])
                 )
             } else if (parent instanceof PostTreeItem) {
                 return this.getPostMetadataChildren(parent)
@@ -88,12 +88,12 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
         this.fireTreeDataChangedEvent(undefined)
     }
 
-    onPostUpdated({ refreshPosts = false, postIds }: { postIds: number[]; refreshPosts?: boolean }) {
+    onPostUpdated({ refreshPost = false, postIds }: { postIds: number[]; refreshPost?: boolean }) {
         const postTreeItems = this.flattenPostItems.filter(x => postIds.includes(x.post.id))
         const categories = new Set<PostCategoryTreeItem>()
         postTreeItems.forEach(treeItem => {
             if (treeItem.parent) {
-                if (refreshPosts) treeItem.parent.children = undefined
+                if (refreshPost) treeItem.parent.children = undefined
                 else this.fireTreeDataChangedEvent(treeItem)
 
                 if (!categories.has(treeItem.parent)) {
@@ -104,13 +104,13 @@ export class PostCategoriesTreeDataProvider implements TreeDataProvider<PostCate
         })
     }
 
-    private async getPosts(parent: PostCategoryTreeItem): Promise<PostTreeItem[]> {
+    private async getPost(parent: PostCategoryTreeItem): Promise<PostTreeItem[]> {
         const {
             category: { categoryId },
         } = parent
 
         return take(
-            (await PostService.fetchPostsList({ categoryId, pageSize: 100 })).items.map(x =>
+            (await PostService.fetchPostList({ categoryId, pageSize: 100 })).items.map(x =>
                 Object.assign<PostTreeItem<PostCategoryTreeItem>, Partial<PostTreeItem<PostCategoryTreeItem>>>(
                     new PostTreeItem<PostCategoryTreeItem>(x, true),
                     {

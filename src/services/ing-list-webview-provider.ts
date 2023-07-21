@@ -89,17 +89,17 @@ export class ingListWebviewProvider implements WebviewViewProvider {
                     command: WebviewCmd.IngCmd.UiCmd.setAppState,
                 } as IngWebviewUiCmd<Partial<IngAppState>>)
                 .then(undefined, () => undefined)
-            const ings = await IngApi.list({
+            const ingList = await IngApi.list({
                 type: ingType,
                 pageIndex,
                 pageSize: 30,
             })
-            const comments = await IngApi.listComments(...ings.map(x => x.id))
+            const comments = await IngApi.listComments(...ingList.map(x => x.id))
             await this._view.webview
                 .postMessage({
                     command: WebviewCmd.IngCmd.UiCmd.setAppState,
                     payload: {
-                        ings,
+                        ingList,
                         isRefreshing: false,
                         comments,
                     },

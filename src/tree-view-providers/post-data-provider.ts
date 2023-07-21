@@ -1,5 +1,5 @@
 import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { refreshPostsList } from '@/commands/posts-list/refresh-posts-list'
+import { refreshPostList } from '@/commands/post-list/refresh-post-list'
 import { Post } from '@/models/post'
 import { PageModel } from '@/models/page-model'
 import { Alert } from '@/services/alert.service'
@@ -10,20 +10,20 @@ import { PostEntryMetadata, PostMetadata } from './models/post-metadata'
 import { PostSearchResultEntry } from './models/post-search-result-entry'
 import { PostTreeItem } from './models/post-tree-item'
 
-export type PostsListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
+export type PostListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
 
-export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
-    private static _instance: PostsDataProvider | null = null
+export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
+    private static _instance: PostDataProvider | null = null
 
-    protected _pagedPosts?: PageModel<Post>
-    protected _onDidChangeTreeData = new EventEmitter<PostsListTreeItem | undefined>()
+    protected _pagedPost?: PageModel<Post>
+    protected _onDidChangeTreeData = new EventEmitter<PostListTreeItem | undefined>()
 
     private _searchResultEntry: PostSearchResultEntry | null = null
 
     protected constructor() {}
 
     static get instance() {
-        this._instance ??= new PostsDataProvider()
+        this._instance ??= new PostDataProvider()
         return this._instance
     }
 
@@ -31,19 +31,19 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
         return this._onDidChangeTreeData.event
     }
 
-    get pagedPosts() {
-        return this._pagedPosts
+    get pagedPost() {
+        return this._pagedPost
     }
 
-    getChildren(parent?: PostsListTreeItem): ProviderResult<PostsListTreeItem[]> {
+    getChildren(parent?: PostListTreeItem): ProviderResult<PostListTreeItem[]> {
         if (!parent) {
-            const items: PostsListTreeItem[] = this._searchResultEntry == null ? [] : [this._searchResultEntry]
-            const pagedPosts = this._pagedPosts
-            if (!pagedPosts) {
-                void refreshPostsList()
+            const items: PostListTreeItem[] = this._searchResultEntry == null ? [] : [this._searchResultEntry]
+            const pagedPost = this._pagedPost
+            if (!pagedPost) {
+                void refreshPostList()
                 return items
             }
-            return items.concat(...pagedPosts.items)
+            return items.concat(...pagedPost.items)
         } else if (parent instanceof Post) {
             return PostMetadata.parseRoots({ post: parent })
         } else if (parent instanceof PostEntryMetadata || parent instanceof PostSearchResultEntry) {
@@ -53,19 +53,19 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
         return []
     }
 
-    getParent(el: PostsListTreeItem) {
+    getParent(el: PostListTreeItem) {
         return el instanceof PostMetadata ? el.parent : undefined
     }
 
-    getTreeItem(item: PostsListTreeItem): TreeItem | Thenable<TreeItem> {
+    getTreeItem(item: PostListTreeItem): TreeItem | Thenable<TreeItem> {
         return toTreeItem(item)
     }
 
-    async loadPosts(): Promise<PageModel<Post> | null> {
-        const { pageIndex } = PostService.getPostsListState() ?? {}
-        const pageSize = Settings.postsListPageSize
+    async loadPost(): Promise<PageModel<Post> | null> {
+        const { pageIndex } = PostService.getPostListState() ?? {}
+        const pageSize = Settings.postListPageSize
 
-        this._pagedPosts = await PostService.fetchPostsList({ pageIndex, pageSize }).catch(e => {
+        this._pagedPost = await PostService.fetchPostList({ pageIndex, pageSize }).catch(e => {
             if (e instanceof Error) Alert.err(e.message)
             else Alert.err(`加载博文失败\n${JSON.stringify(e)}`)
             return undefined
@@ -73,15 +73,15 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
 
         this.fireTreeDataChangedEvent(undefined)
 
-        return this._pagedPosts ?? null
+        return this._pagedPost ?? null
     }
 
-    fireTreeDataChangedEvent(item: PostsListTreeItem | undefined): void
+    fireTreeDataChangedEvent(item: PostListTreeItem | undefined): void
     fireTreeDataChangedEvent(id: number): void
-    fireTreeDataChangedEvent(item: PostsListTreeItem | number | undefined): void {
+    fireTreeDataChangedEvent(item: PostListTreeItem | number | undefined): void {
         return typeof item === 'number'
             ? [
-                  ...(this._pagedPosts?.items.filter(x => x.id === item) ?? []),
+                  ...(this._pagedPost?.items.filter(x => x.id === item) ?? []),
                   ...(this._searchResultEntry?.children.filter(x => x instanceof PostTreeItem && x.post.id === item) ??
                       []),
               ].forEach(data => this._onDidChangeTreeData.fire(data))
@@ -91,7 +91,7 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     async search({ key }: { key: string }): Promise<void> {
         if (key.length <= 0) return
 
-        const { items, totalItemsCount, zzkSearchResult } = await PostService.fetchPostsList({ search: key })
+        const { items, totalItemsCount, zzkSearchResult } = await PostService.fetchPostList({ search: key })
 
         this._searchResultEntry = new PostSearchResultEntry(key, items, totalItemsCount, zzkSearchResult)
         this.fireTreeDataChangedEvent(undefined)
@@ -113,4 +113,4 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     }
 }
 
-export const postsDataProvider = PostsDataProvider.instance
+export const postDataProvider = PostDataProvider.instance

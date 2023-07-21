@@ -28,7 +28,7 @@ export class App extends Component<unknown, IngAppState> {
     }
 
     render(): ReactNode {
-        const { ings, isRefreshing, theme, comments } = this.state
+        const { ingList, isRefreshing, theme, comments } = this.state
         return (
             <React.StrictMode>
                 <ThemeProvider theme={theme} style={{ fontSize: 'var(--vscode-font-size)' }}>
@@ -39,7 +39,7 @@ export class App extends Component<unknown, IngAppState> {
                             </Stack.Item>
                         </Stack>
                     ) : (
-                        <IngList ings={ings ?? []} comments={comments ?? {}} />
+                        <IngList ingList={ingList ?? []} comments={comments ?? {}} />
                     )}
                 </ThemeProvider>
             </React.StrictMode>
@@ -50,9 +50,9 @@ export class App extends Component<unknown, IngAppState> {
         window.addEventListener('message', ({ data: { command, payload } }: { data: IngWebviewUiCmd }) => {
             switch (command) {
                 case WebviewCmd.IngCmd.UiCmd.setAppState: {
-                    const { ings, isRefreshing, comments } = payload as Partial<IngAppState>
+                    const { ingList, isRefreshing, comments } = payload as Partial<IngAppState>
                     this.setState({
-                        ings: ings?.map(Ing.parse) ?? this.state.ings,
+                        ingList: ingList?.map(Ing.parse) ?? this.state.ingList,
                         isRefreshing: isRefreshing ?? this.state.isRefreshing,
                         comments: comments
                             ? Object.assign(
