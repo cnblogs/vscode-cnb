@@ -18,8 +18,6 @@ import { CommentIngCmdHandler } from '@/commands/ing/comment-ing'
 import { execCmd } from '@/utils/cmd'
 
 export class IngsListWebviewProvider implements WebviewViewProvider {
-    private static _instance: IngsListWebviewProvider | null = null
-
     readonly viewId = `${globalCtx.extName}.ings-list-webview`
 
     private readonly _baseTitle = '闪存'
@@ -29,8 +27,6 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     private _isRefreshing = false
     private _ingType = IngType.all
     private _show: WebviewView['show'] | null = null
-
-    private constructor() {}
 
     get observer(): IngWebviewMessageObserver {
         if (!this._view) throw Error('Cannot access the observer until the webviewView initialized!')
@@ -55,24 +51,8 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         return this._show
     }
 
-    static get instance() {
-        this._instance ??= new IngsListWebviewProvider()
-        return this._instance
-    }
-
     private get assetsUri() {
         return globalCtx.assetsUri
-    }
-
-    static ensureRegistered() {
-        if (!this._instance) {
-            this._instance = new IngsListWebviewProvider()
-            globalCtx.extCtx.subscriptions.push(
-                window.registerWebviewViewProvider(this._instance.viewId, this._instance)
-            )
-        }
-
-        return this._instance
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -182,6 +162,8 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         this._view.title = `${this._baseTitle}${ingTypeSuffix ? ' - ' + ingTypeSuffix : ''}${pageIndexSuffix}`
     }
 }
+
+export const ingListWebviewProvider = new IngsListWebviewProvider()
 
 class IngWebviewMessageObserver {
     constructor(private _provider: IngsListWebviewProvider) {}

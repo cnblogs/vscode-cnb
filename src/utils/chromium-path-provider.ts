@@ -6,7 +6,7 @@ import { Alert } from '@/services/alert.service'
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
 const download: (arg: Record<string, unknown>) => Promise<string> = require('download-chromium')
 
-namespace chromiumPathProvider {
+namespace ChromiumPathProvider {
     export const defaultChromiumPath = {
         osx: [`${os.homedir()}/Applications/Google Chrome.app`, '/Applications/Google Chrome.app'],
         win: ['C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'],
@@ -79,10 +79,10 @@ namespace chromiumPathProvider {
         return chromiumPath
     }
 
-    export const Options: [string, chromiumPathProvider.ChromiumProviderFunc][] = [
-        [selectFromLocalTitle, chromiumPathProvider.selectFromLocal],
-        [downloadFromInternetTitle, chromiumPathProvider.downloadFromInternet],
+    export const Options: [string, ChromiumPathProvider.ChromiumProviderFunc][] = [
+        [selectFromLocalTitle, ChromiumPathProvider.selectFromLocal],
+        [downloadFromInternetTitle, ChromiumPathProvider.downloadFromInternet],
     ]
 }
 
-export { chromiumPathProvider }
+export { ChromiumPathProvider }

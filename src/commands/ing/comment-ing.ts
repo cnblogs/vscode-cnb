@@ -1,6 +1,6 @@
 import { CmdHandler } from '@/commands/cmd-handler'
 import { IngApi } from '@/services/ing.api'
-import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
+import { ingListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { ProgressLocation, window } from 'vscode'
 
 export class CommentIngCmdHandler extends CmdHandler {
@@ -16,8 +16,6 @@ export class CommentIngCmdHandler extends CmdHandler {
     }
 
     async handle(): Promise<void> {
-        if (!IngsListWebviewProvider.instance) return
-
         const maxIngContentLength = 50
         const baseTitle = this._parentCommentId || 0 > 0 ? `回复@${this._atUser?.displayName}` : '评论闪存'
         const input = await window.showInputBox({
@@ -47,6 +45,6 @@ export class CommentIngCmdHandler extends CmdHandler {
     }
 
     private onCommented(): Promise<void> {
-        return IngsListWebviewProvider.instance?.updateComments([this._ingId]) ?? Promise.resolve()
+        return ingListWebviewProvider.updateComments([this._ingId]) ?? Promise.resolve()
     }
 }

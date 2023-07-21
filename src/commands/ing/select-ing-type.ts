@@ -1,12 +1,12 @@
 import { CmdHandler } from '@/commands/cmd-handler'
 import { IngType, IngTypesMetadata } from '@/models/ing'
-import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
+import { ingListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { IDisposable } from '@fluentui/react'
 import { QuickPickItem, window } from 'vscode'
 
 export class SelectIngType extends CmdHandler {
     handle(): Promise<void> {
-        const { ingType: curIngType } = IngsListWebviewProvider.ensureRegistered()
+        const { ingType: curIngType } = ingListWebviewProvider
         const options: (QuickPickItem & { ingType: IngType })[] = IngTypesMetadata.map(
             ([ingType, { displayName, description }]) => ({
                 label: displayName,
@@ -27,7 +27,7 @@ export class SelectIngType extends CmdHandler {
                 if (selectedItem) {
                     const { ingType: selectedIngType } = selectedItem
                     quickPick.hide()
-                    return IngsListWebviewProvider.ensureRegistered().refreshIngsList({
+                    return ingListWebviewProvider.refreshIngsList({
                         pageIndex: 1,
                         ingType: selectedIngType,
                     })

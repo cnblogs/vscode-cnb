@@ -4,7 +4,7 @@ import { IngPublishModel, IngType } from '@/models/ing'
 import { Alert } from '@/services/alert.service'
 import { globalCtx } from '@/services/global-ctx'
 import { IngApi } from '@/services/ing.api'
-import { IngsListWebviewProvider } from '@/services/ings-list-webview-provider'
+import { ingListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'
 import { MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode'
 
@@ -146,18 +146,15 @@ export class PublishIngCmdHandler extends CmdHandler {
     }
 
     private warnNoSelection() {
-        Alert.warn(`无法${this.operation}, 当前没有选中的内容`)
+        void Alert.warn(`无法${this.operation}, 当前没有选中的内容`)
     }
 
     private async onPublished(isPublished: boolean): Promise<void> {
-        const ingsListProvider = IngsListWebviewProvider.instance
         if (isPublished) {
-            if (ingsListProvider) {
-                return ingsListProvider.refreshIngsList({
-                    ingType: this.inputIsPrivate ? IngType.my : IngType.all,
-                    pageIndex: 1,
-                })
-            }
+            await ingListWebviewProvider.refreshIngsList({
+                ingType: this.inputIsPrivate ? IngType.my : IngType.all,
+                pageIndex: 1,
+            })
 
             const options = [
                 ['打开闪存', (): Thenable<void> => execCmd('vscode.open', Uri.parse(globalCtx.config.ingSite))],

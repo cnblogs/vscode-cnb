@@ -37,6 +37,7 @@ import { regIngListCmds } from 'src/commands/ing/ings-list-cmd-register'
 import { CopyPostLinkCmdHandler } from '@/commands/posts-list/copy-link'
 import { regBlogExportCmds } from '@/commands/blog-export'
 import { regCmd } from '@/utils/cmd'
+import { exportPostToPdf } from '@/commands/pdf/export-pdf'
 
 export function setupExtCmd() {
     const ctx = globalCtx.extCtx
@@ -77,9 +78,7 @@ export function setupExtCmd() {
         regCmd(`${appName}.set-workspace`, setWorkspace),
         regCmd(`${appName}.reveal-workspace-in-os`, revealWorkspaceInOs),
         regCmd(`${appName}.view-post-online`, viewPostOnline),
-        regCmd(`${appName}.export-post-to-pdf`, (input: unknown) =>
-            import('./pdf/export-pdf.command').then(m => m.exportPostToPdf(input))
-        ),
+        regCmd(`${appName}.export-post-to-pdf`, (input: unknown) => exportPostToPdf(input)),
         regCmd(`${appName}.extract-images`, extractImages),
         regCmd(`${appName}.search-posts`, searchPosts),
         regCmd(`${appName}.clear-posts-search-results`, clearPostsSearchResults),

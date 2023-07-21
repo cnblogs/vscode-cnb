@@ -5,8 +5,8 @@ import type { MarkdownIt } from '@cnblogs/markdown-it-presets'
 export const extendMarkdownIt = (md: MarkdownIt) =>
     md
         .use(MultilineBlockquotePlugin, {
-            enable: () => Settings.isEnableMarkdownEnhancement && Settings.isEnableMarkdownFenceBlockquote,
+            enable: () => Settings.enableMarkdownEnhancement && Settings.enableMarkdownFenceBlockquote,
         })
         .use(HighlightCodeLinesPlugin, {
-            enable: () => Settings.isEnableMarkdownEnhancement && Settings.isEnableMarkdownHighlightCodeLines,
+            enable: () => Settings.enableMarkdownEnhancement && Settings.enableMarkdownHighlightCodeLines,
         })

@@ -26,8 +26,6 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     static readonly providerId = 'cnblogs'
     static readonly providerName = '博客园Cnblogs'
 
-    private static _instance: AuthProvider | null
-
     readonly providerId = AuthProvider.providerId
     readonly providerName = AuthProvider.providerName
 
@@ -46,11 +44,6 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             this._allSessions = null
         })
     )
-
-    static get instance() {
-        this._instance ??= new AuthProvider()
-        return this._instance
-    }
 
     get onDidChangeSessions() {
         return this._sessionChangeEmitter.event
@@ -273,6 +266,8 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         return session
     }
 }
+
+export const authProvider = new AuthProvider()
 
 class LegacyTokenStore {
     static getAccessToken = () =>

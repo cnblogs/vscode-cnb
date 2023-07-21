@@ -33,7 +33,7 @@ const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefine
 
     await update(ctxs)
 
-    Alert.info(`本地文件${resolveFileNames(ctxs)}已更新`)
+    void Alert.info(`本地文件${resolveFileNames(ctxs)}已更新`)
 }
 
 export { pullPostRemoteUpdates }

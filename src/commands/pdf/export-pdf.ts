@@ -7,7 +7,7 @@ import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { PostService } from '@/services/post.service'
 import { extViews } from '@/tree-view-providers/tree-view-registration'
-import { chromiumPathProvider } from '@/utils/chromium-path-provider'
+import { ChromiumPathProvider } from '@/utils/chromium-path-provider'
 import { Settings } from '@/services/settings.service'
 import { accountManager } from '@/auth/account-manager'
 import { Alert } from '@/services/alert.service'
@@ -98,22 +98,22 @@ const writePdfToFile = (dir: Uri, post: Post, buffer: Buffer) =>
     })
 
 const retrieveChromiumPath = async (): Promise<string | undefined> => {
-    let path: string | undefined = chromiumPathProvider.lookupExecutableFromMacApp(Settings.chromiumPath)
+    let path: string | undefined = ChromiumPathProvider.lookupExecutableFromMacApp(Settings.chromiumPath)
     if (path && fs.existsSync(path)) return path
 
     const platform = os.platform()
-    const { defaultChromiumPath } = chromiumPathProvider
+    const { defaultChromiumPath } = ChromiumPathProvider
     if (platform === 'darwin') {
         // mac
         path = defaultChromiumPath.osx.find(x => fs.existsSync(x)) ?? ''
-        path = chromiumPathProvider.lookupExecutableFromMacApp(path)
+        path = ChromiumPathProvider.lookupExecutableFromMacApp(path)
     } else if (platform === 'win32') {
         // windows
         path = defaultChromiumPath.win.find(x => fs.existsSync(x)) ?? ''
     }
 
     if (!path) {
-        const { Options: options } = chromiumPathProvider
+        const { Options: options } = ChromiumPathProvider
         const input = await Alert.warn(
             '未找到Chromium可执行文件',
             {
