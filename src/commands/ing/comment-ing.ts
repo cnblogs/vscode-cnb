@@ -1,6 +1,6 @@
 import { CmdHandler } from '@/commands/cmd-handler'
 import { IngApi } from '@/services/ing.api'
-import { ingListWebviewProvider } from '@/services/ings-list-webview-provider'
+import { getIngListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { ProgressLocation, window } from 'vscode'
 
 export class CommentIngCmdHandler extends CmdHandler {
@@ -45,6 +45,6 @@ export class CommentIngCmdHandler extends CmdHandler {
     }
 
     private onCommented(): Promise<void> {
-        return ingListWebviewProvider.updateComments([this._ingId]) ?? Promise.resolve()
+        return getIngListWebviewProvider().updateComments([this._ingId]) ?? Promise.resolve()
     }
 }

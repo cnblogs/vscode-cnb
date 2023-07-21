@@ -7,22 +7,22 @@ import { window, ExtensionContext } from 'vscode'
 import { accountManager } from '@/auth/account-manager'
 import { observeCfgUpdate, observeWorkspaceFileUpdate, observeWorkspaceUpdate } from '@/services/check-workspace'
 import { extUriHandler } from '@/utils/uri-handler'
-import { ingListWebviewProvider } from 'src/services/ings-list-webview-provider'
 import { extendMarkdownIt } from '@/markdown/extend-markdownIt'
 import { Settings } from '@/services/settings.service'
+import { getIngListWebviewProvider } from '@/services/ings-list-webview-provider'
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the commands is executed
 export function activate(ctx: ExtensionContext) {
     globalCtx.extCtx = ctx
 
-    globalCtx.extCtx.subscriptions.push(accountManager)
+    ctx.subscriptions.push(accountManager)
 
     setupExtCmd()
     setupExtTreeView()
 
-    globalCtx.extCtx.subscriptions.push(
-        window.registerWebviewViewProvider(ingListWebviewProvider.viewId, ingListWebviewProvider)
+    ctx.subscriptions.push(
+        window.registerWebviewViewProvider(getIngListWebviewProvider().viewId, getIngListWebviewProvider())
     )
 
     observeCfgUpdate()

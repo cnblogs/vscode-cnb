@@ -4,7 +4,7 @@ import { IngPublishModel, IngType } from '@/models/ing'
 import { Alert } from '@/services/alert.service'
 import { globalCtx } from '@/services/global-ctx'
 import { IngApi } from '@/services/ing.api'
-import { ingListWebviewProvider } from '@/services/ings-list-webview-provider'
+import { getIngListWebviewProvider } from '@/services/ings-list-webview-provider'
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'
 import { MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode'
 
@@ -151,7 +151,7 @@ export class PublishIngCmdHandler extends CmdHandler {
 
     private async onPublished(isPublished: boolean): Promise<void> {
         if (isPublished) {
-            await ingListWebviewProvider.refreshIngsList({
+            await getIngListWebviewProvider().refreshIngsList({
                 ingType: this.inputIsPrivate ? IngType.my : IngType.all,
                 pageIndex: 1,
             })

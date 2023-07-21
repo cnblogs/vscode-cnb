@@ -2,8 +2,8 @@ import { env, ExtensionContext, Uri } from 'vscode'
 import { defaultConfig, devConfig, IExtensionConfig, isDevEnv } from '@/models/config'
 import path from 'path'
 
-class GlobalCtx {
-    private _extensionContext?: ExtensionContext
+export class GlobalCtx {
+    private _extensionContext: ExtensionContext | null = null
     private readonly _config: IExtensionConfig = defaultConfig
     private readonly _devConfig: IExtensionConfig = devConfig
 
@@ -24,7 +24,7 @@ class GlobalCtx {
         return this._extensionContext
     }
 
-    set extCtx(v: ExtensionContext | undefined) {
+    set extCtx(v: ExtensionContext) {
         this._extensionContext = v
     }
 

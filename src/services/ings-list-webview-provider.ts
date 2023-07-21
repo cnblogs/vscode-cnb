@@ -51,10 +51,6 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         return this._show
     }
 
-    private get assetsUri() {
-        return globalCtx.assetsUri
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async resolveWebviewView(webviewView: WebviewView, context: WebviewViewResolveContext, token: CancellationToken) {
         if (this._view && this._view === webviewView) return
@@ -63,7 +59,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
         webviewView.webview.options = {
             enableScripts: true,
-            localResourceRoots: [this.assetsUri],
+            localResourceRoots: [globalCtx.assetsUri],
         }
 
         const disposables: Disposable[] = []
@@ -163,7 +159,12 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     }
 }
 
-export const ingListWebviewProvider = new IngsListWebviewProvider()
+let _getIngListWebviewProvider: any = null
+
+export function getIngListWebviewProvider(): IngsListWebviewProvider {
+    _getIngListWebviewProvider = new IngsListWebviewProvider()
+    return <IngsListWebviewProvider>_getIngListWebviewProvider
+}
 
 class IngWebviewMessageObserver {
     constructor(private _provider: IngsListWebviewProvider) {}
