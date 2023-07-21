@@ -1,4 +1,4 @@
-import vscode, { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
+import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
 import { Post } from '@/models/post'
 import { LocalDraft } from '@/services/local-draft.service'
 import { Alert } from '@/services/alert.service'
@@ -84,7 +84,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
 
     // check format
     if (!['.md'].some(x => localDraft.fileExt === x)) {
-        Alert.warn('不受支持的文件格式! 只支持markdown格式')
+        void Alert.warn('不受支持的文件格式! 只支持markdown格式')
         return
     }
     const editDto = await PostService.fetchPostEditTemplate()
@@ -106,17 +106,17 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
             await PostFileMapManager.updateOrCreate(savedPost.id, localDraft.filePath)
             await openPostFile(localDraft)
             postsDataProvider.fireTreeDataChangedEvent(undefined)
-            Alert.info('博文已创建')
+            void Alert.info('博文已创建')
         },
         beforeUpdate: async (postToSave, panel) => {
             await saveFilePendingChanges(localDraft.filePath)
             // 本地文件已经被删除了
             if (!localDraft.exist && panel) {
-                Alert.warn('本地文件已删除, 无法新建博文')
+                void Alert.warn('本地文件已删除, 无法新建博文')
                 return false
             }
-            if (Settings.automaticallyExtractImagesType)
-                await extractImages(localDraft.filePathUri, Settings.automaticallyExtractImagesType).catch(console.warn)
+            if (Settings.autoExtractImgSrc !== undefined)
+                await extractImages(localDraft.filePathUri, Settings.autoExtractImgSrc).catch(console.warn)
 
             postToSave.postBody = await localDraft.readAllText()
             return true
@@ -138,8 +138,8 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
     const localFilePath = PostFileMapManager.getFilePath(postId)
     if (!localFilePath) return Alert.warn('本地无该博文的编辑记录')
 
-    if (Settings.automaticallyExtractImagesType)
-        await extractImages(Uri.file(localFilePath), Settings.automaticallyExtractImagesType).catch(console.warn)
+    if (Settings.autoExtractImgSrc !== undefined)
+        await extractImages(Uri.file(localFilePath), Settings.autoExtractImgSrc).catch(console.warn)
 
     await saveFilePendingChanges(localFilePath)
     post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()
@@ -177,11 +177,11 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
 
                 hasSaved = true
                 progress.report({ increment: 100 })
-                Alert.info('上传成功')
+                void Alert.info('上传成功')
                 await refreshPostsList()
             } catch (err) {
                 progress.report({ increment: 100 })
-                Alert.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
+                void Alert.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
                 console.error(err)
             }
             return hasSaved
@@ -191,7 +191,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
 
 const validatePost = (post: Post): boolean => {
     if (!post.postBody) {
-        Alert.warn('文件内容为空!')
+        void Alert.warn('文件内容为空!')
         return false
     }
 

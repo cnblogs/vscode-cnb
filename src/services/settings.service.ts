@@ -6,20 +6,18 @@ import { isNumber } from 'lodash-es'
 import { untildify } from '@/utils/untildify'
 
 export class Settings {
-    static readonly postsListPageSizeKey = 'pageSize.postsList'
-    static readonly platform = os.platform()
-    static readonly prefix = `cnblogsClientForVSCode`
-    static readonly iconThemePrefix = 'workbench'
-    static readonly iconThemeKey = 'iconTheme'
-    static readonly chromiumPathKey = 'chromiumPath'
-    static readonly workspaceUriKey = 'workspace'
+    static postsListPageSizeKey = 'pageSize.postsList'
+    static cfgPrefix = `cnblogsClient`
+    static iconThemePrefix = 'workbench'
+    static iconThemeKey = 'iconTheme'
+    static chromiumPathKey = 'chromiumPath'
+    static workspaceUriKey = 'workspace'
 
     private static readonly _defaultWorkspaceUri = Uri.joinPath(Uri.file(homedir()), 'Documents', 'Cnblogs')
     private static _adaptLegacyWorkspaceTask?: Thenable<void> | null
 
     static get platformPrefix() {
-        const { platform } = this
-        switch (platform) {
+        switch (os.platform()) {
             case 'darwin':
                 return 'macos'
             case 'win32':
@@ -32,123 +30,116 @@ export class Settings {
     }
 
     static get iconTheme() {
-        return workspace.getConfiguration(this.iconThemePrefix).get<string>(this.iconThemeKey)
+        return workspace.getConfiguration(Settings.iconThemePrefix).get<string>(Settings.iconThemeKey)
     }
 
-    static get configuration() {
-        return workspace.getConfiguration(this.prefix)
+    static get cfg() {
+        return workspace.getConfiguration(Settings.cfgPrefix)
     }
 
-    static get platformConfiguration() {
-        const { platformPrefix, prefix } = this
-
-        if (platformPrefix != null) return workspace.getConfiguration(`${prefix}.${platformPrefix}`)
-
+    static get platformCfg() {
+        if (this.platformPrefix != null)
+            return workspace.getConfiguration(`${Settings.cfgPrefix}.${this.platformPrefix}`)
         return null
     }
 
     static get workspaceUri(): Uri {
-        if (this.legacyWorkspaceUri != null) {
-            const legacy = this.legacyWorkspaceUri
-            if (this._adaptLegacyWorkspaceTask == null) {
-                try {
-                    this._adaptLegacyWorkspaceTask = this.removeLegacyWorkspaceUri().then(
-                        () => (legacy ? this.setWorkspaceUri(Uri.file(legacy)) : Promise.resolve()),
-                        () => undefined
-                    )
-                } finally {
-                    this._adaptLegacyWorkspaceTask = null
-                }
-            }
+        const legacy = this.legacyWorkspaceUri
 
-            if (legacy) return Uri.file(legacy)
-        }
+        this._adaptLegacyWorkspaceTask ??= this.removeLegacyWorkspaceUri().then(
+            () => (legacy ? this.setWorkspaceUri(legacy) : Promise.resolve()),
+            () => undefined
+        )
 
-        const workspace = this.platformConfiguration?.get<string>(this.workspaceUriKey)
+        if (legacy) return legacy
+
+        const workspace = this.platformCfg?.get<string>(Settings.workspaceUriKey)
         return workspace ? Uri.file(untildify(workspace)) : this._defaultWorkspaceUri
     }
 
     static get chromiumPath(): string {
-        return this.platformConfiguration?.get(this.chromiumPathKey) ?? ''
+        return this.platformCfg?.get(Settings.chromiumPathKey) ?? ''
     }
 
     static get createLocalPostFileWithCategory(): boolean {
-        return this.configuration.get<boolean>('createLocalPostFileWithCategory') ?? false
+        return Settings.cfg.get<boolean>('createLocalPostFileWithCategory') ?? false
     }
 
-    static get automaticallyExtractImagesType(): ImageSrc | null {
-        const cfg =
-            this.configuration.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('automaticallyExtractImages') ?? null
+    static get autoExtractImgSrc(): ImageSrc | undefined {
+        const cfg = Settings.cfg.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('autoExtractImages')
 
+        if (cfg === 'disable') return
         if (cfg === 'fs') return ImageSrc.fs
         if (cfg === 'dataUrl') return ImageSrc.dataUrl
         if (cfg === 'web') return ImageSrc.web
         if (cfg === 'any') return ImageSrc.any
-
-        return null // 'disable' case
     }
 
     static get postsListPageSize() {
-        const size = this.configuration.get<number>(this.postsListPageSizeKey)
+        const size = Settings.cfg.get<number>(Settings.postsListPageSizeKey)
         return isNumber(size) ? size : 30
     }
 
     static get showConfirmMsgWhenUploadPost() {
-        return this.configuration.get<boolean>('markdown.showConfirmMsgWhenUploadPost') ?? true
+        return Settings.cfg.get<boolean>('markdown.showConfirmMsgWhenUploadPost') ?? true
     }
 
     static get showConfirmMsgWhenPullPost() {
-        return this.configuration.get<boolean>('markdown.showConfirmMsgWhenPullPost') ?? true
+        return Settings.cfg.get<boolean>('markdown.showConfirmMsgWhenPullPost') ?? true
     }
 
-    static get isEnableMarkdownEnhancement() {
-        return this.configuration.get<boolean>('markdown.enableEnhancement') ?? true
+    static get enableMarkdownEnhancement() {
+        return Settings.cfg.get<boolean>('markdown.enableEnhancement') ?? true
     }
 
-    static get isEnableMarkdownFenceBlockquote() {
-        return this.configuration.get<boolean>('markdown.enableFenceQuote') ?? true
+    static get enableMarkdownFenceBlockquote() {
+        return Settings.cfg.get<boolean>('markdown.enableFenceQuote') ?? true
     }
 
-    static get isEnableMarkdownHighlightCodeLines() {
-        return this.configuration.get<boolean>('markdown.enableHighlightCodeLines')
+    static get enableMarkdownHighlightCodeLines() {
+        return Settings.cfg.get<boolean>('markdown.enableHighlightCodeLines')
     }
 
-    private static get legacyWorkspaceUri(): string | null | undefined {
-        return this.configuration.get<string>(this.workspaceUriKey)
+    private static get legacyWorkspaceUri() {
+        const path = this.platformCfg?.get<string>(Settings.workspaceUriKey)?.replace('~', os.homedir())
+
+        if (path === undefined) return undefined
+
+        return Uri.file(path)
     }
 
-    static async setWorkspaceUri(value: Uri) {
-        if (!value.fsPath || !(value.scheme === 'file')) throw Error('Invalid uri')
+    static async setWorkspaceUri(uri: Uri) {
+        if (!uri.fsPath || uri.scheme !== 'file') throw Error('Invalid URI')
 
-        if (!fs.existsSync(value.fsPath)) throw Error(`Folder "${value.fsPath}" not exist`)
+        if (!fs.existsSync(uri.fsPath)) throw Error(`Path not exist: ${uri.fsPath}`)
 
-        await this.platformConfiguration?.update(this.workspaceUriKey, value.fsPath, ConfigurationTarget.Global)
+        await this.platformCfg?.update(Settings.workspaceUriKey, uri.fsPath, ConfigurationTarget.Global)
     }
 
     static async setChromiumPath(value: string) {
-        await this.platformConfiguration?.update(this.chromiumPathKey, value, ConfigurationTarget.Global)
+        await this.platformCfg?.update(Settings.chromiumPathKey, value, ConfigurationTarget.Global)
     }
 
     static async setCreateLocalPostFileWithCategory(value: boolean) {
-        await this.configuration.update('createLocalPostFileWithCategory', value, ConfigurationTarget.Global)
+        await Settings.cfg.update('createLocalPostFileWithCategory', value, ConfigurationTarget.Global)
     }
 
     static async migrateEnablePublishSelectionToIng() {
         const oldKey = 'ing.enablePublishSelectionToIng'
-        const isEnablePublishSelectionToIng = this.configuration.get(oldKey)
-        if (isEnablePublishSelectionToIng === true) {
-            const isOk = await this.configuration
+        const enablePublishSelectionToIng = Settings.cfg.get(oldKey)
+        if (enablePublishSelectionToIng === true) {
+            const isOk = await Settings.cfg
                 .update('menus.context.editor', { 'ing:publish-selection': true }, ConfigurationTarget.Global)
                 .then(
                     () => true,
                     () => false
                 )
 
-            if (isOk) await this.configuration.update(oldKey, undefined, ConfigurationTarget.Global)
+            if (isOk) await Settings.cfg.update(oldKey, undefined, ConfigurationTarget.Global)
         }
     }
 
     private static removeLegacyWorkspaceUri() {
-        return this.configuration.update(this.workspaceUriKey, undefined, ConfigurationTarget.Global)
+        return Settings.cfg.update(Settings.workspaceUriKey, undefined, ConfigurationTarget.Global)
     }
 }

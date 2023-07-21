@@ -17,26 +17,30 @@ export async function extractImages(arg: unknown, inputImageSrc?: ImageSrc) {
     const extractor = new MkdImgExtractor(markdown, arg)
 
     const images = extractor.findImages()
-    if (images.length <= 0) void (!inputImageSrc != null ? Alert.warn('没有找到可以提取的图片') : undefined)
+    if (images.length <= 0) {
+        if (inputImageSrc !== undefined) void Alert.info('没有找到可以提取的图片')
+        return
+    }
 
-    const getExtractOption = () => {
-        const webImgCount = images.filter(newImageSrcFilter(ImageSrc.web)).length
-        const dataUrlImgCount = images.filter(newImageSrcFilter(ImageSrc.dataUrl)).length
-        const fsImgCount = images.filter(newImageSrcFilter(ImageSrc.fs)).length
+    const webImgCount = images.filter(newImageSrcFilter(ImageSrc.web)).length
+    const dataUrlImgCount = images.filter(newImageSrcFilter(ImageSrc.dataUrl)).length
+    const fsImgCount = images.filter(newImageSrcFilter(ImageSrc.fs)).length
 
-        const displayOptions: ExtractOption[] = [
-            { title: '提取全部', imageSrc: ImageSrc.any },
-            { title: '提取网络图片', imageSrc: ImageSrc.web },
-            { title: '提取 Data Url 图片', imageSrc: ImageSrc.dataUrl },
-            { title: '提取本地图片', imageSrc: ImageSrc.fs },
-            { title: '取消', imageSrc: undefined, isCloseAffordance: true },
-        ]
+    const displayOptions: ExtractOption[] = [
+        { title: '提取全部', imageSrc: ImageSrc.any },
+        { title: '提取网络图片', imageSrc: ImageSrc.web },
+        { title: '提取 Data Url 图片', imageSrc: ImageSrc.dataUrl },
+        { title: '提取本地图片', imageSrc: ImageSrc.fs },
+        { title: '取消', imageSrc: undefined, isCloseAffordance: true },
+    ]
 
-        if (inputImageSrc !== undefined)
-            return Promise.resolve(displayOptions.find(ent => ent.imageSrc === inputImageSrc))
+    let selectedSrc
 
+    if (inputImageSrc !== undefined) {
+        selectedSrc = displayOptions.find(ent => ent.imageSrc === inputImageSrc)?.imageSrc
+    } else {
         // if src is not specified:
-        return Alert.info<ExtractOption>(
+        const selectedOption = await Alert.info<ExtractOption>(
             '要提取哪些图片? 此操作会替换源文件中的图片链接!',
             {
                 modal: true,
@@ -48,13 +52,12 @@ export async function extractImages(arg: unknown, inputImageSrc?: ImageSrc) {
             } as MessageOptions,
             ...displayOptions
         )
+        selectedSrc = selectedOption?.imageSrc
     }
 
-    const extractImageSrc = (await getExtractOption())?.imageSrc
+    if (selectedSrc === undefined) return
 
-    if (extractImageSrc === undefined) return
-
-    extractor.imageSrc = extractImageSrc
+    extractor.imageSrc = selectedSrc
 
     const failedImages = await window.withProgress(
         { title: '正在提取图片', location: ProgressLocation.Notification },

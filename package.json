@@ -419,7 +419,7 @@
             {
                 "title": "vscode-cnb",
                 "properties": {
-                    "cnblogsClient.workspace.windows": {
+                    "cnblogsClient.windows.workspace": {
                         "order": 0,
                         "default": "~/Documents/Cnblogs",
                         "scope": "application",
@@ -427,7 +427,7 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "Windows 上存放博文的文件夹, 默认为 `~/Documents/Cnblogs`"
                     },
-                    "cnblogsClient.workspace.macos": {
+                    "cnblogsClient.macos.workspace": {
                         "order": 1,
                         "default": "~/Documents/Cnblogs",
                         "scope": "application",
@@ -435,7 +435,7 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "macOS 上存放博文的文件夹, 默认为 `~/Documents/Cnblogs`"
                     },
-                    "cnblogsClient.workspace.linux": {
+                    "cnblogsClient.linux.workspace": {
                         "order": 2,
                         "default": "~/Documents/Cnblogs",
                         "scope": "application",
@@ -472,7 +472,7 @@
                         "scope": "application",
                         "enum": [
                             "disable",
-                            "local",
+                            "fs",
                             "dataUrl",
                             "web",
                             "any"
