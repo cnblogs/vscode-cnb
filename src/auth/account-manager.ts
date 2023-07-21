@@ -5,7 +5,7 @@ import { accountViewDataProvider } from '@/tree-view-providers/account-view-data
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
 import { Oauth } from '@/services/oauth.api'
-import { AuthProvider } from '@/auth/auth-provider'
+import { authProvider } from '@/auth/auth-provider'
 import { AuthSession } from '@/auth/auth-session'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { Alert } from '@/services/alert.service'
@@ -18,7 +18,7 @@ export const ACQUIRE_TOKEN_REJECT_EXPIRED = 'expired'
 
 class AccountManager extends vscode.Disposable {
     private readonly _disposable = Disposable.from(
-        AuthProvider.instance.onDidChangeSessions(async ({ added }) => {
+        authProvider.onDidChangeSessions(async ({ added }) => {
             this._session = null
             if (added != null && added.length > 0) await this.ensureSession()
 
@@ -70,7 +70,7 @@ class AccountManager extends vscode.Disposable {
     async logout() {
         if (!this.isAuthorized) return
 
-        const session = await authentication.getSession(AuthProvider.providerId, [])
+        const session = await authentication.getSession(authProvider.providerId, [])
 
         // WRN: For old version compatibility, **never** remove this line
         await globalCtx.storage.update('user', undefined)
@@ -78,10 +78,10 @@ class AccountManager extends vscode.Disposable {
         if (session === undefined) return
 
         try {
-            await AuthProvider.instance.removeSession(session.id)
+            await authProvider.removeSession(session.id)
             await Oauth.revokeToken(session.accessToken)
         } catch (e: any) {
-            Alert.err(`登出发生错误: ${e}`)
+            void Alert.err(`登出发生错误: ${e}`)
         }
     }
 
@@ -99,16 +99,16 @@ class AccountManager extends vscode.Disposable {
     }
 
     private async ensureSession(opt?: AuthenticationGetSessionOptions): Promise<AuthSession | null> {
-        const session = await authentication.getSession(AuthProvider.instance.providerId, [], opt).then(
+        const session = await authentication.getSession(authProvider.providerId, [], opt).then(
             session => (session ? AuthSession.from(session) : null),
             e => {
-                Alert.err(`创建/获取 Session 失败: ${e}`)
+                void Alert.err(`创建/获取 Session 失败: ${e}`)
             }
         )
 
         if (session != null && session.account.accountId < 0) {
             this._session = null
-            await AuthProvider.instance.removeSession(session.id)
+            await authProvider.removeSession(session.id)
         } else {
             this._session = session
         }

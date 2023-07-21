@@ -17,8 +17,8 @@ import { isNumber } from 'lodash-es'
 import { CommentIngCmdHandler } from '@/commands/ing/comment-ing'
 import { execCmd } from '@/utils/cmd'
 
-export class IngsListWebviewProvider implements WebviewViewProvider {
-    readonly viewId = `${globalCtx.extName}.ings-list-webview`
+export class ingListWebviewProvider implements WebviewViewProvider {
+    readonly viewId = `${globalCtx.extName}.ing-list-webview`
 
     private readonly _baseTitle = '闪存'
     private _view: WebviewView | null = null
@@ -76,7 +76,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
         }, disposables)
     }
 
-    async refreshIngsList({ ingType = this.ingType, pageIndex = this.pageIndex } = {}) {
+    async refreshingList({ ingType = this.ingType, pageIndex = this.pageIndex } = {}) {
         if (!this._view || !this.show) return
 
         if (this._view.visible) {
@@ -131,7 +131,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     }
 
     private async setIsRefreshing(value: boolean) {
-        await execCmd('setContext', `${globalCtx.extName}.ingsList.isRefreshing`, value ? true : undefined).then(
+        await execCmd('setContext', `${globalCtx.extName}.ingList.isRefreshing`, value ? true : undefined).then(
             undefined,
             () => undefined
         )
@@ -139,7 +139,7 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
     }
 
     private async setPageIndex(value: number) {
-        await execCmd('setContext', `${globalCtx.extName}.ingsList.pageIndex`, value > 0 ? value : undefined).then(
+        await execCmd('setContext', `${globalCtx.extName}.ingList.pageIndex`, value > 0 ? value : undefined).then(
             undefined,
             () => undefined
         )
@@ -161,19 +161,19 @@ export class IngsListWebviewProvider implements WebviewViewProvider {
 
 let _getIngListWebviewProvider: any = null
 
-export function getIngListWebviewProvider(): IngsListWebviewProvider {
-    _getIngListWebviewProvider = new IngsListWebviewProvider()
-    return <IngsListWebviewProvider>_getIngListWebviewProvider
+export function getIngListWebviewProvider(): ingListWebviewProvider {
+    _getIngListWebviewProvider = new ingListWebviewProvider()
+    return <ingListWebviewProvider>_getIngListWebviewProvider
 }
 
 class IngWebviewMessageObserver {
-    constructor(private _provider: IngsListWebviewProvider) {}
+    constructor(private _provider: ingListWebviewProvider) {}
 
     observer = ({ command, payload }: IngWebviewHostCmd) => {
         switch (command) {
-            case WebviewCmd.IngCmd.ExtCmd.refreshIngsList: {
+            case WebviewCmd.IngCmd.ExtCmd.refreshingList: {
                 const { ingType, pageIndex } = payload
-                return this._provider.refreshIngsList({
+                return this._provider.refreshingList({
                     ingType:
                         ingType && Object.values(IngType).includes(ingType as IngType)
                             ? (ingType as IngType)

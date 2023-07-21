@@ -76,7 +76,7 @@ export class App extends Component<unknown, IngAppState> {
 
     private refresh() {
         getVsCodeApiSingleton().postMessage({
-            command: WebviewCmd.IngCmd.ExtCmd.refreshIngsList,
+            command: WebviewCmd.IngCmd.ExtCmd.refreshingList,
             payload: {},
         })
     }

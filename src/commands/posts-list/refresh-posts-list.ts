@@ -92,7 +92,7 @@ const setPostListContext = async (pageCount: number, hasPrevious: boolean, hasNe
 }
 
 const alertRefreshing = () => {
-    Alert.info('正在刷新, 请勿重复操作')
+    void Alert.info('正在刷新, 请勿重复操作')
 }
 
 const gotoPage = async (pageIndex: (currentIndex: number) => number) => {

@@ -25,35 +25,38 @@ export const isTargetWorkspace = (): boolean => {
     return isTarget
 }
 
-export const observeConfigurationChange = () => {
+export const observeCfgUpdate = () => {
     globalCtx.extCtx?.subscriptions.push(
         workspace.onDidChangeConfiguration(ev => {
-            if (ev.affectsConfiguration(Settings.prefix)) isTargetWorkspace()
+            if (ev.affectsConfiguration(Settings.cfgPrefix)) isTargetWorkspace()
 
             if (ev.affectsConfiguration(`${Settings.iconThemePrefix}.${Settings.iconThemeKey}`))
                 refreshPostCategoriesList()
 
-            if (ev.affectsConfiguration(`${Settings.prefix}.${Settings.postsListPageSizeKey}`))
+            if (ev.affectsConfiguration(`${Settings.cfgPrefix}.${Settings.postsListPageSizeKey}`))
                 refreshPostsList({ queue: true }).catch(() => undefined)
 
-            if (ev.affectsConfiguration(`${Settings.prefix}.markdown`))
+            if (ev.affectsConfiguration(`${Settings.cfgPrefix}.markdown`))
                 execCmd('markdown.preview.refresh').then(undefined, () => undefined)
         })
     )
     isTargetWorkspace()
 }
 
-export const observeWorkspaceFolderAndFileChange = () => {
-    globalCtx.extCtx?.subscriptions.push(
+export const observeWorkspaceUpdate = () =>
+    void globalCtx.extCtx?.subscriptions.push(
+        workspace.onDidChangeWorkspaceFolders(() => {
+            isTargetWorkspace()
+        })
+    )
+
+export const observeWorkspaceFileUpdate = () =>
+    void globalCtx.extCtx?.subscriptions.push(
         workspace.onDidRenameFiles(e => {
             for (const item of e.files) {
                 const { oldUri, newUri } = item
                 const postId = PostFileMapManager.getPostId(oldUri.fsPath)
                 if (postId !== undefined) void PostFileMapManager.updateOrCreate(postId, newUri.fsPath)
             }
-        }),
-        workspace.onDidChangeWorkspaceFolders(() => {
-            isTargetWorkspace()
         })
     )
-}

@@ -1,6 +1,6 @@
 import { CmdHandler } from '@/commands/cmd-handler'
 import { IngType, IngTypesMetadata } from '@/models/ing'
-import { getIngListWebviewProvider } from '@/services/ings-list-webview-provider'
+import { getIngListWebviewProvider } from '@/services/ing-list-webview-provider'
 import { IDisposable } from '@fluentui/react'
 import { QuickPickItem, window } from 'vscode'
 
@@ -27,7 +27,7 @@ export class SelectIngType extends CmdHandler {
                 if (selectedItem) {
                     const { ingType: selectedIngType } = selectedItem
                     quickPick.hide()
-                    return getIngListWebviewProvider().refreshIngsList({
+                    return getIngListWebviewProvider().refreshingList({
                         pageIndex: 1,
                         ingType: selectedIngType,
                     })

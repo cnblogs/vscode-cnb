@@ -1,6 +1,6 @@
 import { CmdHandler } from '@/commands/cmd-handler'
 import { IngApi } from '@/services/ing.api'
-import { getIngListWebviewProvider } from '@/services/ings-list-webview-provider'
+import { getIngListWebviewProvider } from '@/services/ing-list-webview-provider'
 import { ProgressLocation, window } from 'vscode'
 
 export class CommentIngCmdHandler extends CmdHandler {

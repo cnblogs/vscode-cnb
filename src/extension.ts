@@ -9,7 +9,7 @@ import { observeCfgUpdate, observeWorkspaceFileUpdate, observeWorkspaceUpdate } 
 import { extUriHandler } from '@/utils/uri-handler'
 import { extendMarkdownIt } from '@/markdown/extend-markdownIt'
 import { Settings } from '@/services/settings.service'
-import { getIngListWebviewProvider } from '@/services/ings-list-webview-provider'
+import { getIngListWebviewProvider } from '@/services/ing-list-webview-provider'
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the commands is executed
