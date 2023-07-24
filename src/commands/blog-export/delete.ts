@@ -10,16 +10,14 @@ import path from 'path'
 import { promisify } from 'util'
 import { MessageItem, window } from 'vscode'
 
-export class DeleteCmdHandler extends TreeViewCmdHandler<DownloadedExportTreeItem | BlogExportRecordTreeItem> {
-    static readonly commandName = 'vscode-cnb.blog-export.delete'
+export class DeleteCmdHandler implements TreeViewCmdHandler<DownloadedExportTreeItem | BlogExportRecordTreeItem> {
+    static readonly cmd = 'vscode-cnb.blog-export.delete'
 
-    constructor(private readonly _input: unknown) {
-        super()
-    }
+    constructor(public input: unknown) {}
 
     parseInput(): DownloadedExportTreeItem | BlogExportRecordTreeItem | null | undefined {
-        return this._input instanceof DownloadedExportTreeItem || this._input instanceof BlogExportRecordTreeItem
-            ? this._input
+        return this.input instanceof DownloadedExportTreeItem || this.input instanceof BlogExportRecordTreeItem
+            ? this.input
             : null
     }
 

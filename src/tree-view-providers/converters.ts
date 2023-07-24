@@ -27,9 +27,7 @@ const categoryIcon = () => {
 
 export type TreeItemSource = Post | PostCategory | TreeItem | BaseTreeItemSource
 
-interface Converter<T> {
-    (s: T): TreeItem | Promise<TreeItem>
-}
+type Converter<T> = (s: T) => TreeItem | Promise<TreeItem>
 
 const postConverter: Converter<Post> = obj => {
     const descDatePublished = obj.datePublished ? `  \n发布于: ${format(obj.datePublished, 'yyyy-MM-dd HH:mm')}` : ''
@@ -60,11 +58,10 @@ const categoryConverter: Converter<PostCategory> = ({ title, count }) =>
     })
 
 const baseTreeItemSourceConverter: Converter<BaseTreeItemSource> = obj => obj.toTreeItem()
-const converter: Converter<TreeItemSource> = obj => {
+
+export const toTreeItem = <T extends TreeItemSource>(obj: T) => {
     if (obj instanceof TreeItem) return obj
     else if (obj instanceof BaseTreeItemSource) return baseTreeItemSourceConverter(obj)
     else if (obj instanceof PostCategory) return categoryConverter(obj)
     else return postConverter(obj)
 }
-
-export const toTreeItem = <T extends TreeItemSource>(obj: T) => converter(obj)

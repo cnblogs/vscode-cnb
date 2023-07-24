@@ -4,7 +4,7 @@ import { globalCtx } from '@/services/global-ctx'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { commands } from 'vscode'
 
-export class RefreshExportRecordsCmdHandler extends CmdHandler {
+export class RefreshExportRecordsCmdHandler implements CmdHandler {
     async handle(): Promise<void> {
         await this.setIsRefreshing(true)
 

@@ -8,12 +8,10 @@ import path from 'path'
 import sanitizeFileName from 'sanitize-filename'
 import { promisify } from 'util'
 
-export class EditExportPostCmdHandler extends TreeViewCmdHandler<ExportPostTreeItem> {
-    static readonly commandName = 'vscode-cnb.blog-export.edit'
+export class EditExportPostCmdHandler implements TreeViewCmdHandler<ExportPostTreeItem> {
+    static readonly cmd = 'vscode-cnb.blog-export.edit'
 
-    constructor(public readonly input: unknown) {
-        super()
-    }
+    constructor(public readonly input: unknown) {}
 
     parseInput(): ExportPostTreeItem | null | undefined {
         return this.input instanceof ExportPostTreeItem ? this.input : null

@@ -24,7 +24,7 @@ export class ExportPostTreeItem extends BaseTreeItemSource {
             collapsibleState: TreeItemCollapsibleState.None,
             command: {
                 title: '查看博文',
-                command: ViewPostCmdHandler.commandName,
+                command: ViewPostCmdHandler.cmd,
                 arguments: [this],
             },
             resourceUri: Uri.joinPath(Settings.workspaceUri, title + (isMarkdown ? '.md' : '.html')),

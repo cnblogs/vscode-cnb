@@ -9,8 +9,8 @@ import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 
 const defaultOptions = { confirmUnzip: true }
 
-export class OpenLocalExportCmdHandler extends CmdHandler {
-    static readonly commandName = `vscode-cnb.blog-export.open-local-export`
+export class OpenLocalExportCmdHandler implements CmdHandler {
+    static readonly cmd = `vscode-cnb.blog-export.open-local-export`
 
     async handle(opts: Partial<typeof defaultOptions> = defaultOptions): Promise<void> {
         let isConfirmedToUnzip = opts?.confirmUnzip === true ? true : defaultOptions.confirmUnzip

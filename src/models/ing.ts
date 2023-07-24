@@ -30,9 +30,8 @@ export class Ing {
     }
 
     get userIconUrl(): string {
-        return (this._userIconUrl = this._userIconUrl.startsWith('//')
-            ? `https:${this._userIconUrl}`
-            : this._userIconUrl)
+        if (this._userIconUrl.startsWith('//')) this._userIconUrl = `https:${this._userIconUrl}`
+        return this._userIconUrl
     }
 
     set userIconUrl(value: string) {

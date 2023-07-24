@@ -8,7 +8,7 @@ import { getIngListWebviewProvider } from '@/services/ing-list-webview-provider'
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'
 import { MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode'
 
-export class PublishIngCmdHandler extends CmdHandler {
+export class PublishIngCmdHandler implements CmdHandler {
     readonly maxLength = 0
     readonly operation = '发布闪存'
     readonly editingText = '编辑闪存'
@@ -73,9 +73,7 @@ export class PublishIngCmdHandler extends CmdHandler {
     inputIsPrivate = false
     currentStep = 0
 
-    constructor(public readonly contentSource: 'selection' | 'input' = 'selection') {
-        super()
-    }
+    constructor(public readonly contentSource: 'selection' | 'input' = 'selection') {}
 
     private get formattedIngContent() {
         return `${this.inputTags.map(x => `[${x}]`).join('')}${this.inputContent}`

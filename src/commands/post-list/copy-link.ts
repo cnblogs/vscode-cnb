@@ -7,12 +7,13 @@ import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { env, MessageItem, Uri, window } from 'vscode'
 
 type LinkFormat = 'markdown' | 'raw' | 'id'
+
 interface CopyStrategy {
     name: string
     provideContent: (post: Post) => Thenable<string>
 }
 
-export class CopyPostLinkCmdHandler extends TreeViewCmdHandler<Thenable<Post | null | undefined>> {
+export class CopyPostLinkCmdHandler implements TreeViewCmdHandler<Thenable<Post | null | undefined>> {
     private readonly _strategies: { [key in LinkFormat]: CopyStrategy } = {
         raw: {
             name: '复制链接',
@@ -28,9 +29,7 @@ export class CopyPostLinkCmdHandler extends TreeViewCmdHandler<Thenable<Post | n
         },
     }
 
-    constructor(public readonly input: unknown) {
-        super()
-    }
+    constructor(public readonly input: unknown) {}
 
     async handle(): Promise<void> {
         const post = await this.parseInput()

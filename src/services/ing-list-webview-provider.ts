@@ -17,7 +17,7 @@ import { isNumber } from 'lodash-es'
 import { CommentIngCmdHandler } from '@/commands/ing/comment-ing'
 import { execCmd } from '@/utils/cmd'
 
-export class ingListWebviewProvider implements WebviewViewProvider {
+export class IngListWebviewProvider implements WebviewViewProvider {
     readonly viewId = `${globalCtx.extName}.ing-list-webview`
 
     private readonly _baseTitle = '闪存'
@@ -26,7 +26,6 @@ export class ingListWebviewProvider implements WebviewViewProvider {
     private _pageIndex = 1
     private _isRefreshing = false
     private _ingType = IngType.all
-    private _show: WebviewView['show'] | null = null
 
     get observer(): IngWebviewMessageObserver {
         if (!this._view) throw Error('Cannot access the observer until the webviewView initialized!')
@@ -44,11 +43,6 @@ export class ingListWebviewProvider implements WebviewViewProvider {
 
     get ingType(): IngType {
         return this._ingType
-    }
-
-    get show() {
-        this._show ??= this._view ? this._view.show.bind(this._view) : null
-        return this._show
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,7 +71,7 @@ export class ingListWebviewProvider implements WebviewViewProvider {
     }
 
     async refreshingList({ ingType = this.ingType, pageIndex = this.pageIndex } = {}) {
-        if (!this._view || !this.show) return
+        if (this._view == null) return
 
         if (this._view.visible) {
             if (this.isRefreshing) return
@@ -106,7 +100,7 @@ export class ingListWebviewProvider implements WebviewViewProvider {
                 } as IngWebviewUiCmd<Omit<IngAppState, ''>>)
                 .then(undefined, () => undefined)
         } else {
-            this.show()
+            this._view.show()
         }
 
         await this.setIngType(ingType)
@@ -159,15 +153,15 @@ export class ingListWebviewProvider implements WebviewViewProvider {
     }
 }
 
-let _getIngListWebviewProvider: any = null
+let _ingListWebviewProvider: any = null
 
-export function getIngListWebviewProvider(): ingListWebviewProvider {
-    _getIngListWebviewProvider = new ingListWebviewProvider()
-    return <ingListWebviewProvider>_getIngListWebviewProvider
+export function getIngListWebviewProvider(): IngListWebviewProvider {
+    _ingListWebviewProvider ??= new IngListWebviewProvider()
+    return <IngListWebviewProvider>_ingListWebviewProvider
 }
 
 class IngWebviewMessageObserver {
-    constructor(private _provider: ingListWebviewProvider) {}
+    constructor(private _provider: IngListWebviewProvider) {}
 
     observer = ({ command, payload }: IngWebviewHostCmd) => {
         switch (command) {

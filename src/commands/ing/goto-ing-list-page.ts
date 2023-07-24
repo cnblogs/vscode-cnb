@@ -1,7 +1,7 @@
 import { CmdHandler } from '@/commands/cmd-handler'
 import { getIngListWebviewProvider } from 'src/services/ing-list-webview-provider'
 
-export class GotoingListNextPage extends CmdHandler {
+export class GotoingListNextPage implements CmdHandler {
     handle(): Promise<void> {
         const provider = getIngListWebviewProvider()
         const { pageIndex } = provider
@@ -9,7 +9,7 @@ export class GotoingListNextPage extends CmdHandler {
     }
 }
 
-export class GotoingListPreviousPage extends CmdHandler {
+export class GotoingListPreviousPage implements CmdHandler {
     handle(): Promise<void> {
         const provider = getIngListWebviewProvider()
         const { pageIndex } = provider
@@ -18,7 +18,7 @@ export class GotoingListPreviousPage extends CmdHandler {
     }
 }
 
-export class GotoingListFirstPage extends CmdHandler {
+export class GotoingListFirstPage implements CmdHandler {
     handle(): Promise<void> {
         return getIngListWebviewProvider().refreshingList({ pageIndex: 1 })
     }

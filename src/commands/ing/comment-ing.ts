@@ -3,7 +3,7 @@ import { IngApi } from '@/services/ing.api'
 import { getIngListWebviewProvider } from '@/services/ing-list-webview-provider'
 import { ProgressLocation, window } from 'vscode'
 
-export class CommentIngCmdHandler extends CmdHandler {
+export class CommentIngCmdHandler implements CmdHandler {
     private _content = ''
 
     constructor(
@@ -11,9 +11,7 @@ export class CommentIngCmdHandler extends CmdHandler {
         private _ingContent: string,
         private _parentCommentId?: number,
         private _atUser?: { id: number; displayName: string }
-    ) {
-        super()
-    }
+    ) {}
 
     async handle(): Promise<void> {
         const maxIngContentLength = 50

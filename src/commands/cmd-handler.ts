@@ -1,15 +1,16 @@
-export abstract class CmdHandler {
-    abstract handle(): Promise<void> | void
+export interface CmdHandler {
+    handle(): Promise<void> | void
 }
 
-export abstract class TreeViewCmdHandler<TData> extends CmdHandler {
+export interface TreeViewCmdHandler<TData> {
     readonly input: unknown
 
-    abstract parseInput(): TData | null | undefined
+    parseInput(): TData | null | undefined
 }
 
 export abstract class MultiSelectableTreeViewCmdHandler<TArgument, TData> implements TreeViewCmdHandler<TData[]> {
     private _selections: TData[] | null = null
+
     constructor(public readonly input: TArgument) {}
 
     get selections(): TData[] {

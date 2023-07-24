@@ -11,15 +11,12 @@ import fs from 'fs'
 import { Progress } from 'got'
 import path from 'path'
 import { promisify } from 'util'
-import { commands } from 'vscode'
 import { execCmd } from '@/utils/cmd'
 
-export class DownloadExportCmdHandler extends TreeViewCmdHandler<BlogExportRecordTreeItem> {
-    static readonly commandName = 'vscode-cnb.blog-export.download'
+export class DownloadExportCmdHandler implements TreeViewCmdHandler<BlogExportRecordTreeItem> {
+    static readonly cmd = 'vscode-cnb.blog-export.download'
 
-    constructor(public readonly input: unknown) {
-        super()
-    }
+    constructor(public readonly input: unknown) {}
 
     parseInput(): BlogExportRecordTreeItem | null | undefined {
         return this.input instanceof BlogExportRecordTreeItem ? this.input : null

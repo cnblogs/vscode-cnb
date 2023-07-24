@@ -347,8 +347,8 @@
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex < 500"
             },
             {
-                "command": "vscode-cnb.ing-list.select-type",
-                "title": "选择闪存列表",
+                "command": "vscode-cnb.ing-list.switch-type",
+                "title": "切换闪存类型",
                 "category": "Cnblogs",
                 "icon": "$(list-filter)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing"
@@ -850,7 +850,7 @@
                     "group": "navigation@3"
                 },
                 {
-                    "command": "vscode-cnb.ing-list.select-type",
+                    "command": "vscode-cnb.ing-list.switch-type",
                     "when": "view == vscode-cnb.ing-list-webview",
                     "group": "navigation@4"
                 },
@@ -969,7 +969,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.ing-list.select-type",
+                    "command": "vscode-cnb.ing-list.switch-type",
                     "when": "false"
                 },
                 {

@@ -4,8 +4,8 @@ import { BlogExportApi } from '@/services/blog-export.api'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { MessageItem, window } from 'vscode'
 
-export class CreateBlogExportCmdHandler extends CmdHandler {
-    static readonly commandName = 'vscode-cnb.blog-export.create'
+export class CreateBlogExportCmdHandler implements CmdHandler {
+    static readonly cmd = 'vscode-cnb.blog-export.create'
 
     async handle(): Promise<void> {
         if (!(await this.confirm())) return

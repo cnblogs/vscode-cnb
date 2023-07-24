@@ -13,11 +13,11 @@ export function regBlogExportCmds() {
 
     return [
         regCmd(`${extName}.blog-export.refresh-records`, () => new RefreshExportRecordsCmdHandler().handle()),
-        regCmd(OpenLocalExportCmdHandler.commandName, () => new OpenLocalExportCmdHandler().handle()),
-        regCmd(EditExportPostCmdHandler.commandName, input => new EditExportPostCmdHandler(input).handle()),
-        regCmd(CreateBlogExportCmdHandler.commandName, () => new CreateBlogExportCmdHandler().handle()),
-        regCmd(DownloadExportCmdHandler.commandName, input => new DownloadExportCmdHandler(input).handle()),
-        regCmd(ViewPostCmdHandler.commandName, input => new ViewPostCmdHandler(input).handle()),
-        regCmd(DeleteCmdHandler.commandName, input => new DeleteCmdHandler(input).handle()),
+        regCmd(OpenLocalExportCmdHandler.cmd, () => new OpenLocalExportCmdHandler().handle()),
+        regCmd(EditExportPostCmdHandler.cmd, input => new EditExportPostCmdHandler(input).handle()),
+        regCmd(CreateBlogExportCmdHandler.cmd, () => new CreateBlogExportCmdHandler().handle()),
+        regCmd(DownloadExportCmdHandler.cmd, input => new DownloadExportCmdHandler(input).handle()),
+        regCmd(ViewPostCmdHandler.cmd, input => new ViewPostCmdHandler(input).handle()),
+        regCmd(DeleteCmdHandler.cmd, input => new DeleteCmdHandler(input).handle()),
     ]
 }

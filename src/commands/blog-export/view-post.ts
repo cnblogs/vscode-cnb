@@ -5,16 +5,14 @@ import { ExportPostTreeItem } from '@/tree-view-providers/models/blog-export/pos
 import { URLSearchParams } from 'url'
 import { languages, TextDocumentContentProvider, Uri, window, workspace } from 'vscode'
 
-export class ViewPostCmdHandler extends TreeViewCmdHandler<ExportPostTreeItem> {
-    static readonly commandName = 'vscode-cnb.blog-export.view-post'
+export class ViewPostCmdHandler implements TreeViewCmdHandler<ExportPostTreeItem> {
+    static readonly cmd = 'vscode-cnb.blog-export.view-post'
     static readonly schema = 'vscode-cnb.blog-export.post'
 
-    constructor(private _input: unknown) {
-        super()
-    }
+    constructor(public input: unknown) {}
 
     parseInput(): ExportPostTreeItem | null | undefined {
-        return this._input instanceof ExportPostTreeItem ? this._input : null
+        return this.input instanceof ExportPostTreeItem ? this.input : null
     }
 
     async handle(): Promise<void> {
