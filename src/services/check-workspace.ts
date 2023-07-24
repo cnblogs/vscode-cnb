@@ -25,8 +25,8 @@ export const isTargetWorkspace = (): boolean => {
     return isTarget
 }
 
-export const observeCfgUpdate = () => {
-    globalCtx.extCtx?.subscriptions.push(
+export const watchCfgUpdate = () => {
+    globalCtx.extCtx.subscriptions.push(
         workspace.onDidChangeConfiguration(ev => {
             if (ev.affectsConfiguration(Settings.cfgPrefix)) isTargetWorkspace()
 
@@ -43,15 +43,15 @@ export const observeCfgUpdate = () => {
     isTargetWorkspace()
 }
 
-export const observeWorkspaceUpdate = () =>
-    void globalCtx.extCtx?.subscriptions.push(
+export const watchWorkspaceUpdate = () =>
+    void globalCtx.extCtx.subscriptions.push(
         workspace.onDidChangeWorkspaceFolders(() => {
             isTargetWorkspace()
         })
     )
 
-export const observeWorkspaceFileUpdate = () =>
-    void globalCtx.extCtx?.subscriptions.push(
+export const watchWorkspaceFileUpdate = () =>
+    void globalCtx.extCtx.subscriptions.push(
         workspace.onDidRenameFiles(e => {
             for (const item of e.files) {
                 const { oldUri, newUri } = item

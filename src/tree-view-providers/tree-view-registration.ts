@@ -22,11 +22,8 @@ const _views: {
         [_views.postList, _views.anotherPostList].filter((x): x is vscode.TreeView<PostListTreeItem> => x != null),
     visiblePostList: () => _views.postLists().find(x => x.visible),
 }
-let _hasRegistered = false
 
 export function setupExtTreeView() {
-    if (_hasRegistered) return extViews
-
     _views.account = regTreeView('cnblogs-account', {
         treeDataProvider: accountViewDataProvider,
         canSelectMany: false,
@@ -47,7 +44,6 @@ export function setupExtTreeView() {
         canSelectMany: false,
         treeDataProvider: BlogExportProvider.instance,
     })
-    _hasRegistered = true
 
     const disposables: IDisposable[] = []
     for (const [, item] of Object.entries(_views)) typeof item === 'function' ? undefined : disposables.push(item)

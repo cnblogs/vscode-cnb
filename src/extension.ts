@@ -5,7 +5,7 @@ import { globalCtx } from '@/services/global-ctx'
 // Import the module and reference it with the alias vscode in your code below
 import { window, ExtensionContext } from 'vscode'
 import { accountManager } from '@/auth/account-manager'
-import { observeCfgUpdate, observeWorkspaceFileUpdate, observeWorkspaceUpdate } from '@/services/check-workspace'
+import { watchCfgUpdate, watchWorkspaceFileUpdate, watchWorkspaceUpdate } from '@/services/check-workspace'
 import { extUriHandler } from '@/utils/uri-handler'
 import { extendMarkdownIt } from '@/markdown/extend-markdownIt'
 import { Settings } from '@/services/settings.service'
@@ -25,13 +25,15 @@ export function activate(ctx: ExtensionContext) {
         window.registerWebviewViewProvider(getIngListWebviewProvider().viewId, getIngListWebviewProvider())
     )
 
-    observeCfgUpdate()
-    observeWorkspaceUpdate()
-    observeWorkspaceFileUpdate()
+    watchCfgUpdate()
+    watchWorkspaceUpdate()
+    watchWorkspaceFileUpdate()
 
     Settings.migrateEnablePublishSelectionToIng().catch(console.warn)
 
     window.registerUriHandler(extUriHandler)
+
+    void accountManager.updateAuthStatus()
 
     return { extendMarkdownIt }
 }

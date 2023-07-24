@@ -86,5 +86,5 @@ export function setupExtCmd() {
         ...regBlogExportCmds(),
     ]
 
-    ctx?.subscriptions.push(...disposables)
+    ctx.subscriptions.push(...disposables)
 }
