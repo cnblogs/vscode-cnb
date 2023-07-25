@@ -4,7 +4,7 @@ import { PostFileMap, PostFileMapManager } from '@/service/post-file-map'
 import { revealPostListItem } from '@/service/post-list-view'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { extTreeViews } from '@/tree-view/tree-view-register'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 
 const confirm = async (postList: Post[]): Promise<boolean> => {
     const options = ['确定']

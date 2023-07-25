@@ -3,7 +3,7 @@ import { window } from 'vscode'
 import path from 'path'
 import fs from 'fs'
 import { promisify } from 'util'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
 

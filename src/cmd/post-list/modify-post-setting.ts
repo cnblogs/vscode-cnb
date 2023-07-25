@@ -1,6 +1,6 @@
 import { Uri } from 'vscode'
 import { Post } from '@/model/post'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post'
 import { PostFileMapManager } from '@/service/post-file-map'
 import { revealPostListItem } from '@/service/post-list-view'

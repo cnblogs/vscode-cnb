@@ -3,7 +3,7 @@ import { postCategoryService } from '@/service/post-category'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { inputPostCategory } from './input-post-category'
 import { refreshPostCategoryList } from './refresh-post-category-list'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 
 export const newPostCategory = async () => {
     const input = await inputPostCategory({

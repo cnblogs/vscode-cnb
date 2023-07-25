@@ -2,7 +2,7 @@ import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode
 import { refreshPostList } from '@/cmd/post-list/refresh-post-list'
 import { Post } from '@/model/post'
 import { PageModel } from '@/model/page-model'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post'
 import { ExtCfg } from '@/ctx/ext-cfg'
 import { toTreeItem } from '@/tree-view/convert'

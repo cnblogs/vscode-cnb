@@ -3,7 +3,7 @@ import { PostCategory } from '@/model/post-category'
 import { postCategoryService } from '@/service/post-category'
 import { PostCategoriesListTreeItem } from '@/tree-view/model/category-list-tree-item'
 import { BaseMultiSelectablePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { refreshPostCategoryList } from '@/cmd/post-category/refresh-post-category-list'
 
 export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategoryTreeViewCmdHandler {

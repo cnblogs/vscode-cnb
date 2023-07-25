@@ -1,4 +1,4 @@
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { uploadImgFromClipboard } from './upload-clipboard-img'
 import { insertImgLinkToActiveEditor, showUploadSuccessModel } from './upload-img-util'
 import { uploadFsImage } from './upload-fs-img'

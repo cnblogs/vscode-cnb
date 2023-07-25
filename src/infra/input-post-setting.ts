@@ -1,7 +1,7 @@
 import { QuickPickItem } from 'vscode'
 import { AccessPermission, Post } from '@/model/post'
 import { PostCategories, PostCategory } from '@/model/post-category'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { InputFlowAction, InputStep, MultiStepInput, QuickPickParameters } from '@/service/multi-step-input'
 import { postCategoryService } from '@/service/post-category'
 

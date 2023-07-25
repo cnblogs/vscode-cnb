@@ -1,6 +1,6 @@
 import path from 'path'
 import { MessageOptions, Uri, window } from 'vscode'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post'
 import { postCategoryService } from '@/service/post-category'
 import { PostFileMapManager } from '@/service/post-file-map'

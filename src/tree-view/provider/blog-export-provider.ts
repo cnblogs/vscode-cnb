@@ -12,7 +12,7 @@ import {
     ExportPostEntryTreeItem,
 } from '@/tree-view/model/blog-export'
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { BlogExportRecord } from '@/model/blog-export'
 
 export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> {

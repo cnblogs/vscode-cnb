@@ -9,7 +9,7 @@ import { PostCategoriesListTreeItem } from '@/tree-view/model/category-list-tree
 import { PostCategoryTreeItem } from '@/tree-view/model/post-category-tree-item'
 import { PostEntryMetadata, PostMetadata, RootPostMetadataType } from '@/tree-view/model/post-metadata'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { execCmd } from '@/infra/cmd'
 
 export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {

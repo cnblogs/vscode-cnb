@@ -1,7 +1,7 @@
 import { MessageOptions } from 'vscode'
 import { ExtCfg } from '@/ctx/ext-cfg'
 import { execCmd } from '@/infra/cmd'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 
 export const openWorkspace = async () => {
     const uri = ExtCfg.workspaceUri

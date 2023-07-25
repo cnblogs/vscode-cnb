@@ -1,7 +1,7 @@
 import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
 import { Post } from '@/model/post'
 import { LocalDraft } from '@/service/local-draft'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post'
 import { PostFileMapManager } from '@/service/post-file-map'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'

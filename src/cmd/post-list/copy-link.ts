@@ -1,6 +1,6 @@
 import { TreeViewCmdHandler } from '@/cmd/cmd-handler'
 import { Post } from '@/model/post'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { PostFileMapManager } from '@/service/post-file-map'
 import { PostService } from '@/service/post'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'

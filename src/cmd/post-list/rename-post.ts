@@ -7,7 +7,7 @@ import { PostFileMapManager } from '@/service/post-file-map'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { revealPostListItem } from '@/service/post-list-view'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 
 const renameLinkedFile = async (post: Post): Promise<void> => {
     const filePath = PostFileMapManager.getFilePath(post.id)

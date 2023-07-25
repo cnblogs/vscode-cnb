@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { ProgressLocation, Uri, window, workspace } from 'vscode'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { ImgService } from '@/service/img'
 import getClipboardImage from '@/infra/get-clipboard-img'
 

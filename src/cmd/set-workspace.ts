@@ -1,5 +1,5 @@
 import { window } from 'vscode'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { ExtCfg } from '@/ctx/ext-cfg'
 
 export const setWorkspace = async () => {

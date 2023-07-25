@@ -1,5 +1,5 @@
 import { openPostFile } from '@/cmd/post-list/open-post-file'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { ExtCfg } from '@/ctx/ext-cfg'
 import { ExportPostTreeItem } from '@/tree-view/model/blog-export/post'
 import fs from 'fs'

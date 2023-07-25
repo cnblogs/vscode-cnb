@@ -3,6 +3,7 @@ import { isArray } from 'lodash-es'
 import path from 'path'
 import vscode, { Uri } from 'vscode'
 import { window } from 'vscode'
+import { isDevEnv } from '@/model/config'
 
 export namespace Alert {
     export const err = window.showErrorMessage
@@ -10,6 +11,10 @@ export namespace Alert {
     export const info = window.showInformationMessage
 
     export const warn = window.showWarningMessage
+
+    export function dev(log: string) {
+        if (isDevEnv()) console.log(log)
+    }
 
     export function httpErr(httpError: Partial<HTTPError>, { message = '' } = {}) {
         const body = httpError.response?.body as

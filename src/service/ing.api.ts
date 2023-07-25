@@ -1,5 +1,5 @@
 import { Ing, IngComment, IngPublishModel, IngType } from '@/model/ing'
-import { Alert } from '@/service/alert'
+import { Alert } from '@/infra/alert'
 import { globalCtx } from '@/ctx/global-ctx'
 import fetch from '@/infra/fetch-client'
 import { URLSearchParams } from 'url'
