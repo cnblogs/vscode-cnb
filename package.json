@@ -175,7 +175,7 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.upload-image",
+                "command": "vscode-cnb.upload-img",
                 "title": "上传图片到博客园",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-image-upload)",
@@ -188,7 +188,7 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.upload-local-disk-image",
+                "command": "vscode-cnb.upload-fs-img",
                 "title": "上传本地图片到博客园",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized"
@@ -225,14 +225,14 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.delete-selected-post-categories",
+                "command": "vscode-cnb.delete-selected-post-category",
                 "title": "删除",
                 "icon": "$(trash)",
                 "category": "Cnblogs Post Categories Management",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.postCategoriesList.isRefreshing"
             },
             {
-                "command": "vscode-cnb.refresh-post-categories-list",
+                "command": "vscode-cnb.refresh-post-category-list",
                 "title": "刷新",
                 "icon": "$(refresh)",
                 "category": "Cnblogs Post Categories Management",
@@ -279,7 +279,7 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.extract-images",
+                "command": "vscode-cnb.extract-img",
                 "title": "提取图片",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized"
@@ -616,8 +616,8 @@
                             "export-post-to-pdf": true,
                             "copy-post-link": true,
                             "upload-clipboard-image": true,
-                            "upload-local-disk-image": true,
-                            "extract-images": true,
+                            "upload-fs-img": true,
+                            "extract-img": true,
                             "ing:publish-selection": false
                         },
                         "properties": {
@@ -662,12 +662,12 @@
                                 "description": "上传剪贴板图片到博客园",
                                 "type": "boolean"
                             },
-                            "upload-local-disk-image": {
+                            "upload-fs-img": {
                                 "order": 8,
                                 "description": "上传本地图片到博客园",
                                 "type": "boolean"
                             },
-                            "extract-images": {
+                            "extract-img": {
                                 "order": 9,
                                 "description": "提取图片",
                                 "type": "boolean"
@@ -741,7 +741,7 @@
                     "visibility": "collapsed"
                 },
                 {
-                    "id": "cnblogs-post-categories-list",
+                    "id": "cnblogs-post-category-list",
                     "name": "分类列表",
                     "when": "vscode-cnb.isAuthorized",
                     "visibility": "collapsed"
@@ -813,11 +813,11 @@
                 {
                     "command": "vscode-cnb.new-post-category",
                     "group": "navigation@1",
-                    "when": "view == cnblogs-post-categories-list"
+                    "when": "view == cnblogs-post-category-list"
                 },
                 {
-                    "command": "vscode-cnb.refresh-post-categories-list",
-                    "when": "view == cnblogs-post-categories-list",
+                    "command": "vscode-cnb.refresh-post-category-list",
+                    "when": "view == cnblogs-post-category-list",
                     "group": "navigation@2"
                 },
                 {
@@ -900,11 +900,11 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.delete-selected-post-categories",
+                    "command": "vscode-cnb.delete-selected-post-category",
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.refresh-post-categories-list",
+                    "command": "vscode-cnb.refresh-post-category-list",
                     "when": "false"
                 },
                 {
@@ -1064,7 +1064,7 @@
                     "group": "0@6"
                 },
                 {
-                    "command": "vscode-cnb.delete-selected-post-categories",
+                    "command": "vscode-cnb.delete-selected-post-category",
                     "when": "viewItem == cnb-post-category"
                 },
                 {
@@ -1073,7 +1073,7 @@
                     "group": "inline@1"
                 },
                 {
-                    "command": "vscode-cnb.delete-selected-post-categories",
+                    "command": "vscode-cnb.delete-selected-post-category",
                     "when": "viewItem == cnb-post-category",
                     "group": "inline@2"
                 },
@@ -1164,8 +1164,8 @@
                     "group": "cnblogs@6"
                 },
                 {
-                    "command": "vscode-cnb.upload-local-disk-image",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-local-disk-image",
+                    "command": "vscode-cnb.upload-fs-img",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-fs-img",
                     "group": "cnblogs@7"
                 },
                 {
@@ -1174,8 +1174,8 @@
                     "group": "cnblogs@8"
                 },
                 {
-                    "command": "vscode-cnb.extract-images",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.extract-images",
+                    "command": "vscode-cnb.extract-img",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.extract-img",
                     "group": "cnblogs@9"
                 },
                 {
@@ -1186,7 +1186,7 @@
             ],
             "editor/title": [
                 {
-                    "command": "vscode-cnb.upload-image",
+                    "command": "vscode-cnb.upload-img",
                     "when": "resourceLangId == markdown",
                     "group": "navigation"
                 },
@@ -1247,7 +1247,7 @@
                 "when": "editorTextFocus && resourceLangId == markdown"
             },
             {
-                "command": "vscode-cnb.upload-local-disk-image",
+                "command": "vscode-cnb.upload-fs-img",
                 "key": "ctrl+alt+f",
                 "mac": "cmd+alt+f",
                 "when": "editorTextFocus && resourceLangId == markdown"

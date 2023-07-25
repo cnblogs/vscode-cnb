@@ -1,15 +1,15 @@
 import { AccountInfo } from './account-info'
-import { globalCtx } from '@/services/global-ctx'
+import { globalCtx } from '@/service/global-ctx'
 import vscode, { authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
-import { accountViewDataProvider } from '@/tree-view-providers/account-view-data-provider'
-import { postDataProvider } from '@/tree-view-providers/post-data-provider'
-import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
-import { Oauth } from '@/services/oauth.api'
+import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
+import { postDataProvider } from '@/tree-view/provider/post-data-provider'
+import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
+import { Oauth } from '@/service/oauth.api'
 import { authProvider } from '@/auth/auth-provider'
 import { AuthSession } from '@/auth/auth-session'
-import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
-import { Alert } from '@/services/alert'
-import { execCmd } from '@/utils/cmd'
+import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
+import { Alert } from '@/service/alert'
+import { execCmd } from '@/infra/cmd'
 
 const isAuthorizedStorageKey = 'isAuthorized'
 
@@ -26,7 +26,7 @@ class AccountManager extends vscode.Disposable {
 
             accountViewDataProvider.fireTreeDataChangedEvent()
             postDataProvider.fireTreeDataChangedEvent(undefined)
-            postCategoriesDataProvider.fireTreeDataChangedEvent()
+            postCategoryDataProvider.fireTreeDataChangedEvent()
 
             BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
         })

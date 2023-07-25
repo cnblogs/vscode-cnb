@@ -11,8 +11,8 @@ import {
     Text,
 } from '@fluentui/react'
 import React from 'react'
-import { tagsStore } from '../services/tags-store'
-import { PostTags, PostTag } from '@models/post-tag'
+import { tagsStore } from '../service/tags-store'
+import { PostTags, PostTag } from '@/model/post-tag'
 
 export interface ITagsInputProps {
     selectedTagNames?: string[]

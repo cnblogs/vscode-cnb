@@ -1,5 +1,5 @@
 import { AuthSession } from '@/auth/auth-session'
-import { genVerifyChallengePair } from '@/services/code-challenge'
+import { genVerifyChallengePair } from '@/service/code-challenge'
 import { isArray, isUndefined } from 'lodash-es'
 import {
     authentication,
@@ -14,12 +14,12 @@ import {
     Uri,
     window,
 } from 'vscode'
-import { globalCtx } from '@/services/global-ctx'
+import { globalCtx } from '@/service/global-ctx'
 import RandomString from 'randomstring'
-import { Oauth } from '@/services/oauth.api'
-import { extUriHandler } from '@/utils/uri-handler'
+import { Oauth } from '@/service/oauth.api'
+import { extUriHandler } from '@/infra/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
-import { TokenInfo } from '@/models/token-info'
+import { TokenInfo } from '@/model/token-info'
 import { Optional } from 'utility-types'
 
 export class AuthProvider implements AuthenticationProvider, Disposable {

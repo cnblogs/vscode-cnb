@@ -13,12 +13,11 @@
         "strictPropertyInitialization": true,
         "baseUrl": ".",
         "paths": {
-            "@models/*": ["../src/models/*"],
-            "@/models/*": ["../src/models/*"]
+            "@/model/*": ["../src/model/*"]
         },
         "lib": ["DOM", "ES2020"],
         "strictBindCallApply": true
     },
-    "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "./**/*.js", "*.mjs", "../src/models/*.ts"],
+    "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "./**/*.js", "*.mjs", "../src/model/*.ts"],
     "exclude": ["./dist"]
 }

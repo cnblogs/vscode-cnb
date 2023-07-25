@@ -1,25 +1,25 @@
 import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button'
 import { Stack } from '@fluentui/react/lib/Stack'
 import React from 'react'
-import { CategoriesSelect } from './CategoriesSelect'
+import { CategorySelect } from './CategorySelect'
 import { SiteHomeContributionOptionsSelector } from './SiteHomeContributionOptionsSelector'
-import { PostCfg } from '@models/post-cfg'
-import { Post } from '@models/post'
+import { PostCfg } from '@/model/post-cfg'
+import { Post } from '@/model/post'
 import { Label, Spinner } from '@fluentui/react'
-import { SiteCategoriesSelector } from './SiteCategoriesSelector'
+import { SiteCategorySelector } from './SiteCategorySelector'
 import { TagsInput } from './TagsInput'
 import { CommonOptions } from './CommonOptions'
 import { AccessPermissionSelector } from './AccessPermissionSelector'
 import { PasswordInput } from './PasswordInput'
 import { getVsCodeApiSingleton } from '../../share/vscode-api'
 import { ErrorResponse } from './ErrorResponse'
-import { WebviewCmd } from '@models/webview-cmd'
-import { webviewMessage } from '@models/webview-msg'
+import { WebviewCmd } from '@/model/webview-cmd'
+import { webviewMessage } from '@/model/webview-msg'
 import { InputSummary } from './InputSummary'
 import { IPostFormContext, PostFormContext } from './PostFormContext'
 import PostEntryNameInput from './PostEntryNameInput'
 import PostTitleInput from 'post-cfg/components/PostTitleInput'
-import NestCategoriesSelect from 'post-cfg/components/NestCategoriesSelect'
+import NestCategorySelect from './NestCategorySelect'
 
 export interface IPostFormProps {
     post?: Post
@@ -59,12 +59,12 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                         <Label>个人分类</Label>
                         <Stack>
                             {this.props.useNestCategoriesSelect ? (
-                                <NestCategoriesSelect
+                                <NestCategorySelect
                                     onSelect={categoryIds => this.setState({ categoryIds })}
                                     selected={this.state.categoryIds ?? []}
-                                ></NestCategoriesSelect>
+                                ></NestCategorySelect>
                             ) : (
-                                <CategoriesSelect
+                                <CategorySelect
                                     onChange={categoryIds => this.setState({ categoryIds })}
                                     categoryIds={this.state.categoryIds ?? []}
                                 />
@@ -119,7 +119,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                         inSiteCandidate={this.state.inSiteCandidate}
                         inSiteHome={this.state.inSiteHome}
                     />
-                    <SiteCategoriesSelector
+                    <SiteCategorySelector
                         categoryIds={this.state.siteCategoryId ? [this.state.siteCategoryId] : []}
                         onChange={categoryId => this.setState({ siteCategoryId: categoryId })}
                     />

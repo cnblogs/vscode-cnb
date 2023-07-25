@@ -1,5 +1,5 @@
 import React from 'react'
-import { SiteHomeContributionOptions as ISiteHomeContributionOptions } from '../models/site-home-contribution-options'
+import { SiteHomeContributionOptions as ISiteHomeContributionOptions } from '../model/site-home-contribution-options'
 import { Text } from '@fluentui/react/lib/Text'
 import { Stack } from '@fluentui/react/lib/Stack'
 import { ActionButton, Checkbox, Label } from '@fluentui/react'

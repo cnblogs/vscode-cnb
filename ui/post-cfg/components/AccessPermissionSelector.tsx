@@ -1,5 +1,5 @@
 import { ChoiceGroup, IChoiceGroupOption, Label, Stack } from '@fluentui/react'
-import { AccessPermission, formatAccessPermission } from '@models/post'
+import { AccessPermission, formatAccessPermission } from '@/model/post'
 import React from 'react'
 
 export interface IAccessPermissionSelectorProps {

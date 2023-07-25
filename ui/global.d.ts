@@ -1,4 +1,4 @@
-type WebviewCommonCmd<TPayload> = import('@models/webview-cmd').WebviewCommonCmd<TPayload>
+type WebviewCommonCmd<TPayload> = import('@/model/webview-cmd').WebviewCommonCmd<TPayload>
 
 declare interface VsCodeApi {
     postMessage<T extends WebviewCommonCmd<unknown> = WebviewCommonCmd<{}>>(message: Object | T): any

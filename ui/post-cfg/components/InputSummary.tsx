@@ -1,7 +1,7 @@
 import { ActionButton, Label, MessageBar, MessageBarType, Stack, TextField, Text } from '@fluentui/react'
-import { ImageUploadStatusId } from '@models/image-upload-status'
-import { WebviewCmd } from '@models/webview-cmd'
-import { webviewMessage } from '@models/webview-msg'
+import { ImageUploadStatusId } from '@/model/img-upload-status'
+import { WebviewCmd } from '@/model/webview-cmd'
+import { webviewMessage } from '@/model/webview-msg'
 import React from 'react'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 

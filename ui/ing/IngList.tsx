@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Ing, IngComment } from '@models/ing'
+import { Ing, IngComment } from '@/model/ing'
 import { IngItem } from 'ing/IngItem'
 import { Stack } from '@fluentui/react'
 

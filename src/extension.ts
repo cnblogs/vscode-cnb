@@ -1,19 +1,15 @@
-import { setupExtTreeView } from '@/tree-view-providers/tree-view-registration'
-import { setupExtCmd } from '@/commands/cmd-register'
-import { globalCtx } from '@/services/global-ctx'
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+import { setupExtTreeView } from '@/tree-view/tree-view-register'
+import { setupExtCmd } from '@/setup/setup-cmd'
+import { globalCtx } from '@/service/global-ctx'
 import { window, ExtensionContext } from 'vscode'
 import { accountManager } from '@/auth/account-manager'
-import { watchCfgUpdate, watchWorkspaceFileUpdate, watchWorkspaceUpdate } from '@/services/check-workspace'
-import { extUriHandler } from '@/utils/uri-handler'
+import { setupWorkspaceWatch, setupCfgWatch, setupWorkspaceFileWatch } from '@/setup/setup-watch'
+import { extUriHandler } from '@/infra/uri-handler'
 import { extendMarkdownIt } from '@/markdown/extend-markdownIt'
-import { Settings } from '@/services/settings'
-import { getIngListWebviewProvider } from '@/services/ing-list-webview-provider'
-import { setupUi } from '@/services/setup-ui'
+import { Settings } from '@/service/settings'
+import { getIngListWebviewProvider } from '@/service/ing-list-webview-provider'
+import { setupUi } from '@/setup/setup-ui'
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the commands is executed
 export function activate(ctx: ExtensionContext) {
     globalCtx.extCtx = ctx
 
@@ -23,12 +19,11 @@ export function activate(ctx: ExtensionContext) {
     setupExtTreeView()
 
     ctx.subscriptions.push(
-        window.registerWebviewViewProvider(getIngListWebviewProvider().viewId, getIngListWebviewProvider())
+        window.registerWebviewViewProvider(getIngListWebviewProvider().viewId, getIngListWebviewProvider()),
+        setupCfgWatch(),
+        setupWorkspaceWatch(),
+        setupWorkspaceFileWatch()
     )
-
-    watchCfgUpdate()
-    watchWorkspaceUpdate()
-    watchWorkspaceFileUpdate()
 
     Settings.migrateEnablePublishSelectionToIng().catch(console.warn)
 
@@ -41,6 +36,6 @@ export function activate(ctx: ExtensionContext) {
     return { extendMarkdownIt }
 }
 
-// this method is called when your extension is deactivated
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export function deactivate() {}
+export function deactivate() {
+    return
+}

@@ -1,6 +1,6 @@
 import { MessageBar, MessageBarType } from '@fluentui/react'
-import { WebviewCmd } from '@models/webview-cmd'
-import { webviewMessage } from '@models/webview-msg'
+import { WebviewCmd } from '@/model/webview-cmd'
+import { webviewMessage } from '@/model/webview-msg'
 import React from 'react'
 import { Optional } from 'utility-types'
 import { PostFormContext } from './PostFormContext'
