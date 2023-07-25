@@ -16,11 +16,13 @@ import { IngType, IngTypesMetadata } from 'src/models/ing'
 import { isNumber } from 'lodash-es'
 import { CommentIngCmdHandler } from '@/commands/ing/comment-ing'
 import { execCmd } from '@/utils/cmd'
+import { ingStarToText } from '@/utils/ingStarToText'
+import { Settings } from '@/services/settings'
+import { isDisableIngUserAvatar, isEnableTextIngStar } from '@/services/setup-ui'
 
 export class IngListWebviewProvider implements WebviewViewProvider {
     readonly viewId = `${globalCtx.extName}.ing-list-webview`
 
-    private readonly _baseTitle = '闪存'
     private _view: WebviewView | null = null
     private _observer: IngWebviewMessageObserver | null = null
     private _pageIndex = 1
@@ -83,10 +85,15 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                     command: WebviewCmd.IngCmd.UiCmd.setAppState,
                 } as IngWebviewUiCmd<Partial<IngAppState>>)
                 .then(undefined, () => undefined)
-            const ingList = await IngApi.list({
+            const rawIngList = await IngApi.list({
                 type: ingType,
                 pageIndex,
                 pageSize: 30,
+            })
+            const ingList = rawIngList.map(ing => {
+                if (isDisableIngUserAvatar(Settings.cfg)) ing.userIconUrl = ''
+                if (isEnableTextIngStar(Settings.cfg)) ing.icons = ingStarToText(ing.icons)
+                return ing
             })
             const comments = await IngApi.listComments(...ingList.map(x => x.id))
             await this._view.webview
@@ -149,7 +156,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
         if (!this._view) return
         const ingTypeSuffix = IngTypesMetadata.find(([x]) => x === this.ingType)?.[1].displayName ?? ''
         const pageIndexSuffix = this.pageIndex > 1 ? `(第${this.pageIndex}页)` : ''
-        this._view.title = `${this._baseTitle}${ingTypeSuffix ? ' - ' + ingTypeSuffix : ''}${pageIndexSuffix}`
+        this._view.title = `闪存 ${ingTypeSuffix ? ' - ' + ingTypeSuffix : ''}${pageIndexSuffix}`
     }
 }
 

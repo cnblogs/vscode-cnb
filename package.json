@@ -682,42 +682,33 @@
                         "additionalProperties": false,
                         "markdownDescription": "控制要在编辑器右键菜单中显示的命令"
                     },
-                    "cnblogsClient.ui.symbolicIngEmoji": {
+                    "cnblogsClient.ui.textIngStar": {
                         "order": 15,
                         "type": "boolean",
                         "scope": "application",
                         "default": false,
-                        "markdownDescription": "符号化闪存表情"
+                        "markdownDescription": "闪存星文本化"
                     },
-                    "cnblogsClient.ui.disableIngAvatar": {
+                    "cnblogsClient.ui.disableIngUserAvatar": {
                         "order": 16,
                         "type": "boolean",
                         "scope": "application",
                         "default": false,
-                        "markdownDescription": "禁用闪存头像"
+                        "markdownDescription": "禁用闪存用户头像"
                     },
-                    "cnblogsClient.ui.explorerTitleStyle": {
+                    "cnblogsClient.ui.treeViewTitleStyle": {
                         "order": 17,
                         "scope": "application",
                         "default": "normal",
                         "markdownDescription": "侧栏标题风格",
                         "enum": [
                             "normal",
-                            "short",
-                            "short-english"
+                            "short"
                         ],
                         "enumItemLabels": [
                             "正常",
-                            "精简",
-                            "英文精简"
+                            "简洁"
                         ]
-                    },
-                    "cnblogsClient.ui.fakeExtIcon": {
-                        "order": 18,
-                        "type": "boolean",
-                        "scope": "application",
-                        "default": false,
-                        "markdownDescription": "伪装扩展图标"
                     }
                 }
             }
@@ -768,7 +759,7 @@
                     "visibility": "collapsed"
                 },
                 {
-                    "id": "cnblogs-navigation",
+                    "id": "cnblogs-navi",
                     "name": "博客园导航",
                     "when": "vscode-cnb.isAuthorized",
                     "visibility": "collapsed"
@@ -1279,10 +1270,6 @@
             {
                 "view": "cnblogs-authorize",
                 "contents": "[Login](command:vscode-cnb.login)"
-            },
-            {
-                "view": "cnblogs-navigation",
-                "contents": "[首页](https://www.cnblogs.com)\n[新闻](https://news.cnblogs.com/)\n[博问](https://q.cnblogs.com/)\n[闪存](https://ing.cnblogs.com/)"
             },
             {
                 "view": "vscode-cnb-workspace",
