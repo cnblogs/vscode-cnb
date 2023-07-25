@@ -1,6 +1,6 @@
 import { env, MessageOptions, SnippetString, window } from 'vscode'
 import { formatImageLink } from '@/utils/format-image-link'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 
 /**
  * 显示上传成功对话框, 支持复制不同格式的图片链接

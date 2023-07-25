@@ -1,7 +1,7 @@
 import { CmdHandler } from '@/commands/cmd-handler'
 import { execCmd } from '@/utils/cmd'
 import { IngPublishModel, IngType } from '@/models/ing'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { globalCtx } from '@/services/global-ctx'
 import { IngApi } from '@/services/ing.api'
 import { getIngListWebviewProvider } from '@/services/ing-list-webview-provider'

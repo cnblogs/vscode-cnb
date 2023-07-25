@@ -29,41 +29,33 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
             { label: u.name, tooltip: '用户名', iconPath: new ThemeIcon('account') },
             {
                 label: '账户设置',
-                tooltip: '账户设置',
                 command: {
                     title: '打开账户设置',
                     command: 'vscode-cnb.open-my-account-settings',
-                    tooltip: '浏览器中打开我的账户设置',
                 },
                 iconPath: new ThemeIcon('gear'),
             },
             {
                 label: '博客后台',
-                tooltip: '博客后台',
                 command: {
                     title: '打开博客后台',
                     command: 'vscode-cnb.open-my-blog-console',
-                    tooltip: '浏览器中打开我的博客后台',
                 },
                 iconPath: new ThemeIcon('console'),
             },
             {
                 label: '我的博客',
-                tooltip: '点击在浏览器中打开我的主页',
                 command: {
                     title: '打开我的博客',
                     command: 'vscode-cnb.open-my-blog',
-                    tooltip: '浏览器中打开我的博客',
                 },
                 iconPath: new ThemeIcon('window'),
             },
             {
                 label: '我的主页',
-                tooltip: '点击在浏览器中打开我的主页',
                 command: {
                     title: '打开我的主页',
                     command: 'vscode-cnb.open-my-home-page',
-                    tooltip: '浏览器中打开我的博客',
                 },
                 iconPath: new ThemeIcon('home'),
             },

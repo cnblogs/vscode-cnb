@@ -1,4 +1,4 @@
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { window } from 'vscode'
 import { uploadImageFromClipboard } from './upload-clipboard-image'
 import { insertImageLinkToActiveEditor, showUploadSuccessModel } from './upload-image-utils'

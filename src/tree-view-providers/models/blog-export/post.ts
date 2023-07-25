@@ -1,6 +1,6 @@
 import { ViewPostCmdHandler } from '@/commands/blog-export/view-post'
 import type { ExportPost } from '@/models/blog-export/export-post'
-import { Settings } from '@/services/settings.service'
+import { Settings } from '@/services/settings'
 import { BaseTreeItemSource } from '@/tree-view-providers/models/base-tree-item-source'
 import { ExportPostEntryTreeItem } from '@/tree-view-providers/models/blog-export'
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from 'vscode'

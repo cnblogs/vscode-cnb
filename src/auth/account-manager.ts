@@ -8,7 +8,7 @@ import { Oauth } from '@/services/oauth.api'
 import { authProvider } from '@/auth/auth-provider'
 import { AuthSession } from '@/auth/auth-session'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { execCmd } from '@/utils/cmd'
 
 const isAuthorizedStorageKey = 'isAuthorized'

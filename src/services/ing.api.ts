@@ -1,5 +1,5 @@
 import { Ing, IngComment, IngPublishModel, IngType } from '@/models/ing'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { globalCtx } from '@/services/global-ctx'
 import fetch from '@/utils/fetch-client'
 import { URLSearchParams } from 'url'
@@ -14,7 +14,7 @@ export namespace IngApi {
         }).catch(reason => void Alert.warn(JSON.stringify(reason)))
 
         if (!res || !res.ok)
-            Alert.err(`闪存发布失败, ${res?.statusText ?? ''} ${JSON.stringify((await res?.text()) ?? '')}`)
+            void Alert.err(`闪存发布失败, ${res?.statusText ?? ''} ${JSON.stringify((await res?.text()) ?? '')}`)
 
         return res != null && res.ok
     }
@@ -32,7 +32,7 @@ export namespace IngApi {
         ).catch(e => void Alert.warn(JSON.stringify(e)))
 
         if (!res || !res.ok) {
-            Alert.err(`获取闪存列表失败, ${res?.statusText ?? ''} ${JSON.stringify((await res?.text()) ?? '')}`)
+            void Alert.err(`获取闪存列表失败, ${res?.statusText ?? ''} ${JSON.stringify((await res?.text()) ?? '')}`)
             return []
         }
 
@@ -40,9 +40,9 @@ export namespace IngApi {
 
         try {
             if (isArray(arr) && arr.every(isObject)) return arr.map(Ing.parse)
-            Alert.err('获取闪存列表失败, 无法读取响应')
+            void Alert.err('获取闪存列表失败, 无法读取响应')
         } catch (e) {
-            Alert.err(JSON.stringify(e))
+            void Alert.err(JSON.stringify(e))
         }
 
         return []

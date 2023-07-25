@@ -8,8 +8,9 @@ import { accountManager } from '@/auth/account-manager'
 import { watchCfgUpdate, watchWorkspaceFileUpdate, watchWorkspaceUpdate } from '@/services/check-workspace'
 import { extUriHandler } from '@/utils/uri-handler'
 import { extendMarkdownIt } from '@/markdown/extend-markdownIt'
-import { Settings } from '@/services/settings.service'
+import { Settings } from '@/services/settings'
 import { getIngListWebviewProvider } from '@/services/ing-list-webview-provider'
+import { setupUi } from '@/services/setup-ui'
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the commands is executed
@@ -34,6 +35,8 @@ export function activate(ctx: ExtensionContext) {
     window.registerUriHandler(extUriHandler)
 
     void accountManager.updateAuthStatus()
+
+    setupUi(Settings.cfg)
 
     return { extendMarkdownIt }
 }

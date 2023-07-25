@@ -1,5 +1,5 @@
 import { ProgressLocation, window } from 'vscode'
-import { ImageService } from '@/services/image.service'
+import { ImageService } from '@/services/image'
 import fs from 'fs'
 
 export const uploadLocalDiskImage = async () => {

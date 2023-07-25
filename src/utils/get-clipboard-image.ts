@@ -6,7 +6,7 @@ import fs from 'fs'
 import os from 'os'
 import isWsl from 'is-wsl'
 import { globalCtx } from '@/services/global-ctx'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { IClipboardImage } from '@/models/clipboard-image'
 import format from 'date-fns/format'
 

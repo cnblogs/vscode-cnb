@@ -1,4 +1,4 @@
-import vscode from 'vscode'
-
-export const openMyWebBlogConsole = () => execCmd('vscode.open', vscode.Uri.parse('https://i.cnblogs.com'))
+import { Uri } from 'vscode'
 import { execCmd } from '@/utils/cmd'
+
+export const openMyWebBlogConsole = () => execCmd('vscode.open', Uri.parse('https://i.cnblogs.com'))

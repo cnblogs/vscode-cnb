@@ -1,7 +1,7 @@
 import { homedir } from 'os'
 import path from 'path'
 import { Uri, window, workspace } from 'vscode'
-import { Settings } from '@/services/settings.service'
+import { Settings } from '@/services/settings'
 import { revealActiveFileInExplorer } from '@/utils/reveal-active-file'
 import { openPostFile } from './open-post-file'
 

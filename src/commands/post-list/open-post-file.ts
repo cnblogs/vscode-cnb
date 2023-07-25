@@ -1,7 +1,7 @@
 import { TextDocumentShowOptions, Uri } from 'vscode'
 import { execCmd } from '@/utils/cmd'
 import { Post } from '@/models/post'
-import { LocalDraft } from '@/services/local-draft.service'
+import { LocalDraft } from '@/services/local-draft'
 import { PostFileMapManager } from '@/services/post-file-map'
 
 export const openPostFile = async (post: LocalDraft | Post | string, options?: TextDocumentShowOptions) => {

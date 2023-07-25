@@ -1,7 +1,7 @@
 import { Uri, window } from 'vscode'
 import { execCmd } from '@/utils/cmd'
 import { Post } from '@/models/post'
-import { PostService } from '@/services/post.service'
+import { PostService } from '@/services/post'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 

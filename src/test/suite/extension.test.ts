@@ -1,4 +1,4 @@
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import assert from 'assert'
 
 // You can import and use all API from the 'vscode' module

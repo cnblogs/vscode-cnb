@@ -3,12 +3,12 @@ import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { openPostInVscode } from './post-list/open-post-in-vscode'
 import fs from 'fs'
-import { PostService } from '@/services/post.service'
-import { Alert } from '@/services/alert.service'
+import { PostService } from '@/services/post'
+import { Alert } from '@/services/alert'
 import path from 'path'
 import { revealPostListItem } from '@/services/post-list-view'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
-import { Settings } from '@/services/settings.service'
+import { Settings } from '@/services/settings'
 
 const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefined | null): Promise<void> => {
     const ctxs: CmdCtx[] = []

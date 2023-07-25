@@ -1,6 +1,6 @@
 import { MessageItem, MessageOptions, ProgressLocation, Range, Uri, window, workspace, WorkspaceEdit } from 'vscode'
-import { ImageInfo, ImageSrc, MkdImgExtractor, newImageSrcFilter } from '@/services/mkd-img-extractor.service'
-import { Alert } from '@/services/alert.service'
+import { ImageInfo, ImageSrc, MkdImgExtractor, newImageSrcFilter } from '@/services/mkd-img-extractor'
+import { Alert } from '@/services/alert'
 
 type ExtractOption = MessageItem & Partial<{ imageSrc: ImageSrc }>
 

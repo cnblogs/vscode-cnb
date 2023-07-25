@@ -2,12 +2,12 @@ import { escapeRegExp } from 'lodash-es'
 import path from 'path'
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
-import { PostService } from '@/services/post.service'
+import { PostService } from '@/services/post'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { postDataProvider } from '@/tree-view-providers/post-data-provider'
 import { revealPostListItem } from '@/services/post-list-view'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 
 const renameLinkedFile = async (post: Post): Promise<void> => {
     const filePath = PostFileMapManager.getFilePath(post.id)

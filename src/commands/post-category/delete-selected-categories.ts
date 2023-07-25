@@ -1,10 +1,10 @@
 import { MessageOptions, ProgressLocation, window } from 'vscode'
 import { PostCategory } from '@/models/post-category'
-import { postCategoryService } from '@/services/post-category.service'
+import { postCategoryService } from '@/services/post-category'
 import { PostCategoriesListTreeItem } from '@/tree-view-providers/models/categories-list-tree-item'
 import { BaseMultiSelectablePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
 import { refreshPostCategoriesList } from './refresh-post-categories-list'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 
 export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategoryTreeViewCmdHandler {
     constructor(input: PostCategoriesListTreeItem) {

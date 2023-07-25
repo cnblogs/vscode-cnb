@@ -1,4 +1,4 @@
-import { Settings } from '@/services/settings.service'
+import { Settings } from '@/services/settings'
 import { HighlightCodeLinesPlugin, MultilineBlockquotePlugin } from '@cnblogs/markdown-it-presets'
 import type { MarkdownIt } from '@cnblogs/markdown-it-presets'
 

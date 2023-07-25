@@ -1,6 +1,6 @@
 import { window } from 'vscode'
-import { Alert } from '@/services/alert.service'
-import { Settings } from '@/services/settings.service'
+import { Alert } from '@/services/alert'
+import { Settings } from '@/services/settings'
 
 export const setWorkspace = async () => {
     const uris =

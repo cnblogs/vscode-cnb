@@ -1,9 +1,9 @@
 import { QuickPickItem } from 'vscode'
 import { AccessPermission, Post } from '@/models/post'
 import { PostCategories, PostCategory } from '@/models/post-category'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { InputFlowAction, InputStep, MultiStepInput, QuickPickParameters } from '@/services/multi-step-input'
-import { postCategoryService } from '@/services/post-category.service'
+import { postCategoryService } from '@/services/post-category'
 
 class CategoryPickItem implements QuickPickItem {
     label: string

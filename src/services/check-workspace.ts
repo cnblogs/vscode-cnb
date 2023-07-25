@@ -5,7 +5,8 @@ import { refreshPostList } from '@/commands/post-list/refresh-post-list'
 import { globalCtx } from './global-ctx'
 import { PostFileMapManager } from './post-file-map'
 import { execCmd } from '@/utils/cmd'
-import { Settings } from './settings.service'
+import { Settings } from './settings'
+import { setupUi } from '@/services/setup-ui'
 
 const diskSymbolRegex = /^(\S{1,5}:)(.*)/
 
@@ -38,6 +39,8 @@ export const watchCfgUpdate = () => {
 
             if (ev.affectsConfiguration(`${Settings.cfgPrefix}.markdown`))
                 execCmd('markdown.preview.refresh').then(undefined, () => undefined)
+
+            if (ev.affectsConfiguration(`${Settings.cfgPrefix}.ui`)) setupUi(Settings.cfg)
         })
     )
     isTargetWorkspace()

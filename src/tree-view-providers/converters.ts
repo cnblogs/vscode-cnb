@@ -5,7 +5,7 @@ import { Post } from '@/models/post'
 import { PostCategory } from '@/models/post-category'
 import { globalCtx } from '@/services/global-ctx'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { Settings } from '@/services/settings.service'
+import { Settings } from '@/services/settings'
 import { BaseTreeItemSource } from './models/base-tree-item-source'
 
 const contextValues = {

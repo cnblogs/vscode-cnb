@@ -1,5 +1,5 @@
 import { AuthSession } from '@/auth/auth-session'
-import { genVerifyChallengePair } from '@/services/code-challenge.service'
+import { genVerifyChallengePair } from '@/services/code-challenge'
 import { isArray, isUndefined } from 'lodash-es'
 import {
     authentication,

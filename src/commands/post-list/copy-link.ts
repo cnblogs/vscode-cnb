@@ -1,8 +1,8 @@
 import { TreeViewCmdHandler } from '@/commands/cmd-handler'
 import { Post } from '@/models/post'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { PostService } from '@/services/post.service'
+import { PostService } from '@/services/post'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { env, MessageItem, Uri, window } from 'vscode'
 

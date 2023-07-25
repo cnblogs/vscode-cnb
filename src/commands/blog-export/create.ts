@@ -1,5 +1,5 @@
 import { CmdHandler } from '@/commands/cmd-handler'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { BlogExportApi } from '@/services/blog-export.api'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { MessageItem, window } from 'vscode'

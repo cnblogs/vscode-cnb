@@ -1,7 +1,7 @@
 import { MessageOptions } from 'vscode'
-import { Settings } from '@/services/settings.service'
+import { Settings } from '@/services/settings'
 import { execCmd } from '@/utils/cmd'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 
 export const openWorkspace = async () => {
     const uri = Settings.workspaceUri
