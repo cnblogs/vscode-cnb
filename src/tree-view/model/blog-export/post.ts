@@ -1,9 +1,9 @@
-import { ViewPostCmdHandler } from '@/cmd/blog-export/view-post'
 import type { ExportPost } from '@/model/blog-export/export-post'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 import { BaseTreeItemSource } from '@/tree-view/model/base-tree-item-source'
 import { ExportPostEntryTreeItem } from '@/tree-view/model/blog-export'
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from 'vscode'
+import { globalCtx } from '@/ctx/global-ctx'
 
 export class ExportPostTreeItem extends BaseTreeItemSource {
     readonly contextValue = 'cnblogs-export-post'
@@ -24,10 +24,10 @@ export class ExportPostTreeItem extends BaseTreeItemSource {
             collapsibleState: TreeItemCollapsibleState.None,
             command: {
                 title: '查看博文',
-                command: ViewPostCmdHandler.cmd,
+                command: `${globalCtx.extName}.blog-export.view-post`,
                 arguments: [this],
             },
-            resourceUri: Uri.joinPath(Settings.workspaceUri, title + (isMarkdown ? '.md' : '.html')),
+            resourceUri: Uri.joinPath(ExtCfg.workspaceUri, title + (isMarkdown ? '.md' : '.html')),
             contextValue,
         }
     }

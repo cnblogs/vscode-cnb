@@ -14,7 +14,7 @@ import { PostEditDto } from '@/model/post-edit-dto'
 import { PostCfgPanel } from '@/service/post-cfg-panel'
 import { saveFilePendingChanges } from '@/infra/save-file-pending-changes'
 import { extractImg } from '@/cmd/extract-img'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 
 const parseFileUri = async (fileUri: Uri | undefined): Promise<Uri | undefined> => {
@@ -34,14 +34,14 @@ const parseFileUri = async (fileUri: Uri | undefined): Promise<Uri | undefined> 
     return fileUri
 }
 
-export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
+export const uploadPostFile = async (fileUri: Uri | undefined) => {
     fileUri = await parseFileUri(fileUri)
     if (!fileUri) return
 
     const { fsPath: filePath } = fileUri
     const postId = PostFileMapManager.getPostId(filePath)
     if (postId && postId >= 0) {
-        await uploadPostToCnblogs(await PostService.fetchPostEditDto(postId))
+        await uploadPost(await PostService.fetchPostEditDto(postId))
     } else {
         const options = [`新建博文`, `关联已有博文`]
         const selected = await Alert.info(
@@ -67,7 +67,7 @@ export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
                             if (!fileContent)
                                 await workspace.fs.writeFile(fileUri, Buffer.from(postEditDto.post.postBody))
 
-                            await uploadPostToCnblogs(postEditDto.post)
+                            await uploadPost(postEditDto.post)
                         }
                     }
                 }
@@ -115,8 +115,8 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
                 void Alert.warn('本地文件已删除, 无法新建博文')
                 return false
             }
-            if (Settings.autoExtractImgSrc !== undefined)
-                await extractImg(localDraft.filePathUri, Settings.autoExtractImgSrc).catch(console.warn)
+            if (ExtCfg.autoExtractImgSrc !== undefined)
+                await extractImg(localDraft.filePathUri, ExtCfg.autoExtractImgSrc).catch(console.warn)
 
             postToSave.postBody = await localDraft.readAllText()
             return true
@@ -124,7 +124,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
     })
 }
 
-export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
+export const uploadPost = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
     input = input instanceof PostTreeItem ? input.post : input
     const post =
         input instanceof PostEditDto
@@ -138,8 +138,8 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
     const localFilePath = PostFileMapManager.getFilePath(postId)
     if (!localFilePath) return Alert.warn('本地无该博文的编辑记录')
 
-    if (Settings.autoExtractImgSrc !== undefined)
-        await extractImg(Uri.file(localFilePath), Settings.autoExtractImgSrc).catch(console.warn)
+    if (ExtCfg.autoExtractImgSrc !== undefined)
+        await extractImg(Uri.file(localFilePath), ExtCfg.autoExtractImgSrc).catch(console.warn)
 
     await saveFilePendingChanges(localFilePath)
     post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()
@@ -147,7 +147,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
 
     if (!validatePost(post)) return false
 
-    if (Settings.showConfirmMsgWhenUploadPost) {
+    if (ExtCfg.showConfirmMsgWhenUploadPost) {
         const answer = await Alert.warn(
             '确认上传吗?',
             {

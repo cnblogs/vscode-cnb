@@ -121,7 +121,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
     private uploadFeatureImage() {
         this.uploadingImageId = `${Date.now()}`
         getVsCodeApiSingleton().postMessage({
-            command: WebviewCmd.ExtCmd.uploadImage,
+            command: WebviewCmd.ExtCmd.uploadImg,
             imageId: this.uploadingImageId,
         } as webviewMessage.UploadImageMessage)
     }

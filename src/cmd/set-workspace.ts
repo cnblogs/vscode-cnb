@@ -1,6 +1,6 @@
 import { window } from 'vscode'
 import { Alert } from '@/service/alert'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 
 export const setWorkspace = async () => {
     const uris =
@@ -9,13 +9,13 @@ export const setWorkspace = async () => {
             canSelectFolders: true,
             canSelectFiles: false,
             canSelectMany: false,
-            defaultUri: Settings.workspaceUri,
+            defaultUri: ExtCfg.workspaceUri,
         })) ?? []
 
     const firstUri = uris[0]
 
     if (firstUri === undefined) return
 
-    await Settings.setWorkspaceUri(firstUri)
-    void Alert.info(`工作空间成功修改为: "${Settings.workspaceUri.fsPath}"`)
+    await ExtCfg.setWorkspaceUri(firstUri)
+    void Alert.info(`工作空间成功修改为: "${ExtCfg.workspaceUri.fsPath}"`)
 }

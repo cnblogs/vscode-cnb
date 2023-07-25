@@ -14,7 +14,7 @@ export namespace WebviewCmd {
     export enum ExtCmd {
         uploadPost = 'uploadPost',
         disposePanel = 'disposePanel',
-        uploadImage = 'uploadImage',
+        uploadImg = 'uploadImg',
         refreshPost = 'refreshPost',
         getChildCategories = 'getChildCategories',
     }

@@ -14,7 +14,7 @@ import {
     Uri,
     window,
 } from 'vscode'
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import RandomString from 'randomstring'
 import { Oauth } from '@/service/oauth.api'
 import { extUriHandler } from '@/infra/uri-handler'

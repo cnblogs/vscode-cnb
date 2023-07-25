@@ -1,6 +1,6 @@
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
-import { globalCtx } from './global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && !!map[1]
 

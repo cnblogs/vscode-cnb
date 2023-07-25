@@ -1,47 +1,40 @@
-import { TreeViewCmdHandler } from '@/cmd/cmd-handler'
 import { openPostFile } from '@/cmd/post-list/open-post-file'
 import { Alert } from '@/service/alert'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 import { ExportPostTreeItem } from '@/tree-view/model/blog-export/post'
 import fs from 'fs'
 import path from 'path'
 import sanitizeFileName from 'sanitize-filename'
 import { promisify } from 'util'
 
-export class EditExportPostCmdHandler implements TreeViewCmdHandler<ExportPostTreeItem> {
-    static readonly cmd = 'vscode-cnb.blog-export.edit'
+function parseInput(input: unknown): ExportPostTreeItem | null | undefined {
+    return input instanceof ExportPostTreeItem ? input : null
+}
 
-    constructor(public readonly input: unknown) {}
+export async function editExportPost(input: unknown): Promise<void> {
+    const target = parseInput(input)
+    if (!target) return void Alert.warn('不支持的参数输入')
 
-    parseInput(): ExportPostTreeItem | null | undefined {
-        return this.input instanceof ExportPostTreeItem ? this.input : null
-    }
+    const {
+        post: { title, isMarkdown, id: postId },
+        parent: {
+            downloadedExport: { filePath: backupFilePath },
+            downloadedExport,
+        },
+    } = target
 
-    async handle(): Promise<void> {
-        const target = this.parseInput()
-        if (!target) return void Alert.warn('不支持的参数输入')
+    const fileName = sanitizeFileName(title)
+    const extName = isMarkdown ? 'md' : 'html'
+    const dirname = ExtCfg.workspaceUri.fsPath
+    const backupName = path.parse(backupFilePath).name
+    fs.mkdirSync(dirname, { recursive: true })
+    const fullPath = path.join(`${dirname}`, `${fileName}.博客备份-${backupName}-${postId}.${extName}`)
 
-        const {
-            post: { title, isMarkdown, id: postId },
-            parent: {
-                downloadedExport: { filePath: backupFilePath },
-                downloadedExport,
-            },
-        } = target
+    const { ExportPostStore } = await import('@/service/blog-export-post.store')
+    const store = new ExportPostStore(downloadedExport)
+    await promisify(fs.writeFile)(fullPath, await store.getBody(postId))
 
-        const fileName = sanitizeFileName(title)
-        const extName = isMarkdown ? 'md' : 'html'
-        const dirname = Settings.workspaceUri.fsPath
-        const backupName = path.parse(backupFilePath).name
-        fs.mkdirSync(dirname, { recursive: true })
-        const fullPath = path.join(`${dirname}`, `${fileName}.博客备份-${backupName}-${postId}.${extName}`)
+    store.dispose()
 
-        const { ExportPostStore } = await import('@/service/blog-export-post.store')
-        const store = new ExportPostStore(downloadedExport)
-        await promisify(fs.writeFile)(fullPath, await store.getBody(postId))
-
-        store.dispose()
-
-        return openPostFile(fullPath, {})
-    }
+    return openPostFile(fullPath, {})
 }

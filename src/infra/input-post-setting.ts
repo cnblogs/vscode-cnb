@@ -34,10 +34,10 @@ class AccessPermissionPickItem implements QuickPickItem {
     constructor(public id: AccessPermission, public label: string) {}
 }
 
-type PostSettingsType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission' | 'isPublished'
-type PostSettingsDto = Pick<Post, PostSettingsType>
+type PostSettingType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission' | 'isPublished'
+type PostSettingDto = Pick<Post, PostSettingType>
 
-const defaultSteps: PostSettingsType[] = [
+const defaultSteps: PostSettingType[] = [
     'accessPermission',
     'description',
     'categoryIds',
@@ -48,11 +48,11 @@ const defaultSteps: PostSettingsType[] = [
 
 const parseTagNames = (value: string) => value.split(/[,，]/).filter(({ length }) => length > 0)
 
-export const inputPostSettings = (
+export const inputPostSetting = (
     postTitle: string,
-    source: PostSettingsDto,
-    steps: PostSettingsType[] = []
-): Promise<PostSettingsDto | undefined> => {
+    source: PostSettingDto,
+    steps: PostSettingType[] = []
+): Promise<PostSettingDto | undefined> => {
     steps = steps?.length > 0 ? steps : defaultSteps
     const configuredPost = Object.assign({}, source)
     const state = {
@@ -60,10 +60,10 @@ export const inputPostSettings = (
         totalSteps: steps.length,
         step: 1,
     }
-    let map: [PostSettingsType, (input: MultiStepInput) => Promise<InputStep | undefined>][] = []
+    let map: [PostSettingType, (input: MultiStepInput) => Promise<InputStep | undefined>][] = []
     const calculateNextStep = (): undefined | InputStep =>
         state.step > steps.length ? undefined : map.find(x => x[0] === steps[state.step - 1])?.[1]
-    const calculateStepNumber = (type: PostSettingsType) => {
+    const calculateStepNumber = (type: PostSettingType) => {
         state.step = steps.findIndex(x => x === type) + 1
     }
 

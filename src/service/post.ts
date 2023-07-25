@@ -1,6 +1,6 @@
 import fetch from '@/infra/fetch-client'
 import { Post } from '@/model/post'
-import { globalCtx } from './global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import { PageModel } from '@/model/page-model'
 import { PostListState } from '@/model/post-list-state'
 import { PostEditDto } from '@/model/post-edit-dto'

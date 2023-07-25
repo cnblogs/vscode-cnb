@@ -1,6 +1,6 @@
 import { Ing, IngComment, IngPublishModel, IngType } from '@/model/ing'
 import { Alert } from '@/service/alert'
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import fetch from '@/infra/fetch-client'
 import { URLSearchParams } from 'url'
 import { isArray, isObject } from 'lodash-es'

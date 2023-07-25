@@ -1,7 +1,7 @@
 import { flattenDepth, take } from 'lodash-es'
 import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
 import { PostCategories } from '@/model/post-category'
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import { postCategoryService } from '@/service/post-category'
 import { PostService } from '@/service/post'
 import { toTreeItem } from '@/tree-view/convert'

@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash-es'
 import vscode, { Uri } from 'vscode'
 import { Post } from '@/model/post'
-import { globalCtx } from './global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import { postCategoryService } from './post-category'
 import { siteCategoryService } from './site-category'
 import { PostTagService } from './post-tag'
@@ -9,7 +9,7 @@ import { PostService } from './post'
 import { isErrorResponse } from '@/model/error-response'
 import { webviewMessage } from '@/model/webview-msg'
 import { WebviewCommonCmd, WebviewCmd } from '@/model/webview-cmd'
-import { uploadImage } from '@/cmd/upload-img/upload-img'
+import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { ImgUploadStatusId } from '@/model/img-upload-status'
 import { openPostFile } from '@/cmd/post-list/open-post-file'
 import { parseWebviewHtml } from '@/service/parse-webview-html'
@@ -127,7 +127,7 @@ export namespace PostCfgPanel {
                 imageId: message.imageId,
             } as webviewMessage.UpdateImageUpdateStatusMessage)
             try {
-                const imageUrl = await uploadImage(false)
+                const imageUrl = await uploadImg(false)
                 await webview.postMessage({
                     command: WebviewCmd.UiCmd.updateImageUploadStatus,
                     status: {
@@ -202,7 +202,7 @@ export namespace PostCfgPanel {
                 case WebviewCmd.ExtCmd.disposePanel:
                     panel?.dispose()
                     break
-                case WebviewCmd.ExtCmd.uploadImage:
+                case WebviewCmd.ExtCmd.uploadImg:
                     await onUploadImageCmd(panel, <webviewMessage.UploadImageMessage>message)
                     break
                 case WebviewCmd.ExtCmd.getChildCategories:

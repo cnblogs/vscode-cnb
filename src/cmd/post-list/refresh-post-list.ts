@@ -1,4 +1,4 @@
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import { PostService } from '@/service/post'
 import { window } from 'vscode'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
@@ -40,7 +40,6 @@ export const refreshPostList = async ({ queue = false } = {}): Promise<boolean> 
                         .then(() => true)
                 }
             })
-            // TODO: impl `always` fn
             .then(ok => postDataProvider.refreshSearch().then(() => ok))
             .then(ok => setRefreshing(false).then(() => ok))
             .catch(() => false)
@@ -50,13 +49,9 @@ export const refreshPostList = async ({ queue = false } = {}): Promise<boolean> 
     return refreshTask
 }
 
-export const gotoNextPostList = async () => {
-    await gotoPage(c => c + 1)
-}
+export const goNextPostList = () => goPage(i => i + 1)
 
-export const gotoPreviousPostList = async () => {
-    await gotoPage(c => c - 1)
-}
+export const goPrevPostList = () => goPage(i => i - 1)
 
 export const seekPostList = async () => {
     const input = await window.showInputBox({
@@ -74,7 +69,7 @@ export const seekPostList = async () => {
         },
     })
     const pageIndex = Number.parseInt(input ?? '-1')
-    if (pageIndex > 0 && !isNaN(pageIndex)) await gotoPage(() => pageIndex)
+    if (pageIndex > 0 && !isNaN(pageIndex)) await goPage(() => pageIndex)
 }
 
 let isRefreshing = false
@@ -95,7 +90,7 @@ const alertRefreshing = () => {
     void Alert.info('正在刷新, 请勿重复操作')
 }
 
-const gotoPage = async (pageIndex: (currentIndex: number) => number) => {
+const goPage = async (pageIndex: (currentIndex: number) => number) => {
     if (isRefreshing) {
         alertRefreshing()
         return

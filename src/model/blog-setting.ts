@@ -1,4 +1,4 @@
-export class BlogSettings implements BlogSiteDto, BlogSiteExtendDto {
+export class BlogSetting implements BlogSiteDto, BlogSiteExtendDto {
     blogId = -1
     blogNews = ''
     secondaryCss = ''

@@ -5,15 +5,15 @@ import { Post } from '@/model/post'
 import { Alert } from '@/service/alert'
 import { PostService } from '@/service/post'
 import { PostFileMapManager } from '@/service/post-file-map'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 import { openPostFile } from './open-post-file'
 import { PostTitleSanitizer } from '@/service/post-title-sanitizer'
 import { postCategoryService } from '@/service/post-category'
 import sanitizeFileName from 'sanitize-filename'
 
 const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise<Uri> => {
-    const workspaceUri = Settings.workspaceUri
-    const shouldCreateLocalPostFileWithCategory = Settings.createLocalPostFileWithCategory
+    const workspaceUri = ExtCfg.workspaceUri
+    const shouldCreateLocalPostFileWithCategory = ExtCfg.createLocalPostFileWithCategory
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`
     const postIdSegment = includePostId ? `.${post.id}` : ''
     const { text: postTitle } = await PostTitleSanitizer.sanitize(post)
@@ -56,7 +56,7 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
 
     const post = postEditDto.post
 
-    const workspaceUri = Settings.workspaceUri
+    const workspaceUri = ExtCfg.workspaceUri
     await createDirectoryIfNotExist(workspaceUri)
     let fileUri = mappedPostFilePath ? Uri.file(mappedPostFilePath) : await buildLocalPostFileUri(post)
 

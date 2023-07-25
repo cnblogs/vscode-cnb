@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { TokenInfo } from '@/model/token-info'
 import { AccountInfo } from '@/auth/account-info'
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import fetch from '@/infra/fetch-client'
 import got from '@/infra/http-client'
 import { CancellationToken } from 'vscode'

@@ -1,4 +1,4 @@
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import {
     CancellationToken,
     Disposable,
@@ -17,7 +17,7 @@ import { isNumber } from 'lodash-es'
 import { CommentIngCmdHandler } from '@/cmd/ing/comment-ing'
 import { execCmd } from '@/infra/cmd'
 import { ingStarToText } from '@/infra/convert/ing-star-to-text'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 import { isDisableIngUserAvatar, isEnableTextIngStar } from '@/setup/setup-ui'
 
 export class IngListWebviewProvider implements WebviewViewProvider {
@@ -91,8 +91,8 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                 pageSize: 30,
             })
             const ingList = rawIngList.map(ing => {
-                if (isDisableIngUserAvatar(Settings.cfg)) ing.userIconUrl = ''
-                if (isEnableTextIngStar(Settings.cfg)) ing.icons = ingStarToText(ing.icons)
+                if (isDisableIngUserAvatar(ExtCfg.cfg)) ing.userIconUrl = ''
+                if (isEnableTextIngStar(ExtCfg.cfg)) ing.icons = ingStarToText(ing.icons)
                 return ing
             })
             const comments = await IngApi.listComments(...ingList.map(x => x.id))

@@ -154,7 +154,7 @@
 也可以在编辑器中选中一段文本或代码，然后鼠标右键唤起上下文菜单，可以将选中的内容发到闪存; 
 
 > PS: 上下文菜单的"将选中内容发到闪存"功能默认处于禁用，您可以在 VSCode 设置中启用此功能
-> <kbd><img src="https://img2023.cnblogs.com/blog/35695/202212/35695-20221215181640273-687396599.png" alt="demo-settings-enable-publish-selection-to-ing" height="550"></kbd>
+> <kbd><img src="https://img2023.cnblogs.com/blog/35695/202212/35695-20221215181640273-687396599.png" alt="demo-settings-enable-publish-select-to-ing" height="550"></kbd>
 
 <kbd><img src="https://img2022.cnblogs.com/blog/35695/202211/35695-20221115143017664-1504226894.png" alt="" height="550"></kbd>
 

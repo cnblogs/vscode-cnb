@@ -1,5 +1,5 @@
 import { BlogExportRecord, BlogExportRecordList } from '@/model/blog-export'
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import got from '@/infra/http-client'
 
 const basePath = `${globalCtx.config.apiBaseUrl}/api/blogExports`

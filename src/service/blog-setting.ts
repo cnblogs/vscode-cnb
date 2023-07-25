@@ -1,11 +1,11 @@
 import fetch from '@/infra/fetch-client'
-import { BlogSettings, BlogSiteDto, BlogSiteExtendDto } from '@/model/blog-settings'
-import { globalCtx } from './global-ctx'
+import { BlogSetting, BlogSiteDto, BlogSiteExtendDto } from '@/model/blog-setting'
+import { globalCtx } from '@/ctx/global-ctx'
 
-let settingCache: BlogSettings | null = null
+let settingCache: BlogSetting | null = null
 
-export namespace BlogSettingsService {
-    export async function getBlogSettings(refresh = false) {
+export namespace BlogSettingService {
+    export async function getBlogSetting(refresh = false) {
         if (settingCache != null && !refresh) return settingCache
 
         const url = `${globalCtx.config.apiBaseUrl}/api/settings`
@@ -14,7 +14,7 @@ export namespace BlogSettingsService {
 
         const data = (await res.json()) as { blogSite: BlogSiteDto; extend: BlogSiteExtendDto }
 
-        settingCache ??= new BlogSettings(data.blogSite, data.extend)
+        settingCache ??= new BlogSetting(data.blogSite, data.extend)
 
         return settingCache
     }

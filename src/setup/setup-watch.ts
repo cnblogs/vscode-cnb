@@ -1,7 +1,7 @@
 import { workspace } from 'vscode'
 import { isTargetWorkspace } from '@/service/is-target-workspace'
 import { PostFileMapManager } from '@/service/post-file-map'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 import { refreshPostCategoryList } from '@/cmd/post-category/refresh-post-category-list'
 import { refreshPostList } from '@/cmd/post-list/refresh-post-list'
 import { execCmd } from '@/infra/cmd'
@@ -9,17 +9,17 @@ import { setupUi } from '@/setup/setup-ui'
 
 export const setupCfgWatch = () =>
     workspace.onDidChangeConfiguration(ev => {
-        if (ev.affectsConfiguration(Settings.cfgPrefix)) isTargetWorkspace()
+        if (ev.affectsConfiguration(ExtCfg.cfgPrefix)) isTargetWorkspace()
 
-        if (ev.affectsConfiguration(`${Settings.iconThemePrefix}.${Settings.iconThemeKey}`)) refreshPostCategoryList()
+        if (ev.affectsConfiguration(`${ExtCfg.iconThemePrefix}.${ExtCfg.iconThemeKey}`)) refreshPostCategoryList()
 
-        if (ev.affectsConfiguration(`${Settings.cfgPrefix}.${Settings.postListPageSizeKey}`))
+        if (ev.affectsConfiguration(`${ExtCfg.cfgPrefix}.${ExtCfg.postListPageSizeKey}`))
             refreshPostList({ queue: true }).catch(() => undefined)
 
-        if (ev.affectsConfiguration(`${Settings.cfgPrefix}.markdown`))
+        if (ev.affectsConfiguration(`${ExtCfg.cfgPrefix}.markdown`))
             execCmd('markdown.preview.refresh').then(undefined, () => undefined)
 
-        if (ev.affectsConfiguration(`${Settings.cfgPrefix}.ui`)) setupUi(Settings.cfg)
+        if (ev.affectsConfiguration(`${ExtCfg.cfgPrefix}.ui`)) setupUi(ExtCfg.cfg)
     })
 
 export const setupWorkspaceWatch = () =>

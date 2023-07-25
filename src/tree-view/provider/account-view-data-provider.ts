@@ -31,7 +31,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 label: '账户设置',
                 command: {
                     title: '打开账户设置',
-                    command: 'vscode-cnb.open-my-account-settings',
+                    command: 'vscode-cnb.open-my-account-setting',
                 },
                 iconPath: new ThemeIcon('gear'),
             },

@@ -4,7 +4,7 @@ import { Post } from '@/model/post'
 import { PageModel } from '@/model/page-model'
 import { Alert } from '@/service/alert'
 import { PostService } from '@/service/post'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 import { toTreeItem } from '@/tree-view/convert'
 import { PostEntryMetadata, PostMetadata } from '@/tree-view/model/post-metadata'
 import { PostSearchResultEntry } from '@/tree-view/model/post-search-result-entry'
@@ -63,7 +63,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
 
     async loadPost(): Promise<PageModel<Post> | null> {
         const { pageIndex } = PostService.getPostListState() ?? {}
-        const pageSize = Settings.postListPageSize
+        const pageSize = ExtCfg.postListPageSize
 
         this._pagedPost = await PostService.fetchPostList({ pageIndex, pageSize }).catch(e => {
             if (e instanceof Error) Alert.err(e.message)

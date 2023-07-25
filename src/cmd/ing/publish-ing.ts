@@ -2,14 +2,13 @@ import { CmdHandler } from '@/cmd/cmd-handler'
 import { execCmd } from '@/infra/cmd'
 import { IngPublishModel, IngType } from '@/model/ing'
 import { Alert } from '@/service/alert'
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import { IngApi } from '@/service/ing.api'
 import { getIngListWebviewProvider } from '@/service/ing-list-webview-provider'
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/service/multi-step-input'
 import { MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode'
 
 export class PublishIngCmdHandler implements CmdHandler {
-    readonly maxLength = 0
     readonly operation = '发布闪存'
     readonly editingText = '编辑闪存'
     readonly inputStep: Record<'content' | 'access' | 'tags', InputStep> = {
@@ -73,7 +72,7 @@ export class PublishIngCmdHandler implements CmdHandler {
     inputIsPrivate = false
     currentStep = 0
 
-    constructor(public readonly contentSource: 'selection' | 'input' = 'selection') {}
+    constructor(public readonly contentSource: 'select' | 'input' = 'select') {}
 
     private get formattedIngContent() {
         return `${this.inputTags.map(x => `[${x}]`).join('')}${this.inputContent}`
@@ -98,7 +97,7 @@ export class PublishIngCmdHandler implements CmdHandler {
 
     private getContent(): Promise<IngPublishModel | false> {
         switch (this.contentSource) {
-            case 'selection':
+            case 'select':
                 return this.getContentFromSelection()
             case 'input':
                 return this.acquireInputContent()

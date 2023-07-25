@@ -12,7 +12,7 @@ import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 
-export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
+export const modifyPostSetting = async (input: Post | PostTreeItem | Uri) => {
     let post: Post | undefined
     let postId = -1
     input = input instanceof PostTreeItem ? input.post : input

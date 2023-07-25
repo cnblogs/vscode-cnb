@@ -1,11 +1,11 @@
 import os, { homedir } from 'os'
 import fs from 'fs'
 import { ConfigurationTarget, Uri, workspace } from 'vscode'
-import { ImgSrc } from './mkd-img-extractor'
+import { ImgSrc } from '@/service/mkd-img-extractor'
 import { isNumber } from 'lodash-es'
 import { untildify } from '@/infra/untildify'
 
-export class Settings {
+export class ExtCfg {
     static postListPageSizeKey = 'pageSize.postList'
     static cfgPrefix = `cnblogsClient`
     static iconThemePrefix = 'workbench'
@@ -30,16 +30,15 @@ export class Settings {
     }
 
     static get iconTheme() {
-        return workspace.getConfiguration(Settings.iconThemePrefix).get<string>(Settings.iconThemeKey)
+        return workspace.getConfiguration(ExtCfg.iconThemePrefix).get<string>(ExtCfg.iconThemeKey)
     }
 
     static get cfg() {
-        return workspace.getConfiguration(Settings.cfgPrefix)
+        return workspace.getConfiguration(ExtCfg.cfgPrefix)
     }
 
     static get platformCfg() {
-        if (this.platformPrefix != null)
-            return workspace.getConfiguration(`${Settings.cfgPrefix}.${this.platformPrefix}`)
+        if (this.platformPrefix != null) return workspace.getConfiguration(`${ExtCfg.cfgPrefix}.${this.platformPrefix}`)
         return null
     }
 
@@ -53,20 +52,20 @@ export class Settings {
 
         if (legacy) return legacy
 
-        const workspace = this.platformCfg?.get<string>(Settings.workspaceUriKey)
+        const workspace = this.platformCfg?.get<string>(ExtCfg.workspaceUriKey)
         return workspace ? Uri.file(untildify(workspace)) : this._defaultWorkspaceUri
     }
 
     static get chromiumPath(): string {
-        return this.platformCfg?.get(Settings.chromiumPathKey) ?? ''
+        return this.platformCfg?.get(ExtCfg.chromiumPathKey) ?? ''
     }
 
     static get createLocalPostFileWithCategory(): boolean {
-        return Settings.cfg.get<boolean>('createLocalPostFileWithCategory') ?? false
+        return ExtCfg.cfg.get<boolean>('createLocalPostFileWithCategory') ?? false
     }
 
     static get autoExtractImgSrc(): ImgSrc | undefined {
-        const cfg = Settings.cfg.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('autoExtractImages')
+        const cfg = ExtCfg.cfg.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('autoExtractImages')
 
         if (cfg === 'disable') return
         if (cfg === 'fs') return ImgSrc.fs
@@ -76,32 +75,32 @@ export class Settings {
     }
 
     static get postListPageSize() {
-        const size = Settings.cfg.get<number>(Settings.postListPageSizeKey)
+        const size = ExtCfg.cfg.get<number>(ExtCfg.postListPageSizeKey)
         return isNumber(size) ? size : 30
     }
 
     static get showConfirmMsgWhenUploadPost() {
-        return Settings.cfg.get<boolean>('markdown.showConfirmMsgWhenUploadPost') ?? true
+        return ExtCfg.cfg.get<boolean>('markdown.showConfirmMsgWhenUploadPost') ?? true
     }
 
     static get showConfirmMsgWhenPullPost() {
-        return Settings.cfg.get<boolean>('markdown.showConfirmMsgWhenPullPost') ?? true
+        return ExtCfg.cfg.get<boolean>('markdown.showConfirmMsgWhenPullPost') ?? true
     }
 
     static get enableMarkdownEnhancement() {
-        return Settings.cfg.get<boolean>('markdown.enableEnhancement') ?? true
+        return ExtCfg.cfg.get<boolean>('markdown.enableEnhancement') ?? true
     }
 
     static get enableMarkdownFenceBlockquote() {
-        return Settings.cfg.get<boolean>('markdown.enableFenceQuote') ?? true
+        return ExtCfg.cfg.get<boolean>('markdown.enableFenceQuote') ?? true
     }
 
     static get enableMarkdownHighlightCodeLines() {
-        return Settings.cfg.get<boolean>('markdown.enableHighlightCodeLines')
+        return ExtCfg.cfg.get<boolean>('markdown.enableHighlightCodeLines')
     }
 
     private static get legacyWorkspaceUri() {
-        const path = this.platformCfg?.get<string>(Settings.workspaceUriKey)?.replace('~', os.homedir())
+        const path = this.platformCfg?.get<string>(ExtCfg.workspaceUriKey)?.replace('~', os.homedir())
 
         if (path === undefined) return undefined
 
@@ -113,33 +112,33 @@ export class Settings {
 
         if (!fs.existsSync(uri.fsPath)) throw Error(`Path not exist: ${uri.fsPath}`)
 
-        await this.platformCfg?.update(Settings.workspaceUriKey, uri.fsPath, ConfigurationTarget.Global)
+        await this.platformCfg?.update(ExtCfg.workspaceUriKey, uri.fsPath, ConfigurationTarget.Global)
     }
 
     static async setChromiumPath(value: string) {
-        await this.platformCfg?.update(Settings.chromiumPathKey, value, ConfigurationTarget.Global)
+        await this.platformCfg?.update(ExtCfg.chromiumPathKey, value, ConfigurationTarget.Global)
     }
 
     static async setCreateLocalPostFileWithCategory(value: boolean) {
-        await Settings.cfg.update('createLocalPostFileWithCategory', value, ConfigurationTarget.Global)
+        await ExtCfg.cfg.update('createLocalPostFileWithCategory', value, ConfigurationTarget.Global)
     }
 
     static async migrateEnablePublishSelectionToIng() {
         const oldKey = 'ing.enablePublishSelectionToIng'
-        const enablePublishSelectionToIng = Settings.cfg.get(oldKey)
+        const enablePublishSelectionToIng = ExtCfg.cfg.get(oldKey)
         if (enablePublishSelectionToIng === true) {
-            const isOk = await Settings.cfg
-                .update('menus.context.editor', { 'ing:publish-selection': true }, ConfigurationTarget.Global)
+            const isOk = await ExtCfg.cfg
+                .update('menus.context.editor', { 'ing:publish-select': true }, ConfigurationTarget.Global)
                 .then(
                     () => true,
                     () => false
                 )
 
-            if (isOk) await Settings.cfg.update(oldKey, undefined, ConfigurationTarget.Global)
+            if (isOk) await ExtCfg.cfg.update(oldKey, undefined, ConfigurationTarget.Global)
         }
     }
 
     private static removeLegacyWorkspaceUri() {
-        return Settings.cfg.update(Settings.workspaceUriKey, undefined, ConfigurationTarget.Global)
+        return ExtCfg.cfg.update(ExtCfg.workspaceUriKey, undefined, ConfigurationTarget.Global)
     }
 }

@@ -1,19 +1,15 @@
-import { CmdHandler } from '@/cmd/cmd-handler'
 import { execCmd } from '@/infra/cmd'
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
-import { commands } from 'vscode'
 
-export class RefreshExportRecordsCmdHandler implements CmdHandler {
-    async handle(): Promise<void> {
-        await this.setIsRefreshing(true)
+export async function refreshExportRecord() {
+    await setIsRefreshing(true)
 
-        await BlogExportProvider.instance.refreshRecords()
+    await BlogExportProvider.instance.refreshRecords()
 
-        await this.setIsRefreshing(false)
-    }
+    await setIsRefreshing(false)
+}
 
-    private setIsRefreshing(value: boolean) {
-        return execCmd('setContext', `${globalCtx.extName}.blog-export.records.isRefreshing`, value || undefined)
-    }
+function setIsRefreshing(value: boolean) {
+    return execCmd('setContext', `${globalCtx.extName}.blog-export.records.isRefreshing`, value || undefined)
 }

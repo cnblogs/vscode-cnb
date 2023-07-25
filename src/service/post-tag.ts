@@ -1,6 +1,6 @@
 import got from '@/infra/http-client'
 import { PostTag } from '@/model/post-tag'
-import { globalCtx } from './global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 
 let cachedTags: PostTag[] | null = null
 

@@ -3,9 +3,9 @@ import { homedir } from 'os'
 import { MarkdownString, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from 'vscode'
 import { Post } from '@/model/post'
 import { PostCategory } from '@/model/post-category'
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import { PostFileMapManager } from '@/service/post-file-map'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 import { BaseTreeItemSource } from '@/tree-view/model/base-tree-item-source'
 
 const contextValues = {
@@ -15,7 +15,7 @@ const contextValues = {
 }
 
 const categoryIcon = () => {
-    const iconTheme = Settings.iconTheme
+    const iconTheme = ExtCfg.iconTheme
     let iconId = 'folder'
     switch (iconTheme) {
         case 'vs-seti':
@@ -46,7 +46,7 @@ const postConverter: Converter<Post> = obj => {
         contextValue: contextValues.post(obj),
         iconPath: new ThemeIcon(obj.isMarkdown ? 'markdown' : 'file-code'),
         description: localPath ? localPathForDesc : '',
-        resourceUri: Uri.joinPath(Settings.workspaceUri, obj.title + (obj.isMarkdown ? '.md' : '.html')),
+        resourceUri: Uri.joinPath(ExtCfg.workspaceUri, obj.title + (obj.isMarkdown ? '.md' : '.html')),
     })
 }
 

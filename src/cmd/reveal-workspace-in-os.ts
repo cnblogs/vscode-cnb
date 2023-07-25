@@ -1,5 +1,4 @@
-import { commands } from 'vscode'
 import { execCmd } from '@/infra/cmd'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 
-export const revealWorkspaceInOs = () => execCmd('revealFileInOS', Settings.workspaceUri)
+export const revealWorkspaceInOs = () => execCmd('revealFileInOS', ExtCfg.workspaceUri)

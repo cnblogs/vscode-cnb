@@ -1,20 +1,18 @@
-import { openMyAccountSettings } from '@/cmd/open/open-my-account-settings'
+import { openIngSite } from '@/cmd/open/open-ing-site'
+import { switchIngType } from '@/cmd/ing/select-ing-type'
+import { refreshIngList } from '@/cmd/ing/refresh-ing-list'
+import { goIngList1stPage, goIngListNextPage, goIngListPrevPage } from '@/cmd/ing/switch-ing-list-page'
+import { openMyAccountSetting } from '@/cmd/open/open-my-account-setting'
 import { openMyWebBlogConsole } from '@/cmd/open/open-my-blog-console'
 import { openMyHomePage } from '@/cmd/open/open-my-home-page'
-import { login, logout } from '@/cmd/login'
 import { openMyBlog } from '@/cmd/open/open-my-blog'
-import { globalCtx } from '@/service/global-ctx'
-import {
-    gotoNextPostList,
-    gotoPreviousPostList,
-    refreshPostList,
-    seekPostList,
-} from '@/cmd/post-list/refresh-post-list'
-import { uploadPostFileToCnblogs, uploadPostToCnblogs } from '@/cmd/post-list/upload-post'
+import { globalCtx } from '@/ctx/global-ctx'
+import { goNextPostList, goPrevPostList, refreshPostList, seekPostList } from '@/cmd/post-list/refresh-post-list'
+import { uploadPostFile, uploadPost } from '@/cmd/post-list/upload-post'
 import { createLocalDraft } from '@/cmd/post-list/create-local-draft'
 import { deleteSelectedPost } from '@/cmd/post-list/delete-post'
-import { modifyPostSettings } from '@/cmd/post-list/modify-post-settings'
-import { uploadImage } from '@/cmd/upload-img/upload-img'
+import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
+import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { revealLocalPostFileInOs } from '@/cmd/reveal-local-post-file-in-os'
 import { showLocalFileToPostInfo } from '@/cmd/show-local-file-to-post-info'
 import { newPostCategory } from '@/cmd/post-category/new-post-category'
@@ -28,20 +26,26 @@ import { openWorkspace } from '@/cmd/open/open-workspace'
 import { setWorkspace } from '@/cmd/set-workspace'
 import { revealWorkspaceInOs } from '@/cmd/reveal-workspace-in-os'
 import { viewPostOnline } from '@/cmd/view-post-online'
-import { pullPostRemoteUpdates } from '@/cmd/pull-post-remote-updates'
+import { pullRemotePost } from '@/cmd/pull-remote-post'
 import { extractImg } from '@/cmd/extract-img'
 import { clearPostSearchResults, refreshPostSearchResults, searchPost } from '@/cmd/post-list/search'
 import { handleDeletePostCategories } from '@/cmd/post-category/delete-selected-category'
 import { PublishIngCmdHandler } from '@/cmd/ing/publish-ing'
-import { regIngListCmds } from '@/cmd/ing/ing-list-cmd-register'
 import { CopyPostLinkCmdHandler } from '@/cmd/post-list/copy-link'
-import { regBlogExportCmds } from '@/cmd/blog-export'
 import { regCmd } from '@/infra/cmd'
 import { exportPostToPdf } from '@/cmd/pdf/export-pdf'
 import { openCnbHome } from '@/cmd/open/open-cnb-home'
 import { openCnbNews } from '@/cmd/open/open-cnb-news'
 import { openCnbQ } from '@/cmd/open/open-cnb-q'
 import { openCnbIng } from '@/cmd/open/open-cnb-ing'
+import { editExportPost } from '@/cmd/blog-export/edit'
+import { createBlogExport } from '@/cmd/blog-export/create'
+import { downloadBlogExport } from '@/cmd/blog-export/download'
+import { viewPostBlogExport } from '@/cmd/blog-export/view-post'
+import { deleteBlogExport } from '@/cmd/blog-export/delete'
+import { openLocalExport } from '@/cmd/blog-export/open-local'
+import { refreshExportRecord } from '@/cmd/blog-export/refresh'
+import { accountManager } from '@/auth/account-manager'
 
 function withPrefix(prefix: string) {
     return (rest: string) => `${prefix}${rest}`
@@ -51,56 +55,75 @@ export function setupExtCmd() {
     const ctx = globalCtx.extCtx
     const withAppName = withPrefix(globalCtx.extName)
 
-    // TODO: simplify register
     const tokens = [
-        regCmd(withAppName('.login'), login),
-        regCmd(withAppName('.open-my-blog'), openMyBlog),
-        regCmd(withAppName('.open-my-home-page'), openMyHomePage),
-        regCmd(withAppName('.open-my-blog-console'), openMyWebBlogConsole),
-        regCmd(withAppName('.open-my-account-settings'), openMyAccountSettings),
-        regCmd(withAppName('.logout'), logout),
+        // auth
+        regCmd(withAppName('.login'), () => accountManager.login()),
+        regCmd(withAppName('.logout'), () => accountManager.logout()),
+        // post-list
         regCmd(withAppName('.refresh-post-list'), refreshPostList),
-        regCmd(withAppName('.previous-post-list'), gotoPreviousPostList),
+        regCmd(withAppName('.prev-post-list'), goPrevPostList),
+        regCmd(withAppName('.next-post-list'), goNextPostList),
         regCmd(withAppName('.seek-post-list'), seekPostList),
-        regCmd(withAppName('.next-post-list'), gotoNextPostList),
-        regCmd(withAppName('.edit-post'), openPostInVscode),
-        regCmd(withAppName('.upload-post'), uploadPostToCnblogs),
-        regCmd(withAppName('.modify-post-settings'), modifyPostSettings),
+        // post
+        regCmd(withAppName('.upload-post'), uploadPost),
         regCmd(withAppName('.delete-post'), deleteSelectedPost),
+        regCmd(withAppName('.edit-post'), openPostInVscode),
+        regCmd(withAppName('.search-post'), searchPost),
+        regCmd(withAppName('.rename-post'), renamePost),
+        regCmd(withAppName('.modify-post-setting'), modifyPostSetting),
         regCmd(withAppName('.create-local-draft'), createLocalDraft),
-        regCmd(withAppName('.upload-post-file-to-cnblogs'), uploadPostFileToCnblogs),
-        regCmd(withAppName('.pull-post-remote-updates'), pullPostRemoteUpdates),
-        regCmd(withAppName('.upload-clipboard-image'), () => uploadImage(true, 'clipboard')),
-        regCmd(withAppName('.upload-fs-img'), () => uploadImage(true, 'local')),
-        regCmd(withAppName('.upload-img'), () => uploadImage(true)),
+        regCmd(withAppName('.upload-post-file'), uploadPostFile),
+        regCmd(withAppName('.pull-remote-post'), pullRemotePost),
+        regCmd(withAppName('.open-post-in-blog-admin'), openPostInBlogAdmin),
+        regCmd(withAppName('.delete-post-to-local-file-map'), deletePostToLocalFileMap),
+        regCmd(withAppName('.view-post-online'), viewPostOnline),
+        regCmd(withAppName('.export-post-to-pdf'), exportPostToPdf),
+        regCmd(withAppName('.clear-post-search-results'), clearPostSearchResults),
+        regCmd(withAppName('.refresh-post-search-results'), refreshPostSearchResults),
+        regCmd(withAppName('.copy-post-link'), input => new CopyPostLinkCmdHandler(input).handle()),
         regCmd(withAppName('.reveal-local-post-file-in-os'), revealLocalPostFileInOs),
         regCmd(withAppName('.show-post-to-local-file-info'), showLocalFileToPostInfo),
+        // img
+        regCmd(withAppName('.extract-img'), extractImg),
+        regCmd(withAppName('.upload-img'), () => uploadImg(true)),
+        regCmd(withAppName('.upload-fs-img'), () => uploadImg(true, 'local')),
+        regCmd(withAppName('.upload-clipboard-image'), () => uploadImg(true, 'clipboard')),
+        // post category
         regCmd(withAppName('.new-post-category'), newPostCategory),
         regCmd(withAppName('.delete-selected-post-category'), handleDeletePostCategories),
         regCmd(withAppName('.refresh-post-category-list'), refreshPostCategoryList),
         regCmd(withAppName('.update-post-category'), handleUpdatePostCategory),
-        regCmd(withAppName('.delete-post-to-local-file-map'), deletePostToLocalFileMap),
-        regCmd(withAppName('.rename-post'), renamePost),
-        regCmd(withAppName('.open-post-in-blog-admin'), openPostInBlogAdmin),
+        // workspace
         regCmd(withAppName('.open-workspace'), openWorkspace),
         regCmd(withAppName('.set-workspace'), setWorkspace),
         regCmd(withAppName('.reveal-workspace-in-os'), revealWorkspaceInOs),
-        regCmd(withAppName('.view-post-online'), viewPostOnline),
-        regCmd(withAppName('.export-post-to-pdf'), (input: unknown) => exportPostToPdf(input)),
-        regCmd(withAppName('.extract-img'), extractImg),
-        regCmd(withAppName('.search-post'), searchPost),
-        regCmd(withAppName('.clear-post-search-results'), clearPostSearchResults),
-        regCmd(withAppName('.refresh-post-search-results'), refreshPostSearchResults),
-        regCmd(withAppName('.copy-post-link'), input => new CopyPostLinkCmdHandler(input).handle()),
+        // ing
         regCmd(withAppName('.ing.publish'), () => new PublishIngCmdHandler('input').handle()),
-        regCmd(withAppName('.ing.publish-selection'), () => new PublishIngCmdHandler('selection').handle()),
+        regCmd(withAppName('.ing.publish-select'), () => new PublishIngCmdHandler('select').handle()),
+        // open in browser
         regCmd(withAppName('.open-cnb-home'), openCnbHome),
         regCmd(withAppName('.open-cnb-news'), openCnbNews),
         regCmd(withAppName('.open-cnb-q'), openCnbQ),
         regCmd(withAppName('.open-cnb-ing'), openCnbIng),
-
-        ...regIngListCmds(),
-        ...regBlogExportCmds(),
+        regCmd(withAppName('.open-my-blog'), openMyBlog),
+        regCmd(withAppName('.open-my-home-page'), openMyHomePage),
+        regCmd(withAppName('.open-my-blog-console'), openMyWebBlogConsole),
+        regCmd(withAppName('.open-my-account-setting'), openMyAccountSetting),
+        // ing list
+        regCmd(withAppName('.ing-list.refresh'), refreshIngList),
+        regCmd(withAppName('.ing-list.next'), goIngListNextPage),
+        regCmd(withAppName('.ing-list.previous'), goIngListPrevPage),
+        regCmd(withAppName('.ing-list.first'), goIngList1stPage),
+        regCmd(withAppName('.ing-list.switch-type'), switchIngType),
+        regCmd(withAppName('.ing-list.open-in-browser'), openIngSite),
+        // blog export
+        regCmd(withAppName('.blog-export.refresh-record'), refreshExportRecord),
+        regCmd(withAppName('.blog-export.open-local-export'), openLocalExport),
+        regCmd(withAppName('.blog-export.edit'), editExportPost),
+        regCmd(withAppName('.blog-export.create'), createBlogExport),
+        regCmd(withAppName('.blog-export.download'), downloadBlogExport),
+        regCmd(withAppName('.blog-export.view-post'), viewPostBlogExport),
+        regCmd(withAppName('.blog-export.delete'), deleteBlogExport),
     ]
 
     ctx.subscriptions.push(...tokens)

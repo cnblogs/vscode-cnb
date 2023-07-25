@@ -1,5 +1,5 @@
 import { AccountInfo } from './account-info'
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import vscode, { authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'

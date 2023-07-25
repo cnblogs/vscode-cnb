@@ -1,9 +1,9 @@
 import { Alert } from '@/service/alert'
-import { uploadImageFromClipboard } from './upload-clipboard-img'
+import { uploadImgFromClipboard } from './upload-clipboard-img'
 import { insertImgLinkToActiveEditor, showUploadSuccessModel } from './upload-img-util'
 import { uploadFsImage } from './upload-fs-img'
 
-export const uploadImage = async (autoInsertToActiveEditor = true, from?: 'local' | 'clipboard') => {
+export const uploadImg = async (autoInsertToActiveEditor = true, from?: 'local' | 'clipboard') => {
     const options = ['本地图片文件', '剪贴板图片']
     const selected = !from
         ? await Alert.info(
@@ -26,7 +26,7 @@ export const uploadImage = async (autoInsertToActiveEditor = true, from?: 'local
             break
         case 'clipboard':
         case options[1]:
-            imageUrl = await uploadImageFromClipboard().catch(caughtFailedUpload)
+            imageUrl = await uploadImgFromClipboard().catch(caughtFailedUpload)
             break
         default:
             break

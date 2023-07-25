@@ -8,32 +8,32 @@ import { Alert } from '@/service/alert'
 import path from 'path'
 import { revealPostListItem } from '@/service/post-list-view'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
-import { Settings } from '@/service/settings'
+import { ExtCfg } from '@/ctx/ext-cfg'
 
-export async function pullPostRemoteUpdates(input: Post | PostTreeItem | Uri | undefined | null) {
-    const ctxs: CmdCtx[] = []
+export async function pullRemotePost(input: Post | PostTreeItem | Uri | undefined | null) {
+    const ctxList: CmdCtx[] = []
     let uri: Uri | undefined
     input = input instanceof PostTreeItem ? input.post : input
-    if (parsePostInput(input) && input.id > 0) await handlePostInput(input, ctxs)
-    else if ((uri = parseUriInput(input))) await handleUriInput(uri, ctxs)
+    if (parsePostInput(input) && input.id > 0) await handlePostInput(input, ctxList)
+    else if ((uri = parseUriInput(input))) await handleUriInput(uri, ctxList)
 
-    if (Settings.showConfirmMsgWhenPullPost) {
+    if (ExtCfg.showConfirmMsgWhenPullPost) {
         const answer = await Alert.warn(
             '确认要拉取远程博文吗?',
             {
                 modal: true,
-                detail: `本地文件 ${resolveFileNames(ctxs)} 将被覆盖, 请谨慎操作!(此消息可在设置中关闭)`,
+                detail: `本地文件 ${resolveFileNames(ctxList)} 将被覆盖, 请谨慎操作!(此消息可在设置中关闭)`,
             } as MessageOptions,
             '确认'
         )
         if (answer !== '确认') return
     }
 
-    if (ctxs.length <= 0) return
+    if (ctxList.length <= 0) return
 
-    await update(ctxs)
+    await update(ctxList)
 
-    void Alert.info(`本地文件${resolveFileNames(ctxs)}已更新`)
+    void Alert.info(`本地文件${resolveFileNames(ctxList)}已更新`)
 }
 
 type InputType = Post | Uri | undefined | null
@@ -86,4 +86,4 @@ const update = async (contexts: CmdCtx[]) => {
     }
 }
 
-const resolveFileNames = (ctxs: CmdCtx[]) => `"${ctxs.map(x => path.basename(x.fileUri.fsPath)).join('", ')}"`
+const resolveFileNames = (ctxList: CmdCtx[]) => `"${ctxList.map(x => path.basename(x.fileUri.fsPath)).join('", ')}"`

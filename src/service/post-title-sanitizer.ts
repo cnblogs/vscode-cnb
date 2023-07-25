@@ -1,7 +1,7 @@
 import path from 'path'
 import sanitizeFilename from 'sanitize-filename'
 import { Post } from '@/model/post'
-import { globalCtx } from './global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import { PostFileMapManager } from './post-file-map'
 
 type InvalidPostFileNameMap = [postId: number, invalidName: string | undefined | null]

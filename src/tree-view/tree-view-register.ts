@@ -1,4 +1,4 @@
-import { globalCtx } from '@/service/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import { TreeView, TreeItem } from 'vscode'
 import { accountViewDataProvider } from './provider/account-view-data-provider'
 import { PostListTreeItem, postDataProvider } from './provider/post-data-provider'
