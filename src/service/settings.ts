@@ -1,7 +1,7 @@
 import os, { homedir } from 'os'
 import fs from 'fs'
 import { ConfigurationTarget, Uri, workspace } from 'vscode'
-import { ImageSrc } from './mkd-img-extractor'
+import { ImgSrc } from './mkd-img-extractor'
 import { isNumber } from 'lodash-es'
 import { untildify } from '@/infra/untildify'
 
@@ -65,14 +65,14 @@ export class Settings {
         return Settings.cfg.get<boolean>('createLocalPostFileWithCategory') ?? false
     }
 
-    static get autoExtractImgSrc(): ImageSrc | undefined {
+    static get autoExtractImgSrc(): ImgSrc | undefined {
         const cfg = Settings.cfg.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('autoExtractImages')
 
         if (cfg === 'disable') return
-        if (cfg === 'fs') return ImageSrc.fs
-        if (cfg === 'dataUrl') return ImageSrc.dataUrl
-        if (cfg === 'web') return ImageSrc.web
-        if (cfg === 'any') return ImageSrc.any
+        if (cfg === 'fs') return ImgSrc.fs
+        if (cfg === 'dataUrl') return ImgSrc.dataUrl
+        if (cfg === 'web') return ImgSrc.web
+        if (cfg === 'any') return ImgSrc.any
     }
 
     static get postListPageSize() {

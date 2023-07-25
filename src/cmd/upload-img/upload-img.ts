@@ -1,6 +1,6 @@
 import { Alert } from '@/service/alert'
 import { uploadImageFromClipboard } from './upload-clipboard-img'
-import { insertImageLinkToActiveEditor, showUploadSuccessModel } from './upload-img-util'
+import { insertImgLinkToActiveEditor, showUploadSuccessModel } from './upload-img-util'
 import { uploadFsImage } from './upload-fs-img'
 
 export const uploadImage = async (autoInsertToActiveEditor = true, from?: 'local' | 'clipboard') => {
@@ -33,7 +33,7 @@ export const uploadImage = async (autoInsertToActiveEditor = true, from?: 'local
     }
 
     if (imageUrl && autoInsertToActiveEditor)
-        if (!(await insertImageLinkToActiveEditor(imageUrl))) await showUploadSuccessModel(imageUrl)
+        if (!(await insertImgLinkToActiveEditor(imageUrl))) await showUploadSuccessModel(imageUrl)
 
     return imageUrl
 }

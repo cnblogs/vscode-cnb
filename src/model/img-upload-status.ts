@@ -1,13 +1,11 @@
-enum ImageUploadStatusId {
+export enum ImgUploadStatusId {
     uploading,
     uploaded,
     failed,
 }
 
-interface ImgUploadStatus {
-    id: ImageUploadStatusId
+export type ImgUploadStatus = {
+    id: ImgUploadStatusId
     imageUrl?: string
     errors?: string[]
 }
-
-export { ImageUploadStatusId, ImgUploadStatus }

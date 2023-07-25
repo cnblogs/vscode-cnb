@@ -1,10 +1,10 @@
 import { MessageItem, MessageOptions, ProgressLocation, Range, Uri, window, workspace, WorkspaceEdit } from 'vscode'
-import { ImageInfo, ImageSrc, MkdImgExtractor, newImageSrcFilter } from '@/service/mkd-img-extractor'
+import { ImgInfo, ImgSrc, MkdImgExtractor, newImgSrcFilter } from '@/service/mkd-img-extractor'
 import { Alert } from '@/service/alert'
 
-type ExtractOption = MessageItem & Partial<{ imageSrc: ImageSrc }>
+type ExtractOption = MessageItem & Partial<{ imageSrc: ImgSrc }>
 
-export async function extractImages(arg: unknown, inputImageSrc?: ImageSrc) {
+export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
     if (!(arg instanceof Uri && arg.scheme === 'file')) return
 
     const editor = window.visibleTextEditors.find(x => x.document.fileName === arg.fsPath)
@@ -18,26 +18,26 @@ export async function extractImages(arg: unknown, inputImageSrc?: ImageSrc) {
 
     const images = extractor.findImages()
     if (images.length <= 0) {
-        if (inputImageSrc !== undefined) void Alert.info('没有找到可以提取的图片')
+        if (inputImgSrc !== undefined) void Alert.info('没有找到可以提取的图片')
         return
     }
 
-    const webImgCount = images.filter(newImageSrcFilter(ImageSrc.web)).length
-    const dataUrlImgCount = images.filter(newImageSrcFilter(ImageSrc.dataUrl)).length
-    const fsImgCount = images.filter(newImageSrcFilter(ImageSrc.fs)).length
+    const webImgCount = images.filter(newImgSrcFilter(ImgSrc.web)).length
+    const dataUrlImgCount = images.filter(newImgSrcFilter(ImgSrc.dataUrl)).length
+    const fsImgCount = images.filter(newImgSrcFilter(ImgSrc.fs)).length
 
     const displayOptions: ExtractOption[] = [
-        { title: '提取全部', imageSrc: ImageSrc.any },
-        { title: '提取网络图片', imageSrc: ImageSrc.web },
-        { title: '提取 Data Url 图片', imageSrc: ImageSrc.dataUrl },
-        { title: '提取本地图片', imageSrc: ImageSrc.fs },
+        { title: '提取全部', imageSrc: ImgSrc.any },
+        { title: '提取网络图片', imageSrc: ImgSrc.web },
+        { title: '提取 Data Url 图片', imageSrc: ImgSrc.dataUrl },
+        { title: '提取本地图片', imageSrc: ImgSrc.fs },
         { title: '取消', imageSrc: undefined, isCloseAffordance: true },
     ]
 
     let selectedSrc
 
-    if (inputImageSrc !== undefined) {
-        selectedSrc = displayOptions.find(ent => ent.imageSrc === inputImageSrc)?.imageSrc
+    if (inputImgSrc !== undefined) {
+        selectedSrc = displayOptions.find(ent => ent.imageSrc === inputImgSrc)?.imageSrc
     } else {
         // if src is not specified:
         const selectedOption = await Alert.info<ExtractOption>(
@@ -87,7 +87,7 @@ export async function extractImages(arg: unknown, inputImageSrc?: ImageSrc) {
                     const range = new Range(posL, posR)
 
                     // just for ts type inferring
-                    const ret: [Range, ImageInfo] = [range, dst]
+                    const ret: [Range, ImgInfo] = [range, dst]
                     return ret
                 })
                 .reduce((we, [range, dst]) => {

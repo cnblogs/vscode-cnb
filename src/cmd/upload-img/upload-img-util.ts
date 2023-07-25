@@ -1,14 +1,13 @@
 import { env, MessageOptions, SnippetString, window } from 'vscode'
-import { formatImageLink } from '@/infra/fmt-img-link'
+import { fmtImgLink } from '@/infra/fmt-img-link'
 import { Alert } from '@/service/alert'
 
 /**
  * 显示上传成功对话框, 支持复制不同格式的图片链接
  *
  * @param {string} imgLink
- * @returns {*}  {Promise<void>}
  */
-export const showUploadSuccessModel = async (imgLink: string): Promise<void> => {
+export async function showUploadSuccessModel(imgLink: string) {
     const copyOptions = ['复制链接', '复制链接(markdown)', '复制链接(html)']
     const option = await Alert.info(
         '上传图片成功',
@@ -18,25 +17,26 @@ export const showUploadSuccessModel = async (imgLink: string): Promise<void> => 
         } as MessageOptions,
         ...copyOptions
     )
-    let formattedImageLink = ''
+
+    let newImgLink
     switch (option) {
         case copyOptions[0]:
-            formattedImageLink = imgLink
+            newImgLink = imgLink
             break
         case copyOptions[1]:
-            formattedImageLink = formatImageLink(imgLink, 'markdown')
+            newImgLink = fmtImgLink(imgLink, 'markdown')
             break
         case copyOptions[2]:
-            formattedImageLink = formatImageLink(imgLink, 'html')
+            newImgLink = fmtImgLink(imgLink, 'html')
             break
     }
-    if (formattedImageLink) await env.clipboard.writeText(formattedImageLink)
+    if (newImgLink) await env.clipboard.writeText(newImgLink)
 }
 
-export const insertImageLinkToActiveEditor = async (imageLink: string): Promise<boolean> => {
+export const insertImgLinkToActiveEditor = async (imgLink: string): Promise<boolean> => {
     const activeEditor = window.activeTextEditor
     if (activeEditor) {
-        await activeEditor.insertSnippet(new SnippetString(formatImageLink(imageLink, 'markdown')))
+        await activeEditor.insertSnippet(new SnippetString(fmtImgLink(imgLink, 'markdown')))
         return true
     }
 

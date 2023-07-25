@@ -3,7 +3,7 @@ import { globalCtx } from '@/service/global-ctx'
 import { GotoingListFirstPage, IngListGoNextPage, GotoingListPreviousPage } from '@/cmd/ing/ing-list-go-next-page'
 import { regCmd } from '@/infra/cmd'
 import { openIngSite } from '@/cmd/open/open-ing-site'
-import { switchIngType } from "@/cmd/ing/select-ing-type";
+import { switchIngType } from '@/cmd/ing/select-ing-type'
 
 export const regIngListCmds = () => {
     const appName = globalCtx.extName

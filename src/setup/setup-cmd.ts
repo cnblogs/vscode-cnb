@@ -29,7 +29,7 @@ import { setWorkspace } from '@/cmd/set-workspace'
 import { revealWorkspaceInOs } from '@/cmd/reveal-workspace-in-os'
 import { viewPostOnline } from '@/cmd/view-post-online'
 import { pullPostRemoteUpdates } from '@/cmd/pull-post-remote-updates'
-import { extractImages } from '@/cmd/extract-img'
+import { extractImg } from '@/cmd/extract-img'
 import { clearPostSearchResults, refreshPostSearchResults, searchPost } from '@/cmd/post-list/search'
 import { handleDeletePostCategories } from '@/cmd/post-category/delete-selected-category'
 import { PublishIngCmdHandler } from '@/cmd/ing/publish-ing'
@@ -87,7 +87,7 @@ export function setupExtCmd() {
         regCmd(withAppName('.reveal-workspace-in-os'), revealWorkspaceInOs),
         regCmd(withAppName('.view-post-online'), viewPostOnline),
         regCmd(withAppName('.export-post-to-pdf'), (input: unknown) => exportPostToPdf(input)),
-        regCmd(withAppName('.extract-img'), extractImages),
+        regCmd(withAppName('.extract-img'), extractImg),
         regCmd(withAppName('.search-post'), searchPost),
         regCmd(withAppName('.clear-post-search-results'), clearPostSearchResults),
         regCmd(withAppName('.refresh-post-search-results'), refreshPostSearchResults),

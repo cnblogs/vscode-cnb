@@ -7,7 +7,7 @@ import os from 'os'
 import isWsl from 'is-wsl'
 import { globalCtx } from '@/service/global-ctx'
 import { Alert } from '@/service/alert'
-import { IClipboardImage } from '@/model/clipboard-img'
+import { IClipboardImg } from '@/model/clipboard-img'
 import format from 'date-fns/format'
 
 export type Platform = 'darwin' | 'win32' | 'win10' | 'linux' | 'wsl'
@@ -57,12 +57,12 @@ const platform2ScriptFilename: {
     wsl: 'wsl.sh',
 }
 
-const getClipboardImage = (): Promise<IClipboardImage> => {
+const getClipboardImage = (): Promise<IClipboardImg> => {
     const imagePath = path.join(
         globalCtx.extCtx?.asAbsolutePath('./') ?? '',
         `${format(new Date(), 'yyyyMMddHHmmss')}.png`
     )
-    return new Promise<IClipboardImage>((resolve, reject): void => {
+    return new Promise<IClipboardImg>((resolve, reject): void => {
         const platform = getCurrentPlatform()
         const scriptPath = path.join(__dirname, platform2ScriptFilename[platform])
         // If the script does not exist yet, we need to write the content to the script file

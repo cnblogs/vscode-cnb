@@ -1,5 +1,5 @@
 import { ActionButton, Label, MessageBar, MessageBarType, Stack, TextField, Text } from '@fluentui/react'
-import { ImageUploadStatusId } from '@/model/img-upload-status'
+import { ImgUploadStatusId } from '@/model/img-upload-status'
 import { WebviewCmd } from '@/model/webview-cmd'
 import { webviewMessage } from '@/model/webview-msg'
 import React from 'react'
@@ -109,8 +109,8 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
                 {
                     const { imageId, status } = data as webviewMessage.UpdateImageUpdateStatusMessage
                     if (imageId === this.uploadingImageId) {
-                        this.setState({ disabled: status.id === ImageUploadStatusId.uploading })
-                        if (status.id === ImageUploadStatusId.uploaded)
+                        this.setState({ disabled: status.id === ImgUploadStatusId.uploading })
+                        if (status.id === ImgUploadStatusId.uploaded)
                             this.props.onFeatureImageChange?.apply(this, [status.imageUrl ?? ''])
                     }
                 }

@@ -10,7 +10,7 @@ import { isErrorResponse } from '@/model/error-response'
 import { webviewMessage } from '@/model/webview-msg'
 import { WebviewCommonCmd, WebviewCmd } from '@/model/webview-cmd'
 import { uploadImage } from '@/cmd/upload-img/upload-img'
-import { ImageUploadStatusId } from '@/model/img-upload-status'
+import { ImgUploadStatusId } from '@/model/img-upload-status'
 import { openPostFile } from '@/cmd/post-list/open-post-file'
 import { parseWebviewHtml } from '@/service/parse-webview-html'
 import path from 'path'
@@ -122,7 +122,7 @@ export namespace PostCfgPanel {
             await webview.postMessage({
                 command: WebviewCmd.UiCmd.updateImageUploadStatus,
                 status: {
-                    id: ImageUploadStatusId.uploading,
+                    id: ImgUploadStatusId.uploading,
                 },
                 imageId: message.imageId,
             } as webviewMessage.UpdateImageUpdateStatusMessage)
@@ -132,7 +132,7 @@ export namespace PostCfgPanel {
                     command: WebviewCmd.UiCmd.updateImageUploadStatus,
                     status: {
                         imageUrl,
-                        id: ImageUploadStatusId.uploaded,
+                        id: ImgUploadStatusId.uploaded,
                     },
                     imageId: message.imageId,
                 } as webviewMessage.UpdateImageUpdateStatusMessage)
@@ -141,7 +141,7 @@ export namespace PostCfgPanel {
                     await webview.postMessage({
                         command: WebviewCmd.UiCmd.updateImageUploadStatus,
                         status: {
-                            id: ImageUploadStatusId.failed,
+                            id: ImgUploadStatusId.failed,
                             errors: err.errors,
                         },
                         imageId: message.imageId,

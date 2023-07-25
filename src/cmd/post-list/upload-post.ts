@@ -13,7 +13,7 @@ import { refreshPostList } from './refresh-post-list'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostCfgPanel } from '@/service/post-cfg-panel'
 import { saveFilePendingChanges } from '@/infra/save-file-pending-changes'
-import { extractImages } from '@/cmd/extract-img'
+import { extractImg } from '@/cmd/extract-img'
 import { Settings } from '@/service/settings'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 
@@ -116,7 +116,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
                 return false
             }
             if (Settings.autoExtractImgSrc !== undefined)
-                await extractImages(localDraft.filePathUri, Settings.autoExtractImgSrc).catch(console.warn)
+                await extractImg(localDraft.filePathUri, Settings.autoExtractImgSrc).catch(console.warn)
 
             postToSave.postBody = await localDraft.readAllText()
             return true
@@ -139,7 +139,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
     if (!localFilePath) return Alert.warn('本地无该博文的编辑记录')
 
     if (Settings.autoExtractImgSrc !== undefined)
-        await extractImages(Uri.file(localFilePath), Settings.autoExtractImgSrc).catch(console.warn)
+        await extractImg(Uri.file(localFilePath), Settings.autoExtractImgSrc).catch(console.warn)
 
     await saveFilePendingChanges(localFilePath)
     post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()

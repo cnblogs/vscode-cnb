@@ -13,7 +13,7 @@ export const enum DataType {
     url,
 }
 
-export interface ImageInfo {
+export interface ImgInfo {
     startOffset: number
     data: string
     dataType: DataType
@@ -33,29 +33,29 @@ const mkdUrlImgPat = /(!\[.*?]\()(.*?\.(?:png|jpg|jpeg|webp|svg|gif))(\))/gi
 
 const cnblogsDomainRegExp = /\.cnblogs\.com\//gi
 
-export const enum ImageSrc {
+export const enum ImgSrc {
     web,
     dataUrl,
     fs,
     any,
 }
 
-export const newImageSrcFilter = (type: ImageSrc) => {
-    const isWebImage = (imgInfo: ImageInfo) => imgInfo.dataType === DataType.url && /https?:\/\//.test(imgInfo.data)
-    const isFsImage = (imgInfo: ImageInfo) => imgInfo.dataType === DataType.url && !isWebImage(imgInfo)
-    const isDataUrlImage = (imgInfo: ImageInfo) => imgInfo.dataType === DataType.dataUrl
+export const newImgSrcFilter = (type: ImgSrc) => {
+    const isWebImg = (imgInfo: ImgInfo) => imgInfo.dataType === DataType.url && /https?:\/\//.test(imgInfo.data)
+    const isFsImg = (imgInfo: ImgInfo) => imgInfo.dataType === DataType.url && !isWebImg(imgInfo)
+    const isDataUrlImg = (imgInfo: ImgInfo) => imgInfo.dataType === DataType.dataUrl
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const isAnyImage = (_: ImageInfo) => true
+    const isAnyImg = (_: ImgInfo) => true
 
     switch (type) {
-        case ImageSrc.web:
-            return isWebImage
-        case ImageSrc.fs:
-            return isFsImage
-        case ImageSrc.dataUrl:
-            return isDataUrlImage
-        case ImageSrc.any:
-            return isAnyImage
+        case ImgSrc.web:
+            return isWebImg
+        case ImgSrc.fs:
+            return isFsImg
+        case ImgSrc.dataUrl:
+            return isDataUrlImg
+        case ImgSrc.any:
+            return isAnyImg
     }
 }
 
@@ -66,16 +66,16 @@ enum ExtractorSt {
 }
 
 export class MkdImgExtractor {
-    private _imageSrc = ImageSrc.any
+    private _imageSrc = ImgSrc.any
     private _status = ExtractorSt.pending
-    private _errors: [imageLink: string, msg: string][] = []
-    private _images: ImageInfo[] | null | undefined = null
+    private _errors: [imgLink: string, msg: string][] = []
+    private _images: ImgInfo[] | null | undefined = null
     private readonly _workspaceDirs: string[] | undefined
 
     constructor(
         private readonly markdown: string,
         private readonly targetFileUri: Uri,
-        public onProgress?: (index: number, images: ImageInfo[]) => void
+        public onProgress?: (index: number, images: ImgInfo[]) => void
     ) {
         this._workspaceDirs = workspace.workspaceFolders?.map(({ uri: { fsPath } }) => fsPath)
     }
@@ -96,7 +96,7 @@ export class MkdImgExtractor {
         return this._errors
     }
 
-    async extract(): Promise<[src: ImageInfo, dst: ImageInfo | null][]> {
+    async extract(): Promise<[src: ImgInfo, dst: ImgInfo | null][]> {
         this._status = ExtractorSt.extracting
 
         const srcInfoArr = this.findImages()
@@ -136,11 +136,11 @@ export class MkdImgExtractor {
         return result
     }
 
-    findImages(): ImageInfo[] {
+    findImages(): ImgInfo[] {
         const acc = () => {
             const imgTagUrlImgMatchGroups = Array.from(this.markdown.matchAll(imgTagUrlImgPat))
             const mkdUrlImgMatchGroups = Array.from(this.markdown.matchAll(mkdUrlImgPat))
-            const urlImgInfo = imgTagUrlImgMatchGroups.concat(mkdUrlImgMatchGroups).map<ImageInfo>(mg => ({
+            const urlImgInfo = imgTagUrlImgMatchGroups.concat(mkdUrlImgMatchGroups).map<ImgInfo>(mg => ({
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 startOffset: mg.index!,
                 dataType: DataType.url,
@@ -151,7 +151,7 @@ export class MkdImgExtractor {
 
             const imgTagDataUrlImgMatchGroups = Array.from(this.markdown.matchAll(imgTagDataUrlImgPat))
             const mkdDataUrlImgMatchGroups = Array.from(this.markdown.matchAll(mkdDataUrlImgPat))
-            const dataUrlImgInfo = imgTagDataUrlImgMatchGroups.concat(mkdDataUrlImgMatchGroups).map<ImageInfo>(mg => ({
+            const dataUrlImgInfo = imgTagDataUrlImgMatchGroups.concat(mkdDataUrlImgMatchGroups).map<ImgInfo>(mg => ({
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 startOffset: mg.index!,
                 dataType: DataType.dataUrl,
@@ -170,7 +170,7 @@ export class MkdImgExtractor {
         this._images ??= acc()
 
         // apply settings
-        return this._images.filter(x => newImageSrcFilter(this._imageSrc)(x))
+        return this._images.filter(x => newImgSrcFilter(this._imageSrc)(x))
     }
 
     private async resolveWebImg(url: string) {
@@ -229,16 +229,16 @@ export class MkdImgExtractor {
         return fs.createReadStream(path)
     }
 
-    private async resolveImgInfo(info: ImageInfo): Promise<Readable | undefined> {
+    private async resolveImgInfo(info: ImgInfo): Promise<Readable | undefined> {
         // for web img
         // eslint-disable-next-line no-return-await
-        if (newImageSrcFilter(ImageSrc.web)(info)) return await this.resolveWebImg(info.data)
+        if (newImgSrcFilter(ImgSrc.web)(info)) return await this.resolveWebImg(info.data)
 
         // for fs img
         // eslint-disable-next-line no-return-await
-        if (newImageSrcFilter(ImageSrc.fs)(info)) return await this.resolveFsImg(info.data)
+        if (newImgSrcFilter(ImgSrc.fs)(info)) return await this.resolveFsImg(info.data)
 
         // for data url img
-        if (newImageSrcFilter(ImageSrc.dataUrl)(info)) return this.resolveDataUrlImg(info.data)
+        if (newImgSrcFilter(ImgSrc.dataUrl)(info)) return this.resolveDataUrlImg(info.data)
     }
 }
