@@ -8,7 +8,7 @@ import { Alert } from '@/infra/alert'
 import path from 'path'
 import { revealPostListItem } from '@/service/post-list-view'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
-import { ExtCfg } from '@/ctx/ext-cfg'
+import { MarkdownCfg } from '@/ctx/cfg/markdown'
 
 export async function pullRemotePost(input: Post | PostTreeItem | Uri | undefined | null) {
     const ctxList: CmdCtx[] = []
@@ -17,7 +17,7 @@ export async function pullRemotePost(input: Post | PostTreeItem | Uri | undefine
     if (parsePostInput(input) && input.id > 0) await handlePostInput(input, ctxList)
     else if ((uri = parseUriInput(input))) await handleUriInput(uri, ctxList)
 
-    if (ExtCfg.showConfirmMsgWhenPullPost) {
+    if (MarkdownCfg.isShowConfirmMsgWhenPullPost()) {
         const answer = await Alert.warn(
             '确认要拉取远程博文吗?',
             {

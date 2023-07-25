@@ -1,14 +1,14 @@
 import { homedir } from 'os'
 import path from 'path'
 import { Uri, window, workspace } from 'vscode'
-import { ExtCfg } from '@/ctx/ext-cfg'
 import { revealActiveFileInExplorer } from '@/infra/reveal-active-file'
 import { openPostFile } from './open-post-file'
+import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 export const createLocalDraft = async () => {
     let title = await window.showInputBox({
         placeHolder: '请输入标题',
-        prompt: `文件将会保存到 ${ExtCfg.workspaceUri.fsPath.replace(homedir(), '~')} 目录下`,
+        prompt: `文件将会保存到 ${WorkspaceCfg.getWorkspaceUri().fsPath.replace(homedir(), '~')} 目录下`,
         title: '新建本地草稿',
         validateInput: input => {
             if (!input) return '标题不能为空'
@@ -18,7 +18,7 @@ export const createLocalDraft = async () => {
     })
     if (!title) return
 
-    const { fsPath: workspacePath } = ExtCfg.workspaceUri
+    const { fsPath: workspacePath } = WorkspaceCfg.getWorkspaceUri()
     title = ['.md', '.html'].some(ext => title && title.endsWith(ext))
         ? title
         : `${title}${title.endsWith('.') ? '' : '.'}md`

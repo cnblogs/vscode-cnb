@@ -14,8 +14,8 @@ import { PostEditDto } from '@/model/post-edit-dto'
 import { PostCfgPanel } from '@/service/post-cfg-panel'
 import { saveFilePendingChanges } from '@/infra/save-file-pending-changes'
 import { extractImg } from '@/cmd/extract-img'
-import { ExtCfg } from '@/ctx/ext-cfg'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
+import { MarkdownCfg } from '@/ctx/cfg/markdown'
 
 const parseFileUri = async (fileUri: Uri | undefined): Promise<Uri | undefined> => {
     if (fileUri && fileUri.scheme !== 'file') {
@@ -115,8 +115,9 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
                 void Alert.warn('本地文件已删除, 无法新建博文')
                 return false
             }
-            if (ExtCfg.autoExtractImgSrc !== undefined)
-                await extractImg(localDraft.filePathUri, ExtCfg.autoExtractImgSrc).catch(console.warn)
+            const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
+            if (autoExtractImgSrc !== undefined)
+                await extractImg(localDraft.filePathUri, autoExtractImgSrc).catch(console.warn)
 
             postToSave.postBody = await localDraft.readAllText()
             return true
@@ -138,8 +139,9 @@ export const uploadPost = async (input: Post | PostTreeItem | PostEditDto | unde
     const localFilePath = PostFileMapManager.getFilePath(postId)
     if (!localFilePath) return Alert.warn('本地无该博文的编辑记录')
 
-    if (ExtCfg.autoExtractImgSrc !== undefined)
-        await extractImg(Uri.file(localFilePath), ExtCfg.autoExtractImgSrc).catch(console.warn)
+    const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
+    if (autoExtractImgSrc !== undefined)
+        await extractImg(Uri.file(localFilePath), autoExtractImgSrc).catch(console.warn)
 
     await saveFilePendingChanges(localFilePath)
     post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()
@@ -147,7 +149,7 @@ export const uploadPost = async (input: Post | PostTreeItem | PostEditDto | unde
 
     if (!validatePost(post)) return false
 
-    if (ExtCfg.showConfirmMsgWhenUploadPost) {
+    if (MarkdownCfg.isShowConfirmMsgWhenUploadPost()) {
         const answer = await Alert.warn(
             '确认上传吗?',
             {

@@ -6,9 +6,9 @@ import { accountManager } from '@/auth/account-manager'
 import { setupWorkspaceWatch, setupCfgWatch, setupWorkspaceFileWatch } from '@/setup/setup-watch'
 import { extUriHandler } from '@/infra/uri-handler'
 import { extendMarkdownIt } from '@/markdown/extend-markdownIt'
-import { ExtCfg } from '@/ctx/ext-cfg'
 import { getIngListWebviewProvider } from '@/service/ing-list-webview-provider'
 import { setupUi } from '@/setup/setup-ui'
+import { LocalState } from '@/ctx/local-state'
 
 export function activate(ctx: ExtensionContext) {
     globalCtx.extCtx = ctx
@@ -25,13 +25,11 @@ export function activate(ctx: ExtensionContext) {
         setupWorkspaceFileWatch()
     )
 
-    ExtCfg.migrateEnablePublishSelectionToIng().catch(console.warn)
-
     window.registerUriHandler(extUriHandler)
 
     void accountManager.updateAuthStatus()
 
-    setupUi(ExtCfg.cfg)
+    setupUi(LocalState.getExtCfg())
 
     return { extendMarkdownIt }
 }

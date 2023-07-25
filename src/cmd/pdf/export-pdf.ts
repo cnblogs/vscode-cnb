@@ -8,12 +8,12 @@ import { PostFileMapManager } from '@/service/post-file-map'
 import { PostService } from '@/service/post'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { ChromiumPathProvider } from '@/infra/chromium-path-provider'
-import { ExtCfg } from '@/ctx/ext-cfg'
 import { accountManager } from '@/auth/account-manager'
 import { Alert } from '@/infra/alert'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { postPdfTemplateBuilder } from '@/cmd/pdf/post-pdf-template-builder'
+import { ChromiumCfg } from '@/ctx/cfg/chromium'
 
 const launchBrowser = async (
     chromiumPath: string
@@ -98,7 +98,7 @@ const writePdfToFile = (dir: Uri, post: Post, buffer: Buffer) =>
     })
 
 const retrieveChromiumPath = async (): Promise<string | undefined> => {
-    let path: string | undefined = ChromiumPathProvider.lookupExecutableFromMacApp(ExtCfg.chromiumPath)
+    let path: string | undefined = ChromiumPathProvider.lookupExecutableFromMacApp(ChromiumCfg.getChromiumPath())
     if (path && fs.existsSync(path)) return path
 
     const platform = os.platform()
@@ -125,7 +125,7 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
         path = op ? await op[1]() : undefined
     }
 
-    if (path !== undefined && path !== ExtCfg.chromiumPath) await ExtCfg.setChromiumPath(path)
+    if (path !== undefined && path !== ChromiumCfg.getChromiumPath()) await ChromiumCfg.setChromiumPath(path)
 
     return path
 }

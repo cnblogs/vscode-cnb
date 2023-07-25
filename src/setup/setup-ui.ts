@@ -7,10 +7,6 @@ export function setupUi(cfg: WorkspaceCfg) {
     applyTreeViewTitleStyle(cfg)
 }
 
-export const isEnableTextIngStar = (cfg: WorkspaceCfg) => cfg.get<boolean>('ui.textIngStar')
-
-export const isDisableIngUserAvatar = (cfg: WorkspaceCfg) => cfg.get<boolean>('ui.disableIngUserAvatar')
-
 export function applyTreeViewTitleStyle(cfg: WorkspaceCfg) {
     type Enum = 'normal' | 'short'
     const option = cfg.get<Enum>('ui.treeViewTitleStyle')
@@ -33,18 +29,3 @@ export function applyTreeViewTitleStyle(cfg: WorkspaceCfg) {
         return
     }
 }
-
-/*
-// TODO: Wait for VSC API support
-"cnblogsClient.ui.fakeExtIcon": {
-    "order": 18,
-    "type": "boolean",
-    "scope": "application",
-    "default": false,
-    "markdownDescription": "伪装扩展图标"
-}
-export function applyFakeExtIcon(cfg: WorkspaceCfg) {
-    const isEnable = cfg.get<boolean>('ui.fakeExtIcon')
-    console.log(isEnable)
-}
-*/

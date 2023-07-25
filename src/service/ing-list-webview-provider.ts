@@ -17,8 +17,7 @@ import { isNumber } from 'lodash-es'
 import { CommentIngCmdHandler } from '@/cmd/ing/comment-ing'
 import { execCmd } from '@/infra/cmd'
 import { ingStarToText } from '@/infra/convert/ing-star-to-text'
-import { ExtCfg } from '@/ctx/ext-cfg'
-import { isDisableIngUserAvatar, isEnableTextIngStar } from '@/setup/setup-ui'
+import { UiCfg } from '@/ctx/cfg/ui'
 
 export class IngListWebviewProvider implements WebviewViewProvider {
     readonly viewId = `${globalCtx.extName}.ing-list-webview`
@@ -91,8 +90,8 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                 pageSize: 30,
             })
             const ingList = rawIngList.map(ing => {
-                if (isDisableIngUserAvatar(ExtCfg.cfg)) ing.userIconUrl = ''
-                if (isEnableTextIngStar(ExtCfg.cfg)) ing.icons = ingStarToText(ing.icons)
+                if (UiCfg.isDisableIngUserAvatar()) ing.userIconUrl = ''
+                if (UiCfg.isEnableTextIngStar()) ing.icons = ingStarToText(ing.icons)
                 return ing
             })
             const comments = await IngApi.listComments(...ingList.map(x => x.id))

@@ -5,8 +5,9 @@ import { Post } from '@/model/post'
 import { PostCategory } from '@/model/post-category'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PostFileMapManager } from '@/service/post-file-map'
-import { ExtCfg } from '@/ctx/ext-cfg'
 import { BaseTreeItemSource } from '@/tree-view/model/base-tree-item-source'
+import { IconThemeCfg } from '@/ctx/cfg/icon-theme'
+import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 const contextValues = {
     post({ id }: Post) {
@@ -15,7 +16,7 @@ const contextValues = {
 }
 
 const categoryIcon = () => {
-    const iconTheme = ExtCfg.iconTheme
+    const iconTheme = IconThemeCfg.getIconTheme()
     let iconId = 'folder'
     switch (iconTheme) {
         case 'vs-seti':
@@ -46,7 +47,7 @@ const postConverter: Converter<Post> = obj => {
         contextValue: contextValues.post(obj),
         iconPath: new ThemeIcon(obj.isMarkdown ? 'markdown' : 'file-code'),
         description: localPath ? localPathForDesc : '',
-        resourceUri: Uri.joinPath(ExtCfg.workspaceUri, obj.title + (obj.isMarkdown ? '.md' : '.html')),
+        resourceUri: Uri.joinPath(WorkspaceCfg.getWorkspaceUri(), obj.title + (obj.isMarkdown ? '.md' : '.html')),
     })
 }
 

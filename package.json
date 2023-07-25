@@ -466,7 +466,7 @@
                         "type": "boolean",
                         "markdownDescription": "创建本地博文时, 是否根据博文分类保存到对应的文件夹中"
                     },
-                    "cnblogsClient.autoExtractImages": {
+                    "cnblogsClient.markdown.autoExtractImages": {
                         "order": 6,
                         "default": "disable",
                         "scope": "application",
@@ -689,15 +689,22 @@
                         "default": false,
                         "markdownDescription": "闪存星文本化"
                     },
-                    "cnblogsClient.ui.disableIngUserAvatar": {
+                    "cnblogsClient.ui.textIngEmoji": {
                         "order": 16,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": false,
+                        "markdownDescription": "闪存 Emoji 文本化"
+                    },
+                    "cnblogsClient.ui.disableIngUserAvatar": {
+                        "order": 17,
                         "type": "boolean",
                         "scope": "application",
                         "default": false,
                         "markdownDescription": "禁用闪存用户头像"
                     },
                     "cnblogsClient.ui.treeViewTitleStyle": {
-                        "order": 17,
+                        "order": 18,
                         "scope": "application",
                         "default": "normal",
                         "markdownDescription": "侧栏标题风格",
@@ -1273,7 +1280,7 @@
             },
             {
                 "view": "vscode-cnb-workspace",
-                "contents": "[在 VSCode 中打开工作空间](command:vscode-cnb.open-workspace)",
+                "contents": "[在 Code 中打开工作空间](command:vscode-cnb.open-workspace)",
                 "when": "!vscode-cnb.isTargetWorkspace"
             },
             {

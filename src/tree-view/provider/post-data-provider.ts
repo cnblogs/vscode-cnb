@@ -4,11 +4,11 @@ import { Post } from '@/model/post'
 import { PageModel } from '@/model/page-model'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post'
-import { ExtCfg } from '@/ctx/ext-cfg'
 import { toTreeItem } from '@/tree-view/convert'
 import { PostEntryMetadata, PostMetadata } from '@/tree-view/model/post-metadata'
 import { PostSearchResultEntry } from '@/tree-view/model/post-search-result-entry'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
+import { PostListCfg } from '@/ctx/cfg/post-list'
 
 export type PostListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
 
@@ -63,11 +63,11 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
 
     async loadPost(): Promise<PageModel<Post> | null> {
         const { pageIndex } = PostService.getPostListState() ?? {}
-        const pageSize = ExtCfg.postListPageSize
+        const pageSize = PostListCfg.getPostListPageSize()
 
         this._pagedPost = await PostService.fetchPostList({ pageIndex, pageSize }).catch(e => {
-            if (e instanceof Error) Alert.err(e.message)
-            else Alert.err(`加载博文失败\n${JSON.stringify(e)}`)
+            if (e instanceof Error) void Alert.err(e.message)
+            else void Alert.err(`加载博文失败\n${JSON.stringify(e)}`)
             return undefined
         })
 

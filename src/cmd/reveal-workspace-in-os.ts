@@ -1,4 +1,4 @@
 import { execCmd } from '@/infra/cmd'
-import { ExtCfg } from '@/ctx/ext-cfg'
+import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
-export const revealWorkspaceInOs = () => execCmd('revealFileInOS', ExtCfg.workspaceUri)
+export const revealWorkspaceInOs = () => execCmd('revealFileInOS', WorkspaceCfg.getWorkspaceUri())

@@ -2,7 +2,6 @@ import { Alert } from '@/infra/alert'
 import { BlogExportApi } from '@/service/blog-export.api'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
 import { globalCtx } from '@/ctx/global-ctx'
-import { ExtCfg } from '@/ctx/ext-cfg'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
 import { BlogExportRecordTreeItem } from '@/tree-view/model/blog-export'
 import { extTreeViews } from '@/tree-view/tree-view-register'
@@ -11,6 +10,7 @@ import { Progress } from 'got'
 import path from 'path'
 import { promisify } from 'util'
 import { execCmd } from '@/infra/cmd'
+import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 function parseInput(input: unknown): BlogExportRecordTreeItem | null | undefined {
     return input instanceof BlogExportRecordTreeItem ? input : null
@@ -25,7 +25,7 @@ export async function downloadBlogExport(input: unknown) {
 
     if (blogId < 0 || exportId <= 0) return
 
-    const targetDir = path.join(ExtCfg.workspaceUri.fsPath, '博客备份')
+    const targetDir = path.join(WorkspaceCfg.getWorkspaceUri().fsPath, '博客备份')
     await promisify(fs.mkdir)(targetDir, { recursive: true })
     const nonZipFilePath = path.join(targetDir, treeItem.record.fileName)
     const zipFilePath = nonZipFilePath + '.zip'

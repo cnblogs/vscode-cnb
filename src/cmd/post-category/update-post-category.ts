@@ -4,8 +4,9 @@ import { PostCategory } from '@/model/post-category'
 import { postCategoryService } from '@/service/post-category'
 import { inputPostCategory } from './input-post-category'
 import { refreshPostCategoryList } from './refresh-post-category-list'
-import { ExtCfg } from '@/ctx/ext-cfg'
 import { BasePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
+import { PostCategoryCfg } from '@/ctx/cfg/post-category'
+import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHandler {
     async handle(): Promise<void> {
@@ -32,8 +33,8 @@ class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHa
                     await postCategoryService.updateCategory(updateDto)
                     refreshPostCategoryList()
                     // 如果选择了createLocalPostFileWithCategory模式且本地有该目录,则重命名该目录
-                    const workspaceUri = ExtCfg.workspaceUri
-                    const shouldCreateLocalPostFileWithCategory = ExtCfg.createLocalPostFileWithCategory
+                    const workspaceUri = WorkspaceCfg.getWorkspaceUri()
+                    const shouldCreateLocalPostFileWithCategory = PostCategoryCfg.isCreateLocalPostFileWithCategory()
                     const uri = Uri.joinPath(workspaceUri, category.title).fsPath
                     const isFileExist = fs.existsSync(uri)
                     if (shouldCreateLocalPostFileWithCategory && isFileExist) {
