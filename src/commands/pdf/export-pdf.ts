@@ -5,12 +5,12 @@ import os from 'os'
 import { MessageOptions, Progress, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
-import { PostService } from '@/services/post.service'
-import { extViews } from '@/tree-view-providers/tree-view-registration'
+import { PostService } from '@/services/post'
+import { extTreeViews } from '@/tree-view-providers/tree-view-registration'
 import { ChromiumPathProvider } from '@/utils/chromium-path-provider'
-import { Settings } from '@/services/settings.service'
+import { Settings } from '@/services/settings'
 import { accountManager } from '@/auth/account-manager'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { PostEditDto } from '@/models/post-edit-dto'
 import { postPdfTemplateBuilder } from '@/commands/pdf/post-pdf-template-builder'
@@ -140,7 +140,7 @@ const inputTargetFolder = async (): Promise<Uri | undefined> =>
 
 const handlePostInput = (post: Post | PostTreeItem): Promise<Post[]> => {
     const postList: Post[] = [post instanceof PostTreeItem ? post.post : post]
-    extViews.visiblePostList()?.selection.map(item => {
+    extTreeViews.visiblePostList()?.selection.map(item => {
         item = item instanceof PostTreeItem ? item.post : item
         if (item instanceof Post && !postList.includes(item)) postList.push(item)
     })

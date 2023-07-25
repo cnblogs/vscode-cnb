@@ -1,12 +1,12 @@
 import { TreeViewCmdHandler } from '@/commands/cmd-handler'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { BlogExportApi } from '@/services/blog-export.api'
 import { DownloadedExportStore } from '@/services/downloaded-export.store'
 import { globalCtx } from '@/services/global-ctx'
-import { Settings } from '@/services/settings.service'
+import { Settings } from '@/services/settings'
 import { BlogExportProvider } from '@/tree-view-providers/blog-export-provider'
 import { BlogExportRecordTreeItem } from '@/tree-view-providers/models/blog-export'
-import { extViews } from '@/tree-view-providers/tree-view-registration'
+import { extTreeViews } from '@/tree-view-providers/tree-view-registration'
 import fs from 'fs'
 import { Progress } from 'got'
 import path from 'path'
@@ -38,7 +38,7 @@ export class DownloadExportCmdHandler implements TreeViewCmdHandler<BlogExportRe
         const downloadStream = BlogExportApi.download(blogId, exportId)
         const isFileExist = await promisify(fs.exists)(zipFilePath)
 
-        extViews.blogExport.reveal(treeItem, { expand: true }).then(undefined, console.warn)
+        extTreeViews.blogExport.reveal(treeItem, { expand: true }).then(undefined, console.warn)
 
         const { optionalInstance: blogExportProvider } = BlogExportProvider
         await this.setIsDownloading(true)

@@ -3,8 +3,8 @@ import { Post } from '@/models/post'
 import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
 import { revealPostListItem } from '@/services/post-list-view'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
-import { extViews } from '@/tree-view-providers/tree-view-registration'
-import { Alert } from '@/services/alert.service'
+import { extTreeViews } from '@/tree-view-providers/tree-view-registration'
+import { Alert } from '@/services/alert'
 
 const confirm = async (postList: Post[]): Promise<boolean> => {
     const options = ['确定']
@@ -21,7 +21,7 @@ const confirm = async (postList: Post[]): Promise<boolean> => {
 
 export const deletePostToLocalFileMap = async (post: Post | PostTreeItem) => {
     post = post instanceof PostTreeItem ? post.post : post
-    const view = extViews.postList
+    const view = extTreeViews.postList
     let selectedPost = view.selection
         .map(x => (x instanceof Post ? x : x instanceof PostTreeItem ? x.post : null))
         .filter((x): x is Post => x != null)

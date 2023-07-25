@@ -1,10 +1,10 @@
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
-import { Alert } from '@/services/alert.service'
-import { PostService } from '@/services/post.service'
+import { Alert } from '@/services/alert'
+import { PostService } from '@/services/post'
 import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
 import { postDataProvider } from '@/tree-view-providers/post-data-provider'
-import { extViews } from '@/tree-view-providers/tree-view-registration'
+import { extTreeViews } from '@/tree-view-providers/tree-view-registration'
 import { refreshPostList } from './refresh-post-list'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
 import { postCategoriesDataProvider } from '@/tree-view-providers/post-categories-tree-data-provider'
@@ -45,7 +45,7 @@ export const deleteSelectedPost = async (arg: unknown) => {
     else return
 
     const selectedPost: Post[] = post ? [post] : []
-    extViews.visiblePostList()?.selection.map(item => {
+    extTreeViews.visiblePostList()?.selection.map(item => {
         const post = item instanceof PostTreeItem ? item.post : item
         if (post instanceof Post && !selectedPost.includes(post)) {
             postDataProvider.pagedPost?.items.find(item => item === post)

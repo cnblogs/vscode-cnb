@@ -1,10 +1,10 @@
 import { globalCtx } from '@/services/global-ctx'
-import { PostService } from '@/services/post.service'
+import { PostService } from '@/services/post'
 import vscode, { window } from 'vscode'
 import { postDataProvider } from '@/tree-view-providers/post-data-provider'
-import { Alert } from '@/services/alert.service'
+import { Alert } from '@/services/alert'
 import { PostListState } from '@/models/post-list-state'
-import { extViews } from '@/tree-view-providers/tree-view-registration'
+import { extTreeViews } from '@/tree-view-providers/tree-view-registration'
 import { execCmd } from '@/utils/cmd'
 
 let refreshTask: Promise<boolean> | null = null
@@ -124,7 +124,7 @@ const updatePostListViewTitle = () => {
     if (!state) return
 
     const { pageIndex, pageCount } = state
-    const views = [extViews.postList, extViews.anotherPostList]
+    const views = [extTreeViews.postList, extTreeViews.anotherPostList]
     for (const view of views) {
         let title = view.title ?? ''
         const idx = title.indexOf('(')
