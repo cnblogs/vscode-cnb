@@ -16,6 +16,7 @@ export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
 
 export namespace Oauth {
     export const AuthHeaderKey = 'Authorization'
+
     export async function fetchToken(verifyCode: string, authCode: string, cancelToken?: CancellationToken) {
         const abortControl = new AbortController()
         if (cancelToken?.isCancellationRequested) abortControl.abort()
@@ -68,7 +69,7 @@ export namespace Oauth {
         return res.body
     }
 
-    export async function revokeToken(token: string): Promise<boolean> {
+    export async function revokeToken(token: string) {
         const { clientId, revocationEndpoint, authority } = globalCtx.config.oauth
 
         const body = new URLSearchParams([

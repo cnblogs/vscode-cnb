@@ -53,7 +53,7 @@ class AccountManager extends vscode.Disposable {
      * This will reject with a human-readable reason string if not sign-in or the token has expired.
      * @returns The access token of the active session
      */
-    async acquireToken(): Promise<string> {
+    async acquireToken() {
         const session = await this.ensureSession({ createIfNone: false })
 
         if (session == null) return Promise.reject(ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED)
@@ -78,8 +78,8 @@ class AccountManager extends vscode.Disposable {
         if (session === undefined) return
 
         try {
-            await authProvider.removeSession(session.id)
             await Oauth.revokeToken(session.accessToken)
+            await authProvider.removeSession(session.id)
         } catch (e: any) {
             void Alert.err(`登出发生错误: ${e}`)
         }
@@ -98,7 +98,7 @@ class AccountManager extends vscode.Disposable {
         }
     }
 
-    private async ensureSession(opt?: AuthenticationGetSessionOptions): Promise<AuthSession | null> {
+    private async ensureSession(opt?: AuthenticationGetSessionOptions) {
         const session = await authentication.getSession(authProvider.providerId, [], opt).then(
             session => (session ? AuthSession.from(session) : null),
             e => {
