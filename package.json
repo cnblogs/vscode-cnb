@@ -697,13 +697,6 @@
                         "default": false,
                         "markdownDescription": "闪存星文本化"
                     },
-                    "cnblogsClient.ui.textIngEmoji": {
-                        "order": 17,
-                        "type": "boolean",
-                        "scope": "application",
-                        "default": false,
-                        "markdownDescription": "闪存 Emoji 文本化"
-                    },
                     "cnblogsClient.ui.disableIngUserAvatar": {
                         "order": 18,
                         "type": "boolean",
