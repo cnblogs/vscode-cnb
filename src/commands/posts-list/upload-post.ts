@@ -1,4 +1,4 @@
-import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
+import vscode, { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
 import { Post } from '@/models/post'
 import { LocalDraft } from '@/services/local-draft.service'
 import { AlertService } from '@/services/alert.service'
@@ -34,14 +34,14 @@ const parseFileUri = async (fileUri: Uri | undefined): Promise<Uri | undefined> 
     return fileUri
 }
 
-export const savePostFileToCnblogs = async (fileUri: Uri | undefined) => {
+export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
     fileUri = await parseFileUri(fileUri)
     if (!fileUri) return
 
     const { fsPath: filePath } = fileUri
     const postId = PostFileMapManager.getPostId(filePath)
     if (postId && postId >= 0) {
-        await savePostToCnblogs(await postService.fetchPostEditDto(postId))
+        await uploadPostToCnblogs(await postService.fetchPostEditDto(postId))
     } else {
         const options = [`新建博文`, `关联已有博文`]
         const selected = await window.showInformationMessage(
@@ -67,7 +67,7 @@ export const savePostFileToCnblogs = async (fileUri: Uri | undefined) => {
                             if (!fileContent)
                                 await workspace.fs.writeFile(fileUri, Buffer.from(postEditDto.post.postBody))
 
-                            await savePostToCnblogs(postEditDto.post)
+                            await uploadPostToCnblogs(postEditDto.post)
                         }
                     }
                 }
@@ -124,7 +124,7 @@ export const saveLocalDraftToCnblogs = async (localDraft: LocalDraft) => {
     })
 }
 
-export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
+export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
     input = input instanceof PostTreeItem ? input.post : input
     const post =
         input instanceof PostEditDto
@@ -147,10 +147,22 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
 
     if (!validatePost(post)) return false
 
+    if (Settings.showConfirmMsgWhenUploadPost) {
+        const answer = await vscode.window.showWarningMessage(
+            '确认上传博文吗?',
+            {
+                modal: true,
+                detail: '本地博文将保存至服务端(可通过设置关闭对话框)',
+            },
+            '确认'
+        )
+        if (answer !== '确认') return false
+    }
+
     return window.withProgress(
         {
             location: ProgressLocation.Notification,
-            title: '正在保存博文',
+            title: '正在上传博文',
             cancellable: false,
         },
         async progress => {
@@ -165,11 +177,11 @@ export const savePostToCnblogs = async (input: Post | PostTreeItem | PostEditDto
 
                 hasSaved = true
                 progress.report({ increment: 100 })
-                AlertService.info('保存成功')
+                AlertService.info('上传成功')
                 await refreshPostsList()
             } catch (err) {
                 progress.report({ increment: 100 })
-                AlertService.error(`保存失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
+                AlertService.error(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
                 console.error(err)
             }
             return hasSaved
