@@ -34,6 +34,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     Settings.migrateEnablePublishSelectionToIng().catch(console.warn)
 
+    void accountManager.updateAuthStatus()
+
     vscode.window.registerUriHandler(extensionUriHandler)
 
     return { extendMarkdownIt }
