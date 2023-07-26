@@ -152,7 +152,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
             '确认上传博文吗?',
             {
                 modal: true,
-                detail: '本地博文将保存至服务端(该对话框可在设置中关闭)',
+                detail: '本地博文将保存至服务端(可通过设置关闭对话框)',
             },
             '确认'
         )
