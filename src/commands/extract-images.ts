@@ -16,8 +16,10 @@ export async function extractImages(arg: unknown, inputImageSrc?: ImageSrc) {
     const extractor = new MkdImgExtractor(markdown, arg)
 
     const images = extractor.findImages()
-    if (images.length <= 0)
+    if (images.length <= 0) {
         void (!inputImageSrc !== undefined ? window.showWarningMessage('没有找到可以提取的图片') : undefined)
+        return
+    }
 
     const getExtractOption = () => {
         const webImgCount = images.filter(newImageSrcFilter(ImageSrc.web)).length

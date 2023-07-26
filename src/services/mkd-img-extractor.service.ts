@@ -29,8 +29,8 @@ export interface ImageInfo {
 
 const imgTagDataUrlImgPat = /(<img.*?src\s*=\s*")(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)("[^/]*?\/?>)/g
 const imgTagUrlImgPat = /(<img.*?src\s*=\s*")(.*\.(?:png|jpg|jpeg|webp|svg|gif))("[^/]*?\/?>)/gi
-const mkdDataUrlImgPat = /(!\[.*?\]\()(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)(\))/g
-const mkdUrlImgPat = /(!\[.*?\]\()(.*?\.(?:png|jpg|jpeg|webp|svg|gif))(\))/gi
+const mkdDataUrlImgPat = /(!\[.*?]\()(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)(\))/g
+const mkdUrlImgPat = /(!\[.*?]\()(.*?\.(?:png|jpg|jpeg|webp|svg|gif))(\))/gi
 
 const cnblogsDomainRegExp = /\.cnblogs\.com\//gi
 
@@ -163,12 +163,13 @@ export class MkdImgExtractor {
 
             const acc = urlImgInfo.concat(dataUrlImgInfo)
 
+            //console.log(k)
             // TODO: better filter design needed
             // remove cnblogs img link
-            return acc.filter(x => !cnblogsDomainRegExp.test(x.data))
+            return acc.filter(x => x.data.match(cnblogsDomainRegExp) == null)
         }
 
-        this._images ??= acc()
+        this._images = acc()
 
         // apply settings
         return this._images.filter(x => newImageSrcFilter(this._imageSrc)(x))
