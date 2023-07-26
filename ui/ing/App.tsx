@@ -48,28 +48,27 @@ export class App extends Component<unknown, IngAppState> {
 
     private observeMessages() {
         window.addEventListener('message', ({ data: { command, payload } }: { data: IngWebviewUiCmd }) => {
-            switch (command) {
-                case WebviewCmd.IngCmd.UiCmd.setAppState: {
-                    const { ingList, isRefreshing, comments } = payload as Partial<IngAppState>
-                    this.setState({
-                        ingList: ingList?.map(Ing.parse) ?? this.state.ingList,
-                        isRefreshing: isRefreshing ?? this.state.isRefreshing,
-                        comments: comments
-                            ? Object.assign(
-                                  {},
-                                  this.state.comments ?? {},
-                                  cloneWith(comments, v => {
-                                      for (const key in v) v[key] = v[key].map(IngComment.parse)
-                                      return v
-                                  })
-                              )
-                            : this.state.comments,
-                    })
-                    break
-                }
-                case WebviewCmd.IngCmd.UiCmd.updateTheme:
-                    this.setState({ theme: activeThemeProvider.activeTheme() })
-                    break
+            if (command === WebviewCmd.IngCmd.UiCmd.setAppState) {
+                const { ingList, isRefreshing, comments } = payload as Partial<IngAppState>
+                this.setState({
+                    ingList: ingList?.map(Ing.parse) ?? this.state.ingList,
+                    isRefreshing: isRefreshing ?? this.state.isRefreshing,
+                    comments: comments
+                        ? Object.assign(
+                              {},
+                              this.state.comments ?? {},
+                              cloneWith(comments, v => {
+                                  for (const key in v) v[key] = v[key].map(IngComment.parse)
+                                  return v
+                              })
+                          )
+                        : this.state.comments,
+                })
+                return
+            }
+            if (command === WebviewCmd.IngCmd.UiCmd.updateTheme) {
+                this.setState({ theme: activeThemeProvider.activeTheme() })
+                return
             }
         })
     }
