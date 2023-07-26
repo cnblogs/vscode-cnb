@@ -77,10 +77,10 @@ class AccountManager extends vscode.Disposable {
         if (session === undefined) return
 
         try {
-            await AuthProvider.instance.removeSession(session.id)
             await Oauth.revokeToken(session.accessToken)
+            await AuthProvider.instance.removeSession(session.id)
         } catch (e: any) {
-            AlertService.err(`登出发生错误: ${e}`)
+            void AlertService.err(`登出发生错误: ${e}`)
         }
     }
 

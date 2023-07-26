@@ -68,7 +68,7 @@ export namespace Oauth {
         return res.body
     }
 
-    export async function revokeToken(token: string): Promise<boolean> {
+    export async function revokeToken(token: string) {
         const { clientId, revocationEndpoint, authority } = globalCtx.config.oauth
 
         const body = new URLSearchParams([
