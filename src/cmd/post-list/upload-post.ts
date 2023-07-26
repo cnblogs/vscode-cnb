@@ -151,10 +151,10 @@ export const uploadPost = async (input: Post | PostTreeItem | PostEditDto | unde
 
     if (MarkdownCfg.isShowConfirmMsgWhenUploadPost()) {
         const answer = await Alert.warn(
-            '确认上传吗?',
+            '确认上传博文吗?',
             {
                 modal: true,
-                detail: '本地博文将对远程博文进行覆盖, 操作不可逆!(此消息可在设置中关闭)',
+                detail: '本地博文将保存至服务端(该对话框可在设置中关闭)',
             },
             '确认'
         )

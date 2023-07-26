@@ -22,7 +22,7 @@ export async function pullRemotePost(input: Post | PostTreeItem | Uri | undefine
             '确认要拉取远程博文吗?',
             {
                 modal: true,
-                detail: `本地文件 ${resolveFileNames(ctxList)} 将被覆盖, 请谨慎操作!(此消息可在设置中关闭)`,
+                detail: `本地文件 ${resolveFileNames(ctxList)} 将被覆盖(可通过设置关闭对话框)`,
             } as MessageOptions,
             '确认'
         )
