@@ -9,6 +9,10 @@ export namespace MarkdownCfg {
         return cfgGet('showConfirmMsgWhenUploadPost') ?? true
     }
 
+    export function isIgnoreYfmWhenUploadPost(): boolean {
+        return cfgGet('ignoreYfmWhenUploadPost') ?? true
+    }
+
     export function isShowConfirmMsgWhenPullPost(): boolean {
         return cfgGet('showConfirmMsgWhenPullPost') ?? true
     }

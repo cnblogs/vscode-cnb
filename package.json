@@ -545,8 +545,16 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "在拉取博文时显示确认消息"
                     },
-                    "cnblogsClient.menus.context.explorer": {
+                    "cnblogsClient.markdown.ignoreYfmWhenUploadPost": {
                         "order": 13,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": true,
+                        "editPresentation": "singlelineText",
+                        "markdownDescription": "上传博文时忽略 YAML front matter"
+                    },
+                    "cnblogsClient.menus.context.explorer": {
+                        "order": 14,
                         "type": "object",
                         "additionalProperties": false,
                         "default": {
@@ -605,7 +613,7 @@
                         }
                     },
                     "cnblogsClient.menus.context.editor": {
-                        "order": 14,
+                        "order": 15,
                         "type": "object",
                         "default": {
                             "upload-post-file": true,
@@ -683,28 +691,28 @@
                         "markdownDescription": "控制要在编辑器右键菜单中显示的命令"
                     },
                     "cnblogsClient.ui.textIngStar": {
-                        "order": 15,
+                        "order": 16,
                         "type": "boolean",
                         "scope": "application",
                         "default": false,
                         "markdownDescription": "闪存星文本化"
                     },
                     "cnblogsClient.ui.textIngEmoji": {
-                        "order": 16,
+                        "order": 17,
                         "type": "boolean",
                         "scope": "application",
                         "default": false,
                         "markdownDescription": "闪存 Emoji 文本化"
                     },
                     "cnblogsClient.ui.disableIngUserAvatar": {
-                        "order": 17,
+                        "order": 18,
                         "type": "boolean",
                         "scope": "application",
                         "default": false,
                         "markdownDescription": "禁用闪存用户头像"
                     },
                     "cnblogsClient.ui.treeViewTitleStyle": {
-                        "order": 18,
+                        "order": 19,
                         "scope": "application",
                         "default": "normal",
                         "markdownDescription": "侧栏标题风格",

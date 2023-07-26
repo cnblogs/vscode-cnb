@@ -13,6 +13,8 @@ import { ZzkSearchResult } from '@/model/zzk-search-result'
 import got from '@/infra/http-client'
 import httpClient from '@/infra/http-client'
 import iconv from 'iconv-lite'
+import { MarkdownCfg } from '@/ctx/cfg/markdown'
+import { rmYfm } from '@/infra/rm-yfm'
 
 const defaultPageSize = 30
 let newPostTemplate: PostEditDto | undefined
@@ -106,6 +108,7 @@ export namespace PostService {
     }
 
     export async function updatePost(post: Post): Promise<PostUpdatedResponse> {
+        if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
         const {
             ok: isOk,
             url,
