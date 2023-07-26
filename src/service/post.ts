@@ -2,12 +2,10 @@ import fetch from '@/infra/fetch-client'
 import { Post } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PageModel } from '@/model/page-model'
-import { PostListState } from '@/model/post-list-state'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostUpdatedResponse } from '@/model/post-updated-response'
 import { throwIfNotOkGotResponse } from '@/infra/response-err'
 import { IErrorResponse } from '@/model/error-response'
-import { Alert } from '@/infra/alert'
 import { PostFileMapManager } from './post-file-map'
 import { ZzkSearchResult } from '@/model/zzk-search-result'
 import got from '@/infra/http-client'
@@ -15,8 +13,9 @@ import httpClient from '@/infra/http-client'
 import iconv from 'iconv-lite'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { rmYfm } from '@/infra/rm-yfm'
+import { PostListState } from '@/model/post-list-state'
+import { Alert } from '@/infra/alert'
 
-const defaultPageSize = 30
 let newPostTemplate: PostEditDto | undefined
 
 export namespace PostService {
@@ -27,13 +26,9 @@ export namespace PostService {
     export async function fetchPostList({
         search = '',
         pageIndex = 1,
-        pageSize = defaultPageSize,
+        pageSize = 30,
         categoryId = <null | number>null,
-    }): Promise<
-        PageModel<Post> & {
-            zzkSearchResult?: ZzkSearchResult
-        }
-    > {
+    }) {
         const s = new URLSearchParams([
             ['t', '1'],
             ['p', `${pageIndex}`],
@@ -60,17 +55,14 @@ export namespace PostService {
         )
     }
 
-    export async function fetchPostEditDto(
-        postId: number,
-        muteErrorNotification = false
-    ): Promise<PostEditDto | undefined> {
-        const response = await httpClient.get(`${getBaseUrl()}/api/posts/${postId}`, {
+    export async function fetchPostEditDto(postId: number, muteErrorNotification = false) {
+        const res = await httpClient.get(`${getBaseUrl()}/api/posts/${postId}`, {
             throwHttpErrors: false,
             responseType: 'buffer',
         })
 
         try {
-            throwIfNotOkGotResponse(response)
+            throwIfNotOkGotResponse(res)
         } catch (e) {
             const { statusCode, errors } = e as IErrorResponse
             if (!muteErrorNotification) {
@@ -85,11 +77,13 @@ export namespace PostService {
             return undefined
         }
 
-        const decodedBody = iconv.decode(response.rawBody, 'utf-8')
+        const decodedBody = iconv.decode(res.rawBody, 'utf-8')
 
         const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown }
 
-        return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined
+        if (blogPost !== undefined) return new PostEditDto(Object.assign(new Post(), blogPost), myConfig)
+
+        return undefined
     }
 
     export async function deletePost(...postIds: number[]) {
@@ -107,7 +101,7 @@ export namespace PostService {
         }
     }
 
-    export async function updatePost(post: Post): Promise<PostUpdatedResponse> {
+    export async function updatePost(post: Post) {
         if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
         const {
             ok: isOk,
@@ -121,32 +115,32 @@ export namespace PostService {
         return PostUpdatedResponse.parse(body)
     }
 
-    export async function updatePostListState(state: PostListState | undefined | PageModel<Post>) {
-        const finalState: PostListState | undefined =
-            state instanceof PageModel
-                ? {
-                      pageIndex: state.pageIndex,
-                      pageSize: state.pageSize,
-                      totalItemsCount: state.totalItemsCount,
-                      itemsCount: state.items?.length ?? 0,
-                      timestamp: new Date(),
-                      hasNext: state.hasNext,
-                      hasPrevious: state.hasPrevious,
-                      pageCount: state.pageCount,
-                  }
-                : state
-        await globalCtx.storage.update('postListState', finalState)
+    export async function updatePostListState(state: PostListState | PageModel<Post>) {
+        if (state instanceof PageModel) {
+            const finalState = {
+                pageIndex: state.pageIndex,
+                pageSize: state.pageSize,
+                totalItemsCount: state.totalItemsCount,
+                itemsCount: state.items?.length ?? 0,
+                timestamp: new Date(),
+                hasNext: state.hasNext,
+                hasPrevious: state.hasPrevious,
+                pageCount: state.pageCount,
+            }
+            await globalCtx.storage.update('postListState', finalState)
+        }
+
+        await globalCtx.storage.update('postListState', state)
     }
 
-    export async function fetchPostEditTemplate(): Promise<PostEditDto | undefined> {
-        if (!newPostTemplate) newPostTemplate = await fetchPostEditDto(-1)
+    export async function fetchPostEditTemplate() {
+        newPostTemplate ??= await fetchPostEditDto(-1)
+        if (newPostTemplate === undefined) return undefined
 
-        return newPostTemplate
-            ? new PostEditDto(
-                  Object.assign(new Post(), newPostTemplate.post),
-                  Object.assign({}, newPostTemplate.config)
-              )
-            : undefined
+        return new PostEditDto(
+            Object.assign(new Post(), newPostTemplate.post),
+            Object.assign({}, newPostTemplate.config)
+        )
     }
 }
 
