@@ -466,8 +466,28 @@
                         "type": "boolean",
                         "markdownDescription": "创建本地博文时, 是否根据博文分类保存到对应的文件夹中"
                     },
-                    "cnblogsClient.markdown.autoExtractImages": {
+                    "cnblogsClient.pageSize.postList": {
                         "order": 6,
+                        "default": 30,
+                        "scope": "application",
+                        "editPresentation": "singlelineText",
+                        "markdownDescription": "随笔列表分页大小, 自定义随笔列表每页展示数量",
+                        "type": "integer",
+                        "maximum": 100,
+                        "enum": [
+                            20,
+                            30,
+                            40,
+                            50,
+                            60,
+                            70,
+                            80,
+                            90,
+                            100
+                        ]
+                    },
+                    "cnblogsClient.markdown.autoExtractImages": {
+                        "order": 7,
                         "default": "disable",
                         "scope": "application",
                         "enum": [
@@ -486,26 +506,6 @@
                         ],
                         "editPresentation": "singlelineText",
                         "markdownDescription": "提取图片, 配置上传到博客园时要自动提取上传到博客园的图片"
-                    },
-                    "cnblogsClient.pageSize.postList": {
-                        "order": 7,
-                        "default": 30,
-                        "scope": "application",
-                        "editPresentation": "singlelineText",
-                        "markdownDescription": "随笔列表分页大小, 自定义随笔列表每页展示数量",
-                        "type": "integer",
-                        "maximum": 100,
-                        "enum": [
-                            20,
-                            30,
-                            40,
-                            50,
-                            60,
-                            70,
-                            80,
-                            90,
-                            100
-                        ]
                     },
                     "cnblogsClient.markdown.enableEnhancement": {
                         "order": 8,
@@ -569,45 +569,45 @@
                         "markdownDescription": "控制要在资源管理器右键菜单中显示的命令",
                         "properties": {
                             "upload-post-file": {
+                                "order": 0,
                                 "description": "上传到博客园",
                                 "type": "boolean",
-                                "order": 0,
                                 "default": true
                             },
                             "pull-remote-post": {
+                                "order": 1,
                                 "description": "拉取博文",
                                 "type": "boolean",
-                                "order": 1,
                                 "default": true
                             },
                             "modify-post-setting": {
+                                "order": 2,
                                 "description": "博文设置",
                                 "type": "boolean",
-                                "order": 2,
                                 "default": true
                             },
                             "show-post-to-local-file-info": {
+                                "order": 3,
                                 "description": "博客园关联博文",
                                 "type": "boolean",
-                                "order": 3,
                                 "default": true
                             },
                             "open-post-in-blog-admin": {
+                                "order": 4,
                                 "description": "在博客后台中编辑",
                                 "type": "boolean",
-                                "order": 4,
                                 "default": true
                             },
                             "export-post-to-pdf": {
+                                "order": 5,
                                 "description": "导出 PDF",
                                 "type": "boolean",
-                                "order": 5,
                                 "default": true
                             },
                             "copy-post-link": {
+                                "order": 6,
                                 "description": "复制博文链接",
                                 "type": "boolean",
-                                "order": 6,
                                 "default": true
                             }
                         }
