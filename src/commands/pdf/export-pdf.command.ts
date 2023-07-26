@@ -125,7 +125,7 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
         path = op ? await op[1]() : undefined
     }
 
-    if (path && path !== Settings.chromiumPath) await Settings.setChromiumPath(path)
+    if (path !== undefined && path !== Settings.chromiumPath) await Settings.setChromiumPath(path)
 
     return path
 }

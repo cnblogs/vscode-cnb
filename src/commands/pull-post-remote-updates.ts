@@ -8,6 +8,7 @@ import { AlertService } from '@/services/alert.service'
 import path from 'path'
 import { revealPostsListItem } from '@/services/posts-list-view'
 import { PostTreeItem } from '@/tree-view-providers/models/post-tree-item'
+import { Settings } from '@/services/settings.service'
 
 const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefined | null): Promise<void> => {
     const ctxs: CommandContext[] = []
@@ -16,7 +17,19 @@ const pullPostRemoteUpdates = async (input: Post | PostTreeItem | Uri | undefine
     if (parsePostInput(input) && input.id > 0) await handlePostInput(input, ctxs)
     else if ((uri = parseUriInput(input))) await handleUriInput(uri, ctxs)
 
-    if (ctxs.length <= 0 || !(await confirmOperation(ctxs))) return
+    if (Settings.showConfirmMsgWhenPullPost) {
+        const answer = await window.showWarningMessage(
+            '确认要拉取远程博文吗?',
+            {
+                modal: true,
+                detail: `本地文件 ${resolveFileNames(ctxs)} 将被覆盖(可通过设置关闭对话框)`,
+            } as MessageOptions,
+            '确认'
+        )
+        if (answer !== '确认') return
+    }
+
+    if (ctxs.length <= 0) return
 
     await update(ctxs)
 
@@ -61,20 +74,6 @@ const handleUriInput = (fileUri: Uri, contexts: CommandContext[]): Promise<void>
 
     contexts.push({ postId, fileUri })
     return Promise.resolve()
-}
-
-const confirmOperation = async (ctxs: CommandContext[]): Promise<boolean> => {
-    const options = ['确定']
-    return (
-        (await window.showWarningMessage(
-            '确定要拉取远程博文内容更新本地文件吗?',
-            {
-                modal: true,
-                detail: `本地文件${resolveFileNames(ctxs)}的内容将被覆盖, 数据无价, 请谨慎操作`,
-            } as MessageOptions,
-            ...options
-        )) === options[0]
-    )
 }
 
 const update = async (contexts: CommandContext[]) => {

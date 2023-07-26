@@ -12,7 +12,7 @@ export namespace webviewCommands {
     }
 
     export enum ExtensionCommands {
-        savePost = 'savePost',
+        uploadPost = 'uploadPost',
         disposePanel = 'disposePanel',
         uploadImage = 'uploadImage',
         refreshPost = 'refreshPost',

@@ -174,11 +174,11 @@ export namespace postConfigurationPanel {
         return webview.onDidReceiveMessage(async message => {
             const { command } = (message ?? {}) as webviewMessage.Message
             switch (command) {
-                case webviewCommands.ExtensionCommands.savePost:
+                case webviewCommands.ExtensionCommands.uploadPost:
                     try {
                         if (!panel) return
 
-                        const { post: postToUpdate } = message as webviewMessage.SavePostMessage
+                        const { post: postToUpdate } = message as webviewMessage.UploadPostMessage
                         if (beforeUpdate) {
                             if (!(await beforeUpdate(postToUpdate, panel))) {
                                 panel.dispose()
