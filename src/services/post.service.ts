@@ -27,11 +27,7 @@ export namespace PostService {
         pageIndex = 1,
         pageSize = defaultPageSize,
         categoryId = <null | number>null,
-    }): Promise<
-        PageModel<Post> & {
-            zzkSearchResult?: ZzkSearchResult
-        }
-    > {
+    }) {
         const s = new URLSearchParams([
             ['t', '1'],
             ['p', `${pageIndex}`],
@@ -58,17 +54,14 @@ export namespace PostService {
         )
     }
 
-    export async function fetchPostEditDto(
-        postId: number,
-        muteErrorNotification = false
-    ): Promise<PostEditDto | undefined> {
-        const response = await httpClient.get(`${getBaseUrl()}/api/posts/${postId}`, {
+    export async function fetchPostEditDto(postId: number, muteErrorNotification = false) {
+        const res = await httpClient.get(`${getBaseUrl()}/api/posts/${postId}`, {
             throwHttpErrors: false,
             responseType: 'buffer',
         })
 
         try {
-            throwIfNotOkGotResponse(response)
+            throwIfNotOkGotResponse(res)
         } catch (e) {
             const { statusCode, errors } = e as IErrorResponse
             if (!muteErrorNotification) {
@@ -83,11 +76,13 @@ export namespace PostService {
             return undefined
         }
 
-        const decodedBody = iconv.decode(response.rawBody, 'utf-8')
+        const decodedBody = iconv.decode(res.rawBody, 'utf-8')
 
         const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown }
 
-        return blogPost ? new PostEditDto(Object.assign(new Post(), blogPost), myConfig) : undefined
+        if (blogPost !== undefined) return new PostEditDto(Object.assign(new Post(), blogPost), myConfig)
+
+        return undefined
     }
 
     export async function deletePost(postId: number) {
@@ -105,7 +100,7 @@ export namespace PostService {
         if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
     }
 
-    export async function updatePost(post: Post): Promise<PostUpdatedResponse> {
+    export async function updatePost(post: Post) {
         const {
             ok: isOk,
             url,
@@ -118,32 +113,32 @@ export namespace PostService {
         return PostUpdatedResponse.parse(body)
     }
 
-    export async function updatePostsListState(state: PostsListState | undefined | PageModel<Post>) {
-        const finalState: PostsListState | undefined =
-            state instanceof PageModel
-                ? {
-                      pageIndex: state.pageIndex,
-                      pageSize: state.pageSize,
-                      totalItemsCount: state.totalItemsCount,
-                      itemsCount: state.items?.length ?? 0,
-                      timestamp: new Date(),
-                      hasNext: state.hasNext,
-                      hasPrevious: state.hasPrevious,
-                      pageCount: state.pageCount,
-                  }
-                : state
-        await globalCtx.storage.update('postsListState', finalState)
+    export async function updatePostsListState(state: PostsListState | PageModel<Post>) {
+        if (state instanceof PageModel) {
+            const finalState = {
+                pageIndex: state.pageIndex,
+                pageSize: state.pageSize,
+                totalItemsCount: state.totalItemsCount,
+                itemsCount: state.items?.length ?? 0,
+                timestamp: new Date(),
+                hasNext: state.hasNext,
+                hasPrevious: state.hasPrevious,
+                pageCount: state.pageCount,
+            }
+            await globalCtx.storage.update('postsListState', finalState)
+        }
+
+        await globalCtx.storage.update('postsListState', state)
     }
 
     export async function fetchPostEditTemplate(): Promise<PostEditDto | undefined> {
-        if (!newPostTemplate) newPostTemplate = await fetchPostEditDto(-1)
+        newPostTemplate ??= await fetchPostEditDto(-1)
+        if (newPostTemplate === undefined) return undefined
 
-        return newPostTemplate
-            ? new PostEditDto(
-                  Object.assign(new Post(), newPostTemplate.post),
-                  Object.assign({}, newPostTemplate.config)
-              )
-            : undefined
+        return new PostEditDto(
+            Object.assign(new Post(), newPostTemplate.post),
+            Object.assign({}, newPostTemplate.config)
+        )
     }
 }
 
