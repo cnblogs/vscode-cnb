@@ -164,10 +164,10 @@ export class MkdImgExtractor {
 
             // TODO: better filter design needed
             // remove cnblogs img link
-            return acc.filter(x => !cnblogsDomainRegExp.test(x.data))
+            return acc.filter(x => x.data.match(cnblogsDomainRegExp) == null)
         }
 
-        this._images ??= acc()
+        this._images = acc()
 
         // apply settings
         return this._images.filter(x => newImgSrcFilter(this._imageSrc)(x))
