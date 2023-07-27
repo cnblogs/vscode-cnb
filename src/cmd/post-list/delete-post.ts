@@ -11,9 +11,7 @@ import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tre
 
 let isDeleting = false
 
-const confirmDelete = async (
-    selectedPost: Post[]
-): Promise<{ confirmed: boolean; deleteLocalFileAtSameTime: boolean }> => {
+async function confirmDelete(selectedPost: Post[]) {
     const result = { confirmed: false, deleteLocalFileAtSameTime: false }
     if (!selectedPost || selectedPost.length <= 0) return result
 
@@ -38,7 +36,7 @@ const confirmDelete = async (
     return result
 }
 
-export const deleteSelectedPost = async (arg: unknown) => {
+export async function deleteSelectedPost(arg: unknown) {
     let post: Post
     if (arg instanceof Post) post = arg
     else if (arg instanceof PostTreeItem) post = arg.post
@@ -55,7 +53,7 @@ export const deleteSelectedPost = async (arg: unknown) => {
     if (selectedPost.length <= 0) return
 
     if (isDeleting) {
-        Alert.warn('休息会儿再点吧~')
+        void Alert.warn('休息会儿再点吧~')
         return
     }
 

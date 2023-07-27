@@ -1,6 +1,6 @@
 import { LocalState } from '@/ctx/local-state'
 import getExtCfg = LocalState.getExtCfg
-import { ImgSrc } from '@/service/mkd-img-extractor'
+import { ImgSrc } from '@/markdown/mkd-img-extractor'
 
 export namespace MarkdownCfg {
     const cfgGet = <T>(key: string) => getExtCfg().get<T>(`markdown.${key}`)

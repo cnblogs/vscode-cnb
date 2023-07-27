@@ -13,7 +13,7 @@ import { createLocalDraft } from '@/cmd/post-list/create-local-draft'
 import { deleteSelectedPost } from '@/cmd/post-list/delete-post'
 import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
 import { uploadImg } from '@/cmd/upload-img/upload-img'
-import { revealLocalPostFileInOs } from '@/cmd/reveal-local-post-file-in-os'
+import { osOpenLocalPostFile } from '@/cmd/os-open-local-post-file'
 import { showLocalFileToPostInfo } from '@/cmd/show-local-file-to-post-info'
 import { newPostCategory } from '@/cmd/post-category/new-post-category'
 import { refreshPostCategoryList } from '@/cmd/post-category/refresh-post-category-list'
@@ -24,7 +24,7 @@ import { renamePost } from '@/cmd/post-list/rename-post'
 import { openPostInBlogAdmin } from '@/cmd/open/open-post-in-blog-admin'
 import { openWorkspace } from '@/cmd/open/open-workspace'
 import { setWorkspace } from '@/cmd/set-workspace'
-import { revealWorkspaceInOs } from '@/cmd/reveal-workspace-in-os'
+import { osOpenWorkspace } from '@/cmd/os-open-workspace'
 import { viewPostOnline } from '@/cmd/view-post-online'
 import { pullRemotePost } from '@/cmd/pull-remote-post'
 import { extractImg } from '@/cmd/extract-img'
@@ -81,7 +81,7 @@ export function setupExtCmd() {
         regCmd(withAppName('.clear-post-search-results'), clearPostSearchResults),
         regCmd(withAppName('.refresh-post-search-results'), refreshPostSearchResults),
         regCmd(withAppName('.copy-post-link'), input => new CopyPostLinkCmdHandler(input).handle()),
-        regCmd(withAppName('.reveal-local-post-file-in-os'), revealLocalPostFileInOs),
+        regCmd(withAppName('.reveal-local-post-file-in-os'), osOpenLocalPostFile),
         regCmd(withAppName('.show-post-to-local-file-info'), showLocalFileToPostInfo),
         // img
         regCmd(withAppName('.extract-img'), extractImg),
@@ -96,7 +96,7 @@ export function setupExtCmd() {
         // workspace
         regCmd(withAppName('.open-workspace'), openWorkspace),
         regCmd(withAppName('.set-workspace'), setWorkspace),
-        regCmd(withAppName('.reveal-workspace-in-os'), revealWorkspaceInOs),
+        regCmd(withAppName('.reveal-workspace-in-os'), osOpenWorkspace),
         // ing
         regCmd(withAppName('.ing.publish'), () => new PublishIngCmdHandler('input').handle()),
         regCmd(withAppName('.ing.publish-select'), () => new PublishIngCmdHandler('select').handle()),

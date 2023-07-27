@@ -1,6 +1,7 @@
 import { MessageItem, MessageOptions, ProgressLocation, Range, Uri, window, workspace, WorkspaceEdit } from 'vscode'
-import { ImgInfo, ImgSrc, MkdImgExtractor, newImgSrcFilter } from '@/service/mkd-img-extractor'
+import { ImgInfo, ImgSrc, MkdImgExtractor, newImgSrcFilter } from '@/markdown/mkd-img-extractor'
 import { Alert } from '@/infra/alert'
+import { findImgLink } from '@/infra/filter/find-img-link'
 
 type ExtractOption = MessageItem & Partial<{ imageSrc: ImgSrc }>
 
@@ -14,17 +15,16 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
     await textDocument.save()
 
     const markdown = (await workspace.fs.readFile(arg)).toString()
-    const extractor = new MkdImgExtractor(markdown, arg)
+    const imgInfoList = findImgLink(markdown)
 
-    const images = extractor.findImages()
-    if (images.length <= 0) {
+    if (imgInfoList.length <= 0) {
         if (inputImgSrc !== undefined) void Alert.info('没有找到可以提取的图片')
         return
     }
 
-    const webImgCount = images.filter(newImgSrcFilter(ImgSrc.web)).length
-    const dataUrlImgCount = images.filter(newImgSrcFilter(ImgSrc.dataUrl)).length
-    const fsImgCount = images.filter(newImgSrcFilter(ImgSrc.fs)).length
+    const webImgCount = imgInfoList.filter(newImgSrcFilter(ImgSrc.web)).length
+    const dataUrlImgCount = imgInfoList.filter(newImgSrcFilter(ImgSrc.dataUrl)).length
+    const fsImgCount = imgInfoList.filter(newImgSrcFilter(ImgSrc.fs)).length
 
     const displayOptions: ExtractOption[] = [
         { title: '提取全部', imageSrc: ImgSrc.any },
@@ -57,7 +57,7 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
 
     if (selectedSrc === undefined) return
 
-    extractor.imgSrc = selectedSrc
+    const extractor = new MkdImgExtractor(arg, selectedSrc)
 
     const failedImages = await window.withProgress(
         { title: '正在提取图片', location: ProgressLocation.Notification },
@@ -71,7 +71,7 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
                 })
             }
 
-            const extracted = await extractor.extract()
+            const extracted = await extractor.extract(imgInfoList)
             const extractedLen = extracted.length
             const idx = 0
 

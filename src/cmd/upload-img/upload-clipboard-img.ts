@@ -6,8 +6,9 @@ import getClipboardImage from '@/infra/get-clipboard-img'
 
 const noImagePath = 'no image'
 
-export const uploadImgFromClipboard = async () => {
+export async function uploadImgFromClipboard() {
     const clipboardImage = await getClipboardImage()
+
     if (clipboardImage.imgPath === noImagePath) {
         void Alert.warn('剪贴板中没有找到图片')
         return

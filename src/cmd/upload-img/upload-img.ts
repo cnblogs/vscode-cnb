@@ -3,18 +3,20 @@ import { uploadImgFromClipboard } from './upload-clipboard-img'
 import { insertImgLinkToActiveEditor, showUploadSuccessModel } from './upload-img-util'
 import { uploadFsImage } from './upload-fs-img'
 
-export const uploadImg = async (autoInsertToActiveEditor = true, from?: 'local' | 'clipboard') => {
+export async function uploadImg(autoInsertToActiveEditor = true, from?: 'local' | 'clipboard') {
     const options = ['本地图片文件', '剪贴板图片']
-    const selected = !from
-        ? await Alert.info(
-              '上传图片到博客园',
-              {
-                  modal: true,
-                  detail: '选择图片来源',
-              },
-              ...options
-          )
-        : from
+    let selected = undefined
+
+    if (from !== undefined) {
+        selected = await Alert.info(
+            '上传图片到博客园',
+            {
+                modal: true,
+                detail: '选择图片来源',
+            },
+            ...options
+        )
+    }
 
     let imageUrl: string | undefined
     const caughtFailedUpload = (e: unknown) =>

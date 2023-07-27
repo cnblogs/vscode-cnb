@@ -12,7 +12,7 @@ import got from '@/infra/http-client'
 import httpClient from '@/infra/http-client'
 import iconv from 'iconv-lite'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
-import { rmYfm } from '@/infra/rm-yfm'
+import { rmYfm } from '@/infra/filter/rm-yfm'
 import { PostListState } from '@/model/post-list-state'
 import { Alert } from '@/infra/alert'
 

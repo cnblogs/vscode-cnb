@@ -21,18 +21,6 @@ export interface ImgInfo {
     postfix: string
 }
 
-// Data URL reference see in:
-// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs
-// Related RFC:
-// https://datatracker.ietf.org/doc/html/rfc2397
-
-const imgTagDataUrlImgPat = /(<img.*?src\s*=\s*")(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)("[^/]*?\/?>)/g
-const imgTagUrlImgPat = /(<img.*?src\s*=\s*")(.*\.(?:png|jpg|jpeg|webp|svg|gif))("[^/]*?\/?>)/gi
-const mkdDataUrlImgPat = /(!\[.*?]\()(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)(\))/g
-const mkdUrlImgPat = /(!\[.*?]\()(.*?\.(?:png|jpg|jpeg|webp|svg|gif))(\))/gi
-
-const cnblogsDomainRegExp = /\.cnblogs\.com\//gi
-
 export const enum ImgSrc {
     web,
     dataUrl,
@@ -68,13 +56,11 @@ enum ExtractorSt {
 export class MkdImgExtractor {
     private _status = ExtractorSt.pending
     private _errors: [imgLink: string, msg: string][] = []
-    private _images: ImgInfo[] = []
     private readonly _workspaceDirs: string[] = []
 
     constructor(
-        private readonly markdown: string,
         private readonly targetFileUri: Uri,
-        public imgSrc: ImgSrc = ImgSrc.any,
+        private imgSrc: ImgSrc,
         public onProgress?: (index: number, images: ImgInfo[]) => void
     ) {
         if (workspace.workspaceFolders !== undefined)
@@ -89,16 +75,15 @@ export class MkdImgExtractor {
         return this._errors
     }
 
-    async extract(): Promise<[src: ImgInfo, dst: ImgInfo | null][]> {
+    async extract(imgInfoList: ImgInfo[]): Promise<[src: ImgInfo, dst: ImgInfo | null][]> {
         this._status = ExtractorSt.extracting
 
-        const srcInfoArr = this.findImages()
         let count = 0
 
         const result: ReturnType<MkdImgExtractor['extract']> extends Promise<infer U> ? U : never = []
 
-        for (const srcInfo of srcInfoArr) {
-            if (this.onProgress) this.onProgress(count++, srcInfoArr)
+        for (const srcInfo of imgInfoList) {
+            if (this.onProgress) this.onProgress(count++, imgInfoList)
 
             // reuse resolved link
             const resolvedLink = result.find(([src, dst]) => dst != null && src.data === srcInfo.data)?.[1]?.data
@@ -127,43 +112,6 @@ export class MkdImgExtractor {
         this._status = ExtractorSt.extracted
 
         return result
-    }
-
-    findImages(): ImgInfo[] {
-        const acc = () => {
-            const imgTagUrlImgMatchGroups = Array.from(this.markdown.matchAll(imgTagUrlImgPat))
-            const mkdUrlImgMatchGroups = Array.from(this.markdown.matchAll(mkdUrlImgPat))
-            const urlImgInfo = imgTagUrlImgMatchGroups.concat(mkdUrlImgMatchGroups).map<ImgInfo>(mg => ({
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                startOffset: mg.index!,
-                dataType: DataType.url,
-                data: mg[2],
-                prefix: mg[1],
-                postfix: mg[3],
-            }))
-
-            const imgTagDataUrlImgMatchGroups = Array.from(this.markdown.matchAll(imgTagDataUrlImgPat))
-            const mkdDataUrlImgMatchGroups = Array.from(this.markdown.matchAll(mkdDataUrlImgPat))
-            const dataUrlImgInfo = imgTagDataUrlImgMatchGroups.concat(mkdDataUrlImgMatchGroups).map<ImgInfo>(mg => ({
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                startOffset: mg.index!,
-                dataType: DataType.dataUrl,
-                data: mg[2],
-                prefix: mg[1],
-                postfix: mg[3],
-            }))
-
-            const acc = urlImgInfo.concat(dataUrlImgInfo)
-
-            // TODO: better filter design needed
-            // remove cnblogs img link
-            return acc.filter(x => x.data.match(cnblogsDomainRegExp) == null)
-        }
-
-        this._images = acc()
-
-        // apply settings
-        return this._images.filter(x => newImgSrcFilter(this.imgSrc)(x))
     }
 
     private async resolveWebImg(url: string) {

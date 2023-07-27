@@ -92,13 +92,13 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
     return fileUri
 }
 
-const createDirectoryIfNotExist = async (uri: Uri) => {
+async function createDirectoryIfNotExist(uri: Uri) {
     try {
         await workspace.fs.readDirectory(uri)
     } catch (err) {
         if (err instanceof FileSystemError) await workspace.fs.createDirectory(uri)
 
-        Alert.err('Create workspace directory failed')
+        void Alert.err('Create workspace directory failed')
         console.error(err)
     }
 }

@@ -1,7 +1,7 @@
 import { homedir } from 'os'
 import path from 'path'
 import { Uri, window, workspace } from 'vscode'
-import { revealActiveFileInExplorer } from '@/infra/reveal-active-file'
+import { osOpenActiveFile } from '@/infra/os-open-active-file'
 import { openPostFile } from './open-post-file'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
@@ -32,9 +32,9 @@ export const createLocalDraft = async () => {
     }
 
     await openPostFile(filePath)
-    await revealActiveFileInExplorer()
+    await osOpenActiveFile()
     // 设置中关闭了 `autoReveal` 的情况下, 需要两次调用 `workbench.files.action.showActiveFileInExplorer` 命令, 才能正确 `reveal`
-    if (!workspace.getConfiguration('explorer').get<boolean>('autoReveal')) await revealActiveFileInExplorer()
+    if (!workspace.getConfiguration('explorer').get<boolean>('autoReveal')) await osOpenActiveFile()
 
     const focusEditor = async () => {
         const { activeTextEditor } = window
