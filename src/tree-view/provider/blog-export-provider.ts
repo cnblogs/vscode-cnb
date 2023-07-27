@@ -19,7 +19,6 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     private static _instance: BlogExportProvider | null = null
 
     private _treeDataChangedSource?: EventEmitter<BlogExportTreeItem | null | undefined> | null
-    private _store?: BlogExportRecordsStore | null
     private _downloadedExportEntry?: DownloadedExportsEntryTreeItem | null
 
     static get instance(): BlogExportProvider {
@@ -34,11 +33,6 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     get onDidChangeTreeData(): Event<BlogExportTreeItem | null | undefined> {
         this._treeDataChangedSource ??= new EventEmitter<BlogExportTreeItem | null | undefined>()
         return this._treeDataChangedSource.event
-    }
-
-    get store(): BlogExportRecordsStore {
-        this._store ??= new BlogExportRecordsStore()
-        return this._store
     }
 
     getTreeItem(element: BlogExportTreeItem): TreeItem | Thenable<TreeItem> {
@@ -105,14 +99,13 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         clearCache = true,
     } = {}): Promise<boolean> {
         const hasCacheRefreshed = force
-            ? await this._store
-                  ?.refresh()
+            ? await BlogExportRecordsStore?.refresh()
                   .then(() => true)
                   .catch(e => {
-                      if (notifyOnError) Alert.err(`刷新博客备份记录失败: ${e.message}`)
+                      if (notifyOnError) void Alert.err(`刷新博客备份记录失败: ${e.message}`)
                   })
             : clearCache
-            ? await this._store?.clearCache().then(
+            ? await BlogExportRecordsStore.clearCache().then(
                   () => true,
                   () => true
               )
@@ -128,10 +121,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     }
 
     private listRecords(): BlogExportRecordTreeItem[] {
-        const {
-            store: { cached },
-        } = this
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        const cached = BlogExportRecordsStore.getCached()
         if (cached == null) void this.refreshRecords()
         const items: BlogExportRecord[] = cached?.items ?? []
         return parseBlogExportRecords(this, items)

@@ -5,7 +5,7 @@ export class ZzkSearchResult {
         return this.postIds.length
     }
 
-    static parse<T extends { postIds?: number[] }>(obj: T | undefined | null) {
+    static parse<T extends { postIds?: number[] }>(obj?: T | null) {
         return obj == null ? null : new ZzkSearchResult(obj.postIds)
     }
 }

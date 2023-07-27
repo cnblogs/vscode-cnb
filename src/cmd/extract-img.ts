@@ -57,7 +57,7 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
 
     if (selectedSrc === undefined) return
 
-    extractor.imageSrc = selectedSrc
+    extractor.imgSrc = selectedSrc
 
     const failedImages = await window.withProgress(
         { title: '正在提取图片', location: ProgressLocation.Notification },

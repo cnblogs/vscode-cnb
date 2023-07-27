@@ -7,7 +7,7 @@ import { PostService } from '@/service/post'
 import { PostFileMapManager } from '@/service/post-file-map'
 import { openPostFile } from './open-post-file'
 import { PostTitleSanitizer } from '@/service/post-title-sanitizer'
-import { postCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post-category'
 import sanitizeFileName from 'sanitize-filename'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { PostCategoryCfg } from '@/ctx/cfg/post-category'
@@ -20,7 +20,7 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
     const { text: postTitle } = await PostTitleSanitizer.sanitize(post)
     if (shouldCreateLocalPostFileWithCategory) {
         const firstCategoryId = post.categoryIds?.[0]
-        const category = firstCategoryId ? await postCategoryService.find(firstCategoryId) : null
+        const category = firstCategoryId ? await PostCategoryService.find(firstCategoryId) : null
         let i: typeof category | undefined = category
         let categoryTitle = ''
         while (i != null) {

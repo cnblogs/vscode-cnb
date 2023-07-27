@@ -1,36 +1,21 @@
 import { DownloadedBlogExport } from '@/model/blog-export'
-import { ExportPost, ExportPostModel } from '@/model/blog-export/export-post'
+import { ExportPostModel } from '@/model/blog-export/export-post'
 import { DataTypes, Op, Sequelize } from 'sequelize'
 import { Disposable } from 'vscode'
 import sqlite3 from 'sqlite3'
+import { isDevEnv } from '@/model/config'
 
 export class ExportPostStore implements Disposable {
-    private _sequelize?: null | Sequelize
-    private _table?: typeof ExportPostModel | null
+    private _sequelize = new Sequelize({
+        dialect: 'sqlite',
+        storage: this.downloadedExport.filePath,
+        dialectModule: sqlite3,
+        logging: (...msg) => (isDevEnv() ? console.log(msg) : undefined),
+    })
 
-    constructor(public readonly downloadedExport: DownloadedBlogExport) {}
+    private _table = ExportPostModel
 
-    protected get sequelize() {
-        if (this._sequelize != null) return this._sequelize
-
-        const {
-            downloadedExport: { filePath },
-        } = this
-
-        this._sequelize = new Sequelize({
-            dialect: 'sqlite',
-            storage: filePath,
-            dialectModule: sqlite3,
-            logging: (...msg) => (process.env.NODE_ENV?.toLowerCase() === 'development' ? console.log(msg) : undefined),
-        })
-
-        return this._sequelize
-    }
-
-    protected get table(): typeof ExportPostModel {
-        if (this._table) return this._table
-
-        const { sequelize } = this
+    constructor(public readonly downloadedExport: DownloadedBlogExport) {
         ExportPostModel.init(
             {
                 id: {
@@ -80,13 +65,12 @@ export class ExportPostStore implements Disposable {
                     allowNull: false,
                 },
             },
-            { sequelize, tableName: 'blog_Content', timestamps: false }
+            { sequelize: this._sequelize, tableName: 'blog_Content', timestamps: false }
         )
-        return (this._table = ExportPostModel)
     }
 
-    list(): Promise<ExportPost[]> {
-        return this.table
+    list() {
+        return this._table
             .findAll({
                 where: {
                     postType: {
@@ -102,8 +86,8 @@ export class ExportPostStore implements Disposable {
             .then(data => data.map(x => x.dataValues))
     }
 
-    getBody(id: number): Promise<string> {
-        return this.table
+    getBody(id: number) {
+        return this._table
             .findOne({
                 where: {
                     id: {
@@ -117,7 +101,5 @@ export class ExportPostStore implements Disposable {
 
     dispose() {
         this._sequelize?.close().catch(console.warn)
-        this._sequelize = null
-        this._table = null
     }
 }

@@ -32,7 +32,7 @@ export interface IPostFormProps {
 export interface IPostFormState extends PostCfg {}
 
 export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
-    static contextType?: React.Context<IPostFormContext> | undefined = PostFormContext
+    static contextType?: React.Context<IPostFormContext> = PostFormContext
     declare context: React.ContextType<typeof PostFormContext>
 
     constructor(props: IPostFormProps) {

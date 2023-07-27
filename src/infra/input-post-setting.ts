@@ -3,14 +3,14 @@ import { AccessPermission, Post } from '@/model/post'
 import { PostCategories, PostCategory } from '@/model/post-category'
 import { Alert } from '@/infra/alert'
 import { InputFlowAction, InputStep, MultiStepInput, QuickPickParameters } from '@/service/multi-step-input'
-import { postCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post-category'
 
 class CategoryPickItem implements QuickPickItem {
     label: string
-    description?: string | undefined
-    detail?: string | undefined
-    picked?: boolean | undefined
-    alwaysShow?: boolean | undefined
+    description?: string
+    detail?: string
+    picked?: boolean
+    alwaysShow?: boolean
 
     constructor(name: string, public id: number) {
         this.label = name
@@ -26,10 +26,10 @@ class CategoryPickItem implements QuickPickItem {
 }
 
 class AccessPermissionPickItem implements QuickPickItem {
-    description?: string | undefined
-    detail?: string | undefined
-    picked?: boolean | undefined
-    alwaysShow?: boolean | undefined
+    description?: string
+    detail?: string
+    picked?: boolean
+    alwaysShow?: boolean
 
     constructor(public id: AccessPermission, public label: string) {}
 }
@@ -100,7 +100,7 @@ export const inputPostSetting = (
         calculateStepNumber('categoryIds')
         let categories: PostCategories = []
         try {
-            categories = await postCategoryService.listCategories()
+            categories = await PostCategoryService.listCategories()
         } catch (err) {
             Alert.err(err instanceof Error ? err.message : JSON.stringify(err))
             // 取消

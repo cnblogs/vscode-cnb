@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { MessageOptions, ProgressLocation, window, Uri, workspace } from 'vscode'
 import { PostCategory } from '@/model/post-category'
-import { postCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post-category'
 import { inputPostCategory } from './input-post-category'
 import { refreshPostCategoryList } from './refresh-post-category-list'
 import { BasePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
@@ -30,7 +30,7 @@ class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHa
             async p => {
                 p.report({ increment: 10 })
                 try {
-                    await postCategoryService.updateCategory(updateDto)
+                    await PostCategoryService.updateCategory(updateDto)
                     refreshPostCategoryList()
                     // 如果选择了createLocalPostFileWithCategory模式且本地有该目录,则重命名该目录
                     const workspaceUri = WorkspaceCfg.getWorkspaceUri()

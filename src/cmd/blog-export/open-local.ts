@@ -1,4 +1,3 @@
-import { CmdHandler } from '@/cmd/cmd-handler'
 import { window } from 'vscode'
 import path from 'path'
 import fs from 'fs'
@@ -6,6 +5,7 @@ import { promisify } from 'util'
 import { Alert } from '@/infra/alert'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
+import { BlogExportRecordsStore } from '@/service/blog-export-records.store'
 
 const defaultOptions = { confirmUnzip: true }
 
@@ -56,9 +56,9 @@ export async function openLocalExport(opts: Partial<typeof defaultOptions> = def
 
     const treeProvider = BlogExportProvider.optionalInstance
     const dbFileSize = (await promisify(fs.stat)(dbFilePath)).size
-    const exportRecord = await treeProvider?.store
-        .list()
-        .then(x => x.items.find(i => i.fileName === dbFileName && i.fileBytes === dbFileSize))
+    const exportRecord = await BlogExportRecordsStore.list().then(x =>
+        x.items.find(i => i.fileName === dbFileName && i.fileBytes === dbFileSize)
+    )
     await DownloadedExportStore.add(dbFilePath, exportRecord?.id)
 
     if (exportRecord) await treeProvider?.refreshRecords({ force: false })

@@ -15,15 +15,7 @@ import { PostEditDto } from '@/model/post-edit-dto'
 import { postPdfTemplateBuilder } from '@/cmd/pdf/post-pdf-template-builder'
 import { ChromiumCfg } from '@/ctx/cfg/chromium'
 
-const launchBrowser = async (
-    chromiumPath: string
-): Promise<
-    | {
-          browser: puppeteer.Browser
-          page: puppeteer.Page
-      }
-    | undefined
-> => {
+async function launchBrowser(chromiumPath: string) {
     try {
         const puppeteer = (await import('puppeteer-core')).default
         const browser = await puppeteer.launch({
@@ -130,15 +122,18 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
     return path
 }
 
-const inputTargetFolder = async (): Promise<Uri | undefined> =>
-    ((await window.showOpenDialog({
+async function inputTargetFolder() {
+    const uris = await window.showOpenDialog({
         canSelectFiles: false,
         canSelectFolders: true,
         canSelectMany: false,
         title: '请选择用于保存 PDF 的目录',
-    })) ?? [])[0]
+    })
+    if (uris === undefined) return undefined
+    else return uris[0]
+}
 
-const handlePostInput = (post: Post | PostTreeItem): Promise<Post[]> => {
+function handlePostInput(post: Post | PostTreeItem) {
     const postList: Post[] = [post instanceof PostTreeItem ? post.post : post]
     extTreeViews.visiblePostList()?.selection.map(item => {
         item = item instanceof PostTreeItem ? item.post : item
@@ -147,7 +142,7 @@ const handlePostInput = (post: Post | PostTreeItem): Promise<Post[]> => {
     return Promise.resolve(postList)
 }
 
-const handleUriInput = async (uri: Uri): Promise<Post[]> => {
+async function handleUriInput(uri: Uri) {
     const postList: Post[] = []
     const { fsPath } = uri
     const postId = PostFileMapManager.getPostId(fsPath)
@@ -182,7 +177,7 @@ const reportErrors = (errors: string[] | undefined) => {
     }
 }
 
-const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Promise<void> => {
+export async function exportPostToPdf(input: Post | PostTreeItem | Uri | unknown): Promise<void> {
     if (!(input instanceof Post) && !(input instanceof PostTreeItem) && !(input instanceof Uri)) return
 
     const chromiumPath = await retrieveChromiumPath()
@@ -232,5 +227,3 @@ const exportPostToPdf = async (input: Post | PostTreeItem | Uri | unknown): Prom
         )
     )
 }
-
-export { exportPostToPdf }

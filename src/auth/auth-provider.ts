@@ -49,7 +49,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         return this._sessionChangeEmitter.event
     }
 
-    async getSessions(scopes?: readonly string[] | undefined): Promise<readonly AuthSession[]> {
+    async getSessions(scopes?: readonly string[]): Promise<readonly AuthSession[]> {
         const sessions = await this.getAllSessions()
         const parsedScopes = this.ensureScopes(scopes)
 

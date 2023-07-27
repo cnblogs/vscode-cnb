@@ -2,7 +2,7 @@ import { window } from 'vscode'
 import { Alert } from '@/infra/alert'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
-export const setWorkspace = async () => {
+export async function setWorkspace() {
     const uris =
         (await window.showOpenDialog({
             title: '选择工作空间',

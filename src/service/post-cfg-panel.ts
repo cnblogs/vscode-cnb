@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash-es'
 import vscode, { Uri } from 'vscode'
 import { Post } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
-import { postCategoryService } from './post-category'
+import { PostCategoryService } from './post-category'
 import { siteCategoryService } from './site-category'
 import { PostTagService } from './post-tag'
 import { PostService } from './post'
@@ -60,7 +60,7 @@ export namespace PostCfgPanel {
                         command: WebviewCmd.UiCmd.editPostCfg,
                         post: cloneDeep(post),
                         activeTheme: vscode.window.activeColorTheme.kind,
-                        personalCategories: cloneDeep(await postCategoryService.listCategories()),
+                        personalCategories: cloneDeep(await PostCategoryService.listCategories()),
                         siteCategories: cloneDeep(await siteCategoryService.fetchAll()),
                         tags: cloneDeep(await PostTagService.fetchTags()),
                         breadcrumbs,
@@ -211,9 +211,9 @@ export namespace PostCfgPanel {
                         await webview.postMessage({
                             command: WebviewCmd.UiCmd.updateChildCategories,
                             payload: {
-                                value: await postCategoryService
-                                    .listCategories({ parentId: payload.parentId })
-                                    .catch(() => []),
+                                value: await PostCategoryService.listCategories({ parentId: payload.parentId }).catch(
+                                    () => []
+                                ),
                                 parentId: payload.parentId,
                             },
                         } as WebviewCommonCmd<WebviewCmd.UpdateChildCategoriesPayload>)

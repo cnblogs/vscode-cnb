@@ -3,7 +3,7 @@ import { PostFileMapManager } from '@/service/post-file-map'
 import fs from 'fs'
 import { BlogSettingService } from '@/service/blog-setting'
 import { accountManager } from '@/auth/account-manager'
-import { postCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post-category'
 import { PostCategory } from '@/model/post-category'
 import { markdownItFactory } from '@cnblogs/markdown-it-presets'
 
@@ -36,7 +36,7 @@ export namespace postPdfTemplateBuilder {
         }
 
         const buildCategoryHtml = async (): Promise<string> => {
-            const categories = await postCategoryService.listCategories()
+            const categories = await PostCategoryService.listCategories()
             const postCategories =
                 post.categoryIds
                     ?.map(categoryId => categories.find(x => x.categoryId === categoryId))

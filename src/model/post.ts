@@ -37,12 +37,13 @@ export class Post {
     title = ''
 
     private _url = ''
-    private _dateUpdated?: Date | undefined
+    private _dateUpdated?: Date
     private _datePublished = new Date()
 
     get datePublished(): Date {
         return this._datePublished
     }
+
     set datePublished(value: Date | string | undefined) {
         this._datePublished = typeof value === 'string' ? parseISO(value) : value ?? new Date()
     }
@@ -50,6 +51,7 @@ export class Post {
     get dateUpdated(): Date | undefined {
         return this._dateUpdated
     }
+
     set dateUpdated(value: Date | string | undefined) {
         this._dateUpdated = typeof value === 'string' ? parseISO(value) : value
     }
@@ -58,6 +60,7 @@ export class Post {
         const { _url } = this
         return _url.startsWith('//') ? (this._url = `https:${_url}`) : _url
     }
+
     set url(value) {
         this._url = value
     }

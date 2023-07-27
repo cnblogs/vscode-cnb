@@ -4,10 +4,10 @@ import { PostService } from './post'
 
 class PostPickItem implements QuickPickItem {
     label: string
-    description?: string | undefined
-    detail?: string | undefined
-    picked?: boolean | undefined
-    alwaysShow?: boolean | undefined
+    description?: string
+    detail?: string
+    picked?: boolean
+    alwaysShow?: boolean
 
     constructor(public post: Post) {
         this.label = post.title

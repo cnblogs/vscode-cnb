@@ -6,7 +6,7 @@ import zhCN from 'date-fns/locale/zh-CN'
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
 import { AccessPermission, Post, formatAccessPermission } from '@/model/post'
 import { PostEditDto } from '@/model/post-edit-dto'
-import { postCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post-category'
 import { PostService } from '@/service/post'
 import { BaseEntryTreeItem } from './base-entry-tree-item'
 import { BaseTreeItemSource } from './base-tree-item-source'
@@ -130,7 +130,7 @@ export class PostCategoryMetadata extends PostMetadata {
         const {
             post: { categoryIds },
         } = editDto
-        return (await Promise.all((categoryIds ?? []).map(categoryId => postCategoryService.find(categoryId))))
+        return (await Promise.all((categoryIds ?? []).map(categoryId => PostCategoryService.find(categoryId))))
             .filter((x): x is PostCategory => x != null)
             .map(
                 category =>

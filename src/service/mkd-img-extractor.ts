@@ -66,26 +66,19 @@ enum ExtractorSt {
 }
 
 export class MkdImgExtractor {
-    private _imageSrc = ImgSrc.any
     private _status = ExtractorSt.pending
     private _errors: [imgLink: string, msg: string][] = []
-    private _images: ImgInfo[] | null | undefined = null
-    private readonly _workspaceDirs: string[] | undefined
+    private _images: ImgInfo[] = []
+    private readonly _workspaceDirs: string[] = []
 
     constructor(
         private readonly markdown: string,
         private readonly targetFileUri: Uri,
+        public imgSrc: ImgSrc = ImgSrc.any,
         public onProgress?: (index: number, images: ImgInfo[]) => void
     ) {
-        this._workspaceDirs = workspace.workspaceFolders?.map(({ uri: { fsPath } }) => fsPath)
-    }
-
-    get imageSrc() {
-        return this._imageSrc
-    }
-
-    set imageSrc(v) {
-        this._imageSrc = v
+        if (workspace.workspaceFolders !== undefined)
+            this._workspaceDirs = workspace.workspaceFolders.map(({ uri: { fsPath } }) => fsPath)
     }
 
     get status() {
@@ -170,7 +163,7 @@ export class MkdImgExtractor {
         this._images = acc()
 
         // apply settings
-        return this._images.filter(x => newImgSrcFilter(this._imageSrc)(x))
+        return this._images.filter(x => newImgSrcFilter(this.imgSrc)(x))
     }
 
     private async resolveWebImg(url: string) {
@@ -204,7 +197,7 @@ export class MkdImgExtractor {
                 continue
             }
 
-            searchingDirs ??= [path.dirname(this.targetFileUri.fsPath), ...(this._workspaceDirs ?? [])]
+            searchingDirs ??= [path.dirname(this.targetFileUri.fsPath), ...this._workspaceDirs]
             iPath = iDir >= 0 && searchingDirs.length > iDir ? path.resolve(searchingDirs[iDir], imgPath) : undefined
             iDir++
             isEncodedPath = false

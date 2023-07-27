@@ -1,6 +1,6 @@
 import { MessageOptions, ProgressLocation, window } from 'vscode'
 import { PostCategory } from '@/model/post-category'
-import { postCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post-category'
 import { PostCategoriesListTreeItem } from '@/tree-view/model/category-list-tree-item'
 import { BaseMultiSelectablePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
 import { Alert } from '@/infra/alert'
@@ -36,7 +36,7 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
                     try {
                         const increment = Math.round(10 + idx / selectedCategories.length / 90)
                         p.report({ increment, message: `正在删除: 📂${category.title}` })
-                        await postCategoryService.deleteCategory(category.categoryId)
+                        await PostCategoryService.deleteCategory(category.categoryId)
                         idx++
                     } catch (err) {
                         errs.push([category, err])

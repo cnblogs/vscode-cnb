@@ -3,44 +3,23 @@ import { PostCategories, PostCategory, PostCategoryAddDto } from '@/model/post-c
 import { globalCtx } from '@/ctx/global-ctx'
 import { URLSearchParams } from 'url'
 
-export class PostCategoryService {
-    private static _instance: PostCategoryService | null = null
+let cache: Map<number, PostCategories> | null = null
 
-    private _cache?: Map<number, PostCategories>
-
-    private constructor() {}
-
-    static get instance(): PostCategoryService {
-        this._instance ??= new PostCategoryService()
-
-        return this._instance
-    }
-
-    async findCategories(ids: number[], { useCache = true } = {}): Promise<PostCategories> {
+export namespace PostCategoryService {
+    export async function findCategories(ids: number[], { useCache = true } = {}) {
         ids = ids.filter(x => x > 0)
         if (ids.length <= 0) return []
 
-        const categories = await this.listCategories(!useCache)
+        const categories = await listCategories(!useCache)
         return categories.filter(({ categoryId }) => ids.includes(categoryId))
     }
 
-    listCategories(): Promise<PostCategories>
-    listCategories({
-        forceRefresh = false,
-        parentId = -1,
-    }: {
-        forceRefresh?: boolean | null
-        parentId?: number
-    }): Promise<PostCategories>
-    listCategories(forceRefresh: boolean): Promise<PostCategories>
-    async listCategories(
-        option: boolean | { forceRefresh?: boolean | null; parentId?: number } = {}
-    ): Promise<PostCategories> {
+    export async function listCategories(option: boolean | { forceRefresh?: boolean | null; parentId?: number } = {}) {
         const parentId = typeof option === 'object' ? option.parentId ?? -1 : -1
         const shouldForceRefresh =
             option === true || (typeof option === 'object' ? option.forceRefresh ?? false : false)
-        this._cache ??= new Map<number, PostCategories>()
-        const map = this._cache
+        cache ??= new Map<number, PostCategories>()
+        const map = cache
         const cachedCategories = map.get(parentId)
         if (cachedCategories && !shouldForceRefresh) return cachedCategories
 
@@ -57,7 +36,7 @@ export class PostCategoryService {
         return categories
     }
 
-    async find(id: number) {
+    export async function find(id: number) {
         const res = await fetch(
             `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${new URLSearchParams([
                 ['parent', id <= 0 ? '' : `${id}`],
@@ -68,7 +47,7 @@ export class PostCategoryService {
         return Object.assign(new PostCategory(), parent)
     }
 
-    async newCategory(categoryAddDto: PostCategoryAddDto) {
+    export async function newCategory(categoryAddDto: PostCategoryAddDto) {
         const res = await fetch(`${globalCtx.config.apiBaseUrl}/api/category/blog/1`, {
             method: 'POST',
             body: JSON.stringify(categoryAddDto),
@@ -77,7 +56,7 @@ export class PostCategoryService {
         if (!res.ok) throw Error(`${res.status}-${res.statusText}\n${await res.text()}`)
     }
 
-    async updateCategory(category: PostCategory) {
+    export async function updateCategory(category: PostCategory) {
         const res = await fetch(`${globalCtx.config.apiBaseUrl}/api/category/blog/${category.categoryId}`, {
             method: 'PUT',
             body: JSON.stringify(category),
@@ -86,7 +65,7 @@ export class PostCategoryService {
         if (!res.ok) throw Error(`${res.status}-${res.statusText}\n${await res.text()}`)
     }
 
-    async deleteCategory(categoryId: number) {
+    export async function deleteCategory(categoryId: number) {
         if (categoryId <= 0) throw Error('Invalid param categoryId')
 
         const res = await fetch(`${globalCtx.config.apiBaseUrl}/api/category/blog/${categoryId}`, {
@@ -96,9 +75,7 @@ export class PostCategoryService {
         if (!res.ok) throw Error(`${res.status}-${res.statusText}\n${await res.text()}`)
     }
 
-    clearCache() {
-        this._cache = undefined
+    export function clearCache() {
+        cache = null
     }
 }
-
-export const postCategoryService = PostCategoryService.instance

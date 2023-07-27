@@ -1,5 +1,5 @@
 import { MessageOptions, ProgressLocation, window } from 'vscode'
-import { postCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post-category'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { inputPostCategory } from './input-post-category'
 import { refreshPostCategoryList } from './refresh-post-category-list'
@@ -21,12 +21,12 @@ export const newPostCategory = async () => {
                 increment: 50,
             })
             try {
-                await postCategoryService.newCategory(input)
+                await PostCategoryService.newCategory(input)
                 p.report({
                     increment: 90,
                 })
                 refreshPostCategoryList()
-                const newCategory = (await postCategoryService.listCategories()).find(x => x.title === input.title)
+                const newCategory = (await PostCategoryService.listCategories()).find(x => x.title === input.title)
                 if (newCategory) await extTreeViews.postCategoriesList.reveal(newCategory)
             } catch (err) {
                 void Alert.err('新建博文分类时遇到了错误', {
