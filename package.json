@@ -466,14 +466,14 @@
                         "type": "boolean",
                         "markdownDescription": "创建本地博文时, 是否根据博文分类保存到对应的文件夹中"
                     },
-                    "cnblogsClientForVSCode.automaticallyExtractImages": {
+                    "cnblogsClientForVSCode.autoExtractImages": {
                         "order": 6,
                         "default": "disable",
                         "scope": "application",
                         "enum": [
                             "disable",
-                            "local",
-                            "dataurl",
+                            "fs",
+                            "dataUrl",
                             "web",
                             "any"
                         ],

@@ -1,13 +1,12 @@
 import os, { homedir } from 'os'
 import fs from 'fs'
 import { ConfigurationTarget, Uri, workspace } from 'vscode'
-import { ImageSrc } from './images-extractor.service'
+import { ImageSrc } from './mkd-img-extractor.service'
 import { isNumber } from 'lodash-es'
 import { untildify } from '@/utils/untildify'
 
 export class Settings {
     static readonly postsListPageSizeKey = 'pageSize.postsList'
-    static readonly platform = os.platform()
     static readonly prefix = `cnblogsClientForVSCode`
     static readonly iconThemePrefix = 'workbench'
     static readonly iconThemeKey = 'iconTheme'
@@ -18,8 +17,7 @@ export class Settings {
     private static _adaptLegacyWorkspaceTask?: Thenable<void> | null
 
     static get platformPrefix() {
-        const { platform } = this
-        switch (platform) {
+        switch (os.platform()) {
             case 'darwin':
                 return 'macos'
             case 'win32':
@@ -48,8 +46,9 @@ export class Settings {
     }
 
     static get workspaceUri(): Uri {
-        if (this.legacyWorkspaceUri != null) {
-            const legacy = this.legacyWorkspaceUri
+        const legacy = this.legacyWorkspaceUri
+
+        if (legacy != null) {
             if (this._adaptLegacyWorkspaceTask == null) {
                 try {
                     this._adaptLegacyWorkspaceTask = this.removeLegacyWorkspaceUri().then(
@@ -76,14 +75,17 @@ export class Settings {
         return this.configuration.get<boolean>('createLocalPostFileWithCategory') ?? false
     }
 
-    static get automaticallyExtractImagesType(): ImageSrc | null {
-        const cfg = this.configuration.get<'disable' | 'web' | 'local' | 'any'>('automaticallyExtractImages') ?? null
+    static get autoExtractImgType(): ImageSrc | undefined {
+        const cfg = this.configuration.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('autoExtractImages')
 
-        if (cfg === 'local') return ImageSrc.local
-        if (cfg === 'any') return ImageSrc.any
+        console.log(this.configuration)
+        console.log(cfg)
+
+        if (cfg === 'disable') return
         if (cfg === 'web') return ImageSrc.web
-
-        return null // 'disable' case
+        if (cfg === 'dataUrl') return ImageSrc.dataUrl
+        if (cfg === 'fs') return ImageSrc.fs
+        if (cfg === 'any') return ImageSrc.any
     }
 
     static get postsListPageSize() {
