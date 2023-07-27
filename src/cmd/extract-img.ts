@@ -18,7 +18,7 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
     const imgInfoList = findImgLink(markdown)
 
     if (imgInfoList.length <= 0) {
-        if (inputImgSrc !== undefined) void Alert.info('没有找到可以提取的图片')
+        if (inputImgSrc === undefined) void Alert.info('没有找到可以提取的图片')
         return
     }
 

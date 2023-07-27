@@ -4,13 +4,13 @@
 // https://datatracker.ietf.org/doc/html/rfc2397
 
 import { DataType, ImgInfo } from '@/markdown/mkd-img-extractor'
+import { notRegMatch } from '@/wasm'
 
 const imgTagDataUrlImgPat = /(<img.*?src\s*=\s*")(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)("[^/]*?\/?>)/g
 const imgTagUrlImgPat = /(<img.*?src\s*=\s*")(.*\.(?:png|jpg|jpeg|webp|svg|gif))("[^/]*?\/?>)/gi
 const mkdDataUrlImgPat = /(!\[.*?]\()(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)(\))/g
 const mkdUrlImgPat = /(!\[.*?]\()(.*?\.(?:png|jpg|jpeg|webp|svg|gif))(\))/gi
-
-const cnblogsDomainRegExp = /\.cnblogs\.com\//gi
+const cnblogsDomain = `\.cnblogs\.com\/`
 
 export function findImgLink(text: string): ImgInfo[] {
     const imgTagUrlImgMatchGroups = Array.from(text.matchAll(imgTagUrlImgPat))
@@ -39,5 +39,5 @@ export function findImgLink(text: string): ImgInfo[] {
 
     // TODO: better filter design needed
     // remove cnblogs img link
-    return acc.filter(x => x.data.match(cnblogsDomainRegExp) == null)
+    return acc.filter(x => notRegMatch(cnblogsDomain, x.data))
 }
