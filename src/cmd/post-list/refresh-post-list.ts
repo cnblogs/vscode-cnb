@@ -9,7 +9,7 @@ import { execCmd } from '@/infra/cmd'
 
 let refreshTask: Promise<boolean> | null = null
 
-export const refreshPostList = async ({ queue = false } = {}): Promise<boolean> => {
+export async function refreshPostList({ queue = false } = {}): Promise<boolean> {
     if (isRefreshing && !queue) {
         alertRefreshing()
         await refreshTask
@@ -53,7 +53,7 @@ export const goNextPostList = () => goPage(i => i + 1)
 
 export const goPrevPostList = () => goPage(i => i - 1)
 
-export const seekPostList = async () => {
+export async function seekPostList() {
     const input = await window.showInputBox({
         placeHolder: '请输入页码',
         validateInput: i => {
@@ -73,13 +73,14 @@ export const seekPostList = async () => {
 }
 
 let isRefreshing = false
-const setRefreshing = async (value = false) => {
+
+async function setRefreshing(value = false) {
     const extName = globalCtx.extName
     await execCmd('setContext', `${extName}.post-list.refreshing`, value).then(undefined, () => false)
     isRefreshing = value
 }
 
-const setPostListContext = async (pageCount: number, hasPrevious: boolean, hasNext: boolean) => {
+async function setPostListContext(pageCount: number, hasPrevious: boolean, hasNext: boolean) {
     const extName = globalCtx.extName
     await execCmd('setContext', `${extName}.post-list.hasPrevious`, hasPrevious)
     await execCmd('setContext', `${extName}.post-list.hasNext`, hasNext)
@@ -90,7 +91,7 @@ const alertRefreshing = () => {
     void Alert.info('正在刷新, 请勿重复操作')
 }
 
-const goPage = async (pageIndex: (currentIndex: number) => number) => {
+async function goPage(pageIndex: (currentIndex: number) => number) {
     if (isRefreshing) {
         alertRefreshing()
         return

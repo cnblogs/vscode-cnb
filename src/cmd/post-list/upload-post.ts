@@ -120,7 +120,7 @@ async function saveLocalDraft(localDraft: LocalDraft) {
     })
 }
 
-export const uploadPost = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
+export async function uploadPost(input: Post | PostTreeItem | PostEditDto | undefined) {
     if (input === undefined) return
     if (input instanceof PostTreeItem) input = input.post
 

@@ -5,7 +5,7 @@ import { PostService } from '@/service/post'
 import { PostFileMapManager } from '@/service/post-file-map'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 
-export const viewPostOnline = async (input?: Post | PostTreeItem | Uri) => {
+export async function viewPostOnline(input?: Post | PostTreeItem | Uri) {
     let post: Post | undefined = input instanceof Post ? input : input instanceof PostTreeItem ? input.post : undefined
     if (!input) input = window.activeTextEditor?.document.uri
 

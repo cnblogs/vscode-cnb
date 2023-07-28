@@ -14,7 +14,7 @@ import format from 'date-fns/format'
  * @param {(Uri | number)} input
  * @returns {*}  {Promise<void>}
  */
-export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void> => {
+export async function showLocalFileToPostInfo(input: Uri | number): Promise<void> {
     let filePath: string | undefined
     let postId: number | undefined
     if (input instanceof Uri && input.scheme === 'file') {

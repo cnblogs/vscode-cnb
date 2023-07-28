@@ -41,7 +41,7 @@ type CmdCtx = { postId: number; fileUri: Uri }
 
 const parsePostInput = (input: InputType): input is Post => input instanceof Post
 
-const handlePostInput = async (post: Post, contexts: CmdCtx[]) => {
+async function handlePostInput(post: Post, contexts: CmdCtx[]) {
     const { id: postId } = post
     let filePath = PostFileMapManager.getFilePath(postId)
     if (filePath && !fs.existsSync(filePath)) {

@@ -12,7 +12,7 @@ import sanitizeFileName from 'sanitize-filename'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { PostCategoryCfg } from '@/ctx/cfg/post-category'
 
-const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise<Uri> => {
+async function buildLocalPostFileUri(post: Post, includePostId = false): Promise<Uri> {
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
     const shouldCreateLocalPostFileWithCategory = PostCategoryCfg.isCreateLocalPostFileWithCategory()
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`
@@ -39,7 +39,7 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
     }
 }
 
-export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> => {
+export async function openPostInVscode(postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> {
     let mappedPostFilePath = PostFileMapManager.getFilePath(postId)
     const isFileExist = !!mappedPostFilePath && fs.existsSync(mappedPostFilePath)
     if (mappedPostFilePath && isFileExist && !forceUpdateLocalPostFile) {

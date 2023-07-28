@@ -9,7 +9,7 @@ import { revealPostListItem } from '@/service/post-list-view'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { Alert } from '@/infra/alert'
 
-const renameLinkedFile = async (post: Post): Promise<void> => {
+async function renameLinkedFile(post: Post): Promise<void> {
     const filePath = PostFileMapManager.getFilePath(post.id)
 
     if (!filePath) return
@@ -34,7 +34,7 @@ const renameLinkedFile = async (post: Post): Promise<void> => {
     }
 }
 
-export const renamePost = async (arg: Post | PostTreeItem) => {
+export async function renamePost(arg: Post | PostTreeItem) {
     const post = arg instanceof PostTreeItem ? arg.post : arg
     if (!post) return
 

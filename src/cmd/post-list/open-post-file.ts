@@ -4,7 +4,7 @@ import { Post } from '@/model/post'
 import { LocalDraft } from '@/service/local-draft'
 import { PostFileMapManager } from '@/service/post-file-map'
 
-export const openPostFile = async (post: LocalDraft | Post | string, options?: TextDocumentShowOptions) => {
+export async function openPostFile(post: LocalDraft | Post | string, options?: TextDocumentShowOptions) {
     let filePath = ''
     if (post instanceof LocalDraft) filePath = post.filePath
     else if (post instanceof Post) filePath = PostFileMapManager.getFilePath(post.id) ?? ''
