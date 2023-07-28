@@ -8,7 +8,7 @@ import { openMyHomePage } from '@/cmd/open/open-my-home-page'
 import { openMyBlog } from '@/cmd/open/open-my-blog'
 import { globalCtx } from '@/ctx/global-ctx'
 import { goNextPostList, goPrevPostList, refreshPostList, seekPostList } from '@/cmd/post-list/refresh-post-list'
-import { uploadPostFile, uploadPost } from '@/cmd/post-list/upload-post'
+import { uploadPostFile, uploadPost, uploadPostNoConfirm, uploadPostFileNoConfirm } from '@/cmd/post-list/upload-post'
 import { createLocalDraft } from '@/cmd/post-list/create-local-draft'
 import { deleteSelectedPost } from '@/cmd/post-list/delete-post'
 import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
@@ -73,6 +73,8 @@ export function setupExtCmd() {
         regCmd(withAppName('.create-local-draft'), createLocalDraft),
         regCmd(withAppName('.upload-post'), uploadPost),
         regCmd(withAppName('.upload-post-file'), uploadPostFile),
+        regCmd(withAppName('.upload-post-no-confirm'), uploadPostNoConfirm),
+        regCmd(withAppName('.upload-post-file-no-confirm'), uploadPostFileNoConfirm),
         regCmd(withAppName('.pull-remote-post'), pullRemotePost),
         regCmd(withAppName('.open-post-in-blog-admin'), openPostInBlogAdmin),
         regCmd(withAppName('.delete-post-to-local-file-map'), deletePostToLocalFileMap),
