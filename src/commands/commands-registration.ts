@@ -11,7 +11,7 @@ import {
     refreshPostsList,
     seekPostsList,
 } from './posts-list/refresh-posts-list'
-import { uploadPostFileToCnblogs, uploadPostToCnblogs } from './posts-list/upload-post'
+import { uploadPostFile, uploadPostFileNoConfirm, uploadPost, uploadPostNoConfirm } from './posts-list/upload-post'
 import { createLocalDraft } from './posts-list/create-local-draft'
 import { deleteSelectedPosts } from './posts-list/delete-post'
 import { modifyPostSettings } from './posts-list/modify-post-settings'
@@ -55,11 +55,13 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.seek-posts-list`, seekPostsList),
         commands.registerCommand(`${appName}.next-posts-list`, gotoNextPostsList),
         commands.registerCommand(`${appName}.edit-post`, openPostInVscode),
-        commands.registerCommand(`${appName}.upload-post`, uploadPostToCnblogs),
         commands.registerCommand(`${appName}.modify-post-settings`, modifyPostSettings),
         commands.registerCommand(`${appName}.delete-post`, deleteSelectedPosts),
         commands.registerCommand(`${appName}.create-local-draft`, createLocalDraft),
-        commands.registerCommand(`${appName}.upload-post-file-to-cnblogs`, uploadPostFileToCnblogs),
+        commands.registerCommand(`${appName}.upload-post`, uploadPost),
+        commands.registerCommand(`${appName}.upload-post-no-confirm`, uploadPostNoConfirm),
+        commands.registerCommand(`${appName}.upload-post-file`, uploadPostFile),
+        commands.registerCommand(`${appName}.upload-post-file-no-confirm`, uploadPostFileNoConfirm),
         commands.registerCommand(`${appName}.pull-post-remote-updates`, pullPostRemoteUpdates),
         commands.registerCommand(`${appName}.upload-clipboard-image`, () => uploadImage(true, 'clipboard')),
         commands.registerCommand(`${appName}.upload-local-disk-image`, () => uploadImage(true, 'local')),
