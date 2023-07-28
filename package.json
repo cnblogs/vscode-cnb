@@ -199,7 +199,7 @@
                 "category": "Cnblogs"
             },
             {
-                "command": "vscode-cnb.upload-post-file-to-cnblogs",
+                "command": "vscode-cnb.upload-post-file",
                 "title": "上传到博客园",
                 "icon": "$(vscode-cnb-cloud-upload)",
                 "enablement": "vscode-cnb.isAuthorized",
@@ -549,7 +549,7 @@
                         "type": "object",
                         "additionalProperties": false,
                         "default": {
-                            "upload-post-file-to-cnblogs": true,
+                            "upload-post-file": true,
                             "pull-post-remote-updates": true,
                             "modify-post-settings": true,
                             "show-post-to-local-file-info": true,
@@ -560,7 +560,7 @@
                         "markdownDescription": "控制要在资源管理器右键菜单中显示的命令",
                         "order": 13,
                         "properties": {
-                            "upload-post-file-to-cnblogs": {
+                            "upload-post-file": {
                                 "description": "上传到博客园",
                                 "type": "boolean",
                                 "order": 0,
@@ -607,7 +607,7 @@
                     "cnblogsClientForVSCode.menus.context.editor": {
                         "type": "object",
                         "default": {
-                            "upload-post-file-to-cnblogs": true,
+                            "upload-post-file": true,
                             "pull-post-remote-updates": true,
                             "modify-post-settings": true,
                             "show-post-to-local-file-info": true,
@@ -620,7 +620,7 @@
                             "ing:publish-selection": false
                         },
                         "properties": {
-                            "upload-post-file-to-cnblogs": {
+                            "upload-post-file": {
                                 "description": "上传到博客园",
                                 "type": "boolean",
                                 "order": 0
@@ -856,7 +856,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.upload-post-file-to-cnblogs",
+                    "command": "vscode-cnb.upload-post-file",
                     "when": "true"
                 },
                 {
@@ -1111,8 +1111,8 @@
                     "group": "cnblogs@1"
                 },
                 {
-                    "command": "vscode-cnb.upload-post-file-to-cnblogs",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.upload-post-file-to-cnblogs",
+                    "command": "vscode-cnb.upload-post-file",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.editor.upload-post-file",
                     "group": "cnblogs@2"
                 },
                 {
@@ -1163,7 +1163,7 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "vscode-cnb.upload-post-file-to-cnblogs",
+                    "command": "vscode-cnb.upload-post-file",
                     "when": "resourceLangId == markdown",
                     "group": "navigation"
                 }
@@ -1175,8 +1175,8 @@
                     "group": "cnblogs@1"
                 },
                 {
-                    "command": "vscode-cnb.upload-post-file-to-cnblogs",
-                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer.upload-post-file-to-cnblogs",
+                    "command": "vscode-cnb.upload-post-file",
+                    "when": "resourceLangId == markdown && config.cnblogsClientForVSCode.menus.context.explorer.upload-post-file",
                     "group": "cnblogs@2"
                 },
                 {

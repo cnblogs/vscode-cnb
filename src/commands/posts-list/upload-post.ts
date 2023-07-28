@@ -127,8 +127,12 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
 
     let post: Post | undefined
 
-    if (input instanceof PostEditDto) post = input.post
-    else (await PostService.fetchPostEditDto(input.id))?.post
+    if (input instanceof PostEditDto) {
+        post = input.post
+    } else {
+        const dto = await PostService.fetchPostEditDto(input.id)
+        post = dto?.post
+    }
 
     if (post === undefined) return
 

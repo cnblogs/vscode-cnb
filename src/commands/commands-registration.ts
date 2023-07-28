@@ -59,7 +59,7 @@ export const registerCommands = () => {
         commands.registerCommand(`${appName}.modify-post-settings`, modifyPostSettings),
         commands.registerCommand(`${appName}.delete-post`, deleteSelectedPosts),
         commands.registerCommand(`${appName}.create-local-draft`, createLocalDraft),
-        commands.registerCommand(`${appName}.upload-post-file-to-cnblogs`, uploadPostFileToCnblogs),
+        commands.registerCommand(`${appName}.upload-post-file`, uploadPostFileToCnblogs),
         commands.registerCommand(`${appName}.pull-post-remote-updates`, pullPostRemoteUpdates),
         commands.registerCommand(`${appName}.upload-clipboard-image`, () => uploadImage(true, 'clipboard')),
         commands.registerCommand(`${appName}.upload-local-disk-image`, () => uploadImage(true, 'local')),
