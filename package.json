@@ -574,6 +574,14 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "在拉取博文时显示确认消息"
                     },
+                    "cnblogsClient.markdown.ignoreYfmWhenUploadPost": {
+                        "order": 13,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": false,
+                        "editPresentation": "singlelineText",
+                        "markdownDescription": "上传博文时忽略 YAML front matter"
+                    },
                     "cnblogsClient.menus.context.explorer": {
                         "order": 13,
                         "markdownDescription": "要在资源管理器右键菜单中显示的命令",

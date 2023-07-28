@@ -10,7 +10,7 @@ export namespace MarkdownCfg {
     }
 
     export function isIgnoreYfmWhenUploadPost(): boolean {
-        return cfgGet('ignoreYfmWhenUploadPost') ?? true
+        return cfgGet('ignoreYfmWhenUploadPost') ?? false
     }
 
     export function isShowConfirmMsgWhenPullPost(): boolean {

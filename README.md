@@ -47,7 +47,7 @@
 
 <kbd><img src="https://img2022.cnblogs.com/blog/1596066/202204/1596066-20220415194545998-874211959.png" height="550"></kbd>
 
-在上传博文时，扩展会默认忽略 YAML front matter，此行为可于设置中变更。
+在上传博文时，扩展会保留 YAML front matter，此行为可于设置中变更。
 
 ### 博客园博文列表
 
