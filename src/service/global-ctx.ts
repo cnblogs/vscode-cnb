@@ -1,5 +1,5 @@
 import { env, ExtensionContext, Uri } from 'vscode'
-import { defaultConfig, devConfig, IExtensionConfig, isDevEnv } from '@/models/config'
+import { defaultConfig, devConfig, IExtensionConfig, isDevEnv } from '@/model/config'
 import path from 'path'
 
 class GlobalCtx {
