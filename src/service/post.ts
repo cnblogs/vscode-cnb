@@ -11,6 +11,8 @@ import { ZzkSearchResult } from '@/model/zzk-search-result'
 import got from '@/infra/http-client'
 import httpClient from '@/infra/http-client'
 import iconv from 'iconv-lite'
+import { MarkdownCfg } from '@/ctx/cfg/markdown'
+import { rmYfm } from '@/infra/rm-yfm'
 import { PostListState } from '@/model/post-list-state'
 import { Alert } from '@/infra/alert'
 
@@ -100,6 +102,7 @@ export namespace PostService {
     }
 
     export async function updatePost(post: Post) {
+        if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
         const {
             ok: isOk,
             url,

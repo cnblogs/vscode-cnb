@@ -18,7 +18,7 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
 
     const images = extractor.findImages()
     if (images.length <= 0) {
-        if (inputImgSrc !== undefined) void Alert.info('没有找到可以提取的图片')
+        if (inputImgSrc === undefined) void Alert.info('没有找到可以提取的图片')
         return
     }
 

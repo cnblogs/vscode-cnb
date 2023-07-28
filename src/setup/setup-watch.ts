@@ -9,17 +9,17 @@ import { LocalState } from '@/ctx/local-state'
 
 export const setupCfgWatch = () =>
     workspace.onDidChangeConfiguration(ev => {
-        if (ev.affectsConfiguration('cnblogsConfig')) isTargetWorkspace()
+        if (ev.affectsConfiguration('cnblogsClient')) isTargetWorkspace()
 
         if (ev.affectsConfiguration('workbench.iconTheme')) refreshPostCategoryList()
 
-        if (ev.affectsConfiguration('cnblogsConfig.pageSize.postList'))
+        if (ev.affectsConfiguration('cnblogsClient.pageSize.postList'))
             refreshPostList({ queue: true }).catch(() => undefined)
 
-        if (ev.affectsConfiguration('cnblogsConfig.markdown'))
+        if (ev.affectsConfiguration('cnblogsClient.markdown'))
             execCmd('markdown.preview.refresh').then(undefined, () => undefined)
 
-        if (ev.affectsConfiguration('cnblogsConfig.ui')) setupUi(LocalState.getExtCfg())
+        if (ev.affectsConfiguration('cnblogsClient.ui')) setupUi(LocalState.getExtCfg())
     })
 
 export const setupWorkspaceWatch = () =>
