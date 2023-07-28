@@ -33,49 +33,6 @@ async function parseFileUri(fileUri: Uri | undefined) {
     return undefined
 }
 
-export const uploadPostFile = async (fileUri: Uri | undefined) => {
-    const parsedFileUri = await parseFileUri(fileUri)
-    if (parsedFileUri === undefined) return
-
-    const { fsPath: filePath } = parsedFileUri
-    const postId = PostFileMapManager.getPostId(filePath)
-
-    if (postId !== undefined && postId >= 0) {
-        const dto = await PostService.fetchPostEditDto(postId)
-        if (dto !== undefined) await uploadPost(dto)
-        return
-    }
-
-    const fileContent = Buffer.from(await workspace.fs.readFile(parsedFileUri)).toString()
-    if (isEmptyBody(fileContent)) return
-
-    const options = ['新建博文', '关联已有博文']
-    const selected = await window.showInformationMessage(
-        '本地文件尚未关联到博客园博文',
-        {
-            modal: true,
-            detail: `您可以选择新建一篇博文或将本地文件关联到一篇博客园博文(您可以根据标题搜索您在博客园博文)`,
-        } as MessageOptions,
-        ...options
-    )
-    if (selected === '关联已有博文') {
-        const selectedPost = await searchPostByTitle({
-            postTitle: path.basename(filePath, path.extname(filePath)),
-            quickPickTitle: '搜索要关联的博文',
-        })
-        if (selectedPost === undefined) return
-
-        await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
-        const postEditDto = await PostService.fetchPostEditDto(selectedPost.id)
-        if (postEditDto === undefined) return
-        if (!fileContent) await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
-
-        await uploadPost(postEditDto.post)
-    } else if (selected === '新建博文') {
-        await saveLocalDraft(new LocalDraft(filePath))
-    }
-}
-
 async function saveLocalDraft(localDraft: LocalDraft) {
     // check format
     if (!['.md', '.mkd'].some(x => localDraft.fileExt === x)) {
@@ -120,7 +77,16 @@ async function saveLocalDraft(localDraft: LocalDraft) {
     })
 }
 
-export const uploadPost = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
+function isEmptyBody(body: string) {
+    if (body === '') {
+        void Alert.warn('博文内容不能为空')
+        return true
+    }
+
+    return false
+}
+
+export async function uploadPost(input: Post | PostTreeItem | PostEditDto | undefined) {
     if (input === undefined) return
     if (input instanceof PostTreeItem) input = input.post
 
@@ -196,11 +162,152 @@ export const uploadPost = async (input: Post | PostTreeItem | PostEditDto | unde
     )
 }
 
-function isEmptyBody(body: string) {
-    if (body === '') {
-        void Alert.warn('博文内容不能为空')
-        return true
+export async function uploadPostFile(fileUri: Uri | undefined) {
+    const parsedFileUri = await parseFileUri(fileUri)
+    if (parsedFileUri === undefined) return
+
+    const { fsPath: filePath } = parsedFileUri
+    const postId = PostFileMapManager.getPostId(filePath)
+
+    if (postId !== undefined && postId >= 0) {
+        const dto = await PostService.fetchPostEditDto(postId)
+        if (dto !== undefined) await uploadPost(dto)
+        return
     }
 
-    return false
+    const fileContent = Buffer.from(await workspace.fs.readFile(parsedFileUri)).toString()
+    if (isEmptyBody(fileContent)) return
+
+    const options = ['新建博文', '关联已有博文']
+    const selected = await window.showInformationMessage(
+        '本地文件尚未关联到博客园博文',
+        {
+            modal: true,
+            detail: `您可以选择新建一篇博文或将本地文件关联到一篇博客园博文(您可以根据标题搜索您在博客园博文)`,
+        } as MessageOptions,
+        ...options
+    )
+    if (selected === '关联已有博文') {
+        const selectedPost = await searchPostByTitle({
+            postTitle: path.basename(filePath, path.extname(filePath)),
+            quickPickTitle: '搜索要关联的博文',
+        })
+        if (selectedPost === undefined) return
+
+        await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
+        const postEditDto = await PostService.fetchPostEditDto(selectedPost.id)
+        if (postEditDto === undefined) return
+        if (!fileContent) await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
+
+        await uploadPost(postEditDto.post)
+    } else if (selected === '新建博文') {
+        await saveLocalDraft(new LocalDraft(filePath))
+    }
+}
+
+export async function uploadPostNoConfirm(input: Post | PostTreeItem | PostEditDto | undefined) {
+    if (input === undefined) return
+    if (input instanceof PostTreeItem) input = input.post
+
+    let post: Post | undefined
+
+    if (input instanceof PostEditDto) {
+        post = input.post
+    } else {
+        const dto = await PostService.fetchPostEditDto(input.id)
+        post = dto?.post
+    }
+
+    if (post === undefined) return
+
+    const localFilePath = PostFileMapManager.getFilePath(post.id)
+    if (!localFilePath) return Alert.warn('本地无该博文的编辑记录')
+
+    if (MarkdownCfg.getAutoExtractImgSrc())
+        await extractImg(Uri.file(localFilePath), MarkdownCfg.getAutoExtractImgSrc()).catch(console.warn)
+
+    await saveFilePendingChanges(localFilePath)
+    post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()
+
+    if (isEmptyBody(post.postBody)) return false
+
+    post.isMarkdown =
+        path.extname(localFilePath).endsWith('md') || path.extname(localFilePath).endsWith('mkd') || post.isMarkdown
+
+    const thePost = post // Dup code for type checking
+
+    return window.withProgress(
+        {
+            location: ProgressLocation.Notification,
+            title: '正在上传博文',
+            cancellable: false,
+        },
+        async progress => {
+            progress.report({
+                increment: 10,
+            })
+
+            let isSaved = false
+
+            try {
+                const { id: postId } = await PostService.updatePost(thePost)
+                await openPostInVscode(postId)
+                thePost.id = postId
+
+                isSaved = true
+                progress.report({ increment: 100 })
+                void Alert.info('上传成功')
+                await refreshPostList()
+            } catch (err) {
+                progress.report({ increment: 100 })
+                void Alert.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
+                console.error(err)
+            }
+
+            return isSaved
+        }
+    )
+}
+
+export async function uploadPostFileNoConfirm(fileUri: Uri | undefined) {
+    const parsedFileUri = await parseFileUri(fileUri)
+    if (parsedFileUri === undefined) return
+
+    const { fsPath: filePath } = parsedFileUri
+    const postId = PostFileMapManager.getPostId(filePath)
+
+    if (postId !== undefined && postId >= 0) {
+        const dto = await PostService.fetchPostEditDto(postId)
+        if (dto !== undefined) await uploadPostNoConfirm(dto)
+        return
+    }
+
+    const fileContent = Buffer.from(await workspace.fs.readFile(parsedFileUri)).toString()
+    if (isEmptyBody(fileContent)) return
+
+    const options = ['新建博文', '关联已有博文']
+    const selected = await window.showInformationMessage(
+        '本地文件尚未关联到博客园博文',
+        {
+            modal: true,
+            detail: `您可以选择新建一篇博文或将本地文件关联到一篇博客园博文(您可以根据标题搜索您在博客园博文)`,
+        } as MessageOptions,
+        ...options
+    )
+    if (selected === '关联已有博文') {
+        const selectedPost = await searchPostByTitle({
+            postTitle: path.basename(filePath, path.extname(filePath)),
+            quickPickTitle: '搜索要关联的博文',
+        })
+        if (selectedPost === undefined) return
+
+        await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
+        const postEditDto = await PostService.fetchPostEditDto(selectedPost.id)
+        if (postEditDto === undefined) return
+        if (!fileContent) await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
+
+        await uploadPostNoConfirm(postEditDto.post)
+    } else if (selected === '新建博文') {
+        await saveLocalDraft(new LocalDraft(filePath))
+    }
 }

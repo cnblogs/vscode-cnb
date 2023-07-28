@@ -148,13 +148,6 @@
                 "category": "Cnblogs Post List"
             },
             {
-                "command": "vscode-cnb.upload-post",
-                "title": "上传博文",
-                "icon": "$(cloud-upload)",
-                "category": "Cnblogs Post List",
-                "enablement": "vscode-cnb.isAuthorized"
-            },
-            {
                 "command": "vscode-cnb.delete-post",
                 "title": "删除随笔(支持多选)",
                 "icon": "$(trash)",
@@ -173,6 +166,34 @@
                 "icon": "$(gear)",
                 "category": "Cnblogs Post List",
                 "enablement": "vscode-cnb.isAuthorized"
+            },
+            {
+                "command": "vscode-cnb.upload-post",
+                "title": "上传博文",
+                "icon": "$(cloud-upload)",
+                "category": "Cnblogs Post List",
+                "enablement": "vscode-cnb.isAuthorized"
+            },
+            {
+                "command": "vscode-cnb.upload-post-file",
+                "title": "上传到博客园",
+                "icon": "$(vscode-cnb-cloud-upload)",
+                "enablement": "vscode-cnb.isAuthorized",
+                "category": "Cnblogs"
+            },
+            {
+                "command": "vscode-cnb.upload-post-no-confirm",
+                "title": "上传博文",
+                "icon": "$(cloud-upload)",
+                "category": "Cnblogs Post List",
+                "enablement": "vscode-cnb.isAuthorized"
+            },
+            {
+                "command": "vscode-cnb.upload-post-file-no-confirm",
+                "title": "上传到博客园",
+                "icon": "$(vscode-cnb-cloud-upload)",
+                "enablement": "vscode-cnb.isAuthorized",
+                "category": "Cnblogs"
             },
             {
                 "command": "vscode-cnb.upload-img",
@@ -196,13 +217,6 @@
             {
                 "command": "vscode-cnb.reveal-local-post-file-in-os",
                 "title": "在文件资源管理器中打开",
-                "category": "Cnblogs"
-            },
-            {
-                "command": "vscode-cnb.upload-post-file",
-                "title": "上传到博客园",
-                "icon": "$(vscode-cnb-cloud-upload)",
-                "enablement": "vscode-cnb.isAuthorized",
                 "category": "Cnblogs"
             },
             {
@@ -547,10 +561,11 @@
                     },
                     "cnblogsClient.menus.context.explorer": {
                         "order": 13,
+                        "markdownDescription": "要在资源管理器右键菜单中显示的命令",
                         "type": "object",
                         "additionalProperties": false,
                         "default": {
-                            "upload-post-file": true,
+                            "upload-post-file-no-confirm": true,
                             "pull-remote-post": true,
                             "modify-post-setting": true,
                             "show-post-to-local-file-info": true,
@@ -558,9 +573,8 @@
                             "export-post-to-pdf": true,
                             "copy-post-link": true
                         },
-                        "markdownDescription": "控制要在资源管理器右键菜单中显示的命令",
                         "properties": {
-                            "upload-post-file": {
+                            "upload-post-file-no-confirm": {
                                 "description": "上传到博客园",
                                 "type": "boolean",
                                 "order": 0,
@@ -606,9 +620,10 @@
                     },
                     "cnblogsClient.menus.context.editor": {
                         "order": 14,
+                        "markdownDescription": "要在编辑器右键菜单中显示的命令",
                         "type": "object",
                         "default": {
-                            "upload-post-file": true,
+                            "upload-post-file-no-confirm": true,
                             "pull-remote-post": true,
                             "modify-post-setting": true,
                             "show-post-to-local-file-info": true,
@@ -621,7 +636,7 @@
                             "ing:publish-select": false
                         },
                         "properties": {
-                            "upload-post-file": {
+                            "upload-post-file-no-confirm": {
                                 "order": 0,
                                 "description": "上传到博客园",
                                 "type": "boolean"
@@ -679,8 +694,7 @@
                             }
                         },
                         "scope": "application",
-                        "additionalProperties": false,
-                        "markdownDescription": "控制要在编辑器右键菜单中显示的命令"
+                        "additionalProperties": false
                     },
                     "cnblogsClient.ui.textIngStar": {
                         "order": 15,
@@ -1034,7 +1048,7 @@
                     "group": "delete@2"
                 },
                 {
-                    "command": "vscode-cnb.upload-post",
+                    "command": "vscode-cnb.upload-post-no-confirm",
                     "group": "0@1",
                     "when": "viewItem == cnb-post-cached"
                 },
@@ -1139,8 +1153,8 @@
                     "group": "cnblogs@1"
                 },
                 {
-                    "command": "vscode-cnb.upload-post-file",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-post-file",
+                    "command": "vscode-cnb.upload-post-file-no-confirm",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-post-file-no-confirm",
                     "group": "cnblogs@2"
                 },
                 {
