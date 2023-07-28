@@ -2,11 +2,11 @@ import path from 'path'
 import { isString } from 'lodash-es'
 import fs from 'fs'
 import { Uri, workspace } from 'vscode'
-import { ImgService } from '@/service/img'
 import { isErrorResponse } from '@/model/error-response'
 import { promisify } from 'util'
 import { Readable } from 'stream'
 import { tmpdir } from 'os'
+import { ImgService } from '@/service/img'
 
 export const enum DataType {
     dataUrl,
