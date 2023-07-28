@@ -14,8 +14,9 @@ import {
 import {
     uploadPostFileToCnblogs,
     uploadPostFileToCnblogsNoConfirm,
-    uploadPostToCnblogs, uploadPostToCnblogsNoConfirm
-} from "./posts-list/upload-post";
+    uploadPostToCnblogs,
+    uploadPostToCnblogsNoConfirm,
+} from './posts-list/upload-post'
 import { createLocalDraft } from './posts-list/create-local-draft'
 import { deleteSelectedPosts } from './posts-list/delete-post'
 import { modifyPostSettings } from './posts-list/modify-post-settings'
