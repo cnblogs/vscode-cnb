@@ -34,7 +34,7 @@ async function parseFileUri(fileUri: Uri | undefined) {
 }
 
 // TODO: need better impl
-export const uploadPostToCnblogsNoConfirm = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
+export const uploadPostNoConfirm = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
     if (input === undefined) return
     if (input instanceof PostTreeItem) input = input.post
 
@@ -99,7 +99,7 @@ export const uploadPostToCnblogsNoConfirm = async (input: Post | PostTreeItem | 
 }
 
 // TODO: need better impl
-export const uploadPostFileToCnblogsNoConfirm = async (fileUri: Uri | undefined) => {
+export const uploadPostFileNoConfirm = async (fileUri: Uri | undefined) => {
     const parsedFileUri = await parseFileUri(fileUri)
     if (parsedFileUri === undefined) return
 
@@ -108,7 +108,7 @@ export const uploadPostFileToCnblogsNoConfirm = async (fileUri: Uri | undefined)
 
     if (postId !== undefined && postId >= 0) {
         const dto = await PostService.fetchPostEditDto(postId)
-        if (dto !== undefined) await uploadPostToCnblogsNoConfirm(dto)
+        if (dto !== undefined) await uploadPostNoConfirm(dto)
         return
     }
 
@@ -136,13 +136,13 @@ export const uploadPostFileToCnblogsNoConfirm = async (fileUri: Uri | undefined)
         if (postEditDto === undefined) return
         if (!fileContent) await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
 
-        await uploadPostToCnblogsNoConfirm(postEditDto.post)
+        await uploadPostNoConfirm(postEditDto.post)
     } else if (selected === '新建博文') {
         await saveLocalDraftToCnblogs(new LocalDraft(filePath))
     }
 }
 
-export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
+export const uploadPost = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
     if (input === undefined) return
     if (input instanceof PostTreeItem) input = input.post
 
@@ -218,7 +218,7 @@ export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditD
     )
 }
 
-export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
+export const uploadPostFile = async (fileUri: Uri | undefined) => {
     const parsedFileUri = await parseFileUri(fileUri)
     if (parsedFileUri === undefined) return
 
@@ -227,7 +227,7 @@ export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
 
     if (postId !== undefined && postId >= 0) {
         const dto = await PostService.fetchPostEditDto(postId)
-        if (dto !== undefined) await uploadPostToCnblogs(dto)
+        if (dto !== undefined) await uploadPost(dto)
         return
     }
 
@@ -255,7 +255,7 @@ export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
         if (postEditDto === undefined) return
         if (!fileContent) await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
 
-        await uploadPostToCnblogs(postEditDto.post)
+        await uploadPost(postEditDto.post)
     } else if (selected === '新建博文') {
         await saveLocalDraftToCnblogs(new LocalDraft(filePath))
     }
