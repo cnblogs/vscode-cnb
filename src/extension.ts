@@ -1,46 +1,39 @@
-import { registerTreeViews } from '@/tree-view-providers/tree-view-registration'
-import { registerCommands } from '@/commands/commands-registration'
-import { globalCtx } from '@/services/global-ctx'
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import vscode from 'vscode'
+import { setupExtTreeView } from '@/tree-view/tree-view-register'
+import { setupExtCmd } from '@/setup/setup-cmd'
+import { globalCtx } from '@/ctx/global-ctx'
+import { window, ExtensionContext } from 'vscode'
 import { accountManager } from '@/auth/account-manager'
-import {
-    observeConfigurationChange,
-    observeWorkspaceFolderAndFileChange as observeWorkspaceFolderChange,
-} from '@/services/check-workspace'
-import extensionUriHandler from '@/utils/uri-handler'
-import { IngsListWebviewProvider } from 'src/services/ings-list-webview-provider'
+import { setupWorkspaceWatch, setupCfgWatch, setupWorkspaceFileWatch } from '@/setup/setup-watch'
+import { extUriHandler } from '@/infra/uri-handler'
 import { extendMarkdownIt } from '@/markdown/extend-markdownIt'
-import { Settings } from '@/services/settings.service'
+import { getIngListWebviewProvider } from '@/service/ing-list-webview-provider'
+import { setupUi } from '@/setup/setup-ui'
+import { LocalState } from '@/ctx/local-state'
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-    globalCtx.extCtx = context
+export function activate(ctx: ExtensionContext) {
+    globalCtx.extCtx = ctx
 
-    context.subscriptions.push(accountManager)
+    ctx.subscriptions.push(accountManager)
 
-    registerCommands()
-    registerTreeViews()
+    setupExtCmd()
+    setupExtTreeView()
 
-    const timeoutId = setTimeout(() => {
-        IngsListWebviewProvider.ensureRegistered()
-        clearTimeout(timeoutId)
-    }, 1000)
+    ctx.subscriptions.push(
+        window.registerWebviewViewProvider(getIngListWebviewProvider().viewId, getIngListWebviewProvider()),
+        setupCfgWatch(),
+        setupWorkspaceWatch(),
+        setupWorkspaceFileWatch()
+    )
 
-    observeConfigurationChange()
-    observeWorkspaceFolderChange()
-
-    Settings.migrateEnablePublishSelectionToIng().catch(console.warn)
+    window.registerUriHandler(extUriHandler)
 
     void accountManager.updateAuthStatus()
 
-    vscode.window.registerUriHandler(extensionUriHandler)
+    setupUi(LocalState.getExtCfg())
 
     return { extendMarkdownIt }
 }
 
-// this method is called when your extension is deactivated
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export function deactivate() {}
+export function deactivate() {
+    return
+}

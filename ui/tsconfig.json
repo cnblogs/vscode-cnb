@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "module": "es2015",
-        "target": "es5",
+        "module": "ES2020",
+        "target": "ES2020",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
@@ -13,12 +13,11 @@
         "strictPropertyInitialization": true,
         "baseUrl": ".",
         "paths": {
-            "@models/*": ["../src/models/*"],
-            "@/models/*": ["../src/models/*"]
+            "@/model/*": ["../src/model/*"]
         },
         "lib": ["DOM", "ES2020"],
         "strictBindCallApply": true
     },
-    "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "./**/*.js", "*.mjs", "../src/models/*.ts"],
+    "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "./**/*.js", "*.mjs", "../src/model/*.ts"],
     "exclude": ["./dist"]
 }

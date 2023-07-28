@@ -2,6 +2,7 @@
 import fetch from 'node-fetch'
 import fs from 'fs'
 import AdmZip from 'adm-zip'
+
 const url =
     'https://www.iconfont.cn/api/project/download.zip?spm=a313x.7781069.1998910419.d7543c303&pid=2996691&ctoken=ndNRCUzYy381Rxk59b1LjTrg'
 const cookie =
@@ -21,14 +22,14 @@ fetch(url, { headers: { cookie: cookie } }).then(f => {
                     zip.extractEntryTo(e, './dist/assets', false, true, undefined, outFileName)
                     zip.extractEntryTo(e, 'src/assets', false, true, undefined, outFileName)
                 })
-            fs.unlink(filename, err => {
-                if (err) {
-                    console.log(err)
+            fs.unlink(filename, e => {
+                if (e != null) {
+                    console.log(e)
                 }
                 console.log('iconfont assets downloaded')
             })
-        } catch (ex) {
-            console.warn('Failed to unzip iconfont assets! Some icons may not work correctly.', ex)
+        } catch (e) {
+            console.warn('Failed to unzip iconfont assets! Some icons may not work correctly.', e)
         }
     })
 }, undefined)

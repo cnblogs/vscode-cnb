@@ -1,5 +1,5 @@
 import { AuthSession } from '@/auth/auth-session'
-import { genVerifyChallengePair } from '@/services/code-challenge.service'
+import { genVerifyChallengePair } from '@/service/code-challenge'
 import { isArray, isUndefined } from 'lodash-es'
 import {
     authentication,
@@ -14,19 +14,17 @@ import {
     Uri,
     window,
 } from 'vscode'
-import { globalCtx } from '@/services/global-ctx'
+import { globalCtx } from '@/ctx/global-ctx'
 import RandomString from 'randomstring'
-import { Oauth } from '@/services/oauth.api'
-import extensionUriHandler from '@/utils/uri-handler'
+import { Oauth } from '@/service/oauth.api'
+import { extUriHandler } from '@/infra/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
-import { TokenInfo } from '@/models/token-info'
+import { TokenInfo } from '@/model/token-info'
 import { Optional } from 'utility-types'
 
 export class AuthProvider implements AuthenticationProvider, Disposable {
     static readonly providerId = 'cnblogs'
     static readonly providerName = '博客园Cnblogs'
-
-    private static _instance: AuthProvider | null
 
     readonly providerId = AuthProvider.providerId
     readonly providerName = AuthProvider.providerName
@@ -47,25 +45,8 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         })
     )
 
-    static get instance() {
-        this._instance ??= new AuthProvider()
-        return this._instance
-    }
-
     get onDidChangeSessions() {
         return this._sessionChangeEmitter.event
-    }
-
-    protected get context() {
-        return globalCtx.extCtx
-    }
-
-    protected get secretStorage() {
-        return globalCtx.secretsStorage
-    }
-
-    protected get config() {
-        return globalCtx.config
     }
 
     async getSessions(scopes?: readonly string[] | undefined): Promise<readonly AuthSession[]> {
@@ -108,9 +89,9 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
                         reject(`${isTimeout ? '由于超时, ' : ''}登录操作已取消`)
                     }),
                     cancelTokenSrc,
-                    extensionUriHandler
+                    extUriHandler
                 )
-                extensionUriHandler.onUri(uri => {
+                extUriHandler.onUri(uri => {
                     if (cancelTokenSrc.token.isCancellationRequested) return
 
                     const authorizationCode = this.parseOauthCallbackUri(uri)
@@ -148,7 +129,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             },
             { removed: <AuthSession[]>[], keep: <AuthSession[]>[] }
         )
-        await this.context.secrets.store(this.sessionStorageKey, JSON.stringify(data.keep))
+        await globalCtx.extCtx.secrets.store(this.sessionStorageKey, JSON.stringify(data.keep))
         this._sessionChangeEmitter.fire({ removed: data.removed, added: undefined, changed: undefined })
     }
 
@@ -165,7 +146,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         }
 
         if (this._allSessions == null || this._allSessions.length <= 0) {
-            const sessions = JSON.parse((await this.secretStorage.get(this.sessionStorageKey)) ?? '[]') as
+            const sessions = JSON.parse((await globalCtx.secretsStorage.get(this.sessionStorageKey)) ?? '[]') as
                 | AuthSession[]
                 | null
                 | undefined
@@ -178,7 +159,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
     private signInWithBrowser({ scopes }: { scopes: readonly string[] }) {
         const [verifyCode, challengeCode] = genVerifyChallengePair()
-        const { clientId, responseType, authorizeEndpoint, authority, clientSecret } = this.config.oauth
+        const { clientId, responseType, authorizeEndpoint, authority, clientSecret } = globalCtx.config.oauth
 
         const search = new URLSearchParams([
             ['client_id', clientId],
@@ -249,7 +230,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             const hasStored = await ifNotCancelledThen(() => {
                 if (isUndefined(session)) return Promise.resolve(false)
 
-                return this.secretStorage.store(this.sessionStorageKey, JSON.stringify([session])).then(
+                return globalCtx.secretsStorage.store(this.sessionStorageKey, JSON.stringify([session])).then(
                     () => true,
                     () => false
                 )
@@ -273,6 +254,8 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         return session
     }
 }
+
+export const authProvider = new AuthProvider()
 
 class LegacyTokenStore {
     static getAccessToken = () =>

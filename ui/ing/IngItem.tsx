@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
-import { Ing, IngComment, IngSendFromType } from '@models/ing'
-import { IngItemState } from '@models/ing-view'
+import { Ing, IngComment, IngSendFromType } from '@/model/ing'
+import { IngItemState } from '@/model/ing-view'
 import { take } from 'lodash-es'
 import { ActivityItem, IPersonaProps, Link, Text } from '@fluentui/react'
 import { format, formatDistanceStrict } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { vsCodeApi } from 'share/vscode-api'
-import { IngWebviewHostCommand, webviewCommands } from '@models/webview-commands'
+import { getVsCodeApiSingleton } from 'share/vscode-api'
+import { IngWebviewHostCmd, WebviewCmd } from '@/model/webview-cmd'
 
 interface IngItemProps {
     ing: Ing
@@ -197,11 +197,11 @@ class IngItem extends Component<IngItemProps, IngItemState> {
         }
     }
 
-    private comment(payload: webviewCommands.ingCommands.CommentCommandPayload) {
-        vsCodeApi.getInstance().postMessage({
-            command: webviewCommands.ingCommands.ExtensionCommands.comment,
+    private comment(payload: WebviewCmd.IngCmd.CommentCmdPayload) {
+        getVsCodeApiSingleton().postMessage({
+            command: WebviewCmd.IngCmd.ExtCmd.comment,
             payload,
-        } as IngWebviewHostCommand<webviewCommands.ingCommands.CommentCommandPayload>)
+        } as IngWebviewHostCmd<WebviewCmd.IngCmd.CommentCmdPayload>)
     }
 }
 

@@ -1,9 +1,9 @@
 import React, { Component, ReactNode } from 'react'
-import { IngWebviewUiCommand, webviewCommands } from '@models/webview-commands'
+import { IngWebviewUiCmd, WebviewCmd } from '@/model/webview-cmd'
 import { IngList } from 'ing/IngList'
-import { vsCodeApi } from 'share/vscode-api'
-import { IngAppState } from '@models/ing-view'
-import { Ing, IngComment } from '@models/ing'
+import { getVsCodeApiSingleton } from 'share/vscode-api'
+import { IngAppState } from '@/model/ing-view'
+import { Ing, IngComment } from '@/model/ing'
 import { activeThemeProvider } from 'share/active-theme-provider'
 import { ThemeProvider } from '@fluentui/react/lib/Theme'
 import { Spinner, Stack } from '@fluentui/react'
@@ -28,7 +28,7 @@ export class App extends Component<unknown, IngAppState> {
     }
 
     render(): ReactNode {
-        const { ings, isRefreshing, theme, comments } = this.state
+        const { ingList, isRefreshing, theme, comments } = this.state
         return (
             <React.StrictMode>
                 <ThemeProvider theme={theme} style={{ fontSize: 'var(--vscode-font-size)' }}>
@@ -39,7 +39,7 @@ export class App extends Component<unknown, IngAppState> {
                             </Stack.Item>
                         </Stack>
                     ) : (
-                        <IngList ings={ings ?? []} comments={comments ?? {}} />
+                        <IngList ingList={ingList ?? []} comments={comments ?? {}} />
                     )}
                 </ThemeProvider>
             </React.StrictMode>
@@ -47,36 +47,35 @@ export class App extends Component<unknown, IngAppState> {
     }
 
     private observeMessages() {
-        window.addEventListener('message', ({ data: { command, payload } }: { data: IngWebviewUiCommand }) => {
-            switch (command) {
-                case webviewCommands.ingCommands.UiCommands.setAppState: {
-                    const { ings, isRefreshing, comments } = payload as Partial<IngAppState>
-                    this.setState({
-                        ings: ings?.map(Ing.parse) ?? this.state.ings,
-                        isRefreshing: isRefreshing ?? this.state.isRefreshing,
-                        comments: comments
-                            ? Object.assign(
-                                  {},
-                                  this.state.comments ?? {},
-                                  cloneWith(comments, v => {
-                                      for (const key in v) v[key] = v[key].map(IngComment.parse)
-                                      return v
-                                  })
-                              )
-                            : this.state.comments,
-                    })
-                    break
-                }
-                case webviewCommands.ingCommands.UiCommands.updateTheme:
-                    this.setState({ theme: activeThemeProvider.activeTheme() })
-                    break
+        window.addEventListener('message', ({ data: { command, payload } }: { data: IngWebviewUiCmd }) => {
+            if (command === WebviewCmd.IngCmd.UiCmd.setAppState) {
+                const { ingList, isRefreshing, comments } = payload as Partial<IngAppState>
+                this.setState({
+                    ingList: ingList?.map(Ing.parse) ?? this.state.ingList,
+                    isRefreshing: isRefreshing ?? this.state.isRefreshing,
+                    comments: comments
+                        ? Object.assign(
+                              {},
+                              this.state.comments ?? {},
+                              cloneWith(comments, v => {
+                                  for (const key in v) v[key] = v[key].map(IngComment.parse)
+                                  return v
+                              })
+                          )
+                        : this.state.comments,
+                })
+                return
+            }
+            if (command === WebviewCmd.IngCmd.UiCmd.updateTheme) {
+                this.setState({ theme: activeThemeProvider.activeTheme() })
+                return
             }
         })
     }
 
     private refresh() {
-        vsCodeApi.getInstance().postMessage({
-            command: webviewCommands.ingCommands.ExtensionCommands.refreshIngsList,
+        getVsCodeApiSingleton().postMessage({
+            command: WebviewCmd.IngCmd.ExtCmd.refreshingList,
             payload: {},
         })
     }
