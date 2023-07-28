@@ -85,12 +85,12 @@ export namespace IngApi {
             })
 
             if (!res.ok) {
-                Alert.err(`发表评论失败, ${await res.text()}`)
+                void Alert.err(`发表评论失败, ${await res.text()}`)
                 return false
             }
         } catch (e) {
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            Alert.err(`发表评论失败, ${e}`)
+            void Alert.err(`发表评论失败, ${e}`)
             return false
         }
 

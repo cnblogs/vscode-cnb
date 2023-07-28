@@ -40,7 +40,7 @@ export const modifyPostSetting = async (input: Post | PostTreeItem | Uri) => {
         post: postEditDto,
         localFileUri: localFilePath ? Uri.file(localFilePath) : undefined,
         successCallback: ({ id }) => {
-            Alert.info('博文已更新')
+            void Alert.info('博文已更新')
             postDataProvider.fireTreeDataChangedEvent(id)
             postCategoryDataProvider.onPostUpdated({ refreshPost: false, postIds: [id] })
         },

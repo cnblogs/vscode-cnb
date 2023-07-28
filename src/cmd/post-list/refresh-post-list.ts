@@ -33,7 +33,7 @@ export const refreshPostList = async ({ queue = false } = {}): Promise<boolean> 
             )
             .then(pagedPost => {
                 if (pagedPost == null) {
-                    return Promise.resolve(false).finally(() => Alert.err('刷新博文列表失败'))
+                    return Promise.resolve(false).finally(() => void Alert.err('刷新博文列表失败'))
                 } else {
                     return PostService.updatePostListState(pagedPost)
                         .then(() => updatePostListViewTitle())
