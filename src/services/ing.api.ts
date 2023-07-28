@@ -1,26 +1,26 @@
 import { Ing, IngComment, IngPublishModel, IngType } from '@/models/ing'
 import { AlertService } from '@/services/alert.service'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import fetch from '@/utils/fetch-client'
 import { URLSearchParams } from 'url'
 import { isArray, isNumber, isObject } from 'lodash-es'
 
 export class IngApi {
     async publishIng(ing: IngPublishModel): Promise<boolean> {
-        const resp = await fetch(`${globalContext.config.cnblogsOpenApiUrl}/api/statuses`, {
+        const resp = await fetch(`${globalCtx.config.cnblogsOpenApiUrl}/api/statuses`, {
             method: 'POST',
             body: JSON.stringify(ing),
             headers: [['Content-Type', 'application/json']],
-        }).catch(reason => void AlertService.warning(JSON.stringify(reason)))
+        }).catch(reason => void AlertService.warn(JSON.stringify(reason)))
         if (!resp || !resp.ok)
-            AlertService.error(`闪存发布失败, ${resp?.statusText ?? ''} ${JSON.stringify((await resp?.text()) ?? '')}`)
+            AlertService.err(`闪存发布失败, ${resp?.statusText ?? ''} ${JSON.stringify((await resp?.text()) ?? '')}`)
 
         return resp != null && resp.ok
     }
 
     async list({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}): Promise<Ing[] | null> {
         const resp = await fetch(
-            `${globalContext.config.cnblogsOpenApiUrl}/api/statuses/@${type}?${new URLSearchParams({
+            `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/@${type}?${new URLSearchParams({
                 pageIndex: `${pageIndex}`,
                 pageSize: `${pageSize}`,
             }).toString()}`,
@@ -28,9 +28,9 @@ export class IngApi {
                 method: 'GET',
                 headers: [['Content-Type', 'application/json']],
             }
-        ).catch(reason => void AlertService.warning(JSON.stringify(reason)))
+        ).catch(reason => void AlertService.warn(JSON.stringify(reason)))
         if (!resp || !resp.ok) {
-            AlertService.error(
+            AlertService.err(
                 `获取闪存列表失败, ${resp?.statusText ?? ''} ${JSON.stringify((await resp?.text()) ?? '')}`
             )
             return null
@@ -44,7 +44,7 @@ export class IngApi {
                 return x
             })
             .catch(reason => {
-                AlertService.error(JSON.stringify(reason))
+                AlertService.err(JSON.stringify(reason))
                 return null
             })
     }
@@ -53,14 +53,14 @@ export class IngApi {
         const arr = isNumber(ingIds) ? [ingIds] : ingIds
         return Promise.all(
             arr.map(id =>
-                fetch(`${globalContext.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`, {
+                fetch(`${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`, {
                     method: 'GET',
                     headers: [['Content-Type', 'application/json']],
                 }).then(
                     resp =>
                         resp?.json().then(obj => [id, obj as IngComment[] | null | undefined] as const) ??
                         Promise.resolve(undefined),
-                    reason => void AlertService.warning(JSON.stringify(reason))
+                    reason => void AlertService.warn(JSON.stringify(reason))
                 )
             )
         ).then(results =>
@@ -72,7 +72,7 @@ export class IngApi {
     }
 
     comment(ingId: number, data: { replyTo?: number; parentCommentId?: number; content: string }) {
-        return fetch(`${globalContext.config.cnblogsOpenApiUrl}/api/statuses/${ingId}/comments`, {
+        return fetch(`${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${ingId}/comments`, {
             method: 'POST',
             headers: [['Content-Type', 'application/json']],
             body: JSON.stringify(data),
@@ -82,7 +82,7 @@ export class IngApi {
                 return resp.ok
             })
             .catch(reason => {
-                AlertService.warning(`发表评论失败, ${reason}`)
+                AlertService.err(`发表评论失败, ${reason}`)
                 return false
             })
     }

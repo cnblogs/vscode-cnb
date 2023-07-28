@@ -1,4 +1,4 @@
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import vscode from 'vscode'
 import { accountViewDataProvider } from './account-view-data-provider'
 import { PostsListTreeItem, postsDataProvider } from './posts-data-provider'
@@ -54,7 +54,7 @@ export const registerTreeViews = () => {
     const disposables: IDisposable[] = []
     for (const [, item] of Object.entries(_views)) typeof item === 'function' ? undefined : disposables.push(item)
 
-    globalContext.extensionContext.subscriptions.push(...disposables)
+    globalCtx.extCtx.subscriptions.push(...disposables)
 
     return extensionViews
 }

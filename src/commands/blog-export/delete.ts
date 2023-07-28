@@ -87,7 +87,7 @@ export class DeleteCommandHandler extends TreeViewCommandHandler<DownloadedExpor
             .delete(record.id)
             .then(() => true)
             .catch((e: unknown) => {
-                AlertService.httpError(typeof e === 'object' && e != null ? e : {})
+                AlertService.httpErr(typeof e === 'object' && e != null ? e : {})
                 return false
             })
         if (hasDeleted) if (downloaded) await this.removeDownloadedBlogExport(downloaded, { shouldDeleteLocal })

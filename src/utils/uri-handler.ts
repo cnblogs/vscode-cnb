@@ -20,11 +20,13 @@ class ExtensionUriHandler implements UriHandler, Disposable {
     }
 
     private get uriEventEmitter() {
-        return (this._uriEventEmitter ??= new EventEmitter<Uri>())
+        this._uriEventEmitter ??= new EventEmitter<Uri>()
+        return this._uriEventEmitter
     }
 
     get onUri() {
-        return (this._onUri ??= this.uriEventEmitter.event)
+        this._onUri ??= this.uriEventEmitter.event
+        return this._onUri
     }
 
     handleUri(uri: Uri): ProviderResult<void> {

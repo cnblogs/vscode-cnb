@@ -1,6 +1,6 @@
 import { commands } from 'vscode'
 import { RefreshIngsList } from 'src/commands/ing/refresh-ings-list'
-import { globalContext } from 'src/services/global-state'
+import { globalCtx } from 'src/services/global-ctx'
 import { IDisposable } from '@fluentui/react'
 import {
     GotoIngsListFirstPage,
@@ -11,7 +11,7 @@ import { SelectIngType } from '@/commands/ing/select-ing-type'
 import { OpenIngInBrowser } from '@/commands/ing/open-ing-in-browser'
 
 export const registerCommandsForIngsList = (disposables: IDisposable[]) => {
-    const appName = globalContext.extensionName
+    const appName = globalCtx.extName
 
     disposables.push(
         ...[

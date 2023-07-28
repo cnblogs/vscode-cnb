@@ -1,7 +1,7 @@
 import path from 'path'
 import { MessageOptions, Uri, window } from 'vscode'
 import { AlertService } from '@/services/alert.service'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { postCategoryService } from '@/services/post-category.service'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { searchPostsByTitle } from '@/services/search-post-by-title'
@@ -49,7 +49,7 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
 
     if (!filePath || !postId || !(postId >= 0)) return
 
-    const post = (await postService.fetchPostEditDto(postId))?.post
+    const post = (await PostService.fetchPostEditDto(postId))?.post
     if (!post) return
 
     let categories = await postCategoryService.listCategories()

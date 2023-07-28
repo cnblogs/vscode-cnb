@@ -3,7 +3,7 @@ import { Post } from '@/models/post'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { openPostInVscode } from './posts-list/open-post-in-vscode'
 import fs from 'fs'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { AlertService } from '@/services/alert.service'
 import path from 'path'
 import { revealPostsListItem } from '@/services/posts-list-view'
@@ -79,7 +79,7 @@ const handleUriInput = (fileUri: Uri, contexts: CommandContext[]): Promise<void>
 const update = async (contexts: CommandContext[]) => {
     for (const ctx of contexts) {
         const { fileUri, postId } = ctx
-        const { post } = (await postService.fetchPostEditDto(postId)) ?? {}
+        const { post } = (await PostService.fetchPostEditDto(postId)) ?? {}
         if (post) {
             const textEditors = window.visibleTextEditors.filter(x => x.document.uri.fsPath === fileUri.fsPath)
             await Promise.all(textEditors.map(editor => editor.document.save()))

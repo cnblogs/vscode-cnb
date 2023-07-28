@@ -102,7 +102,7 @@ export const inputPostSettings = (
         try {
             categories = await postCategoryService.listCategories()
         } catch (err) {
-            AlertService.error(err instanceof Error ? err.message : JSON.stringify(err))
+            AlertService.err(err instanceof Error ? err.message : JSON.stringify(err))
             // 取消
             throw InputFlowAction.cancel
         }

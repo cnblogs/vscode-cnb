@@ -4,7 +4,7 @@ import { openMyWebBlogConsole } from './open-my-blog-management-background'
 import { openMyHomePage } from './open-my-home-page'
 import { login, logout } from './login'
 import { openMyBlog } from './open-my-blog'
-import { globalContext } from '@/services/global-state'
+import { globalCtx } from '@/services/global-ctx'
 import {
     gotoNextPostsList,
     gotoPreviousPostsList,
@@ -39,8 +39,8 @@ import { CopyPostLinkCommandHandler } from '@/commands/posts-list/copy-link'
 import { registerCommandsForBlogExport } from '@/commands/blog-export'
 
 export const registerCommands = () => {
-    const context = globalContext.extensionContext
-    const appName = globalContext.extensionName
+    const context = globalCtx.extCtx
+    const appName = globalCtx.extName
 
     // TODO: simplify register
     const disposables = [

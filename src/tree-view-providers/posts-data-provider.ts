@@ -3,7 +3,7 @@ import { refreshPostsList } from '@/commands/posts-list/refresh-posts-list'
 import { Post } from '@/models/post'
 import { PageModel } from '@/models/page-model'
 import { AlertService } from '@/services/alert.service'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { Settings } from '@/services/settings.service'
 import { toTreeItem } from './converters'
 import { PostEntryMetadata, PostMetadata } from './models/post-metadata'
@@ -23,7 +23,8 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     protected constructor() {}
 
     static get instance() {
-        return (this._instance ??= new PostsDataProvider())
+        this._instance ??= new PostsDataProvider()
+        return this._instance
     }
 
     get onDidChangeTreeData() {
@@ -47,9 +48,9 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
             return PostMetadata.parseRoots({ post: parent })
         } else if (parent instanceof PostEntryMetadata || parent instanceof PostSearchResultEntry) {
             return parent.getChildrenAsync()
-        } else {
-            return []
         }
+
+        return []
     }
 
     getParent(el: PostsListTreeItem) {
@@ -61,14 +62,17 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     }
 
     async loadPosts(): Promise<PageModel<Post> | null> {
-        const { pageIndex } = postService.postsListState ?? {}
+        const { pageIndex } = PostService.getPostsListState() ?? {}
         const pageSize = Settings.postsListPageSize
-        this._pagedPosts = await postService.fetchPostsList({ pageIndex, pageSize }).catch(ex => {
-            if (ex instanceof Error) AlertService.error(ex.message)
-            else AlertService.error(`加载博文失败\n${JSON.stringify(ex)}`)
+
+        this._pagedPosts = await PostService.fetchPostsList({ pageIndex, pageSize }).catch(e => {
+            if (e instanceof Error) AlertService.err(e.message)
+            else AlertService.err(`加载博文失败\n${JSON.stringify(e)}`)
             return undefined
         })
+
         this.fireTreeDataChangedEvent(undefined)
+
         return this._pagedPosts ?? null
     }
 
@@ -87,7 +91,7 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
     async search({ key }: { key: string }): Promise<void> {
         if (key.length <= 0) return
 
-        const { items, totalItemsCount, zzkSearchResult } = await postService.fetchPostsList({ search: key })
+        const { items, totalItemsCount, zzkSearchResult } = await PostService.fetchPostsList({ search: key })
 
         this._searchResultEntry = new PostSearchResultEntry(key, items, totalItemsCount, zzkSearchResult)
         this.fireTreeDataChangedEvent(undefined)
@@ -100,6 +104,7 @@ export class PostsDataProvider implements TreeDataProvider<PostsListTreeItem> {
 
     async refreshSearch(): Promise<void> {
         const { _searchResultEntry } = this
+
         if (_searchResultEntry) {
             const { searchKey } = _searchResultEntry
             this._searchResultEntry = null

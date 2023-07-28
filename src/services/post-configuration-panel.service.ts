@@ -1,11 +1,11 @@
 import { cloneDeep } from 'lodash-es'
 import vscode, { Uri } from 'vscode'
 import { Post } from '@/models/post'
-import { globalContext } from './global-state'
+import { globalCtx } from './global-ctx'
 import { postCategoryService } from './post-category.service'
 import { siteCategoryService } from './site-category.service'
 import { postTagService } from './post-tag.service'
-import { postService } from './post.service'
+import { PostService } from './post.service'
 import { isErrorResponse } from '@/models/error-response'
 import { webviewMessage } from '@/models/webview-message'
 import { WebviewCommonCommand, webviewCommands } from 'src/models/webview-commands'
@@ -27,7 +27,7 @@ export namespace postConfigurationPanel {
         beforeUpdate?: (postToUpdate: Post, panel: vscode.WebviewPanel) => Promise<boolean>
     }
 
-    const resourceRootUri = () => globalContext.assetsUri
+    const resourceRootUri = () => globalCtx.assetsUri
 
     const setHtml = async (webview: vscode.Webview): Promise<void> => {
         webview.html = await parseWebviewHtml('post-configuration', webview)
@@ -108,7 +108,7 @@ export namespace postConfigurationPanel {
         })
         const { webview } = panel
         await setHtml(webview)
-        panel.iconPath = Uri.joinPath(globalContext.extensionContext.extensionUri, 'dist', 'assets', 'favicon.svg')
+        panel.iconPath = Uri.joinPath(globalCtx.extCtx.extensionUri, 'dist', 'assets', 'favicon.svg')
         panels.set(panelId, panel)
         return panel
     }
@@ -185,7 +185,7 @@ export namespace postConfigurationPanel {
                                 return
                             }
                         }
-                        const postSavedModel = await postService.updatePost(postToUpdate)
+                        const postSavedModel = await PostService.updatePost(postToUpdate)
                         panel.dispose()
                         successCallback(Object.assign({}, postToUpdate, postSavedModel))
                     } catch (err) {

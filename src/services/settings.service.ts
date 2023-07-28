@@ -78,9 +78,6 @@ export class Settings {
     static get autoExtractImgType(): ImageSrc | undefined {
         const cfg = this.configuration.get<'disable' | 'web' | 'dataUrl' | 'fs' | 'any'>('autoExtractImages')
 
-        console.log(this.configuration)
-        console.log(cfg)
-
         if (cfg === 'disable') return
         if (cfg === 'web') return ImageSrc.web
         if (cfg === 'dataUrl') return ImageSrc.dataUrl

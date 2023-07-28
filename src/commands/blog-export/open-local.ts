@@ -28,8 +28,7 @@ export class OpenLocalExportCommandHandler extends CommandHandler {
             })) ?? []
         if (fileUri == null) return
         const filePath = fileUri.fsPath
-        if (filePath.endsWith('.zip') && !filePath.endsWith('.db.zip'))
-            return AlertService.warning('不支持的博客备份文件')
+        if (filePath.endsWith('.zip') && !filePath.endsWith('.db.zip')) return AlertService.warn('不支持的博客备份文件')
 
         const fileName = path.basename(filePath.replace(/\.db(\.zip)?$/, ''))
         const dirname = path.dirname(filePath)
@@ -56,7 +55,7 @@ export class OpenLocalExportCommandHandler extends CommandHandler {
         const dbFileName = path.basename(dbFilePath)
 
         const isExist = await promisify(fs.exists)(dbFilePath)
-        if (!isExist) return AlertService.warning('文件不存在')
+        if (!isExist) return AlertService.warn('文件不存在')
 
         const treeProvider = BlogExportProvider.optionalInstance
         const dbFileSize = (await promisify(fs.stat)(dbFilePath)).size

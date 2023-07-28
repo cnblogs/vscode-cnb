@@ -8,7 +8,7 @@ import tailwindConfig from './tailwind.config.js'
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 
-const isDev = process.env.ASPNETCORE_ENVIRONMENT === 'Development' || process.env.NODE_ENV === 'development'
+const isDevEnv = process.env.ASPNETCORE_ENVIRONMENT === 'Development' || process.env.NODE_ENV === 'development'
 
 rmSync('./dist/assets/ui/**', { force: true, recursive: true })
 
@@ -31,7 +31,7 @@ const buildEntry = () => {
 
     cpSync('./node_modules/@fluentui/font-icons-mdl2/fonts/', './dist/assets/fonts/', { recursive: true })
 
-    if (isDev) console.log(entries)
+    if (isDevEnv) console.log(entries)
 
     return entries
 }
@@ -49,8 +49,8 @@ const config = {
         extensions: ['.tsx', '.ts', 'less', '.css', '.js'],
         plugins: [new TsconfigPathsPlugin({ configFile: './ui/tsconfig.json' })],
     },
-    devtool: isDev ? 'eval-source-map' : false,
-    mode: isDev ? 'development' : 'production',
+    devtool: isDevEnv ? 'eval-source-map' : false,
+    mode: isDevEnv ? 'development' : 'production',
     module: {
         rules: [
             {
@@ -61,7 +61,7 @@ const config = {
                         loader: 'css-loader',
                         options: {
                             import: true,
-                            sourceMap: isDev,
+                            sourceMap: isDevEnv,
                             url: false,
                         },
                     },
@@ -114,7 +114,7 @@ const config = {
         },
     ],
     optimization: {
-        minimize: !isDev,
+        minimize: !isDevEnv,
         minimizer: [
             new TerserPlugin({
                 terserOptions: {

@@ -97,8 +97,10 @@ export class DownloadedExportsEntryTreeItem
         throw new Error('Not implemented')
     }
 
-    getChildrenAsync: () => Promise<DownloadedExportTreeItem[]> = async () =>
-        (this._children ??= parseDownloadedExports(this, await DownloadedExportStore.instance.list()))
+    getChildrenAsync: () => Promise<DownloadedExportTreeItem[]> = async () => {
+        this._children ??= parseDownloadedExports(this, await DownloadedExportStore.instance.list())
+        return this._children
+    }
 
     async refresh() {
         this._children = null
@@ -107,7 +109,7 @@ export class DownloadedExportsEntryTreeItem
 
     toTreeItem(): TreeItem | Promise<TreeItem> {
         return {
-            label: '已下载备份',
+            label: '已下载博客备份',
             iconPath: new ThemeIcon('archive'),
             collapsibleState: TreeItemCollapsibleState.Collapsed,
             contextValue: 'cnblogs-export-downloaded-entry',

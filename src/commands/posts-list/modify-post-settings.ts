@@ -1,7 +1,7 @@
 import { Uri } from 'vscode'
 import { Post } from '@/models/post'
 import { AlertService } from '@/services/alert.service'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { PostFileMapManager } from '@/services/post-file-map'
 import { revealPostsListItem } from '@/services/posts-list-view'
 import { postConfigurationPanel } from '@/services/post-configuration-panel.service'
@@ -29,7 +29,7 @@ export const modifyPostSettings = async (input: Post | PostTreeItem | Uri) => {
 
     if (post) await revealPostsListItem(post)
 
-    const editDto = await postService.fetchPostEditDto(postId)
+    const editDto = await PostService.fetchPostEditDto(postId)
     if (!editDto) return
 
     const postEditDto = editDto.post

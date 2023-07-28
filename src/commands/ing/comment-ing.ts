@@ -17,7 +17,8 @@ export class CommentIngCommandHandler extends CommandHandler {
     }
 
     private get ingApi() {
-        return (this._ingApi ??= new IngApi())
+        this._ingApi ??= new IngApi()
+        return this._ingApi
     }
 
     async handle(): Promise<void> {

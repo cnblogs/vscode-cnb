@@ -1,6 +1,7 @@
 export const convertObjectKeysToCamelCase = <T extends object>(obj: T) => {
     const anyObj = <Record<string, unknown>>obj
     const splitters = ['-', '_']
+
     for (const oldKey of Object.keys(obj)) {
         const newKey = oldKey
             .split(new RegExp(`(${splitters.join('|')})`))
@@ -10,5 +11,6 @@ export const convertObjectKeysToCamelCase = <T extends object>(obj: T) => {
         anyObj[newKey] = anyObj[oldKey]
         if (oldKey !== newKey) delete anyObj[oldKey]
     }
+
     return obj
 }

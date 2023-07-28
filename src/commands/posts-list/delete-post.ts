@@ -1,7 +1,7 @@
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/models/post'
 import { AlertService } from '@/services/alert.service'
-import { postService } from '@/services/post.service'
+import { PostService } from '@/services/post.service'
 import { PostFileMap, PostFileMapManager } from '@/services/post-file-map'
 import { postsDataProvider } from '@/tree-view-providers/posts-data-provider'
 import { extensionViews } from '@/tree-view-providers/tree-view-registration'
@@ -55,7 +55,7 @@ export const deleteSelectedPosts = async (arg: unknown) => {
     if (selectedPosts.length <= 0) return
 
     if (isDeleting) {
-        AlertService.warning('休息会儿再点吧~')
+        AlertService.warn('休息会儿再点吧~')
         return
     }
 
@@ -72,13 +72,13 @@ export const deleteSelectedPosts = async (arg: unknown) => {
             increment: 0,
         })
         try {
-            await postService.deletePosts(selectedPosts.map(p => p.id))
+            await PostService.deletePosts(selectedPosts.map(p => p.id))
             if (isToDeleteLocalFile) {
                 selectedPosts
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')
                     .filter(x => !!x)
                     .forEach(path => {
-                        workspace.fs.delete(Uri.file(path)).then(undefined, ex => console.error(ex))
+                        workspace.fs.delete(Uri.file(path)).then(undefined, e => console.error(e))
                     })
             }
             await PostFileMapManager.updateOrCreateMany({
