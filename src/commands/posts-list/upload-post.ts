@@ -33,6 +33,191 @@ async function parseFileUri(fileUri: Uri | undefined) {
     return undefined
 }
 
+// TODO: need better impl
+export const uploadPostToCnblogsNoConfirm = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
+    if (input === undefined) return
+    if (input instanceof PostTreeItem) input = input.post
+
+    let post: Post | undefined
+
+    if (input instanceof PostEditDto) {
+        post = input.post
+    } else {
+        const dto = await PostService.fetchPostEditDto(input.id)
+        post = dto?.post
+    }
+
+    if (post === undefined) return
+
+    const localFilePath = PostFileMapManager.getFilePath(post.id)
+    if (!localFilePath) return AlertService.warn('本地无该博文的编辑记录')
+
+    if (Settings.autoExtractImgType !== undefined)
+        await extractImages(Uri.file(localFilePath), Settings.autoExtractImgType).catch(console.warn)
+
+    await saveFilePendingChanges(localFilePath)
+    post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()
+
+    if (isEmptyBody(post.postBody)) return false
+
+    post.isMarkdown =
+        path.extname(localFilePath).endsWith('md') || path.extname(localFilePath).endsWith('mkd') || post.isMarkdown
+
+    const thePost = post // Dup code for type checking
+
+    return window.withProgress(
+        {
+            location: ProgressLocation.Notification,
+            title: '正在上传博文',
+            cancellable: false,
+        },
+        async progress => {
+            progress.report({
+                increment: 10,
+            })
+
+            let isSaved = false
+
+            try {
+                const { id: postId } = await PostService.updatePost(thePost)
+                await openPostInVscode(postId)
+                thePost.id = postId
+
+                isSaved = true
+                progress.report({ increment: 100 })
+                AlertService.info('上传成功')
+                await refreshPostsList()
+            } catch (err) {
+                progress.report({ increment: 100 })
+                AlertService.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
+                console.error(err)
+            }
+
+            return isSaved
+        }
+    )
+}
+
+// TODO: need better impl
+export const uploadPostFileToCnblogsNoConfirm = async (fileUri: Uri | undefined) => {
+    const parsedFileUri = await parseFileUri(fileUri)
+    if (parsedFileUri === undefined) return
+
+    const { fsPath: filePath } = parsedFileUri
+    const postId = PostFileMapManager.getPostId(filePath)
+
+    if (postId !== undefined && postId >= 0) {
+        const dto = await PostService.fetchPostEditDto(postId)
+        if (dto !== undefined) await uploadPostToCnblogsNoConfirm(dto)
+        return
+    }
+
+    const fileContent = Buffer.from(await workspace.fs.readFile(parsedFileUri)).toString()
+    if (isEmptyBody(fileContent)) return
+
+    const options = ['新建博文', '关联已有博文']
+    const selected = await window.showInformationMessage(
+        '本地文件尚未关联到博客园博文',
+        {
+            modal: true,
+            detail: `您可以选择新建一篇博文或将本地文件关联到一篇博客园博文(您可以根据标题搜索您在博客园博文)`,
+        } as MessageOptions,
+        ...options
+    )
+    if (selected === '关联已有博文') {
+        const selectedPost = await searchPostsByTitle({
+            postTitle: path.basename(filePath, path.extname(filePath)),
+            quickPickTitle: '搜索要关联的博文',
+        })
+        if (selectedPost === undefined) return
+
+        await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
+        const postEditDto = await PostService.fetchPostEditDto(selectedPost.id)
+        if (postEditDto === undefined) return
+        if (!fileContent) await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
+
+        await uploadPostToCnblogsNoConfirm(postEditDto.post)
+    } else if (selected === '新建博文') {
+        await saveLocalDraftToCnblogs(new LocalDraft(filePath))
+    }
+}
+
+export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
+    if (input === undefined) return
+    if (input instanceof PostTreeItem) input = input.post
+
+    let post: Post | undefined
+
+    if (input instanceof PostEditDto) {
+        post = input.post
+    } else {
+        const dto = await PostService.fetchPostEditDto(input.id)
+        post = dto?.post
+    }
+
+    if (post === undefined) return
+
+    const localFilePath = PostFileMapManager.getFilePath(post.id)
+    if (!localFilePath) return AlertService.warn('本地无该博文的编辑记录')
+
+    if (Settings.autoExtractImgType !== undefined)
+        await extractImages(Uri.file(localFilePath), Settings.autoExtractImgType).catch(console.warn)
+
+    await saveFilePendingChanges(localFilePath)
+    post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()
+
+    if (isEmptyBody(post.postBody)) return false
+
+    post.isMarkdown =
+        path.extname(localFilePath).endsWith('md') || path.extname(localFilePath).endsWith('mkd') || post.isMarkdown
+
+    if (Settings.showConfirmMsgWhenUploadPost) {
+        const answer = await vscode.window.showWarningMessage(
+            '确认上传博文吗?',
+            {
+                modal: true,
+                detail: '本地博文将保存至服务端(可通过设置关闭对话框)',
+            },
+            '确认'
+        )
+        if (answer !== '确认') return false
+    }
+
+    const thePost = post // Dup code for type checking
+
+    return window.withProgress(
+        {
+            location: ProgressLocation.Notification,
+            title: '正在上传博文',
+            cancellable: false,
+        },
+        async progress => {
+            progress.report({
+                increment: 10,
+            })
+
+            let isSaved = false
+
+            try {
+                const { id: postId } = await PostService.updatePost(thePost)
+                await openPostInVscode(postId)
+                thePost.id = postId
+
+                isSaved = true
+                progress.report({ increment: 100 })
+                AlertService.info('上传成功')
+                await refreshPostsList()
+            } catch (err) {
+                progress.report({ increment: 100 })
+                AlertService.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
+                console.error(err)
+            }
+
+            return isSaved
+        }
+    )
+}
+
 export const uploadPostFileToCnblogs = async (fileUri: Uri | undefined) => {
     const parsedFileUri = await parseFileUri(fileUri)
     if (parsedFileUri === undefined) return
@@ -119,82 +304,6 @@ export async function saveLocalDraftToCnblogs(localDraft: LocalDraft) {
             return true
         },
     })
-}
-
-export const uploadPostToCnblogs = async (input: Post | PostTreeItem | PostEditDto | undefined) => {
-    if (input === undefined) return
-    if (input instanceof PostTreeItem) input = input.post
-
-    let post: Post | undefined
-
-    if (input instanceof PostEditDto) {
-        post = input.post
-    } else {
-        const dto = await PostService.fetchPostEditDto(input.id)
-        post = dto?.post
-    }
-
-    if (post === undefined) return
-
-    const localFilePath = PostFileMapManager.getFilePath(post.id)
-    if (!localFilePath) return AlertService.warn('本地无该博文的编辑记录')
-
-    if (Settings.autoExtractImgType !== undefined)
-        await extractImages(Uri.file(localFilePath), Settings.autoExtractImgType).catch(console.warn)
-
-    await saveFilePendingChanges(localFilePath)
-    post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()
-
-    if (isEmptyBody(post.postBody)) return false
-
-    post.isMarkdown =
-        path.extname(localFilePath).endsWith('md') || path.extname(localFilePath).endsWith('mkd') || post.isMarkdown
-
-    if (Settings.showConfirmMsgWhenUploadPost) {
-        const answer = await vscode.window.showWarningMessage(
-            '确认上传博文吗?',
-            {
-                modal: true,
-                detail: '本地博文将保存至服务端(可通过设置关闭对话框)',
-            },
-            '确认'
-        )
-        if (answer !== '确认') return false
-    }
-
-    const thePost = post // Dup code for type checking
-
-    return window.withProgress(
-        {
-            location: ProgressLocation.Notification,
-            title: '正在上传博文',
-            cancellable: false,
-        },
-        async progress => {
-            progress.report({
-                increment: 10,
-            })
-
-            let isSaved = false
-
-            try {
-                const { id: postId } = await PostService.updatePost(thePost)
-                await openPostInVscode(postId)
-                thePost.id = postId
-
-                isSaved = true
-                progress.report({ increment: 100 })
-                AlertService.info('上传成功')
-                await refreshPostsList()
-            } catch (err) {
-                progress.report({ increment: 100 })
-                AlertService.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
-                console.error(err)
-            }
-
-            return isSaved
-        }
-    )
 }
 
 function isEmptyBody(body: string) {
