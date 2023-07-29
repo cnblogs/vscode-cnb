@@ -8,17 +8,10 @@ import { promisify } from 'util'
 import { Readable } from 'stream'
 import { tmpdir } from 'os'
 
-export const enum DataType {
-    dataUrl,
-    url,
-}
-
 export interface ImgInfo {
     offset: number
     data: string
-    dataType: DataType
-    prefix: string
-    postfix: string
+    src: ImgSrc
 }
 
 export const enum ImgSrc {
@@ -26,25 +19,6 @@ export const enum ImgSrc {
     dataUrl,
     fs,
     any,
-}
-
-export const newImgSrcFilter = (type: ImgSrc) => {
-    const isWebImg = (imgInfo: ImgInfo) => imgInfo.dataType === DataType.url && /https?:\/\//.test(imgInfo.data)
-    const isFsImg = (imgInfo: ImgInfo) => imgInfo.dataType === DataType.url && !isWebImg(imgInfo)
-    const isDataUrlImg = (imgInfo: ImgInfo) => imgInfo.dataType === DataType.dataUrl
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const isAnyImg = (_: ImgInfo) => true
-
-    switch (type) {
-        case ImgSrc.web:
-            return isWebImg
-        case ImgSrc.fs:
-            return isFsImg
-        case ImgSrc.dataUrl:
-            return isDataUrlImg
-        case ImgSrc.any:
-            return isAnyImg
-    }
 }
 
 enum ExtractorSt {
@@ -169,13 +143,13 @@ export class MkdImgExtractor {
     private async resolveImgInfo(info: ImgInfo): Promise<Readable | undefined> {
         // for web img
         // eslint-disable-next-line no-return-await
-        if (newImgSrcFilter(ImgSrc.web)(info)) return await this.resolveWebImg(info.data)
+        if (info.src === ImgSrc.web) return await this.resolveWebImg(info.data)
 
         // for fs img
         // eslint-disable-next-line no-return-await
-        if (newImgSrcFilter(ImgSrc.fs)(info)) return await this.resolveFsImg(info.data)
+        if (info.src === ImgSrc.fs) return await this.resolveFsImg(info.data)
 
         // for data url img
-        if (newImgSrcFilter(ImgSrc.dataUrl)(info)) return this.resolveDataUrlImg(info.data)
+        if (info.src === ImgSrc.dataUrl) return this.resolveDataUrlImg(info.data)
     }
 }

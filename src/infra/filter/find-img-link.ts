@@ -1,4 +1,4 @@
-import { DataType, ImgInfo } from '@/markdown/mkd-img-extractor'
+import { ImgInfo, ImgSrc } from '@/markdown/mkd-img-extractor'
 import { r } from '@/infra/convert/string-literal'
 import { RsMatch, RsRegex } from '@/wasm'
 
@@ -11,32 +11,42 @@ const imgExtPat = r`png|jpg|jpeg|webp|svg|gif`
 const imgUrlPat = r`.*?\.(?:${imgExtPat})`
 const dataUrlPat = r`data:image\/.*?,[a-zA-Z0-9+/]*?=?=?`
 
-const imgTagDataUrlImgPat = r`(<img.*?src\s*=\s*")(${dataUrlPat})("[^/]*?\/?>)`
-const mkdUrlImgPat = r`(!\[.*?]\()(${imgUrlPat})(\))`
-const imgTagUrlImgPat = r`(<img.*?src\s*=\s*")(${imgUrlPat})("[^/]*?\/?>)`
-const mkdDataUrlImgPat = r`(!\[.*?]\()(${dataUrlPat})(\))`
+const imgTagDataUrlImgPat = r`(<img.*?src\s*=\s*")(${dataUrlPat})"[^/]*?\/?>`
+const mkdUrlImgPat = r`(!\[.*?]\()(${imgUrlPat})\)`
+const imgTagUrlImgPat = r`(<img.*?src\s*=\s*")(${imgUrlPat})"[^/]*?\/?>`
+const mkdDataUrlImgPat = r`(!\[.*?]\()(${dataUrlPat})\)`
 const cnbDomain = r`\.cnblogs\.com\/`
 
 export function findImgLink(text: string): ImgInfo[] {
     const imgTagUrlImgMgs = RsRegex.matches(imgTagUrlImgPat, text) as RsMatch[]
     const mkdUrlImgMgs = RsRegex.matches(mkdUrlImgPat, text) as RsMatch[]
-    const urlImgInfo = imgTagUrlImgMgs.concat(mkdUrlImgMgs).map<ImgInfo>(mg => ({
-        offset: mg.offset,
-        dataType: DataType.url,
-        data: mg.groups[2],
-        prefix: mg.groups[1],
-        postfix: mg.groups[3],
-    }))
+    const urlImgInfo = imgTagUrlImgMgs.concat(mkdUrlImgMgs).map<ImgInfo>(mg => {
+        const data = mg.groups[2]
+        const prefix = mg.groups[1]
+
+        let src
+        if (/https?:\/\//.test(data)) src = ImgSrc.web
+        else src = ImgSrc.fs
+
+        return {
+            offset: mg.offset + prefix.length,
+            data,
+            src,
+        }
+    })
 
     const imgTagDataUrlImgMgs = RsRegex.matches(imgTagDataUrlImgPat, text) as RsMatch[]
     const mkdDataUrlImgMgs = RsRegex.matches(mkdDataUrlImgPat, text) as RsMatch[]
-    const dataUrlImgInfo = imgTagDataUrlImgMgs.concat(mkdDataUrlImgMgs).map<ImgInfo>(mg => ({
-        offset: mg.offset,
-        dataType: DataType.dataUrl,
-        data: mg.groups[2],
-        prefix: mg.groups[1],
-        postfix: mg.groups[3],
-    }))
+    const dataUrlImgInfo = imgTagDataUrlImgMgs.concat(mkdDataUrlImgMgs).map<ImgInfo>(mg => {
+        const data = mg.groups[2]
+        const prefix = mg.groups[1]
+
+        return {
+            offset: mg.offset + prefix.length,
+            data,
+            src: ImgSrc.dataUrl,
+        }
+    })
 
     const acc = urlImgInfo.concat(dataUrlImgInfo)
 
