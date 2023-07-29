@@ -1,44 +1,45 @@
+import { DataType, ImgInfo } from '@/markdown/mkd-img-extractor'
+import { r } from '@/infra/convert/string-literal'
+import { RsMatch, RsRegex } from '@/wasm'
+
 // Data URL reference see in:
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs
 // Related RFC:
 // https://datatracker.ietf.org/doc/html/rfc2397
 
-import { DataType, ImgInfo } from '@/markdown/mkd-img-extractor'
-import { RsRegex } from '@/wasm'
+const imgExtPat = r`png|jpg|jpeg|webp|svg|gif`
+const imgUrlPat = r`.*?\.(?:${imgExtPat})`
+const dataUrlPat = r`data:image\/.*?,[a-zA-Z0-9+/]*?=?=?`
 
-const imgTagDataUrlImgPat = /(<img.*?src\s*=\s*")(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)("[^/]*?\/?>)/g
-const imgTagUrlImgPat = /(<img.*?src\s*=\s*")(.*\.(?:png|jpg|jpeg|webp|svg|gif))("[^/]*?\/?>)/gi
-const mkdDataUrlImgPat = /(!\[.*?]\()(data:image\/.*?,[a-zA-Z0-9+/]*?=?=?)(\))/g
-const mkdUrlImgPat = /(!\[.*?]\()(.*?\.(?:png|jpg|jpeg|webp|svg|gif))(\))/gi
-//eslint-disable-next-line
-const cnblogsDomain = `\.cnblogs\.com\/`
+const imgTagDataUrlImgPat = r`(<img.*?src\s*=\s*")(${dataUrlPat})("[^/]*?\/?>)`
+const mkdUrlImgPat = r`(!\[.*?]\()(${imgUrlPat})(\))`
+const imgTagUrlImgPat = r`(<img.*?src\s*=\s*")(${imgUrlPat})("[^/]*?\/?>)`
+const mkdDataUrlImgPat = r`(!\[.*?]\()(${dataUrlPat})(\))`
+const cnbDomain = r`\.cnblogs\.com\/`
 
 export function findImgLink(text: string): ImgInfo[] {
-    const imgTagUrlImgMatchGroups = Array.from(text.matchAll(imgTagUrlImgPat))
-    const mkdUrlImgMatchGroups = Array.from(text.matchAll(mkdUrlImgPat))
-    const urlImgInfo = imgTagUrlImgMatchGroups.concat(mkdUrlImgMatchGroups).map<ImgInfo>(mg => ({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        startOffset: mg.index!,
+    const imgTagUrlImgMgs = RsRegex.matches(imgTagUrlImgPat, text) as RsMatch[]
+    const mkdUrlImgMgs = RsRegex.matches(mkdUrlImgPat, text) as RsMatch[]
+    const urlImgInfo = imgTagUrlImgMgs.concat(mkdUrlImgMgs).map<ImgInfo>(mg => ({
+        offset: mg.offset,
         dataType: DataType.url,
-        data: mg[2],
-        prefix: mg[1],
-        postfix: mg[3],
+        data: mg.groups[2],
+        prefix: mg.groups[1],
+        postfix: mg.groups[3],
     }))
 
-    const imgTagDataUrlImgMatchGroups = Array.from(text.matchAll(imgTagDataUrlImgPat))
-    const mkdDataUrlImgMatchGroups = Array.from(text.matchAll(mkdDataUrlImgPat))
-    const dataUrlImgInfo = imgTagDataUrlImgMatchGroups.concat(mkdDataUrlImgMatchGroups).map<ImgInfo>(mg => ({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        startOffset: mg.index!,
+    const imgTagDataUrlImgMgs = RsRegex.matches(imgTagDataUrlImgPat, text) as RsMatch[]
+    const mkdDataUrlImgMgs = RsRegex.matches(mkdDataUrlImgPat, text) as RsMatch[]
+    const dataUrlImgInfo = imgTagDataUrlImgMgs.concat(mkdDataUrlImgMgs).map<ImgInfo>(mg => ({
+        offset: mg.offset,
         dataType: DataType.dataUrl,
-        data: mg[2],
-        prefix: mg[1],
-        postfix: mg[3],
+        data: mg.groups[2],
+        prefix: mg.groups[1],
+        postfix: mg.groups[3],
     }))
 
     const acc = urlImgInfo.concat(dataUrlImgInfo)
 
-    // TODO: better filter design needed
-    // remove cnblogs img link
-    return acc.filter(x => RsRegex.isMatch(cnblogsDomain, x.data))
+    // keep links while not cnb
+    return acc.filter(x => !RsRegex.isMatch(cnbDomain, x.data.toLowerCase()))
 }

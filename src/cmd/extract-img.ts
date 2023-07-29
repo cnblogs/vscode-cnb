@@ -15,7 +15,7 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
     await textDocument.save()
 
     const markdown = (await workspace.fs.readFile(arg)).toString()
-    const imgInfoList = findImgLink(markdown)
+    let imgInfoList = findImgLink(markdown)
 
     if (imgInfoList.length <= 0) {
         if (inputImgSrc === undefined) void Alert.info('没有找到可以提取的图片')
@@ -57,7 +57,9 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
 
     if (selectedSrc === undefined) return
 
-    const extractor = new MkdImgExtractor(arg, selectedSrc)
+    imgInfoList = imgInfoList.filter(newImgSrcFilter(selectedSrc))
+
+    const extractor = new MkdImgExtractor(arg)
 
     const failedImages = await window.withProgress(
         { title: '正在提取图片', location: ProgressLocation.Notification },
@@ -80,9 +82,9 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 .map(([src, dst]) => [src, dst!])
                 .map(([src, dst]) => {
-                    const posL = textDocument.positionAt(src.startOffset)
+                    const posL = textDocument.positionAt(src.offset)
                     const posR = textDocument.positionAt(
-                        src.startOffset + src.prefix.length + src.data.length + src.postfix.length
+                        src.offset + src.prefix.length + src.data.length + src.postfix.length
                     )
                     const range = new Range(posL, posR)
 
