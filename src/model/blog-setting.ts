@@ -20,7 +20,7 @@ export class BlogSetting implements BlogSiteDto, BlogSiteExtendDto {
     skin = ''
     registerTime = new Date().toString()
     codeHighlightTheme = ''
-    codeHighlightEngine: CodeHighlightEngineEnum = -1
+    codeHighlightEngine: CodeHighlightEngineEnum = CodeHighlightEngineEnum.highlightJs
     enableCodeLineNumber = false
     blogNewsUseMarkdown = false
 
