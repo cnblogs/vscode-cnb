@@ -1,4 +1,4 @@
-import { PostCategories } from '@/model/post-category'
+import { PostCategory } from '@/model/post-category'
 
 export namespace WebviewCmd {
     export enum UiCmd {
@@ -25,7 +25,7 @@ export namespace WebviewCmd {
 
     export interface UpdateChildCategoriesPayload {
         parentId: number
-        value: PostCategories
+        value: PostCategory[]
     }
 
     export namespace IngCmd {

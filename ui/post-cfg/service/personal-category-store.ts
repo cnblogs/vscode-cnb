@@ -1,15 +1,15 @@
-import { PostCategories } from '@/model/post-category'
 import { WebviewCommonCmd, WebviewCmd } from '@/model/webview-cmd'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
+import { PostCategory } from '@/model/post-category'
 
-let children: Map<number, PostCategories>
-let pendingChildrenQuery: Map<number, Promise<PostCategories>> | undefined | null
+let children: Map<number, PostCategory[]>
+let pendingChildrenQuery: Map<number, Promise<PostCategory[]>> | undefined | null
 
 export namespace personalCategoriesStore {
-    let items: PostCategories = []
-    export const get = (): PostCategories => items ?? []
+    let items: PostCategory[] = []
+    export const get = (): PostCategory[] => items ?? []
 
-    export const getByParent = async (parent: number): Promise<PostCategories> => {
+    export const getByParent = async (parent: number): Promise<PostCategory[]> => {
         children ??= new Map()
         let result = children.get(parent)
         const vscode = getVsCodeApiSingleton()
@@ -17,7 +17,7 @@ export namespace personalCategoriesStore {
         if (!result) {
             let promise = pendingChildrenQuery?.get(parent)
             if (promise == null) {
-                promise = new Promise<PostCategories>(resolve => {
+                promise = new Promise<PostCategory[]>(resolve => {
                     const timeoutId = setTimeout(() => {
                         clearTimeout(timeoutId)
                         window.removeEventListener('message', onUpdate)
@@ -58,5 +58,5 @@ export namespace personalCategoriesStore {
         return result
     }
 
-    export const set = (value: PostCategories) => (items = value ?? [])
+    export const set = (value: PostCategory[]) => (items = value ?? [])
 }

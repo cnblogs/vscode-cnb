@@ -1,11 +1,11 @@
 import { Post } from './post'
 import { WebviewCmd } from './webview-cmd'
 import { ColorThemeKind } from 'vscode'
-import { PostCategories } from './post-category'
 import { PostTags } from './post-tag'
 import { IErrorResponse as ErrorResponse } from './error-response'
 import { ImgUploadStatus } from './img-upload-status'
 import { SiteCategory } from '@/model/site-category'
+import { PostCategory } from '@/model/post-category'
 
 export namespace webviewMessage {
     export interface Message {
@@ -15,7 +15,7 @@ export namespace webviewMessage {
     export interface EditPostCfgMessage extends Message {
         post: Post
         activeTheme: ColorThemeKind
-        personalCategories: PostCategories
+        personalCategories: PostCategory[]
         siteCategories: SiteCategory[]
         tags: PostTags
         breadcrumbs?: string[]

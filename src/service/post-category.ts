@@ -1,12 +1,13 @@
 import fetch from '@/infra/fetch-client'
-import { PostCategories, PostCategory, PostCategoryAddDto } from '@/model/post-category'
+import { PostCategory, PostCategoryAddDto } from '@/model/post-category'
 import { globalCtx } from '@/ctx/global-ctx'
 import { URLSearchParams } from 'url'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { Alert } from '@/infra/alert'
+import { consUrlPara } from '@/infra/http/infra/url'
 
-let cache: Map<number, PostCategories> | null = null
+let cache: Map<number, PostCategory[]> | null = null
 
 export namespace PostCategoryService {
     export async function findCategories(ids: number[], { useCache = true } = {}) {
@@ -21,22 +22,23 @@ export namespace PostCategoryService {
         const parentId = typeof option === 'object' ? option.parentId ?? -1 : -1
         const shouldForceRefresh =
             option === true || (typeof option === 'object' ? option.forceRefresh ?? false : false)
-        cache ??= new Map<number, PostCategories>()
+        cache ??= new Map<number, PostCategory[]>()
         const map = cache
         const cachedCategories = map.get(parentId)
         if (cachedCategories && !shouldForceRefresh) return cachedCategories
 
-        const res = await fetch(
-            `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${new URLSearchParams([
-                ['parent', parentId <= 0 ? '' : `${parentId}`],
-            ]).toString()}`
-        )
-        if (!res.ok) throw Error(`${res.status}\n${await res.text()}`)
-
-        let { categories } = <{ parent?: PostCategory | null; categories: PostCategories }>await res.json()
-        categories = categories.map(x => Object.assign(new PostCategory(), x))
-        map.set(parentId, categories)
-        return categories
+        const para = consUrlPara(['parent', parentId <= 0 ? '' : `${parentId}`])
+        const url = `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${para}`
+        try {
+            const resp = await AuthedReq.get(url, consReqHeader())
+            const { categories } = <{ categories: PostCategory[] }>JSON.parse(resp)
+            map.set(parentId, categories)
+            return categories
+        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            void Alert.err(`获取随笔分类失败: ${e}`)
+            return []
+        }
     }
 
     export async function find(id: number) {
@@ -45,7 +47,7 @@ export namespace PostCategoryService {
                 ['parent', id <= 0 ? '' : `${id}`],
             ]).toString()}`
         )
-        const { parent } = <{ parent?: PostCategory | null; categories: PostCategories }>await res.json()
+        const { parent } = <{ parent?: PostCategory | null; categories: PostCategory[] }>await res.json()
 
         return Object.assign(new PostCategory(), parent)
     }

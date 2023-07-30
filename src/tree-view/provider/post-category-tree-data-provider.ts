@@ -1,6 +1,5 @@
 import { flattenDepth, take } from 'lodash-es'
 import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { PostCategories } from '@/model/post-category'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PostCategoryService } from '@/service/post-category'
 import { PostService } from '@/service/post'
@@ -11,6 +10,7 @@ import { PostEntryMetadata, PostMetadata, RootPostMetadataType } from '@/tree-vi
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { Alert } from '@/infra/alert'
 import { execCmd } from '@/infra/cmd'
+import { PostCategory } from '@/model/post-category'
 
 export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {
     private static _instance: PostCategoryTreeDataProvider | null = null
@@ -128,7 +128,7 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
 
     private async getCategories(parentId?: number | null) {
         await this.setIsRefreshing(true)
-        let categories: PostCategories = []
+        let categories: PostCategory[] = []
         try {
             categories = await PostCategoryService.listCategories({
                 forceRefresh: true,

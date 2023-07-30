@@ -1,6 +1,6 @@
 import { QuickPickItem } from 'vscode'
 import { AccessPermission, Post } from '@/model/post'
-import { PostCategories, PostCategory } from '@/model/post-category'
+import { PostCategory } from '@/model/post-category'
 import { Alert } from '@/infra/alert'
 import { InputFlowAction, InputStep, MultiStepInput, QuickPickParameters } from '@/service/multi-step-input'
 import { PostCategoryService } from '@/service/post-category'
@@ -20,7 +20,7 @@ class CategoryPickItem implements QuickPickItem {
         return new CategoryPickItem(category.title, category.categoryId)
     }
 
-    static fromPostCategories(categories: PostCategories): CategoryPickItem[] {
+    static fromPostCategories(categories: PostCategory[]): CategoryPickItem[] {
         return categories.map(this.fromPostCategory)
     }
 }
@@ -98,7 +98,7 @@ export const inputPostSetting = (
     // 分类
     const inputCategory = async (input: MultiStepInput) => {
         calculateStepNumber('categoryIds')
-        let categories: PostCategories = []
+        let categories: PostCategory[] = []
         try {
             categories = await PostCategoryService.listCategories()
         } catch (err) {
