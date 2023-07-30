@@ -85,7 +85,7 @@ export class PublishIngCmdHandler implements CmdHandler {
 
     private async publish(model: IngPublishModel): Promise<void> {
         return this.onPublished(
-            await window.withProgress({ location: ProgressLocation.Notification, title: '正在发闪, 请稍候...' }, p => {
+            await window.withProgress({ location: ProgressLocation.Notification, title: '正在发布...' }, p => {
                 p.report({ increment: 30 })
                 return IngApi.publishIng(model).then(isPublished => {
                     p.report({ increment: 70 })

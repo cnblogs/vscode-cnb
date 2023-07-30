@@ -16,16 +16,18 @@ async function getIngComment(id: number) {
 
 export namespace IngApi {
     export async function publishIng(ing: IngPublishModel): Promise<boolean> {
-        const res = await fetch(`${globalCtx.config.cnblogsOpenApiUrl}/api/statuses`, {
-            method: 'POST',
-            body: JSON.stringify(ing),
-            headers: [['Content-Type', 'application/json']],
-        }).catch(reason => void Alert.warn(JSON.stringify(reason)))
+        const url = `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses`
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
+        const body = JSON.stringify(ing)
 
-        if (!res || !res.ok)
-            void Alert.err(`闪存发布失败, ${res?.statusText ?? ''} ${JSON.stringify((await res?.text()) ?? '')}`)
-
-        return res != null && res.ok
+        try {
+            await AuthedReq.post(url, body, header)
+            return true
+        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            void Alert.err(`闪存发布失败: ${e}`)
+            return false
+        }
     }
 
     export async function list({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}) {
@@ -65,23 +67,17 @@ export namespace IngApi {
             content: string
         }
     ) {
-        try {
-            const res = await fetch(`${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${ingId}/comments`, {
-                method: 'POST',
-                headers: [['Content-Type', 'application/json']],
-                body: JSON.stringify(data),
-            })
+        const url = `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${ingId}/comments`
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
+        const body = JSON.stringify(data)
 
-            if (!res.ok) {
-                void Alert.err(`发表评论失败, ${await res.text()}`)
-                return false
-            }
+        try {
+            await AuthedReq.post(url, body, header)
+            return true
         } catch (e) {
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             void Alert.err(`发表评论失败, ${e}`)
             return false
         }
-
-        return true
     }
 }

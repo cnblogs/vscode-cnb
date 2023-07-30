@@ -2,6 +2,8 @@ import fetch from '@/infra/fetch-client'
 import { PostCategories, PostCategory, PostCategoryAddDto } from '@/model/post-category'
 import { globalCtx } from '@/ctx/global-ctx'
 import { URLSearchParams } from 'url'
+import { AuthedReq } from '@/infra/http/authed-req'
+import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 
 let cache: Map<number, PostCategories> | null = null
 
@@ -47,22 +49,20 @@ export namespace PostCategoryService {
         return Object.assign(new PostCategory(), parent)
     }
 
-    export async function newCategory(categoryAddDto: PostCategoryAddDto) {
-        const res = await fetch(`${globalCtx.config.apiBaseUrl}/api/category/blog/1`, {
-            method: 'POST',
-            body: JSON.stringify(categoryAddDto),
-            headers: [['Content-Type', 'application/json']],
-        })
-        if (!res.ok) throw Error(`${res.status}-${res.statusText}\n${await res.text()}`)
+    export async function newCategory(dto: PostCategoryAddDto) {
+        const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/1`
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
+        const body = JSON.stringify(dto)
+
+        await AuthedReq.post(url, body, header)
     }
 
     export async function updateCategory(category: PostCategory) {
-        const res = await fetch(`${globalCtx.config.apiBaseUrl}/api/category/blog/${category.categoryId}`, {
-            method: 'PUT',
-            body: JSON.stringify(category),
-            headers: [['Content-Type', 'application/json']],
-        })
-        if (!res.ok) throw Error(`${res.status}-${res.statusText}\n${await res.text()}`)
+        const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/${category.categoryId}`
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
+        const body = JSON.stringify(category)
+
+        await AuthedReq.put(url, body, header)
     }
 
     export async function deleteCategory(categoryId: number) {

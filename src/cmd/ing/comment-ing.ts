@@ -29,7 +29,7 @@ export class CommentIngCmdHandler implements CmdHandler {
 
         if (this._content) {
             return window.withProgress(
-                { location: ProgressLocation.Notification, title: '正在发表评论, 请稍后...' },
+                { location: ProgressLocation.Notification, title: '正在请求...' },
                 p => {
                     p.report({ increment: 30 })
                     return IngApi.comment(this._ingId, {
