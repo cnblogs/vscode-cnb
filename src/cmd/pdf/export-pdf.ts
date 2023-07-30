@@ -12,7 +12,7 @@ import { accountManager } from '@/auth/account-manager'
 import { Alert } from '@/infra/alert'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { PostEditDto } from '@/model/post-edit-dto'
-import { postPdfTemplateBuilder } from '@/cmd/pdf/post-pdf-template-builder'
+import { PostPdfTemplateBuilder } from '@/cmd/pdf/post-pdf-template-builder'
 import { ChromiumCfg } from '@/ctx/cfg/chromium'
 
 async function launchBrowser(chromiumPath: string) {
@@ -50,13 +50,13 @@ const exportOne = async (
         })
     }
     report(10)
-    const html = await postPdfTemplateBuilder.build(post, blogApp)
+    const html = await PostPdfTemplateBuilder.build(post, blogApp)
     report(15)
     // Wait for code block highlight finished
     await Promise.all([
         new Promise<void>(resolve => {
             page.on('console', ev => {
-                if (ev.text() === postPdfTemplateBuilder.HighlightedMessage) resolve()
+                if (ev.text() === PostPdfTemplateBuilder.HighlightedMessage) resolve()
             })
         }),
         page.setContent(html, {

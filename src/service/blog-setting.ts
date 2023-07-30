@@ -1,21 +1,27 @@
-import fetch from '@/infra/fetch-client'
 import { BlogSetting, BlogSiteDto, BlogSiteExtendDto } from '@/model/blog-setting'
 import { globalCtx } from '@/ctx/global-ctx'
+import { AuthedReq } from '@/infra/http/authed-req'
+import { consReqHeader } from '@/infra/http/infra/header'
+import { Alert } from '@/infra/alert'
 
-let settingCache: BlogSetting | null = null
+let cache: BlogSetting | null = null
 
 export namespace BlogSettingService {
     export async function getBlogSetting(refresh = false) {
-        if (settingCache != null && !refresh) return settingCache
+        if (cache != null && !refresh) return cache
 
         const url = `${globalCtx.config.apiBaseUrl}/api/settings`
-        const res = await fetch(url)
-        if (!res.ok) throw Error(`Failed to request ${url}, statusCode: ${res.status}, detail: ${await res.text()}`)
 
-        const data = (await res.json()) as { blogSite: BlogSiteDto; extend: BlogSiteExtendDto }
-
-        settingCache ??= new BlogSetting(data.blogSite, data.extend)
-
-        return settingCache
+        try {
+            const resp = await AuthedReq.get(url, consReqHeader())
+            const data = JSON.parse(resp) as { blogSite: BlogSiteDto; extend: BlogSiteExtendDto }
+            const setting = new BlogSetting(data.blogSite, data.extend)
+            cache ??= setting
+            return setting
+        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            void Alert.err(`获取博客设置失败: ${e}`)
+            return cache
+        }
     }
 }
