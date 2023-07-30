@@ -3,7 +3,7 @@ import vscode, { Uri } from 'vscode'
 import { Post } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PostCategoryService } from './post-category'
-import { siteCategoryService } from './site-category'
+import { SiteCategoryService } from './site-category'
 import { PostTagService } from './post-tag'
 import { PostService } from './post'
 import { isErrorResponse } from '@/model/error-response'
@@ -61,7 +61,7 @@ export namespace PostCfgPanel {
                         post: cloneDeep(post),
                         activeTheme: vscode.window.activeColorTheme.kind,
                         personalCategories: cloneDeep(await PostCategoryService.listCategories()),
-                        siteCategories: cloneDeep(await siteCategoryService.fetchAll()),
+                        siteCategories: cloneDeep(await SiteCategoryService.fetchAll()),
                         tags: cloneDeep(await PostTagService.fetchTags()),
                         breadcrumbs,
                         fileName: localFileUri

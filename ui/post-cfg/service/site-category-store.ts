@@ -1,7 +1,7 @@
-import { SiteCategories } from '../../../src/model/site-category'
+import { SiteCategory } from '../../../src/model/site-category'
 
 export namespace siteCategoriesStore {
-    let items: SiteCategories = []
-    export const get = (): SiteCategories => items ?? []
-    export const set = (value: SiteCategories) => (items = value ?? [])
+    let items: SiteCategory[] = []
+    export const get = (): SiteCategory[] => items ?? []
+    export const set = (value: SiteCategory[]) => (items = value ?? [])
 }

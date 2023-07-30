@@ -1,7 +1,6 @@
 import { Ing, IngComment, IngPublishModel, IngType } from '@/model/ing'
 import { Alert } from '@/infra/alert'
 import { globalCtx } from '@/ctx/global-ctx'
-import fetch from '@/infra/fetch-client'
 import { consUrlPara } from '@/infra/http/infra/url'
 import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { AuthedReq } from '@/infra/http/authed-req'

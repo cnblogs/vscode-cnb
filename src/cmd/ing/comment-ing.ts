@@ -28,17 +28,14 @@ export class CommentIngCmdHandler implements CmdHandler {
         const atContent = atUserAlias ? `@${atUserAlias} ` : ''
 
         if (this._content) {
-            return window.withProgress(
-                { location: ProgressLocation.Notification, title: '正在请求...' },
-                p => {
-                    p.report({ increment: 30 })
-                    return IngApi.comment(this._ingId, {
-                        replyTo: atUserId,
-                        content: atContent + this._content,
-                        parentCommentId: this._parentCommentId ?? 0,
-                    }).then(hasCommented => (hasCommented ? this.onCommented() : undefined))
-                }
-            )
+            return window.withProgress({ location: ProgressLocation.Notification, title: '正在请求...' }, p => {
+                p.report({ increment: 30 })
+                return IngApi.comment(this._ingId, {
+                    replyTo: atUserId,
+                    content: atContent + this._content,
+                    parentCommentId: this._parentCommentId ?? 0,
+                }).then(hasCommented => (hasCommented ? this.onCommented() : undefined))
+            })
         }
     }
 

@@ -1,4 +1,3 @@
-import fetch from '@/infra/fetch-client'
 import { Post } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PageModel } from '@/model/page-model'

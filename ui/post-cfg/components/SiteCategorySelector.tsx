@@ -1,5 +1,5 @@
 import { ActionButton, Checkbox, Label, Stack } from '@fluentui/react'
-import { SiteCategories } from '@/model/site-category'
+import { SiteCategory } from '@/model/site-category'
 import React from 'react'
 import { siteCategoriesStore } from '../service/site-category-store'
 
@@ -9,7 +9,7 @@ export interface ISiteCategoriesSelectorProps {
 }
 
 export interface ISiteCategoriesSelectorState {
-    siteCategories: SiteCategories
+    siteCategories: SiteCategory[]
     isCollapsed: boolean
     categoryIds: number[]
     categoryExpandState: { [key: number]: boolean | undefined }

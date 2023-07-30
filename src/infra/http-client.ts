@@ -1,8 +1,7 @@
 import { accountManager } from '@/auth/account-manager'
 import got, { BeforeRequestHook } from 'got'
 import { isString } from 'lodash-es'
-import { Oauth } from '@/service/oauth.api'
-import { ReqHeaderKey } from "@/infra/http/infra/header";
+import { ReqHeaderKey } from '@/infra/http/infra/header'
 
 const bearerTokenHook: BeforeRequestHook = async opt => {
     const { headers } = opt

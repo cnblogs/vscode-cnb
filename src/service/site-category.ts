@@ -1,18 +1,24 @@
-import fetch from '@/infra/fetch-client'
-import { SiteCategories, SiteCategory } from '@/model/site-category'
+import { SiteCategory } from '@/model/site-category'
 import { globalCtx } from '@/ctx/global-ctx'
+import { AuthedReq } from '@/infra/http/authed-req'
+import { consReqHeader } from '@/infra/http/infra/header'
 
-export namespace siteCategoryService {
-    let cached: SiteCategories | null = null
+let cached: SiteCategory[] | null = null
 
-    export const fetchAll = async (forceRefresh = false): Promise<SiteCategories> => {
+export namespace SiteCategoryService {
+    export async function fetchAll(forceRefresh = false) {
         if (cached && !forceRefresh) return cached
 
-        const response = await fetch(`${globalCtx.config.apiBaseUrl}/api/category/site`)
-        if (!response.ok) throw Error(`Failed to fetch post category\n${response.status}\n${await response.text()}`)
-
-        const categories = <SiteCategories>await response.json()
-        cached = categories.map(c => Object.assign(new SiteCategory(), c))
-        return categories
+        const url = `${globalCtx.config.apiBaseUrl}/api/category/site`
+        try {
+            const resp = await AuthedReq.get(url, consReqHeader())
+            const list = <SiteCategory[]>JSON.parse(resp)
+            cached = list
+            return list
+        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            console.log(`获取随笔分类失败: ${e}`)
+            return []
+        }
     }
 }
