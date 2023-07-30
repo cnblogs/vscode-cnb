@@ -9,7 +9,7 @@ use anyhow::{bail, Result};
 use core::convert::TryFrom;
 use core::str::FromStr;
 use reqwest::header::HeaderMap;
-use reqwest::{Response, StatusCode};
+use reqwest::Response;
 use serde_json::Value;
 use wasm_bindgen::__rt::std::collections::HashMap;
 use wasm_bindgen::prelude::*;
@@ -26,12 +26,12 @@ fn header_json_to_header_map(header_json: &str) -> Result<HeaderMap> {
 }
 
 async fn body_or_err(resp: Response) -> Result<String> {
-    let status = resp.status();
+    let code = resp.status();
     let body = resp.text().await?;
 
-    if status == StatusCode::OK {
+    if code.is_success() {
         body.into_ok()
     } else {
-        bail!("{}: {}", status, body)
+        bail!("{}: {}", code, body)
     }
 }
