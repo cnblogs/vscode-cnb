@@ -42,14 +42,18 @@ export namespace PostCategoryService {
     }
 
     export async function find(id: number) {
-        const res = await fetch(
-            `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${new URLSearchParams([
-                ['parent', id <= 0 ? '' : `${id}`],
-            ]).toString()}`
-        )
-        const { parent } = <{ parent?: PostCategory | null; categories: PostCategory[] }>await res.json()
+        const para = consUrlPara(['parent', id <= 0 ? '' : id.toString()])
+        const url = `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${para}`
 
-        return Object.assign(new PostCategory(), parent)
+        try {
+            const resp = await AuthedReq.get(url, consReqHeader())
+            const { parent } = <{ parent?: PostCategory | null }>JSON.parse(resp)
+            return Object.assign(new PostCategory(), parent)
+        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            void Alert.err(`查询随笔分类失败: ${e}`)
+            return new PostCategory()
+        }
     }
 
     export async function newCategory(dto: PostCategoryAddDto) {

@@ -50,7 +50,7 @@ const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto | undefined)
     ] as const
 
 export abstract class PostMetadata extends BaseTreeItemSource {
-    constructor(public parent: Post) {
+    protected constructor(public parent: Post) {
         super()
     }
 
@@ -119,6 +119,7 @@ export class PostTagEntryMetadata extends PostEntryMetadata<PostTagMetadata> {
 
 export class PostCategoryMetadata extends PostMetadata {
     readonly icon = new ThemeIcon('vscode-cnb-folder-close')
+
     constructor(parent: Post, public categoryName: string, public categoryId: number) {
         super(parent)
     }
@@ -127,10 +128,11 @@ export class PostCategoryMetadata extends PostMetadata {
         editDto = editDto ? editDto : await PostService.fetchPostEditDto(parent.id)
         if (editDto == null) return []
 
-        const {
-            post: { categoryIds },
-        } = editDto
-        return (await Promise.all((categoryIds ?? []).map(categoryId => PostCategoryService.find(categoryId))))
+        const categoryIds = editDto.post.categoryIds ?? []
+        const futList = categoryIds.map(PostCategoryService.find)
+        const categoryList = await Promise.all(futList)
+
+        return categoryList
             .filter((x): x is PostCategory => x != null)
             .map(
                 category =>
@@ -153,6 +155,7 @@ export class PostCategoryMetadata extends PostMetadata {
 
 export class PostTagMetadata extends PostMetadata {
     readonly icon = undefined
+
     constructor(parent: Post, public tag: string, public tagId?: string) {
         super(parent)
     }
@@ -175,6 +178,7 @@ export class PostTagMetadata extends PostMetadata {
 
 export abstract class PostDateMetadata extends PostMetadata {
     readonly distance: string
+
     constructor(public label: string, parent: Post, public readonly date: Date) {
         super(parent)
         this.distance = this.toDistance()
