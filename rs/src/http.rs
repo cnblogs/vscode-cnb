@@ -1,5 +1,6 @@
 pub mod get;
 pub mod post;
+pub mod delete;
 
 use alloc::string::String;
 use core::convert::TryFrom;
