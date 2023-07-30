@@ -7,8 +7,8 @@ import got from '@/infra/http-client'
 import { CancellationToken } from 'vscode'
 import { AbortController } from 'node-abort-controller'
 import { objectKeysToCamelCase } from '@/infra/convert/object-keys-to-camel-case'
-import { Http } from '@/infra/http/get'
-import { consReqHeader } from '@/infra/http/infra/consReqHeader'
+import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
+import { Req } from '@/infra/http/req'
 
 export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
     readonly blog_id: string
@@ -17,8 +17,6 @@ export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
 }
 
 export namespace Oauth {
-    export const AuthHeaderKey = 'Authorization'
-
     export async function fetchToken(verifyCode: string, authCode: string, cancelToken?: CancellationToken) {
         const abortControl = new AbortController()
         if (cancelToken?.isCancellationRequested) abortControl.abort()
@@ -39,7 +37,7 @@ export namespace Oauth {
             responseType: 'json',
             signal: abortControl.signal,
             headers: {
-                [AuthHeaderKey]: '',
+                [ReqHeaderKey.AUTHORIZATION]: '',
             },
         })
 
@@ -54,8 +52,8 @@ export namespace Oauth {
         const { authority, userInfoEndpoint } = globalCtx.config.oauth
 
         const url = `${authority}${userInfoEndpoint}`
-        const header = consReqHeader(['Authorization', `Bearer ${token}`])
-        const resp = await Http.noAuthGet(url, header)
+        const header = consReqHeader([ReqHeaderKey.AUTHORIZATION, `Bearer ${token}`])
+        const resp = await Req.get(url, header)
 
         return JSON.parse(resp) as UserInfoSpec
     }

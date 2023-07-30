@@ -1,6 +1,6 @@
 pub mod get;
 pub mod post;
-pub mod delete;
+pub mod del;
 pub mod put;
 
 use alloc::string::String;

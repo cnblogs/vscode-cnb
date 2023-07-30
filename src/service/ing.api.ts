@@ -2,14 +2,14 @@ import { Ing, IngComment, IngPublishModel, IngType } from '@/model/ing'
 import { Alert } from '@/infra/alert'
 import { globalCtx } from '@/ctx/global-ctx'
 import fetch from '@/infra/fetch-client'
-import { Http } from '@/infra/http/get'
-import { consReqHeader } from '@/infra/http/infra/consReqHeader'
-import { consUrlPara } from '@/infra/http/infra/consUrlPara'
+import { consUrlPara } from '@/infra/http/infra/url'
+import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
+import { AuthedReq } from '@/infra/http/authed-req'
 
 async function getIngComment(id: number) {
     const url = `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`
-    const header = consReqHeader(['Content-Type', 'application/json'])
-    const resp = await Http.get(url, header)
+    const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
+    const resp = await AuthedReq.get(url, header)
     const list = JSON.parse(resp) as []
     return list.map(IngComment.parse)
 }
@@ -30,13 +30,13 @@ export namespace IngApi {
 
     export async function list({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}) {
         const para = consUrlPara(['pageIndex', `${pageIndex}`], ['pageSize', `${pageSize}`])
-        const header = consReqHeader(['Content-Type', 'application/json'])
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
 
         const url = `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/@${type}?${para}`
 
         let list: Ing[]
         try {
-            const resp = await Http.get(url, header)
+            const resp = await AuthedReq.get(url, header)
             const arr = JSON.parse(resp) as unknown[]
             list = arr.map(Ing.parse)
         } catch (e) {

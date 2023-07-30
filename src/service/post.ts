@@ -15,9 +15,9 @@ import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { rmYfm } from '@/infra/filter/rm-yfm'
 import { PostListState } from '@/model/post-list-state'
 import { Alert } from '@/infra/alert'
-import { Http } from '@/infra/http/get'
-import { consUrlPara } from '@/infra/http/infra/consUrlPara'
-import { consReqHeader } from '@/infra/http/infra/consReqHeader'
+import { consUrlPara } from '@/infra/http/infra/url'
+import { consReqHeader } from '@/infra/http/infra/header'
+import { AuthedReq } from '@/infra/http/authed-req'
 
 let newPostTemplate: PostEditDto | undefined
 
@@ -35,7 +35,7 @@ export namespace PostService {
             ['cid', categoryId.toString()]
         )
         const url = `${getBaseUrl()}/api/posts/list?${para}`
-        const resp = await Http.get(url, consReqHeader())
+        const resp = await AuthedReq.get(url, consReqHeader())
         const model = <PostListModel>await JSON.parse(resp)
 
         return Object.assign(
