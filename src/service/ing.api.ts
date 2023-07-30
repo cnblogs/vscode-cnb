@@ -21,7 +21,7 @@ export namespace IngApi {
         const body = JSON.stringify(ing)
 
         try {
-            await AuthedReq.post(url, body, header)
+            await AuthedReq.post(url, header, body)
             return true
         } catch (e) {
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -72,7 +72,7 @@ export namespace IngApi {
         const body = JSON.stringify(data)
 
         try {
-            await AuthedReq.post(url, body, header)
+            await AuthedReq.post(url, header, body)
             return true
         } catch (e) {
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions

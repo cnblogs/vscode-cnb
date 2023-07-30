@@ -72,7 +72,7 @@ export namespace Oauth {
         })
 
         try {
-            await AuthedReq.post(url, body, header)
+            await AuthedReq.post(url, header, body)
             return true
         } catch (e) {
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions

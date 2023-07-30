@@ -54,7 +54,7 @@ export namespace PostCategoryService {
         const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
         const body = JSON.stringify(dto)
 
-        await AuthedReq.post(url, body, header)
+        await AuthedReq.post(url, header, body)
     }
 
     export async function updateCategory(category: PostCategory) {
@@ -62,7 +62,7 @@ export namespace PostCategoryService {
         const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
         const body = JSON.stringify(category)
 
-        await AuthedReq.put(url, body, header)
+        await AuthedReq.put(url, header, body)
     }
 
     export async function deleteCategory(categoryId: number) {

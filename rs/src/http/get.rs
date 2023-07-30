@@ -1,4 +1,4 @@
-use crate::http::{header_json_to_header_map, RsHttp};
+use crate::http::{body_or_err, header_json_to_header_map, RsHttp};
 use crate::infra::result::IntoResult;
 use alloc::string::{String, ToString};
 use anyhow::Result;
@@ -22,7 +22,5 @@ async fn get(url: &str, header_json: &str) -> Result<String> {
 
     let resp = client.get(url).headers(header_map).send().await?;
 
-    let body = resp.text().await?;
-
-    body.into_ok()
+    body_or_err(resp).await
 }
