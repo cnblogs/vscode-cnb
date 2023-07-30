@@ -4,6 +4,7 @@ import { globalCtx } from '@/ctx/global-ctx'
 import { URLSearchParams } from 'url'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
+import { Alert } from '@/infra/alert'
 
 let cache: Map<number, PostCategories> | null = null
 
@@ -68,11 +69,15 @@ export namespace PostCategoryService {
     export async function deleteCategory(categoryId: number) {
         if (categoryId <= 0) throw Error('Invalid param categoryId')
 
-        const res = await fetch(`${globalCtx.config.apiBaseUrl}/api/category/blog/${categoryId}`, {
-            method: 'DELETE',
-            headers: [['Content-Type', 'application/json']],
-        })
-        if (!res.ok) throw Error(`${res.status}-${res.statusText}\n${await res.text()}`)
+        const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/${categoryId}`
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
+
+        try {
+            await AuthedReq.del(url, header)
+        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            void Alert.err(`删除分类失败: ${e}`)
+        }
     }
 
     export function clearCache() {

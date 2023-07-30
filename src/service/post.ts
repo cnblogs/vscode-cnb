@@ -82,16 +82,22 @@ export namespace PostService {
 
     export async function deletePost(...postIds: number[]) {
         if (postIds.length === 1) {
-            const res = await fetch(`${getBaseUrl()}/api/posts/${postIds[0]}`, {
-                method: 'DELETE',
-            })
-            if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
+            const url = `${getBaseUrl()}/api/posts/${postIds[0]}`
+            try {
+                await AuthedReq.del(url, consReqHeader())
+            } catch (e) {
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                void Alert.err(`删除博文失败: ${e}`)
+            }
         } else {
-            const searchParams = new URLSearchParams(postIds.map<[string, string]>(id => ['postIds', `${id}`]))
-            const res = await fetch(`${getBaseUrl()}/api/bulk-operation/post?${searchParams.toString()}`, {
-                method: 'DELETE',
-            })
-            if (!res.ok) throw Error(`删除博文失败!\n${res.status}\n${await res.text()}`)
+            const para = consUrlPara(...postIds.map(id => ['postIds', id.toString()] as [string, string]))
+            const url = `${getBaseUrl()}/api/bulk-operation/post?${para}`
+            try {
+                await AuthedReq.del(url, consReqHeader())
+            } catch (e) {
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                void Alert.err(`删除博文失败: ${e}`)
+            }
         }
     }
 
