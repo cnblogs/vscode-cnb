@@ -24,11 +24,11 @@ export namespace ImgService {
         const fd = new (await import('form-data')).default()
         fd.append('image', file, { filename: finalName, contentType: mimeType })
 
-        const res = await httpClient.post(`${globalCtx.config.apiBaseUrl}/api/posts/body/images`, {
+        const resp = await httpClient.post(`${globalCtx.config.apiBaseUrl}/api/posts/body/images`, {
             body: fd,
         })
 
-        return res.body
+        return resp.body
     }
 
     /**
@@ -39,13 +39,13 @@ export namespace ImgService {
      * @returns The {@link Readable} stream
      */
     export async function download(url: string, name?: string): Promise<Readable> {
-        const res = await httpClient.get(url, { responseType: 'buffer' })
-        const contentType = res.headers['content-type'] ?? 'image/png'
+        const resp = await httpClient.get(url, { responseType: 'buffer' })
+        const contentType = resp.headers['content-type'] ?? 'image/png'
         name = !name ? 'image' : name
         const mime = await import('mime')
 
-        return merge(Readable.from(res.body), {
-            ...pick(res, 'httpVersion', 'headers'),
+        return merge(Readable.from(resp.body), {
+            ...pick(resp, 'httpVersion', 'headers'),
             path: `${name}.${mime.extension(contentType) ?? 'png'}`,
         })
     }

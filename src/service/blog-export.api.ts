@@ -9,18 +9,18 @@ export namespace BlogExportApi {
     export async function list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }) {
         const para = new URLSearchParams({ pageIndex: `${pageIndex ?? ''}`, pageSize: `${pageSize ?? ''}` })
 
-        const res = await got.get<BlogExportRecordList>(`${basePath}`, {
+        const resp = await got.get<BlogExportRecordList>(`${basePath}`, {
             searchParams: para,
             responseType: 'json',
         })
 
-        return res.body
+        return resp.body
     }
 
     export async function create() {
-        const res = await got.post<BlogExportRecord>(`${basePath}`, { responseType: 'json' })
+        const resp = await got.post<BlogExportRecord>(`${basePath}`, { responseType: 'json' })
 
-        return res.body
+        return resp.body
     }
 
     export async function del(id: number): Promise<void> {
@@ -28,7 +28,7 @@ export namespace BlogExportApi {
     }
 
     export async function getById(id: number): Promise<BlogExportRecord> {
-        const res = await got.get<BlogExportRecord>(`${basePath}/${id}`, {
+        const resp = await got.get<BlogExportRecord>(`${basePath}/${id}`, {
             responseType: 'json',
             timeout: {
                 request: 500,
@@ -38,7 +38,7 @@ export namespace BlogExportApi {
             },
         })
 
-        return res.body
+        return resp.body
     }
 
     export function download(blogId: number, exportId: number) {

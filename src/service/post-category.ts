@@ -1,7 +1,5 @@
-import fetch from '@/infra/fetch-client'
 import { PostCategory, PostCategoryAddDto } from '@/model/post-category'
 import { globalCtx } from '@/ctx/global-ctx'
-import { URLSearchParams } from 'url'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { Alert } from '@/infra/alert'
@@ -31,7 +29,8 @@ export namespace PostCategoryService {
         const url = `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${para}`
         try {
             const resp = await AuthedReq.get(url, consReqHeader())
-            const { categories } = <{ categories: PostCategory[] }>JSON.parse(resp)
+            let { categories } = <{ categories: PostCategory[] }>JSON.parse(resp)
+            categories = categories.map(x => Object.assign(new PostCategory(), x))
             map.set(parentId, categories)
             return categories
         } catch (e) {

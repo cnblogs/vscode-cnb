@@ -49,13 +49,13 @@ export namespace PostService {
     }
 
     export async function fetchPostEditDto(postId: number, muteErrorNotification = false) {
-        const res = await httpClient.get(`${getBaseUrl()}/api/posts/${postId}`, {
+        const resp = await httpClient.get(`${getBaseUrl()}/api/posts/${postId}`, {
             throwHttpErrors: false,
             responseType: 'buffer',
         })
 
         try {
-            throwIfNotOkGotResponse(res)
+            throwIfNotOkGotResponse(resp)
         } catch (e) {
             const { statusCode, errors } = e as IErrorResponse
             if (!muteErrorNotification) {
@@ -70,7 +70,7 @@ export namespace PostService {
             return undefined
         }
 
-        const decodedBody = iconv.decode(res.rawBody, 'utf-8')
+        const decodedBody = iconv.decode(resp.rawBody, 'utf-8')
 
         const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown }
 

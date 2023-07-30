@@ -26,7 +26,7 @@ export namespace Oauth {
         const url = globalCtx.config.oauth.authority + globalCtx.config.oauth.tokenEndpoint
         const { clientId, clientSecret } = globalCtx.config.oauth
 
-        const res = await got.post<TokenInfo>(url, {
+        const resp = await got.post<TokenInfo>(url, {
             form: {
                 code: authCode,
                 code_verifier: verifyCode,
@@ -42,10 +42,10 @@ export namespace Oauth {
             },
         })
 
-        if (res.statusCode === 200) return objectKeysToCamelCase(res.body)
+        if (resp.statusCode === 200) return objectKeysToCamelCase(resp.body)
 
         throw Error(
-            `Failed to request token endpoint, ${res.statusCode}, ${res.statusMessage}, ${res.rawBody.toString()}`
+            `Failed to request token endpoint, ${resp.statusCode}, ${resp.statusMessage}, ${resp.rawBody.toString()}`
         )
     }
 
