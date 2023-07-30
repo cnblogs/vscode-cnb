@@ -2,8 +2,17 @@ import { Ing, IngComment, IngPublishModel, IngType } from '@/model/ing'
 import { Alert } from '@/infra/alert'
 import { globalCtx } from '@/ctx/global-ctx'
 import fetch from '@/infra/fetch-client'
-import { URLSearchParams } from 'url'
-import { isArray, isObject } from 'lodash-es'
+import { Http } from '@/infra/http/get'
+import { consReqHeader } from '@/infra/http/infra/consReqHeader'
+import { consUrlPara } from '@/infra/http/infra/consUrlPara'
+
+async function getIngComment(id: number) {
+    const url = `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`
+    const header = consReqHeader(['Content-Type', 'application/json'])
+    const resp = await Http.get(url, header)
+    const list = JSON.parse(resp) as []
+    return list.map(IngComment.parse)
+}
 
 export namespace IngApi {
     export async function publishIng(ing: IngPublishModel): Promise<boolean> {
@@ -20,53 +29,32 @@ export namespace IngApi {
     }
 
     export async function list({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}) {
-        const res = await fetch(
-            `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/@${type}?${new URLSearchParams({
-                pageIndex: `${pageIndex}`,
-                pageSize: `${pageSize}`,
-            }).toString()}`,
-            {
-                method: 'GET',
-                headers: [['Content-Type', 'application/json']],
-            }
-        ).catch(e => void Alert.warn(JSON.stringify(e)))
+        const para = consUrlPara(['pageIndex', `${pageIndex}`], ['pageSize', `${pageSize}`])
+        const header = consReqHeader(['Content-Type', 'application/json'])
 
-        if (!res || !res.ok) {
-            void Alert.err(`获取闪存列表失败, ${res?.statusText ?? ''} ${JSON.stringify((await res?.text()) ?? '')}`)
-            return []
-        }
+        const url = `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/@${type}?${para}`
 
-        const arr = <Ing[]>await res.json()
-
+        let list: Ing[]
         try {
-            if (isArray(arr) && arr.every(isObject)) return arr.map(Ing.parse)
-            void Alert.err('获取闪存列表失败, 无法读取响应')
+            const resp = await Http.get(url, header)
+            const arr = JSON.parse(resp) as unknown[]
+            list = arr.map(Ing.parse)
         } catch (e) {
-            void Alert.err(JSON.stringify(e))
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            void Alert.err(`获取闪存列表失败: ${e}`)
+            list = []
         }
 
-        return []
+        return list
     }
 
     export async function listComments(...ingIds: number[]) {
-        const tasks = ingIds.map(id =>
-            fetch(`${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`, {
-                method: 'GET',
-                headers: [['Content-Type', 'application/json']],
-            }).then(
-                resp =>
-                    resp?.json().then(obj => [id, obj as IngComment[] | null | undefined] as const) ??
-                    Promise.resolve(undefined),
-                reason => void Alert.warn(JSON.stringify(reason))
-            )
-        )
-
-        const results = await Promise.all(tasks)
-
-        return results.reduce<Record<number, IngComment[]>>((p, v) => {
-            if (v) p[v[0]] = (v[1] ?? []).map(IngComment.parse)
-            return p
-        }, {})
+        const futList = ingIds.map(async id => {
+            const comment = await getIngComment(id)
+            return { [id]: comment }
+        })
+        const resList = await Promise.all(futList)
+        return resList.reduce((acc, it) => Object.assign(it, acc), {})
     }
 
     export async function comment(

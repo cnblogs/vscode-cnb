@@ -15,43 +15,37 @@ import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { rmYfm } from '@/infra/filter/rm-yfm'
 import { PostListState } from '@/model/post-list-state'
 import { Alert } from '@/infra/alert'
+import { Http } from '@/infra/http/get'
+import { consUrlPara } from '@/infra/http/infra/consUrlPara'
+import { consReqHeader } from '@/infra/http/infra/consReqHeader'
 
 let newPostTemplate: PostEditDto | undefined
 
-export namespace PostService {
-    const getBaseUrl = () => globalCtx.config.apiBaseUrl
+const getBaseUrl = () => globalCtx.config.apiBaseUrl
 
+export namespace PostService {
     export const getPostListState = () => globalCtx.storage.get<PostListState>('postListState')
 
-    export async function fetchPostList({
-        search = '',
-        pageIndex = 1,
-        pageSize = 30,
-        categoryId = <null | number>null,
-    }) {
-        const s = new URLSearchParams([
+    export async function fetchPostList({ search = '', pageIndex = 1, pageSize = 30, categoryId = <'' | number>'' }) {
+        const para = consUrlPara(
             ['t', '1'],
-            ['p', `${pageIndex}`],
-            ['s', `${pageSize}`],
+            ['p', pageIndex.toString()],
+            ['s', pageSize.toString()],
             ['search', search],
-            ['cid', categoryId != null && categoryId > 0 ? `${categoryId}` : ''],
-        ])
-        const response = await fetch(`${getBaseUrl()}/api/posts/list?${s.toString()}`, {
-            method: 'GET',
-        })
-        if (!response.ok) throw Error(`请求博文列表失败: ${response.status}, ${await response.text()}`)
-
-        const obj = <PostListModel>await response.json()
-        const { zzkSearchResult } = obj
+            ['cid', categoryId.toString()]
+        )
+        const url = `${getBaseUrl()}/api/posts/list?${para}`
+        const resp = await Http.get(url, consReqHeader())
+        const model = <PostListModel>await JSON.parse(resp)
 
         return Object.assign(
             new PageModel(
-                obj.pageIndex,
-                obj.pageSize,
-                obj.postCount,
-                obj.postList.map(x => Object.assign(new Post(), x))
+                model.pageIndex,
+                model.pageSize,
+                model.postCount,
+                model.postList.map(x => Object.assign(new Post(), x))
             ),
-            { zzkSearchResult: ZzkSearchResult.parse(zzkSearchResult) || undefined }
+            { zzkSearchResult: ZzkSearchResult.parse(model.zzkSearchResult) || undefined }
         )
     }
 

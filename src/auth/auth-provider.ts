@@ -211,7 +211,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         try {
             onStateChange?.('正在获取账户信息...')
 
-            const spec = await ifNotCancelledThen(() => Oauth.fetchUserInfo(accessToken, cancelToken))
+            const spec = await Oauth.fetchUserInfo(accessToken)
 
             onStateChange?.('即将完成...')
 

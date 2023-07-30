@@ -30,6 +30,9 @@ export const searchPostByTitle = ({ postTitle = '', quickPickTitle = '按标题�
                 const paged = await PostService.fetchPostList({ search: value })
                 const pickItems = paged.items.map(p => new PostPickItem(p))
                 if (value === quickPick.value) quickPick.items = pickItems
+            } catch (e) {
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                throw Error(`请求博文列表失败: ${e}`)
             } finally {
                 quickPick.busy = false
             }

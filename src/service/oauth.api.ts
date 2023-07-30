@@ -7,6 +7,8 @@ import got from '@/infra/http-client'
 import { CancellationToken } from 'vscode'
 import { AbortController } from 'node-abort-controller'
 import { objectKeysToCamelCase } from '@/infra/convert/object-keys-to-camel-case'
+import { Http } from '@/infra/http/get'
+import { consReqHeader } from '@/infra/http/infra/consReqHeader'
 
 export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
     readonly blog_id: string
@@ -48,25 +50,14 @@ export namespace Oauth {
         )
     }
 
-    export async function fetchUserInfo(token: string, cancelToken?: CancellationToken) {
+    export async function fetchUserInfo(token: string) {
         const { authority, userInfoEndpoint } = globalCtx.config.oauth
-        const abortController = new AbortController()
 
-        if (cancelToken?.isCancellationRequested) abortController.abort()
+        const url = `${authority}${userInfoEndpoint}`
+        const header = consReqHeader(['Authorization', `Bearer ${token}`])
+        const resp = await Http.noAuthGet(url, header)
 
-        const cancelSub = cancelToken?.onCancellationRequested(() => abortController.abort())
-
-        const res = await got<UserInfoSpec>(`${authority}${userInfoEndpoint}`, {
-            method: 'GET',
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            headers: { Authorization: `Bearer ${token}` },
-            signal: abortController.signal,
-            responseType: 'json',
-        }).finally(() => {
-            cancelSub?.dispose()
-        })
-
-        return res.body
+        return JSON.parse(resp) as UserInfoSpec
     }
 
     export async function revokeToken(token: string) {
