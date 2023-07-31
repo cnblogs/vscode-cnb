@@ -1371,8 +1371,8 @@
         "tsconfig-paths-webpack-plugin": "^3.5.2",
         "typescript": "^4.9.5",
         "utility-types": "^3.10.0",
-        "webpack": "^5.76.0",
-        "webpack-cli": "^5.0.1"
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
     },
     "dependencies": {
         "@cnblogs/code-highlight-adapter": "^1.7.1",
