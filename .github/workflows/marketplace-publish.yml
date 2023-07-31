@@ -4,92 +4,114 @@
 name: Publish extension to vscode extension marketplace
 
 on:
-    push:
-        tags:
-            - v*.*.*
+  push:
+    tags:
+      - v*.*.*
 
 env:
-    GITLAB_NPM_TOKEN: ${{secrets.GITLAB_NPM_TOKEN}}
+  GITLAB_NPM_TOKEN: ${{secrets.GITLAB_NPM_TOKEN}}
 
 jobs:
-    build:
-        strategy:
-            matrix:
-                include:
-                    - os: windows-latest
-                      platform: win32
-                      arch: x64
-                      npm_config_arch: x64
-                    - os: windows-latest
-                      platform: win32
-                      arch: ia32
-                      npm_config_arch: ia32
-                    - os: windows-latest
-                      platform: win32
-                      arch: arm64
-                      npm_config_arch: arm
-                    - os: ubuntu-latest
-                      platform: linux
-                      arch: x64
-                      npm_config_arch: x64
-                    - os: ubuntu-latest
-                      platform: linux
-                      arch: arm64
-                      npm_config_arch: arm64
-                    - os: ubuntu-latest
-                      platform: linux
-                      arch: armhf
-                      npm_config_arch: arm
-                    - os: ubuntu-latest
-                      platform: alpine
-                      arch: x64
-                      npm_config_arch: x64
-                    - os: macos-latest
-                      platform: darwin
-                      arch: x64
-                      npm_config_arch: x64
-                    - os: macos-latest
-                      platform: darwin
-                      arch: arm64
-                      npm_config_arch: arm64
-        runs-on: ${{ matrix.os }}
-        steps:
-            - uses: actions/checkout@v2
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win32
+            arch: x64
+            npm_config_arch: x64
+          - os: windows-latest
+            platform: win32
+            arch: ia32
+            npm_config_arch: ia32
+          - os: windows-latest
+            platform: win32
+            arch: arm64
+            npm_config_arch: arm
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+            npm_config_arch: x64
+          - os: ubuntu-latest
+            platform: linux
+            arch: arm64
+            npm_config_arch: arm64
+          - os: ubuntu-latest
+            platform: linux
+            arch: armhf
+            npm_config_arch: arm
+          - os: ubuntu-latest
+            platform: alpine
+            arch: x64
+            npm_config_arch: x64
+          - os: macos-latest
+            platform: darwin
+            arch: x64
+            npm_config_arch: x64
+          - os: macos-latest
+            platform: darwin
+            arch: arm64
+            npm_config_arch: arm64
 
-            - name: Use Node.js
-              uses: actions/setup-node@v2
-              with:
-                  node-version: 16.x
-                  cache: 'npm'
+    runs-on: ${{ matrix.os }}
 
-            - name: 'Installing Dependencies'
-              run: npm ci
+    steps:
+      - uses: actions/checkout@v3
 
-            - name: 'Building'
-              run: npm run package -- --env CLIENTID=${{ secrets.OAUTHCLIENTID }} --env CLIENTSECRET=${{ secrets.OAUTHCLIENTSECRET }} && npm run ui:package
+      - name: Setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
 
-            - name: 'Versioning'
-              id: version
-              shell: bash
-              run: echo "VERSION=${{ github.ref_name }}" | sed 's/v//' >> $GITHUB_OUTPUT
+      - name: Step rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          override: true
+          toolchain: nightly-2023-06-09
 
-            - id: targeting
-              name: Targeting
-              shell: pwsh
-              run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_OUTPUT
+      - name: Setup wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-            - name: 'Packaging'
-              run: npx @vscode/vsce package --target ${{ steps.targeting.outputs.target }} --no-git-tag-version --no-update-package-json ${{ steps.version.outputs.VERSION }}
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
 
-            - name: 'Uploading'
-              uses: actions/upload-artifact@v2
-              with:
-                  name: ${{ steps.targeting.outputs.target }}
-                  path: '*.vsix'
+      - name: Install
+        run: npm ci
 
-    publish:
-        runs-on: ubuntu-latest
-        needs: build
-        steps:
-            - uses: actions/download-artifact@v2
-            - run: npx @vscode/vsce publish --packagePath $(find . -iname *.vsix) -p ${{ secrets.VSCETOKEN }}
+      - name: Build
+        run: ./build.sh ${{ secrets.OAUTHCLIENTID }} ${{ secrets.OAUTHCLIENTSECRET }}
+
+      - name: Version
+        id: version
+        shell: bash
+        run: echo "VERSION=${{ github.ref_name }}" | sed 's/v//' >> $GITHUB_OUTPUT
+
+      - name: Target
+        id: target
+        shell: bash
+        run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_OUTPUT
+
+      - name: Package
+        run: |
+          npx @vscode/vsce package \
+            --no-git-tag-version \
+            --target ${{ steps.target.outputs.target }} \
+            --no-update-package-json ${{ steps.version.outputs.VERSION }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.target.outputs.target }}
+          path: '*.vsix'
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v3
+      - run: |
+          npx @vscode/vsce publish \
+            --packagePath $(find . -iname *.vsix) \
+            -p ${{ secrets.VSCETOKEN }}
