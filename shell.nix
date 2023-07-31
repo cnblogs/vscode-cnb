@@ -1,21 +1,26 @@
 with import <nixpkgs> {};
 
 let
+  packages = with pkgs; [
+    openssl_3
+    pkg-config
+  ];
+
   corepack = stdenv.mkDerivation {
     name = "corepack";
-    buildInputs = [ pkgs.nodejs-18_x ];
+    buildInputs = [ pkgs.nodejs_18 ];
     phases = [ "installPhase" ];
     installPhase = ''
       mkdir -p $out/bin
       corepack enable --install-directory=$out/bin
     '';
   };
-in 
+in pkgs.mkShell {
+  buildInputs = packages ++ [ corepack ];
 
-stdenv.mkDerivation rec {
-  name = "env";
-  env = buildEnv { name = name; paths = buildInputs; };
-  buildInputs = [ 
-    corepack
-  ];
+  shellHook = ''
+    export LD_LIBRARY_PATH=${
+      pkgs.lib.makeLibraryPath packages
+    }:$LD_LIBRARY_PATH
+  '';
 }
