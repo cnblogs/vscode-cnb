@@ -1,4 +1,4 @@
-import { SiteCategory } from '../../../src/model/site-category'
+import { SiteCategory } from '@/model/site-category'
 
 export namespace siteCategoriesStore {
     let items: SiteCategory[] = []
