@@ -102,16 +102,11 @@ export namespace PostService {
 
     export async function updatePost(post: Post) {
         if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
-        const {
-            ok: isOk,
-            url,
-            method,
-            body,
-            statusCode,
-            statusMessage,
-        } = await got.post<PostUpdatedResponse>(`${getBaseUrl()}/api/posts`, { json: post, responseType: 'json' })
-        if (!isOk) throw new Error(`Failed to ${method} ${url}, ${statusCode} - ${statusMessage}`)
-        return PostUpdatedResponse.parse(body)
+        const url = `${getBaseUrl()}/api/posts`
+        const body = JSON.stringify(post)
+        const resp = await AuthedReq.post(url, consReqHeader(), body)
+
+        return PostUpdatedResponse.parse(JSON.parse(resp))
     }
 
     export async function updatePostListState(state: PostListState | PageModel<Post>) {

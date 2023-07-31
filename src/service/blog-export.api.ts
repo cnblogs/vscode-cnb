@@ -1,44 +1,37 @@
 import { BlogExportRecord, BlogExportRecordList } from '@/model/blog-export'
 import { globalCtx } from '@/ctx/global-ctx'
 import got from '@/infra/http-client'
+import { AuthedReq } from '@/infra/http/authed-req'
+import { consReqHeader } from '@/infra/http/infra/header'
+import { consUrlPara } from '@/infra/http/infra/url'
 
 const basePath = `${globalCtx.config.apiBaseUrl}/api/blogExports`
 const downloadOrigin = 'https://export.cnblogs.com'
 
 export namespace BlogExportApi {
     export async function list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }) {
-        const para = new URLSearchParams({ pageIndex: `${pageIndex ?? ''}`, pageSize: `${pageSize ?? ''}` })
+        const para = consUrlPara(['pageIndex', `${pageIndex ?? ''}`], ['pageSize', `${pageSize ?? ''}`])
+        const url = `${basePath}?${para}`
+        const resp = await AuthedReq.get(url, consReqHeader())
 
-        const resp = await got.get<BlogExportRecordList>(`${basePath}`, {
-            searchParams: para,
-            responseType: 'json',
-        })
-
-        return resp.body
+        return <BlogExportRecordList>JSON.parse(resp)
     }
 
     export async function create() {
-        const resp = await got.post<BlogExportRecord>(`${basePath}`, { responseType: 'json' })
+        const resp = await AuthedReq.post(basePath, consReqHeader(), '')
 
-        return resp.body
+        return <BlogExportRecord>JSON.parse(resp)
     }
 
     export async function del(id: number): Promise<void> {
-        await got.delete(`${basePath}/${id}`).then(() => undefined)
+        const url = `${basePath}/${id}`
+        await AuthedReq.del(url, consReqHeader())
     }
 
-    export async function getById(id: number): Promise<BlogExportRecord> {
-        const resp = await got.get<BlogExportRecord>(`${basePath}/${id}`, {
-            responseType: 'json',
-            timeout: {
-                request: 500,
-            },
-            retry: {
-                limit: 0,
-            },
-        })
+    export async function getById(id: number) {
+        const resp = await AuthedReq.get(`${basePath}/${id}`, consReqHeader())
 
-        return resp.body
+        return <BlogExportRecord>JSON.parse(resp)
     }
 
     export function download(blogId: number, exportId: number) {
