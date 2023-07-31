@@ -1,5 +1,5 @@
 import { Alert } from '@/infra/alert'
-import { BlogExportApi } from '@/service/blog-export.api'
+import { BlogExportApi } from '@/service/blog-export'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
 import { globalCtx } from '@/ctx/global-ctx'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'

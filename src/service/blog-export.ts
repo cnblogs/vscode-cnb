@@ -19,17 +19,21 @@ export namespace BlogExportApi {
 
     export async function create() {
         const resp = await AuthedReq.post(basePath, consReqHeader(), '')
+        // TODO: need test
+        console.log(resp)
 
         return <BlogExportRecord>JSON.parse(resp)
     }
 
-    export async function del(id: number): Promise<void> {
+    export async function del(id: number) {
         const url = `${basePath}/${id}`
         await AuthedReq.del(url, consReqHeader())
     }
 
     export async function getById(id: number) {
         const resp = await AuthedReq.get(`${basePath}/${id}`, consReqHeader())
+        // TODO: need test
+        console.log(resp)
 
         return <BlogExportRecord>JSON.parse(resp)
     }

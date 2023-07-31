@@ -1,5 +1,5 @@
 import { BlogExportRecordList } from '@/model/blog-export'
-import { BlogExportApi } from '@/service/blog-export.api'
+import { BlogExportApi } from '@/service/blog-export'
 
 export namespace BlogExportRecordsStore {
     let cacheList: Promise<BlogExportRecordList> | null = null

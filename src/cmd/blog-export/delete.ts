@@ -1,6 +1,6 @@
 import { DownloadedBlogExport } from '@/model/blog-export'
 import { Alert } from '@/infra/alert'
-import { BlogExportApi } from '@/service/blog-export.api'
+import { BlogExportApi } from '@/service/blog-export'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
 import { BlogExportRecordTreeItem, DownloadedExportTreeItem } from '@/tree-view/model/blog-export'
