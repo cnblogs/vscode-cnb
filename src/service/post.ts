@@ -14,7 +14,7 @@ import { rmYfm } from '@/infra/filter/rm-yfm'
 import { PostListState } from '@/model/post-list-state'
 import { Alert } from '@/infra/alert'
 import { consUrlPara } from '@/infra/http/infra/url'
-import { consReqHeader } from '@/infra/http/infra/header'
+import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { AuthedReq } from '@/infra/http/authed-req'
 
 let newPostTemplate: PostEditDto | undefined
@@ -22,6 +22,7 @@ let newPostTemplate: PostEditDto | undefined
 const getBaseUrl = () => globalCtx.config.apiBaseUrl
 
 export namespace PostService {
+    import ContentType = ReqHeaderKey.ContentType
     export const getPostListState = () => globalCtx.storage.get<PostListState>('postListState')
 
     export async function fetchPostList({ search = '', pageIndex = 1, pageSize = 30, categoryId = <'' | number>'' }) {
@@ -103,7 +104,8 @@ export namespace PostService {
         if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
         const url = `${getBaseUrl()}/api/posts`
         const body = JSON.stringify(post)
-        const resp = await AuthedReq.post(url, consReqHeader(), body)
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+        const resp = await AuthedReq.post(url, header, body)
 
         return PostUpdatedResponse.parse(JSON.parse(resp))
     }

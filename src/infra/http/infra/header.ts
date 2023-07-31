@@ -1,6 +1,11 @@
 export namespace ReqHeaderKey {
     export const CONTENT_TYPE = 'Content-Type'
     export const AUTHORIZATION = 'Authorization'
+
+    export enum ContentType {
+        appJson = 'application/json',
+        appX3wfu = 'application/x-www-form-urlencoded',
+    }
 }
 
 export function consReqHeader(...kvs: [string, string][]) {

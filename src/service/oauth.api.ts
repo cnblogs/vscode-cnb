@@ -18,6 +18,8 @@ export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
 }
 
 export namespace Oauth {
+    import ContentType = ReqHeaderKey.ContentType
+
     export async function fetchToken(verifyCode: string, authCode: string, cancelToken?: CancellationToken) {
         const abortControl = new AbortController()
         if (cancelToken?.isCancellationRequested) abortControl.abort()
@@ -64,7 +66,7 @@ export namespace Oauth {
         const { clientId, revocationEndpoint, authority } = globalCtx.config.oauth
 
         const url = `${authority}${revocationEndpoint}`
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/x-www-form-urlencoded'])
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appX3wfu])
         const body = JSON.stringify({
             client_id: clientId,
             token: token,

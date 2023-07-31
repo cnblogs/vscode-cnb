@@ -8,6 +8,8 @@ import { consUrlPara } from '@/infra/http/infra/url'
 let cache: Map<number, PostCategory[]> | null = null
 
 export namespace PostCategoryService {
+    import ContentType = ReqHeaderKey.ContentType
+
     export async function findCategories(ids: number[], { useCache = true } = {}) {
         ids = ids.filter(x => x > 0)
         if (ids.length <= 0) return []
@@ -57,7 +59,7 @@ export namespace PostCategoryService {
 
     export async function newCategory(dto: PostCategoryAddDto) {
         const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/1`
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const body = JSON.stringify(dto)
 
         await AuthedReq.post(url, header, body)
@@ -65,7 +67,7 @@ export namespace PostCategoryService {
 
     export async function updateCategory(category: PostCategory) {
         const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/${category.categoryId}`
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const body = JSON.stringify(category)
 
         await AuthedReq.put(url, header, body)
@@ -75,7 +77,7 @@ export namespace PostCategoryService {
         if (categoryId <= 0) throw Error('Invalid param categoryId')
 
         const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/${categoryId}`
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, 'application/json'])
+        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
 
         try {
             await AuthedReq.del(url, header)
