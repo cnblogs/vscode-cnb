@@ -32,7 +32,7 @@ export const defaultConfig: IExtensionConfig = {
         clientSecret: CNBLOGS_CLIENTSECRET,
         responseType: 'code',
         scope: 'openid profile CnBlogsApi CnblogsAdminApi',
-        revocationEndpoint: '/connection/revocation',
+        revocationEndpoint: '/connect/revocation',
     },
     apiBaseUrl: 'https://i.cnblogs.com',
     ingSite: 'https://ing.cnblogs.com',

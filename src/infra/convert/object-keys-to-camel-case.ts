@@ -1,4 +1,4 @@
-export const objectKeysToCamelCase = <T extends object>(obj: T) => {
+export const objectKeys2camelCase = <T extends object>(obj: T) => {
     const anyObj = <Record<string, unknown>>obj
     const splitters = ['-', '_']
 

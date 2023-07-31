@@ -21,6 +21,7 @@ import { extUriHandler } from '@/infra/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
 import { TokenInfo } from '@/model/token-info'
 import { Optional } from 'utility-types'
+import { consUrlPara } from '@/infra/http/infra/url'
 
 export class AuthProvider implements AuthenticationProvider, Disposable {
     static readonly providerId = 'cnblogs'
@@ -91,25 +92,24 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
                     cancelTokenSrc,
                     extUriHandler
                 )
-                extUriHandler.onUri(uri => {
+                extUriHandler.onUri(async uri => {
                     if (cancelTokenSrc.token.isCancellationRequested) return
 
-                    const authorizationCode = this.parseOauthCallbackUri(uri)
-                    if (authorizationCode == null) return
+                    const authCode = this.parseOauthCallbackUri(uri)
+                    if (authCode == null) return
 
                     progress.report({ message: '已获得授权, 正在获取令牌...' })
 
-                    Oauth.fetchToken(verifyCode, authorizationCode, cancelTokenSrc.token)
-                        .then(token =>
-                            this.onAccessTokenGranted(token, {
-                                cancelToken: cancelTokenSrc.token,
-                                onStateChange(state) {
-                                    progress.report({ message: state })
-                                },
-                            })
-                        )
-                        .then(resolve)
-                        .catch(reject)
+                    const token = await Oauth.fetchToken(verifyCode, authCode)
+
+                    const authSession = await this.onAccessTokenGranted(token, {
+                        cancelToken: cancelTokenSrc.token,
+                        onStateChange(state) {
+                            progress.report({ message: state })
+                        },
+                    })
+
+                    resolve(authSession)
                 })
             })
 
@@ -161,7 +161,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         const [verifyCode, challengeCode] = genVerifyChallengePair()
         const { clientId, responseType, authorizeEndpoint, authority, clientSecret } = globalCtx.config.oauth
 
-        const search = new URLSearchParams([
+        const para = consUrlPara(
             ['client_id', clientId],
             ['response_type', responseType],
             ['redirect_uri', globalCtx.extensionUrl],
@@ -169,13 +169,12 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             ['code_challenge', challengeCode],
             ['code_challenge_method', 'S256'],
             ['scope', scopes.join(' ')],
-            ['client_secret', clientSecret],
-        ])
-
-        env.openExternal(Uri.parse(`${authority}${authorizeEndpoint}?${search.toString()}`)).then(
-            undefined,
-            console.warn
+            ['client_secret', clientSecret]
         )
+
+        const uri = Uri.parse(`${authority}${authorizeEndpoint}?${para}`)
+
+        env.openExternal(uri).then(undefined, console.warn)
 
         return verifyCode
     }
