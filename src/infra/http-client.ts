@@ -2,6 +2,7 @@ import { accountManager } from '@/auth/account-manager'
 import got, { BeforeRequestHook } from 'got'
 import { isString } from 'lodash-es'
 import { ReqHeaderKey } from '@/infra/http/infra/header'
+import { bearer } from '@/infra/http/infra/bearer'
 
 const bearerTokenHook: BeforeRequestHook = async opt => {
     const { headers } = opt
@@ -12,7 +13,7 @@ const bearerTokenHook: BeforeRequestHook = async opt => {
     if (keyIndex < 0) {
         const token = await accountManager.acquireToken()
 
-        if (isString(token)) headers[ReqHeaderKey.AUTHORIZATION] = `Bearer ${token}`
+        if (isString(token)) headers[ReqHeaderKey.AUTHORIZATION] = bearer(token)
     }
 }
 

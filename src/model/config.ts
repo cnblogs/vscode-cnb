@@ -1,20 +1,20 @@
 import { env } from 'process'
 
-export interface IExtensionConfig {
-    readonly oauth: Readonly<{
+export type ExtConst = {
+    oauth: {
         authority: string
-        tokenEndpoint: string
-        authorizeEndpoint: string
-        userInfoEndpoint: string
+        tokenRoute: string
+        authRoute: string
+        userInfoRoute: string
         clientId: string
         clientSecret: string
         responseType: string
         scope: string
-        revocationEndpoint: string
-    }>
-    readonly apiBaseUrl: string
-    readonly ingSite: string
-    readonly cnblogsOpenApiUrl: string
+        revokeRoute: string
+    }
+    apiBaseUrl: string
+    ingSite: string
+    openApiUrl: string
 }
 
 export const isDevEnv = () => process.env.NODE_ENV === 'Development'
@@ -22,24 +22,24 @@ export const isDevEnv = () => process.env.NODE_ENV === 'Development'
 declare const CNBLOGS_CLIENTID: string
 declare const CNBLOGS_CLIENTSECRET: string
 
-export const defaultConfig: IExtensionConfig = {
+export const defaultConfig: ExtConst = {
     oauth: {
         authority: 'https://oauth.cnblogs.com',
-        tokenEndpoint: '/connect/token',
-        authorizeEndpoint: '/connect/authorize',
-        userInfoEndpoint: '/connect/userinfo',
+        tokenRoute: '/connect/token',
+        authRoute: '/connect/authorize',
+        userInfoRoute: '/connect/userinfo',
         clientId: CNBLOGS_CLIENTID,
         clientSecret: CNBLOGS_CLIENTSECRET,
         responseType: 'code',
         scope: 'openid profile CnBlogsApi CnblogsAdminApi',
-        revocationEndpoint: '/connect/revocation',
+        revokeRoute: '/connect/revocation',
     },
     apiBaseUrl: 'https://i.cnblogs.com',
     ingSite: 'https://ing.cnblogs.com',
-    cnblogsOpenApiUrl: 'https://api.cnblogs.com',
+    openApiUrl: 'https://api.cnblogs.com',
 }
 
-export const devConfig: IExtensionConfig = {
+export const devConfig: ExtConst = {
     ...defaultConfig,
     oauth: {
         ...defaultConfig.oauth,
@@ -49,5 +49,5 @@ export const devConfig: IExtensionConfig = {
     },
     apiBaseUrl: 'https://admin.cnblogs.com',
     ingSite: 'https://my-ing.cnblogs.com',
-    cnblogsOpenApiUrl: 'https://my-api.cnblogs.com',
+    openApiUrl: 'https://my-api.cnblogs.com',
 }

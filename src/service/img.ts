@@ -24,7 +24,9 @@ export namespace ImgService {
         const fd = new (await import('form-data')).default()
         fd.append('image', file, { filename: finalName, contentType: mimeType })
 
-        const resp = await httpClient.post(`${globalCtx.config.apiBaseUrl}/api/posts/body/images`, {
+        const url = `${globalCtx.config.apiBaseUrl}/api/posts/body/images`
+
+        const resp = await httpClient.post(url, {
             body: fd,
         })
 

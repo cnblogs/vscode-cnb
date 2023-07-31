@@ -7,7 +7,7 @@ import { AuthedReq } from '@/infra/http/authed-req'
 import ContentType = ReqHeaderKey.ContentType
 
 async function getIngComment(id: number) {
-    const url = `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${id}/comments`
+    const url = `${globalCtx.config.openApiUrl}/api/statuses/${id}/comments`
     const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
     const resp = await AuthedReq.get(url, header)
     const list = JSON.parse(resp) as []
@@ -16,7 +16,7 @@ async function getIngComment(id: number) {
 
 export namespace IngApi {
     export async function publishIng(ing: IngPublishModel): Promise<boolean> {
-        const url = `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses`
+        const url = `${globalCtx.config.openApiUrl}/api/statuses`
         const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const body = JSON.stringify(ing)
 
@@ -24,8 +24,7 @@ export namespace IngApi {
             await AuthedReq.post(url, header, body)
             return true
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            void Alert.err(`闪存发布失败: ${e}`)
+            void Alert.err(`闪存发布失败: ${<string>e}`)
             return false
         }
     }
@@ -34,7 +33,7 @@ export namespace IngApi {
         const para = consUrlPara(['pageIndex', `${pageIndex}`], ['pageSize', `${pageSize}`])
         const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
 
-        const url = `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/@${type}?${para}`
+        const url = `${globalCtx.config.openApiUrl}/api/statuses/@${type}?${para}`
 
         let list: Ing[]
         try {
@@ -42,8 +41,7 @@ export namespace IngApi {
             const arr = JSON.parse(resp) as unknown[]
             list = arr.map(Ing.parse)
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            void Alert.err(`获取闪存列表失败: ${e}`)
+            void Alert.err(`获取闪存列表失败: ${<string>e}`)
             list = []
         }
 
@@ -67,7 +65,7 @@ export namespace IngApi {
             content: string
         }
     ) {
-        const url = `${globalCtx.config.cnblogsOpenApiUrl}/api/statuses/${ingId}/comments`
+        const url = `${globalCtx.config.openApiUrl}/api/statuses/${ingId}/comments`
         const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const body = JSON.stringify(data)
 
@@ -75,8 +73,7 @@ export namespace IngApi {
             await AuthedReq.post(url, header, body)
             return true
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            void Alert.err(`发表评论失败, ${e}`)
+            void Alert.err(`发表评论失败, ${<string>e}`)
             return false
         }
     }

@@ -19,8 +19,7 @@ export namespace BlogSettingService {
             cache ??= setting
             return setting
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            void Alert.err(`获取博客设置失败: ${e}`)
+            void Alert.err(`获取博客设置失败: ${<string>e}`)
             return cache
         }
     }

@@ -50,7 +50,9 @@ export namespace BlogExportApi {
             },
         })
 
-        return g.stream.get(`${downloadOrigin}/blogs/${blogId}/exports/${exportId}`, {
+        const url = `${downloadOrigin}/blogs/${blogId}/exports/${exportId}`
+
+        return g.stream.get(url, {
             throwHttpErrors: true,
             followRedirect: true,
         })

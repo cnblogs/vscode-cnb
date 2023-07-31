@@ -85,8 +85,7 @@ export namespace PostService {
             try {
                 await AuthedReq.del(url, consReqHeader())
             } catch (e) {
-                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                void Alert.err(`删除博文失败: ${e}`)
+                void Alert.err(`删除博文失败: ${<string>e}`)
             }
         } else {
             const para = consUrlPara(...postIds.map(id => ['postIds', id.toString()] as [string, string]))
@@ -94,8 +93,7 @@ export namespace PostService {
             try {
                 await AuthedReq.del(url, consReqHeader())
             } catch (e) {
-                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                void Alert.err(`删除博文失败: ${e}`)
+                void Alert.err(`删除博文失败: ${<string>e}`)
             }
         }
     }

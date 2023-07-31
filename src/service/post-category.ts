@@ -36,8 +36,7 @@ export namespace PostCategoryService {
             map.set(parentId, categories)
             return categories
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            void Alert.err(`获取随笔分类失败: ${e}`)
+            void Alert.err(`获取随笔分类失败: ${<string>e}`)
             return []
         }
     }
@@ -51,8 +50,7 @@ export namespace PostCategoryService {
             const { parent } = <{ parent?: PostCategory | null }>JSON.parse(resp)
             return Object.assign(new PostCategory(), parent)
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            void Alert.err(`查询随笔分类失败: ${e}`)
+            void Alert.err(`查询随笔分类失败: ${<string>e}`)
             return new PostCategory()
         }
     }
@@ -82,8 +80,7 @@ export namespace PostCategoryService {
         try {
             await AuthedReq.del(url, header)
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            void Alert.err(`删除分类失败: ${e}`)
+            void Alert.err(`删除分类失败: ${<string>e}`)
         }
     }
 

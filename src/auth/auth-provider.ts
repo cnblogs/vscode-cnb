@@ -159,7 +159,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
     private signInWithBrowser({ scopes }: { scopes: readonly string[] }) {
         const [verifyCode, challengeCode] = genVerifyChallengePair()
-        const { clientId, responseType, authorizeEndpoint, authority, clientSecret } = globalCtx.config.oauth
+        const { clientId, responseType, authRoute, authority, clientSecret } = globalCtx.config.oauth
 
         const para = consUrlPara(
             ['client_id', clientId],
@@ -172,7 +172,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             ['client_secret', clientSecret]
         )
 
-        const uri = Uri.parse(`${authority}${authorizeEndpoint}?${para}`)
+        const uri = Uri.parse(`${authority}${authRoute}?${para}`)
 
         env.openExternal(uri).then(undefined, console.warn)
 

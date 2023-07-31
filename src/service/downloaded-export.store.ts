@@ -54,12 +54,13 @@ export namespace DownloadedExportStore {
     }
 
     export async function remove(downloaded: DownloadedBlogExport, { shouldRemoveExportRecordMap = true } = {}) {
-        await Promise.all([
+        const futList = [
             updateList((await list()).filter(x => x.filePath !== downloaded.filePath)),
             shouldRemoveExportRecordMap && downloaded.id != null && downloaded.id > 0
                 ? updateExport(downloaded.id, undefined)
-                : Promise.resolve(),
-        ])
+                : await Promise.resolve(),
+        ]
+        await Promise.all(futList)
     }
 
     export async function findById(id: number, { prune = true } = {}) {

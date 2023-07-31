@@ -81,7 +81,7 @@ class AccountManager extends vscode.Disposable {
             await Oauth.revokeToken(session.accessToken)
             await authProvider.removeSession(session.id)
         } catch (e: any) {
-            void Alert.err(`登出发生错误: ${e}`)
+            void Alert.err(`登出发生错误: ${<string>e}`)
         }
     }
 
@@ -102,7 +102,7 @@ class AccountManager extends vscode.Disposable {
         const session = await authentication.getSession(authProvider.providerId, [], opt).then(
             session => (session ? AuthSession.from(session) : null),
             e => {
-                void Alert.err(`创建/获取 Session 失败: ${e}`)
+                void Alert.err(`创建/获取 Session 失败: ${<string>e}`)
             }
         )
 

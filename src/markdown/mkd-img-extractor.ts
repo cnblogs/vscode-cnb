@@ -88,8 +88,7 @@ export class MkdImgExtractor {
         try {
             return await ImgService.download(url)
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            this._errors.push([url, `无法下载网络图片: ${e}`])
+            this._errors.push([url, `无法下载网络图片: ${<string>e}`])
             return
         }
     }

@@ -16,8 +16,7 @@ export namespace SiteCategoryService {
             cached = list
             return list
         } catch (e) {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            console.log(`获取随笔分类失败: ${e}`)
+            console.log(`获取随笔分类失败: ${<string>e}`)
             return []
         }
     }
