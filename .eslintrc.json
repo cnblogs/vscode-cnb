@@ -18,13 +18,15 @@
         ]
     },
     "ignorePatterns": [
+        "rs",
         "out",
+        "pkg",
         "dist",
-        "src/test/**",
         "**/*.d.ts",
-        "__mocks__/vscode.ts",
+        "src/test/**",
+        "src/wasm/**",
         "src/assets/**",
-        "src/wasm/**"
+        "__mocks__/vscode.ts"
     ],
     "overrides": [
         {
