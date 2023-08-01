@@ -135,7 +135,7 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.previous-post-list",
+                "command": "vscode-cnb.prev-post-list",
                 "title": "上一页",
                 "icon": "$(chevron-left)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post-list.refreshing && vscode-cnb.post-list.hasPrevious",
@@ -818,7 +818,7 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "vscode-cnb.previous-post-list",
+                    "command": "vscode-cnb.prev-post-list",
                     "when": "view == cnblogs-post-list || view == cnblogs-post-list-another",
                     "group": "navigation@1"
                 },
