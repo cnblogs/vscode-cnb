@@ -1,7 +1,7 @@
 import { accountManager } from '@/auth/account-manager'
 
 import { ReqHeaderKey } from '@/infra/http/infra/header'
-import { bearer } from '@/infra/http/infra/bearer'
+import { bearer } from '@/infra/http/infra/auth-type'
 import { Req } from '@/infra/http/req'
 
 export namespace AuthedReq {

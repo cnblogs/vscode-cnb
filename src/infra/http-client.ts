@@ -2,7 +2,7 @@ import { accountManager } from '@/auth/account-manager'
 import got, { BeforeRequestHook } from 'got'
 import { isString } from 'lodash-es'
 import { ReqHeaderKey } from '@/infra/http/infra/header'
-import { bearer } from '@/infra/http/infra/bearer'
+import { bearer } from '@/infra/http/infra/auth-type'
 
 const bearerTokenHook: BeforeRequestHook = async opt => {
     const { headers } = opt

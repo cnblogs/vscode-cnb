@@ -8,6 +8,8 @@ import { Req } from '@/infra/http/req'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { Alert } from '@/infra/alert'
 import { consUrlPara } from '@/infra/http/infra/url'
+import { basic } from '@/infra/http/infra/auth-type'
+import { RsBase64 } from '@/wasm'
 
 export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
     readonly blog_id: string
@@ -56,12 +58,17 @@ export namespace Oauth {
 
     export async function revokeToken(token: string) {
         // FIX: revoke url is deprecated
-        const { clientId, revokeRoute, authority } = globalCtx.config.oauth
+        const { clientId, clientSecret, revokeRoute, authority } = globalCtx.config.oauth
 
         const url = `${authority}${revokeRoute}`
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appX3wfu])
 
-        const body = consUrlPara(['client_id', clientId], ['token', token], ['token_type_hint', 'access_token'])
+        const credentials = RsBase64.encode(`${clientId}:${clientSecret}`)
+        const header = consReqHeader(
+            [ReqHeaderKey.AUTHORIZATION, basic(credentials)],
+            [ReqHeaderKey.CONTENT_TYPE, ContentType.appX3wfu]
+        )
+
+        const body = consUrlPara(['client_id', clientId], ['token', token], ['token_type_hint', 'refresh_token'])
 
         try {
             await AuthedReq.post(url, header, body)
