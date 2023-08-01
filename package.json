@@ -1336,7 +1336,7 @@
         "@types/randomstring": "^1.1.8",
         "@types/react": "^18.2.18",
         "@types/react-dom": "^18.2.7",
-        "@types/vscode": "^1.80.0",
+        "@types/vscode": "^1.70.0",
         "@typescript-eslint/eslint-plugin": "^6.2.1",
         "@typescript-eslint/parser": "^6.2.1",
         "@vscode/test-electron": "^2.3.4",
