@@ -1,4 +1,4 @@
-import { BlogExportRecordsStore } from '@/service/blog-export-records.store'
+import { BlogExportRecordsStore } from '@/service/blog-export/blog-export-records.store'
 import {
     BlogExportRecordTreeItem,
     BlogExportRecordMetadata,

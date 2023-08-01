@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { MessageOptions, ProgressLocation, window, Uri, workspace } from 'vscode'
 import { PostCategory } from '@/model/post-category'
-import { PostCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post/post-category'
 import { inputPostCategory } from './input-post-category'
 import { refreshPostCategoryList } from './refresh-post-category-list'
 import { BasePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'

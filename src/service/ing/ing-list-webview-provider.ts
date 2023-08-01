@@ -10,7 +10,7 @@ import {
 } from 'vscode'
 import { parseWebviewHtml } from '@/service/parse-webview-html'
 import { IngWebviewHostCmd, IngWebviewUiCmd, WebviewCmd } from '@/model/webview-cmd'
-import { IngApi } from '@/service/ing.api'
+import { IngApi } from '@/service/ing/ing-api'
 import { IngAppState } from '@/model/ing-view'
 import { IngType, IngTypesMetadata } from '@/model/ing'
 import { isNumber } from 'lodash-es'

@@ -38,7 +38,7 @@ async function provide(downloadedExport: DownloadedBlogExport, { id: postId, tit
         schemaWithId,
         new (class implements TextDocumentContentProvider {
             async provideTextDocumentContent(): Promise<string> {
-                const { ExportPostStore } = await import('@/service/blog-export-post.store')
+                const { ExportPostStore } = await import('@/service/blog-export/blog-export-post.store')
                 const store = new ExportPostStore(downloadedExport)
                 return store.getBody(postId).finally(() => store.dispose())
             }

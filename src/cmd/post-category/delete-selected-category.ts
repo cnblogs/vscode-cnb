@@ -1,6 +1,6 @@
 import { MessageOptions, ProgressLocation, window } from 'vscode'
 import { PostCategory } from '@/model/post-category'
-import { PostCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post/post-category'
 import { PostCategoriesListTreeItem } from '@/tree-view/model/category-list-tree-item'
 import { BaseMultiSelectablePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
 import { Alert } from '@/infra/alert'

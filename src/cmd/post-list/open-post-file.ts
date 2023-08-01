@@ -2,7 +2,7 @@ import { TextDocumentShowOptions, Uri } from 'vscode'
 import { execCmd } from '@/infra/cmd'
 import { Post } from '@/model/post'
 import { LocalDraft } from '@/service/local-draft'
-import { PostFileMapManager } from '@/service/post-file-map'
+import { PostFileMapManager } from '@/service/post/post-file-map'
 
 export async function openPostFile(post: LocalDraft | Post | string, options?: TextDocumentShowOptions) {
     let filePath = ''

@@ -1,5 +1,5 @@
 import { IngType, IngTypesMetadata } from '@/model/ing'
-import { getIngListWebviewProvider } from '@/service/ing-list-webview-provider'
+import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provider'
 import { QuickPickItem, window } from 'vscode'
 
 export function switchIngType() {

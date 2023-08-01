@@ -3,7 +3,7 @@ import { AccessPermission, Post } from '@/model/post'
 import { PostCategory } from '@/model/post-category'
 import { Alert } from '@/infra/alert'
 import { InputFlowAction, InputStep, MultiStepInput, QuickPickParameters } from '@/service/multi-step-input'
-import { PostCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post/post-category'
 
 class CategoryPickItem implements QuickPickItem {
     label: string

@@ -4,7 +4,7 @@ import { MarkdownString, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } fr
 import { Post } from '@/model/post'
 import { PostCategory } from '@/model/post-category'
 import { globalCtx } from '@/ctx/global-ctx'
-import { PostFileMapManager } from '@/service/post-file-map'
+import { PostFileMapManager } from '@/service/post/post-file-map'
 import { BaseTreeItemSource } from '@/tree-view/model/base-tree-item-source'
 import { IconThemeCfg } from '@/ctx/cfg/icon-theme'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'

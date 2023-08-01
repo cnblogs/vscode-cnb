@@ -6,7 +6,7 @@ import { accountManager } from '@/auth/account-manager'
 import { setupWorkspaceWatch, setupCfgWatch, setupWorkspaceFileWatch } from '@/setup/setup-watch'
 import { extUriHandler } from '@/infra/uri-handler'
 import { extendMarkdownIt } from '@/markdown/extend-markdownIt'
-import { getIngListWebviewProvider } from '@/service/ing-list-webview-provider'
+import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provider'
 import { setupUi } from '@/setup/setup-ui'
 import { LocalState } from '@/ctx/local-state'
 

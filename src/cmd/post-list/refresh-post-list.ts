@@ -1,5 +1,5 @@
 import { globalCtx } from '@/ctx/global-ctx'
-import { PostService } from '@/service/post'
+import { PostService } from '@/service/post/post'
 import { window } from 'vscode'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { Alert } from '@/infra/alert'

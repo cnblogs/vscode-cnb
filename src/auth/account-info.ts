@@ -1,4 +1,4 @@
-import { UserInfoSpec } from '@/service/oauth.api'
+import { UserInfoSpec } from '@/auth/oauth'
 import { trim } from 'lodash-es'
 import { AuthenticationSessionAccountInformation } from 'vscode'
 import { AuthProvider } from './auth-provider'
