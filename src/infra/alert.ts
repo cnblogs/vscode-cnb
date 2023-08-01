@@ -1,8 +1,7 @@
 import type { HTTPError } from 'got'
 import { isArray } from 'lodash-es'
 import path from 'path'
-import vscode, { Uri } from 'vscode'
-import { window } from 'vscode'
+import vscode, { ProgressLocation, Uri, window } from 'vscode'
 import { isDevEnv } from '@/model/config'
 
 export namespace Alert {
@@ -11,6 +10,19 @@ export namespace Alert {
     export const info = window.showInformationMessage
 
     export const warn = window.showWarningMessage
+
+    export function infoWithTimeout(info: string, sec: number) {
+        return window.withProgress(
+            {
+                title: info,
+                location: ProgressLocation.Notification,
+            },
+            () =>
+                new Promise(resolve => {
+                    setTimeout(resolve, sec * 1000)
+                })
+        )
+    }
 
     export function dev(log: string) {
         if (isDevEnv()) console.log(log)
