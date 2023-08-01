@@ -109,17 +109,17 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
             category: { categoryId },
         } = parent
 
-        return take(
-            (await PostService.fetchPostList({ categoryId, pageSize: 100 })).items.map(x =>
-                Object.assign<PostTreeItem<PostCategoryTreeItem>, Partial<PostTreeItem<PostCategoryTreeItem>>>(
-                    new PostTreeItem<PostCategoryTreeItem>(x, true),
-                    {
-                        parent,
-                    }
-                )
-            ),
-            500
+        const postList = await PostService.fetchPostList({ categoryId, pageSize: 100 })
+        const arr = postList.items.map(x =>
+            Object.assign<PostTreeItem<PostCategoryTreeItem>, Partial<PostTreeItem<PostCategoryTreeItem>>>(
+                new PostTreeItem<PostCategoryTreeItem>(x, true),
+                {
+                    parent,
+                }
+            )
         )
+
+        return take(arr, 500)
     }
 
     private getPostMetadataChildren(parent: PostTreeItem) {
