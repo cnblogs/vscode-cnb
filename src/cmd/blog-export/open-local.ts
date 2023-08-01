@@ -5,7 +5,7 @@ import { promisify } from 'util'
 import { Alert } from '@/infra/alert'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
-import { BlogExportRecordsStore } from '@/service/blog-export-records.store'
+import { BlogExportRecordsStore } from '@/service/blog-export/blog-export-records.store'
 
 const defaultOptions = { confirmUnzip: true }
 

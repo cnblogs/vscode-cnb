@@ -1,5 +1,5 @@
 import { WorkspaceConfiguration as WorkspaceCfg } from 'vscode'
-import { getIngListWebviewProvider } from '@/service/ing-list-webview-provider'
+import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provider'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 
 export function setupUi(cfg: WorkspaceCfg) {

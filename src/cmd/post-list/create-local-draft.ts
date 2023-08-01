@@ -1,7 +1,7 @@
 import { homedir } from 'os'
 import path from 'path'
 import { Uri, window, workspace } from 'vscode'
-import { osOpenActiveFile } from '@/infra/os-open-active-file'
+import { osOpenActiveFile } from '@/cmd/open/os-open-active-file'
 import { openPostFile } from './open-post-file'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 

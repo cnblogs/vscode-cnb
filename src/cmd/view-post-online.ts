@@ -1,8 +1,8 @@
 import { Uri, window } from 'vscode'
 import { execCmd } from '@/infra/cmd'
 import { Post } from '@/model/post'
-import { PostService } from '@/service/post'
-import { PostFileMapManager } from '@/service/post-file-map'
+import { PostService } from '@/service/post/post'
+import { PostFileMapManager } from '@/service/post/post-file-map'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 
 export async function viewPostOnline(input?: Post | PostTreeItem | Uri) {

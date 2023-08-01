@@ -4,7 +4,7 @@ import vscode, { authentication, AuthenticationGetSessionOptions, Disposable } f
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
-import { Oauth } from '@/service/oauth.api'
+import { Oauth } from '@/auth/oauth'
 import { authProvider } from '@/auth/auth-provider'
 import { AuthSession } from '@/auth/auth-session'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'

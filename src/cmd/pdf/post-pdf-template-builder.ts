@@ -1,9 +1,9 @@
 import { Post } from '@/model/post'
-import { PostFileMapManager } from '@/service/post-file-map'
+import { PostFileMapManager } from '@/service/post/post-file-map'
 import fs from 'fs'
 import { BlogSettingService } from '@/service/blog-setting'
 import { accountManager } from '@/auth/account-manager'
-import { PostCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post/post-category'
 import { PostCategory } from '@/model/post-category'
 import { markdownItFactory } from '@cnblogs/markdown-it-presets'
 

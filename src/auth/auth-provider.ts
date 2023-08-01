@@ -15,7 +15,7 @@ import {
     window,
 } from 'vscode'
 import { globalCtx } from '@/ctx/global-ctx'
-import { Oauth } from '@/service/oauth.api'
+import { Oauth } from '@/auth/oauth'
 import { extUriHandler } from '@/infra/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
 import { TokenInfo } from '@/model/token-info'
