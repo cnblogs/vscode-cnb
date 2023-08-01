@@ -29,7 +29,7 @@ export const newPostCategory = async () => {
                 const newCategory = (await PostCategoryService.listCategories()).find(x => x.title === input.title)
                 if (newCategory) await extTreeViews.postCategoriesList.reveal(newCategory)
             } catch (err) {
-                void Alert.err('新建博文分类时遇到了错误', {
+                void Alert.err('新建博文分类时遇到错误', {
                     modal: true,
                     detail: `服务器反回了错误\n${err instanceof Error ? err.message : JSON.stringify(err)}`,
                 } as MessageOptions)

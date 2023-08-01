@@ -45,7 +45,7 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
 
                 p.report({ increment: 100 })
                 if (errs.length > 0) {
-                    await Alert.err('删除博文分类时发生了一些错误', {
+                    await Alert.err('删除博文分类时发生错误', {
                         detail: errs
                             .map(
                                 err =>

@@ -74,7 +74,7 @@ export namespace ChromiumPathProvider {
                 }
             }
         )
-        if (chromiumPath) void Alert.info(`Chromium已下载至${chromiumPath}`)
+        if (chromiumPath) void Alert.info(`Chromium 已下载至${chromiumPath}`)
 
         return chromiumPath
     }
