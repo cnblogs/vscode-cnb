@@ -1,5 +1,10 @@
 export class PageModel<T> {
-    constructor(public pageIndex = 1, public pageSize = 0, public totalItemsCount = 0, public items: T[] = []) {}
+    constructor(
+        public pageIndex = 1,
+        public pageSize = 0,
+        public totalItemsCount = 0,
+        public items: T[] = []
+    ) {}
 
     get hasPrevious() {
         return this.pageIndex > 1

@@ -177,7 +177,7 @@ const reportErrors = (errors: string[] | undefined) => {
     }
 }
 
-export async function exportPostToPdf(input: Post | PostTreeItem | Uri | unknown): Promise<void> {
+export async function exportPostToPdf(input?: Post | PostTreeItem | Uri): Promise<void> {
     if (!(input instanceof Post) && !(input instanceof PostTreeItem) && !(input instanceof Uri)) return
 
     const chromiumPath = await retrieveChromiumPath()

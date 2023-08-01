@@ -46,7 +46,7 @@ export const createLocalDraft = async () => {
     await new Promise<void>(resolve => {
         const innerTimeout = setTimeout(() => {
             clearTimeout(innerTimeout)
-            focusEditor().finally(() => resolve())
+            void focusEditor().finally(() => resolve())
         }, 50)
     })
 }

@@ -23,7 +23,10 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
         message?: string | null
     } | null
 
-    constructor(private readonly _treeDataProvider: BlogExportProvider, public record: BlogExportRecord) {
+    constructor(
+        private readonly _treeDataProvider: BlogExportProvider,
+        public record: BlogExportRecord
+    ) {
         super()
     }
 

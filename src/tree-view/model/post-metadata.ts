@@ -79,7 +79,10 @@ export abstract class PostEntryMetadata<T extends PostMetadata = PostMetadata>
     extends PostMetadata
     implements BaseEntryTreeItem<T>
 {
-    constructor(parent: Post, public readonly children: T[]) {
+    constructor(
+        parent: Post,
+        public readonly children: T[]
+    ) {
         super(parent)
     }
 
@@ -120,7 +123,11 @@ export class PostTagEntryMetadata extends PostEntryMetadata<PostTagMetadata> {
 export class PostCategoryMetadata extends PostMetadata {
     readonly icon = new ThemeIcon('vscode-cnb-folder-close')
 
-    constructor(parent: Post, public categoryName: string, public categoryId: number) {
+    constructor(
+        parent: Post,
+        public categoryName: string,
+        public categoryId: number
+    ) {
         super(parent)
     }
 
@@ -156,7 +163,11 @@ export class PostCategoryMetadata extends PostMetadata {
 export class PostTagMetadata extends PostMetadata {
     readonly icon = undefined
 
-    constructor(parent: Post, public tag: string, public tagId?: string) {
+    constructor(
+        parent: Post,
+        public tag: string,
+        public tagId?: string
+    ) {
         super(parent)
     }
 
@@ -179,7 +190,11 @@ export class PostTagMetadata extends PostMetadata {
 export abstract class PostDateMetadata extends PostMetadata {
     readonly distance: string
 
-    constructor(public label: string, parent: Post, public readonly date: Date) {
+    constructor(
+        public label: string,
+        parent: Post,
+        public readonly date: Date
+    ) {
         super(parent)
         this.distance = this.toDistance()
     }

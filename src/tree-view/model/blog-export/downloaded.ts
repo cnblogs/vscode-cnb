@@ -22,7 +22,10 @@ export class DownloadedExportMetadata extends TreeItem {
 }
 
 export class ExportPostEntryTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<ExportPostTreeItem> {
-    constructor(public readonly parent: BlogExportTreeItem, public readonly downloadedExport: DownloadedBlogExport) {
+    constructor(
+        public readonly parent: BlogExportTreeItem,
+        public readonly downloadedExport: DownloadedBlogExport
+    ) {
         super()
     }
 

@@ -29,10 +29,7 @@ export namespace Alert {
     }
 
     export function httpErr(httpError: Partial<HTTPError>, { message = '' } = {}) {
-        const body = httpError.response?.body as
-            | { errors: (string | unknown)[] | undefined | unknown }
-            | undefined
-            | null
+        const body = httpError.response?.body as { errors: string[] | undefined } | undefined | null
         let parsedError = ''
         const errors = body?.errors
         if (isArray(errors)) parsedError = errors.filter(i => typeof i === 'string' && i.length > 0).join(', ')

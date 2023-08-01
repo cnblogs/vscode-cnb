@@ -100,7 +100,7 @@ class IngItem extends Component<IngItemProps, IngItemState> {
                                     addSuffix: true,
                                 })}
                             </span>,
-                            sendFrom > 0 ? (
+                            (sendFrom as number) > 0 ? (
                                 <span className="ml-[3px] inline-flex items-center">
                                     {this.renderSendFromIcon(sendFrom)}
                                 </span>

@@ -52,7 +52,7 @@ class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHa
     }
 
     private notifyFailed(err: unknown) {
-        window
+        void window
             .showErrorMessage('更新博文分类失败', {
                 detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
                 modal: true,

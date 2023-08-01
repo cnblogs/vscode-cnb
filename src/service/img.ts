@@ -11,7 +11,7 @@ export namespace ImgService {
             fileName?: string
             filename?: string
             path?: string | Buffer
-        }
+        },
     >(file: T) {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         const { name, fileName, filename, path: _path } = file

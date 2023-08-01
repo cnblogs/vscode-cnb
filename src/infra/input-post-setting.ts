@@ -12,7 +12,10 @@ class CategoryPickItem implements QuickPickItem {
     picked?: boolean
     alwaysShow?: boolean
 
-    constructor(name: string, public id: number) {
+    constructor(
+        name: string,
+        public id: number
+    ) {
         this.label = name
     }
 
@@ -31,7 +34,10 @@ class AccessPermissionPickItem implements QuickPickItem {
     picked?: boolean
     alwaysShow?: boolean
 
-    constructor(public id: AccessPermission, public label: string) {}
+    constructor(
+        public id: AccessPermission,
+        public label: string
+    ) {}
 }
 
 type PostSettingType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission' | 'isPublished'

@@ -32,7 +32,10 @@ export class MkdImgExtractor {
     private _errors: [imgLink: string, msg: string][] = []
     private readonly _workspaceDirs: string[] = []
 
-    constructor(private readonly targetFileUri: Uri, public onProgress?: (index: number, images: ImgInfo[]) => void) {
+    constructor(
+        private readonly targetFileUri: Uri,
+        public onProgress?: (index: number, images: ImgInfo[]) => void
+    ) {
         if (workspace.workspaceFolders !== undefined)
             this._workspaceDirs = workspace.workspaceFolders.map(({ uri: { fsPath } }) => fsPath)
     }

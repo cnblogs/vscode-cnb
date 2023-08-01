@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { ThemeProvider } from '@fluentui/react/lib/Theme'
-import { Theme, PartialTheme, Stack, Breadcrumb, IBreadcrumbItem, Spinner, initializeIcons } from '@fluentui/react'
+import { Breadcrumb, IBreadcrumbItem, initializeIcons, PartialTheme, Spinner, Stack, Theme } from '@fluentui/react'
 import { PostForm } from './components/PostForm'
 import { Post } from '@/model/post'
 import { personalCategoriesStore } from './service/personal-category-store'
@@ -12,6 +12,7 @@ import { PostFormContextProvider } from './components/PostFormContextProvider'
 import { activeThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
+import { ColorThemeKind } from 'vscode'
 
 interface AppState {
     post?: Post
@@ -76,7 +77,7 @@ class App extends Component<AppProps, AppState> {
         const { breadcrumbs } = this.state
         if (!breadcrumbs || breadcrumbs.length <= 0) return <></>
 
-        const items = breadcrumbs.map(breadcrumb => ({ text: breadcrumb, key: breadcrumb } as IBreadcrumbItem))
+        const items = breadcrumbs.map(breadcrumb => ({ text: breadcrumb, key: breadcrumb }) as IBreadcrumbItem)
         return <Breadcrumb styles={{ item: { fontSize: 12 } }} items={items}></Breadcrumb>
     }
 
@@ -95,7 +96,7 @@ class App extends Component<AppProps, AppState> {
                 tagsStore.set(tags)
 
                 this.setState({
-                    theme: activeTheme === 2 ? darkTheme : lightTheme,
+                    theme: activeTheme === ColorThemeKind.Dark ? darkTheme : lightTheme,
                     post,
                     breadcrumbs,
                     fileName,

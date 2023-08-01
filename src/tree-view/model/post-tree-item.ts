@@ -6,7 +6,10 @@ import { BaseTreeItemSource } from './base-tree-item-source'
 export class PostTreeItem<TParent = unknown> extends BaseTreeItemSource {
     parent?: TParent
 
-    constructor(public readonly post: Post, public readonly showMetadata = true) {
+    constructor(
+        public readonly post: Post,
+        public readonly showMetadata = true
+    ) {
         super()
     }
 

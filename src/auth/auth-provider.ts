@@ -72,11 +72,14 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
         let isTimeout = false
 
-        const timeoutId = setTimeout(() => {
-            clearTimeout(timeoutId)
-            isTimeout = true
-            cancelTokenSrc.cancel()
-        }, 30 * 60 * 1000) // 30 min
+        const timeoutId = setTimeout(
+            () => {
+                clearTimeout(timeoutId)
+                isTimeout = true
+                cancelTokenSrc.cancel()
+            },
+            30 * 60 * 1000
+        ) // 30 min
 
         const verifyCode = this.signInWithBrowser({ scopes: parsedScopes })
 
@@ -150,7 +153,6 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
                 | AuthSession[]
                 | null
                 | undefined
-                | unknown
             this._allSessions = isArray(sessions) ? sessions.map(x => AuthSession.from(x)) : []
         }
 
@@ -175,6 +177,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         const uri = Uri.parse(`${authority}${authRoute}?${para}`)
 
         env.openExternal(uri).then(undefined, console.warn)
+        console.log(verifyCode)
 
         return verifyCode
     }
