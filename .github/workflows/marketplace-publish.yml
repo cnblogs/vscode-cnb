@@ -15,6 +15,7 @@ jobs:
   build:
     strategy:
       matrix:
+        node-version: [ 16.x ]
         include:
           - os: windows-latest
             platform: win32
@@ -61,7 +62,7 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Step rust toolchain
@@ -74,7 +75,7 @@ jobs:
       - name: Setup wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-      - name: Rust Cache
+      - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
 
       - name: Install
