@@ -12,7 +12,6 @@ import { PostFormContextProvider } from './components/PostFormContextProvider'
 import { activeThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
-import { ColorThemeKind } from 'vscode'
 
 interface AppState {
     post?: Post
@@ -96,7 +95,7 @@ class App extends Component<AppProps, AppState> {
                 tagsStore.set(tags)
 
                 this.setState({
-                    theme: activeTheme === ColorThemeKind.Dark ? darkTheme : lightTheme,
+                    theme: (activeTheme as number) === 2 ? darkTheme : lightTheme,
                     post,
                     breadcrumbs,
                     fileName,

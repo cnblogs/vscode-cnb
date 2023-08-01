@@ -3,10 +3,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import { rmSync, readdirSync, cpSync, existsSync } from 'fs'
-import { resolve } from 'path'
 import tailwindConfig from './tailwind.config.js'
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
+import path from 'path'
 
 const isDevEnv = process.env.ASPNETCORE_ENVIRONMENT === 'Development' || process.env.NODE_ENV === 'development'
 
@@ -36,13 +36,13 @@ const buildEntry = () => {
     return entries
 }
 
-/** @typedef {import('webpack').Configuration} WebpackConfig **/
+/** @typedef {import("webpack").Configuration} WebpackConfig **/
 
 /** @type WebpackConfig */
 const config = {
     entry: buildEntry(),
     output: {
-        path: resolve('dist/assets/ui'), //打包后的文件存放的地方
+        path: path.resolve('dist/assets/ui'), //打包后的文件存放的地方
         filename: '[name].js', //打包后输出文件的文件名
     },
     resolve: {
