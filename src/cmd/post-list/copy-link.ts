@@ -60,16 +60,14 @@ export class CopyPostLinkCmdHandler implements TreeViewCmdHandler<Thenable<Post 
     }
 
     private askFormat(): Thenable<LinkFormat | undefined | null> {
-        return window
-            .showInformationMessage(
-                '选择链接格式',
-                { modal: true },
-                ...(Object.keys(this._strategies) as LinkFormat[]).map<MessageItem & { format: LinkFormat }>(f => ({
-                    title: this._strategies[f].name,
-                    format: f,
-                    isCloseAffordance: false,
-                }))
-            )
-            .then(x => x?.format)
+        return Alert.info(
+            '选择链接格式',
+            { modal: true },
+            ...(Object.keys(this._strategies) as LinkFormat[]).map<MessageItem & { format: LinkFormat }>(f => ({
+                title: this._strategies[f].name,
+                format: f,
+                isCloseAffordance: false,
+            }))
+        ).then(x => x?.format)
     }
 }

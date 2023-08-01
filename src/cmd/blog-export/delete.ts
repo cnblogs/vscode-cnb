@@ -28,16 +28,14 @@ function confirm(
         { title: '确定' + (hasLocalFile ? '(保留本地文件)' : ''), result: { shouldDeleteLocal: false } },
         ...(hasLocalFile ? [{ title: '确定(同时删除本地文件)', result: { shouldDeleteLocal: true } }] : []),
     ]
-    return window
-        .showInformationMessage(
-            `确定要删除 ${itemName} 吗?`,
-            { modal: true, detail: detail ? detail : undefined },
-            ...options
-        )
-        .then(
-            x => x?.result,
-            () => undefined
-        )
+    return Alert.info(
+        `确定要删除 ${itemName} 吗?`,
+        { modal: true, detail: detail ? detail : undefined },
+        ...options
+    ).then(
+        x => x?.result,
+        () => undefined
+    )
 }
 
 async function deleteDownloadedExportItem(

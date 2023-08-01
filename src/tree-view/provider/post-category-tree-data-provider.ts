@@ -13,17 +13,9 @@ import { execCmd } from '@/infra/cmd'
 import { PostCategory } from '@/model/post-category'
 
 export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {
-    private static _instance: PostCategoryTreeDataProvider | null = null
     private _treeDataChanged = new EventEmitter<PostCategoriesListTreeItem | null | undefined>()
     private _isRefreshing = false
     private _roots: PostCategoryTreeItem[] | null = null
-
-    private constructor() {}
-
-    static get instance() {
-        this._instance ??= new PostCategoryTreeDataProvider()
-        return this._instance
-    }
 
     get isRefreshing() {
         return this._isRefreshing
@@ -144,4 +136,4 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
     }
 }
 
-export const postCategoryDataProvider = PostCategoryTreeDataProvider.instance
+export const postCategoryDataProvider = new PostCategoryTreeDataProvider()

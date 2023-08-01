@@ -179,7 +179,7 @@ export async function uploadPostFile(fileUri: Uri | undefined) {
     if (isEmptyBody(fileContent)) return
 
     const options = ['新建博文', '关联已有博文']
-    const selected = await window.showInformationMessage(
+    const selected = await Alert.info(
         '本地文件尚未关联到博客园博文',
         {
             modal: true,
@@ -286,7 +286,7 @@ export async function uploadPostFileNoConfirm(fileUri: Uri | undefined) {
     if (isEmptyBody(fileContent)) return
 
     const options = ['新建博文', '关联已有博文']
-    const selected = await window.showInformationMessage(
+    const selected = await Alert.info(
         '本地文件尚未关联到博客园博文',
         {
             modal: true,
