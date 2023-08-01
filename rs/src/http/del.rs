@@ -1,5 +1,6 @@
 use crate::http::{body_or_err, header_json_to_header_map, RsHttp};
 use crate::infra::result::IntoResult;
+use crate::panic_hook;
 use alloc::string::{String, ToString};
 use anyhow::Result;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -8,6 +9,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 impl RsHttp {
     #[wasm_bindgen(js_name = del)]
     pub async fn export_del(url: &str, header_json: &str) -> Result<String, String> {
+        panic_hook!();
         let body = del(url, header_json).await;
         let Ok(body) = body else { return body.unwrap_err().to_string().into_err(); };
 

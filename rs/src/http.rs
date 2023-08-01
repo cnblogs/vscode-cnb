@@ -4,6 +4,7 @@ pub mod post;
 pub mod put;
 
 use crate::infra::result::IntoResult;
+use crate::panic_hook;
 use alloc::string::String;
 use anyhow::{bail, Result};
 use core::convert::TryFrom;
@@ -18,6 +19,7 @@ use wasm_bindgen::prelude::*;
 pub struct RsHttp;
 
 fn header_json_to_header_map(header_json: &str) -> Result<HeaderMap> {
+    panic_hook!();
     let header_json = Value::from_str(header_json)?;
     let header = serde_json::from_value::<HashMap<String, String>>(header_json)?;
     let header_map = HeaderMap::try_from(&header)?;

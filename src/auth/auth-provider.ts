@@ -15,13 +15,13 @@ import {
     window,
 } from 'vscode'
 import { globalCtx } from '@/ctx/global-ctx'
-import RandomString from 'randomstring'
 import { Oauth } from '@/service/oauth.api'
 import { extUriHandler } from '@/infra/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
 import { TokenInfo } from '@/model/token-info'
 import { Optional } from 'utility-types'
 import { consUrlPara } from '@/infra/http/infra/url'
+import { RsRand } from '@/wasm'
 
 export class AuthProvider implements AuthenticationProvider, Disposable {
     static readonly providerId = 'cnblogs'
@@ -165,19 +165,18 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
         const para = consUrlPara(
             ['client_id', clientId],
+            ['client_secret', clientSecret],
             ['response_type', responseType],
-            ['redirect_uri', globalCtx.extensionUrl],
-            ['nonce', RandomString.generate(32)],
+            ['nonce', RsRand.string(32)],
             ['code_challenge', challengeCode],
             ['code_challenge_method', 'S256'],
             ['scope', scopes.join(' ')],
-            ['client_secret', clientSecret]
+            ['redirect_uri', globalCtx.extensionUrl]
         )
 
         const uri = Uri.parse(`${authority}${authRoute}?${para}`)
 
         env.openExternal(uri).then(undefined, console.warn)
-        console.log(verifyCode)
 
         return verifyCode
     }

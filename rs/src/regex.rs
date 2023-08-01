@@ -1,3 +1,4 @@
+use crate::panic_hook;
 use alloc::string::{String, ToString};
 use alloc::vec;
 use alloc::vec::Vec;
@@ -23,6 +24,7 @@ pub struct RsRegex;
 impl RsRegex {
     #[wasm_bindgen(js_name = isMatch)]
     pub fn export_is_match(regex: &str, text: &str) -> bool {
+        panic_hook!();
         let regex = Regex::new(regex);
         let Ok(regex) = regex else { return false; };
 
@@ -31,6 +33,7 @@ impl RsRegex {
 
     #[wasm_bindgen(js_name = matches)]
     pub fn export_matches(regex: &str, text: &str) -> JsValue {
+        panic_hook!();
         let ret = matches(regex, text);
         serde_wasm_bindgen::to_value(&ret).unwrap()
     }
