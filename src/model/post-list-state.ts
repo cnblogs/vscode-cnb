@@ -5,6 +5,5 @@ export interface PostListState {
     pageCount: number
     hasPrevious: boolean
     hasNext: boolean
-    totalItemsCount: number
     timestamp: Date
 }

@@ -117,14 +117,13 @@ const isPageIndexInRange = (pageIndex: number, state: PostListState) => pageInde
 
 const updatePostListViewTitle = () => {
     const state = PostService.getPostListState()
-    if (!state) return
+    if (state === undefined) return
 
-    const { pageIndex, pageCount } = state
     const views = [extTreeViews.postList, extTreeViews.anotherPostList]
     for (const view of views) {
         let title = view.title ?? ''
         const idx = title.indexOf('(')
-        const pager = `${pageIndex}/${pageCount}`
+        const pager = `${state.pageIndex}/${state.pageCount}`
         title = idx >= 0 ? title.substring(0, idx) : title
         view.title = `${title} (${pager})`
     }

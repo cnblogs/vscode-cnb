@@ -91,9 +91,9 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
     async search({ key }: { key: string }): Promise<void> {
         if (key.length <= 0) return
 
-        const { items, totalItemsCount, zzkSearchResult } = await PostService.fetchPostList({ search: key })
+        const { items, postsCount, zzkSearchResult } = await PostService.fetchPostList({ search: key })
 
-        this._searchResultEntry = new PostSearchResultEntry(key, items, totalItemsCount, zzkSearchResult)
+        this._searchResultEntry = new PostSearchResultEntry(key, items, postsCount, zzkSearchResult)
         this.fireTreeDataChangedEvent(undefined)
     }
 

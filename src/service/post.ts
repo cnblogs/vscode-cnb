@@ -35,17 +35,18 @@ export namespace PostService {
         )
         const url = `${getBaseUrl()}/api/posts/list?${para}`
         const resp = await AuthedReq.get(url, consReqHeader())
-        const model = <PostListModel>await JSON.parse(resp)
+        const listModel = <PostListModel>JSON.parse(resp)
 
-        return Object.assign(
-            new PageModel(
-                model.pageIndex,
-                model.pageSize,
-                model.postCount,
-                model.postList.map(x => Object.assign(new Post(), x))
-            ),
-            { zzkSearchResult: ZzkSearchResult.parse(model.zzkSearchResult) || undefined }
+        const pageModel = new PageModel(
+            listModel.pageIndex,
+            listModel.pageSize,
+            listModel.postsCount,
+            listModel.postList.map(x => Object.assign(new Post(), x))
         )
+
+        return Object.assign(pageModel, {
+            zzkSearchResult: ZzkSearchResult.parse(listModel.zzkSearchResult) || undefined,
+        })
     }
 
     export async function fetchPostEditDto(postId: number, muteErrorNotification = false) {
@@ -113,7 +114,6 @@ export namespace PostService {
             const finalState = {
                 pageIndex: state.pageIndex,
                 pageSize: state.pageSize,
-                totalItemsCount: state.totalItemsCount,
                 itemsCount: state.items?.length ?? 0,
                 timestamp: new Date(),
                 hasNext: state.hasNext,
@@ -121,6 +121,7 @@ export namespace PostService {
                 pageCount: state.pageCount,
             }
             await globalCtx.storage.update('postListState', finalState)
+            return
         }
 
         await globalCtx.storage.update('postListState', state)
@@ -138,10 +139,11 @@ export namespace PostService {
 }
 
 interface PostListModel {
+    category: unknown
     categoryName: string
     pageIndex: number
     pageSize: number
     postList: []
-    postCount: number
+    postsCount: number
     zzkSearchResult?: ZzkSearchResult
 }

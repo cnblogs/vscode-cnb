@@ -2,7 +2,7 @@ export class PageModel<T> {
     constructor(
         public pageIndex = 1,
         public pageSize = 0,
-        public totalItemsCount = 0,
+        public postsCount = 0,
         public items: T[] = []
     ) {}
 
@@ -15,6 +15,6 @@ export class PageModel<T> {
     }
 
     get pageCount() {
-        return Math.floor(this.totalItemsCount / this.pageSize) + (this.totalItemsCount % this.pageSize > 0 ? 1 : 0)
+        return Math.floor(this.postsCount / this.pageSize) + (this.postsCount % this.pageSize > 0 ? 1 : 0)
     }
 }
