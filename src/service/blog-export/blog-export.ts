@@ -2,8 +2,8 @@ import { BlogExportRecord, BlogExportRecordList } from '@/model/blog-export'
 import { globalCtx } from '@/ctx/global-ctx'
 import got from '@/infra/http-client'
 import { AuthedReq } from '@/infra/http/authed-req'
-import { consReqHeader } from '@/infra/http/infra/header'
-import { consUrlPara } from '@/infra/http/infra/url'
+import { consHeader } from '@/infra/http/infra/header'
+import { consUrlPara } from '@/infra/http/infra/url-para'
 
 const basePath = `${globalCtx.config.apiBaseUrl}/api/blogExports`
 const downloadOrigin = 'https://export.cnblogs.com'
@@ -12,13 +12,13 @@ export namespace BlogExportApi {
     export async function list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }) {
         const para = consUrlPara(['pageIndex', `${pageIndex ?? ''}`], ['pageSize', `${pageSize ?? ''}`])
         const url = `${basePath}?${para}`
-        const resp = await AuthedReq.get(url, consReqHeader())
+        const resp = await AuthedReq.get(url, consHeader())
 
         return <BlogExportRecordList>JSON.parse(resp)
     }
 
     export async function create() {
-        const resp = await AuthedReq.post(basePath, consReqHeader(), '')
+        const resp = await AuthedReq.post(basePath, consHeader(), '')
         // TODO: need test
         console.log(resp)
 
@@ -27,11 +27,11 @@ export namespace BlogExportApi {
 
     export async function del(id: number) {
         const url = `${basePath}/${id}`
-        await AuthedReq.del(url, consReqHeader())
+        await AuthedReq.del(url, consHeader())
     }
 
     export async function getById(id: number) {
-        const resp = await AuthedReq.get(`${basePath}/${id}`, consReqHeader())
+        const resp = await AuthedReq.get(`${basePath}/${id}`, consHeader())
         // TODO: need test
         console.log(resp)
 

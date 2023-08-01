@@ -13,8 +13,8 @@ import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { rmYfm } from '@/infra/filter/rm-yfm'
 import { PostListState } from '@/model/post-list-state'
 import { Alert } from '@/infra/alert'
-import { consUrlPara } from '@/infra/http/infra/url'
-import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
+import { consUrlPara } from '@/infra/http/infra/url-para'
+import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { AuthedReq } from '@/infra/http/authed-req'
 
 let newPostTemplate: PostEditDto | undefined
@@ -34,7 +34,7 @@ export namespace PostService {
             ['cid', categoryId.toString()]
         )
         const url = `${getBaseUrl()}/api/posts/list?${para}`
-        const resp = await AuthedReq.get(url, consReqHeader())
+        const resp = await AuthedReq.get(url, consHeader())
         const listModel = <PostListModel>JSON.parse(resp)
 
         const pageModel = new PageModel(
@@ -84,7 +84,7 @@ export namespace PostService {
         if (postIds.length === 1) {
             const url = `${getBaseUrl()}/api/posts/${postIds[0]}`
             try {
-                await AuthedReq.del(url, consReqHeader())
+                await AuthedReq.del(url, consHeader())
             } catch (e) {
                 void Alert.err(`删除博文失败: ${<string>e}`)
             }
@@ -92,7 +92,7 @@ export namespace PostService {
             const para = consUrlPara(...postIds.map(id => ['postIds', id.toString()] as [string, string]))
             const url = `${getBaseUrl()}/api/bulk-operation/post?${para}`
             try {
-                await AuthedReq.del(url, consReqHeader())
+                await AuthedReq.del(url, consHeader())
             } catch (e) {
                 void Alert.err(`删除博文失败: ${<string>e}`)
             }
@@ -103,7 +103,7 @@ export namespace PostService {
         if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
         const url = `${getBaseUrl()}/api/posts`
         const body = JSON.stringify(post)
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const resp = await AuthedReq.post(url, header, body)
 
         return PostUpdatedResponse.parse(JSON.parse(resp))

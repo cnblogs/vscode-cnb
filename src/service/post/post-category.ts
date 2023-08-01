@@ -1,9 +1,9 @@
 import { PostCategory, PostCategoryAddDto } from '@/model/post-category'
 import { globalCtx } from '@/ctx/global-ctx'
 import { AuthedReq } from '@/infra/http/authed-req'
-import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
+import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { Alert } from '@/infra/alert'
-import { consUrlPara } from '@/infra/http/infra/url'
+import { consUrlPara } from '@/infra/http/infra/url-para'
 
 let cache: Map<number, PostCategory[]> | null = null
 
@@ -30,7 +30,7 @@ export namespace PostCategoryService {
         const para = consUrlPara(['parent', parentId <= 0 ? '' : `${parentId}`])
         const url = `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${para}`
         try {
-            const resp = await AuthedReq.get(url, consReqHeader())
+            const resp = await AuthedReq.get(url, consHeader())
             let { categories } = <{ categories: PostCategory[] }>JSON.parse(resp)
             categories = categories.map(x => Object.assign(new PostCategory(), x))
             map.set(parentId, categories)
@@ -46,7 +46,7 @@ export namespace PostCategoryService {
         const url = `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${para}`
 
         try {
-            const resp = await AuthedReq.get(url, consReqHeader())
+            const resp = await AuthedReq.get(url, consHeader())
             const { parent } = <{ parent?: PostCategory | null }>JSON.parse(resp)
             return Object.assign(new PostCategory(), parent)
         } catch (e) {
@@ -57,7 +57,7 @@ export namespace PostCategoryService {
 
     export async function newCategory(dto: PostCategoryAddDto) {
         const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/1`
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const body = JSON.stringify(dto)
 
         await AuthedReq.post(url, header, body)
@@ -65,7 +65,7 @@ export namespace PostCategoryService {
 
     export async function updateCategory(category: PostCategory) {
         const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/${category.categoryId}`
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const body = JSON.stringify(category)
 
         await AuthedReq.put(url, header, body)
@@ -75,7 +75,7 @@ export namespace PostCategoryService {
         if (categoryId <= 0) throw Error('Invalid param categoryId')
 
         const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/${categoryId}`
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
 
         try {
             await AuthedReq.del(url, header)

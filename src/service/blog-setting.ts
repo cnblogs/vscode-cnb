@@ -1,7 +1,7 @@
 import { BlogSetting, BlogSiteDto, BlogSiteExtendDto } from '@/model/blog-setting'
 import { globalCtx } from '@/ctx/global-ctx'
 import { AuthedReq } from '@/infra/http/authed-req'
-import { consReqHeader } from '@/infra/http/infra/header'
+import { consHeader } from '@/infra/http/infra/header'
 import { Alert } from '@/infra/alert'
 
 let cache: BlogSetting | null = null
@@ -13,7 +13,7 @@ export namespace BlogSettingService {
         const url = `${globalCtx.config.apiBaseUrl}/api/settings`
 
         try {
-            const resp = await AuthedReq.get(url, consReqHeader())
+            const resp = await AuthedReq.get(url, consHeader())
             const data = JSON.parse(resp) as { blogSite: BlogSiteDto; extend: BlogSiteExtendDto }
             const setting = new BlogSetting(data.blogSite, data.extend)
             cache ??= setting

@@ -1,14 +1,14 @@
 import { Ing, IngComment, IngPublishModel, IngType } from '@/model/ing'
 import { Alert } from '@/infra/alert'
 import { globalCtx } from '@/ctx/global-ctx'
-import { consUrlPara } from '@/infra/http/infra/url'
-import { consReqHeader, ReqHeaderKey } from '@/infra/http/infra/header'
+import { consUrlPara } from '@/infra/http/infra/url-para'
+import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { AuthedReq } from '@/infra/http/authed-req'
 import ContentType = ReqHeaderKey.ContentType
 
 async function getIngComment(id: number) {
     const url = `${globalCtx.config.openApiUrl}/api/statuses/${id}/comments`
-    const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+    const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
     const resp = await AuthedReq.get(url, header)
     const list = JSON.parse(resp) as []
     return list.map(IngComment.parse)
@@ -17,7 +17,7 @@ async function getIngComment(id: number) {
 export namespace IngApi {
     export async function publishIng(ing: IngPublishModel): Promise<boolean> {
         const url = `${globalCtx.config.openApiUrl}/api/statuses`
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const body = JSON.stringify(ing)
 
         try {
@@ -31,7 +31,7 @@ export namespace IngApi {
 
     export async function list({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}) {
         const para = consUrlPara(['pageIndex', `${pageIndex}`], ['pageSize', `${pageSize}`])
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
 
         const url = `${globalCtx.config.openApiUrl}/api/statuses/@${type}?${para}`
 
@@ -66,7 +66,7 @@ export namespace IngApi {
         }
     ) {
         const url = `${globalCtx.config.openApiUrl}/api/statuses/${ingId}/comments`
-        const header = consReqHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const body = JSON.stringify(data)
 
         try {

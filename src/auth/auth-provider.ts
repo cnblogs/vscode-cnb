@@ -20,7 +20,7 @@ import { extUriHandler } from '@/infra/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
 import { TokenInfo } from '@/model/token-info'
 import { Optional } from 'utility-types'
-import { consUrlPara } from '@/infra/http/infra/url'
+import { consUrlPara } from '@/infra/http/infra/url-para'
 import { RsRand } from '@/wasm'
 
 export class AuthProvider implements AuthenticationProvider, Disposable {
