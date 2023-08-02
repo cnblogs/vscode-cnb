@@ -96,7 +96,7 @@ jobs:
 
       - name: Package
         run: |
-          npx @vscode/vsce package --target ${{ steps.targeting.outputs.target }} --no-git-tag-version --no-update-package-json ${{ steps.version.outputs.VERSION }}
+          npx @vscode/vsce package --target ${{ steps.target.outputs.target }} --no-git-tag-version --no-update-package-json ${{ steps.version.outputs.VERSION }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
