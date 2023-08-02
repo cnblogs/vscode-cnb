@@ -97,10 +97,7 @@ jobs:
 
       - name: Package
         run: |
-          npx @vscode/vsce package \
-            --target ${{ steps.target.outputs.target }} \
-            --no-git-tag-version \
-            --no-update-package-json ${{ steps.version.outputs.VERSION }}
+          npx @vscode/vsce package --target ${{ steps.target.outputs.target }} --no-git-tag-version --no-update-package-json ${{ steps.version.outputs.VERSION }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -114,6 +111,4 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
       - run: |
-          npx @vscode/vsce publish \
-            --packagePath $(find . -iname *.vsix) \
-            -p ${{ secrets.VSCETOKEN }}
+          npx @vscode/vsce publish --packagePath $(find . -iname *.vsix) -p ${{ secrets.VSCETOKEN }}
