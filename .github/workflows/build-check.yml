@@ -182,11 +182,15 @@ jobs:
       - name: Target
         id: target
         shell: bash
-        run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_OUTPUT
+        run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Package
         run: |
-          npx @vscode/vsce package --pre-release --target ${{ steps.target.outputs.target }} --no-update-package-json --no-git-tag-version ${{ steps.version.outputs.VERSION }}
+          npx @vscode/vsce package \
+            --pre-release \
+            --target ${{ steps.target.outputs.target }} \
+            --no-update-package-json \
+            --no-git-tag-version ${{ steps.version.outputs.VERSION }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
