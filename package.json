@@ -1302,11 +1302,11 @@
         "viewsWelcome": [
             {
                 "view": "cnblogs-authorize",
-                "contents": "欢迎使用博客园 VSCode 插件!请先登录授权!"
+                "contents": "欢迎使用博客园 VSCode 客户端, 请先登录授权!"
             },
             {
                 "view": "cnblogs-authorize",
-                "contents": "[Login](command:vscode-cnb.login)"
+                "contents": "[从浏览器登录](command:vscode-cnb.login)  \n[Access Token 登录](command:vscode-cnb.patLogin)"
             },
             {
                 "view": "vscode-cnb-workspace",
