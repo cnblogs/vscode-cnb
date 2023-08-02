@@ -15,7 +15,6 @@ jobs:
   build:
     strategy:
       matrix:
-        node-version: [ 16.x ]
         include:
           - os: windows-latest
             platform: win32
@@ -62,7 +61,7 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
           cache: 'npm'
 
       - name: Step rust toolchain
@@ -78,7 +77,7 @@ jobs:
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: ". -> rs"
+          workspaces: "rs"
 
       - name: Install
         run: npm ci

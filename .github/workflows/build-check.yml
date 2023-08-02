@@ -34,7 +34,7 @@ jobs:
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: ". -> rs"
+          workspaces: "rs"
 
       - name: Fmt
         working-directory: rs
@@ -56,10 +56,6 @@ jobs:
     permissions: read-all
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [ 16.x ]
-
     steps:
       - name: Check out
         uses: actions/checkout@v3
@@ -69,7 +65,7 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
           cache: 'npm'
 
       - name: Step rust toolchain
@@ -85,7 +81,7 @@ jobs:
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: ". -> rs"
+          workspaces: "rs"
 
       - name: Build wasm
         run: ./build-wasm.sh
@@ -102,7 +98,6 @@ jobs:
   package:
     strategy:
       matrix:
-        node-version: [ 16.x ]
         include:
           - os: windows-latest
             platform: win32
@@ -156,7 +151,7 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
           cache: 'npm'
 
       - name: Step rust toolchain
@@ -172,7 +167,7 @@ jobs:
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: ". -> rs"
+          workspaces: "rs"
 
       - name: Install
         run: npm ci
