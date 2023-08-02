@@ -1,6 +1,6 @@
-use crate::infra::result::IntoResult;
+use crate::infra::result::{homo_result_string, HomoResult, IntoResult};
 use crate::panic_hook;
-use alloc::string::{String, ToString};
+use alloc::string::String;
 use anyhow::Result;
 use base64::{engine::general_purpose, Engine as _};
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -16,12 +16,11 @@ impl RsBase64 {
         general_purpose::STANDARD.encode(text)
     }
     #[wasm_bindgen(js_name = decode)]
-    pub fn export_decode(base64: &str) -> Result<String, String> {
+    pub fn export_decode(base64: &str) -> HomoResult<String> {
         panic_hook!();
         let text = decode(base64);
-        let Ok(text) = text else { return text.unwrap_err().to_string().into_err(); };
 
-        text.into_ok()
+        homo_result_string(text)
     }
 
     #[wasm_bindgen(js_name = encodeUrl)]
@@ -30,12 +29,11 @@ impl RsBase64 {
         base64url::encode(text)
     }
     #[wasm_bindgen(js_name = decodeUrl)]
-    pub fn export_decode_url(base64url: &str) -> Result<String, String> {
+    pub fn export_decode_url(base64url: &str) -> HomoResult<String> {
         panic_hook!();
         let text = decode_url(base64url);
-        let Ok(text) = text else { return text.unwrap_err().to_string().into_err(); };
 
-        text.into_ok()
+        homo_result_string(text)
     }
 }
 
@@ -55,6 +53,7 @@ pub fn decode_url(base64url: &str) -> Result<String> {
 
 #[test]
 fn test_encode_decode() {
+    use alloc::string::ToString;
     let text = "hola".to_string();
     let base64 = RsBase64::export_encode(text.clone());
     assert_eq!(base64, "aG9sYQ==");

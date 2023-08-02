@@ -1,3 +1,6 @@
+use alloc::string::{String, ToString};
+use anyhow::Result;
+
 pub trait IntoResult
 where
     Self: Sized,
@@ -13,3 +16,15 @@ where
 }
 
 impl<T> IntoResult for T {}
+
+pub type HomoResult<T> = Result<T, T>;
+
+pub fn homo_result_string<E>(r: Result<impl Into<String>, E>) -> HomoResult<String>
+where
+    E: ToString,
+{
+    match r {
+        Ok(o) => Ok(o.into()),
+        Err(e) => Ok(e.to_string()),
+    }
+}

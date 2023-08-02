@@ -13,19 +13,9 @@ import { PostListCfg } from '@/ctx/cfg/post-list'
 export type PostListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
 
 export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
-    private static _instance: PostDataProvider | null = null
-
     protected _pagedPost?: PageModel<Post>
     protected _onDidChangeTreeData = new EventEmitter<PostListTreeItem | undefined>()
-
     private _searchResultEntry: PostSearchResultEntry | null = null
-
-    protected constructor() {}
-
-    static get instance() {
-        this._instance ??= new PostDataProvider()
-        return this._instance
-    }
 
     get onDidChangeTreeData() {
         return this._onDidChangeTreeData.event
@@ -113,4 +103,4 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
     }
 }
 
-export const postDataProvider = PostDataProvider.instance
+export const postDataProvider = new PostDataProvider()

@@ -33,6 +33,8 @@ jobs:
 
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "rs"
 
       - name: Fmt
         working-directory: rs
@@ -54,10 +56,6 @@ jobs:
     permissions: read-all
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [ 16.x ]
-
     steps:
       - name: Check out
         uses: actions/checkout@v3
@@ -67,7 +65,7 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
           cache: 'npm'
 
       - name: Step rust toolchain
@@ -82,6 +80,8 @@ jobs:
 
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "rs"
 
       - name: Build wasm
         run: ./build-wasm.sh
@@ -98,7 +98,6 @@ jobs:
   package:
     strategy:
       matrix:
-        node-version: [ 16.x ]
         include:
           - os: windows-latest
             platform: win32
@@ -152,7 +151,7 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
           cache: 'npm'
 
       - name: Step rust toolchain
@@ -167,12 +166,18 @@ jobs:
 
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "rs"
 
-      - name: Install
+      - name: NPM install
         run: npm ci
 
-      - name: Build
-        run: ./build.sh ${{ secrets.OAUTHCLIENTID }} ${{ secrets.OAUTHCLIENTSECRET }}
+      - name: Build wasm
+        run: wasm-pack build rs --target=nodejs --out-dir ../src/wasm
+
+      - name: Build node
+        run: |
+          npm run package -- --env CLIENTID="${{ secrets.OAUTHCLIENTID }}" --env CLIENTSECRET="${{ secrets.OAUTHCLIENTSECRET }}" && npm run ui:package
 
       - name: Version
         id: version
@@ -182,11 +187,11 @@ jobs:
       - name: Target
         id: target
         shell: bash
-        run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_OUTPUT
+        run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Package
         run: |
-          npx @vscode/vsce package --pre-release --target ${{ steps.targeting.outputs.target }} --no-update-package-json --no-git-tag-version ${{ steps.version.outputs.VERSION }}
+          npx @vscode/vsce package --pre-release --target ${{ steps.target.outputs.target }} --no-update-package-json --no-git-tag-version ${{ steps.version.outputs.VERSION }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3

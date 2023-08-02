@@ -1,4 +1,3 @@
-import { openIngSite } from '@/cmd/open/open-ing-site'
 import { switchIngType } from '@/cmd/ing/select-ing-type'
 import { refreshIngList } from '@/cmd/ing/refresh-ing-list'
 import { goIngList1stPage, goIngListNextPage, goIngListPrevPage } from '@/cmd/ing/switch-ing-list-page'
@@ -117,7 +116,7 @@ export function setupExtCmd() {
         regCmd(withAppName('.ing-list.previous'), goIngListPrevPage),
         regCmd(withAppName('.ing-list.first'), goIngList1stPage),
         regCmd(withAppName('.ing-list.switch-type'), switchIngType),
-        regCmd(withAppName('.ing-list.open-in-browser'), openIngSite),
+        regCmd(withAppName('.ing-list.open-in-browser'), openCnbIng),
         // blog export
         regCmd(withAppName('.blog-export.refresh-record'), refreshExportRecord),
         regCmd(withAppName('.blog-export.open-local-export'), openLocalExport),
