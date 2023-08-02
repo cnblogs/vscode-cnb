@@ -25,6 +25,6 @@ where
 {
     match r {
         Ok(o) => Ok(o.into()),
-        Err(e) => Ok(e.to_string()),
+        Err(e) => Err(e.to_string()),
     }
 }
