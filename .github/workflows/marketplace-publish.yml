@@ -82,8 +82,12 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Build
-        run: ./build.sh ${{ secrets.OAUTHCLIENTID }} ${{ secrets.OAUTHCLIENTSECRET }}
+      - name: Build wasm
+        run: wasm-pack build rs --target=nodejs --out-dir ../src/wasm
+
+      - name: Build node
+        run: |
+          npm run package -- --env CLIENTID="${{ secrets.OAUTHCLIENTID }}" --env CLIENTSECRET="${{ secrets.OAUTHCLIENTSECRET }}" && npm run ui:package
 
       - name: Version
         id: version
