@@ -79,7 +79,7 @@ jobs:
         with:
           workspaces: "rs"
 
-      - name: Install
+      - name: NPM install
         run: npm ci
 
       - name: Build wasm
