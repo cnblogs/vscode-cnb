@@ -2,6 +2,7 @@ import { SiteCategory } from '@/model/site-category'
 import { globalCtx } from '@/ctx/global-ctx'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { consHeader } from '@/infra/http/infra/header'
+import { Alert } from "@/infra/alert"
 
 let cached: SiteCategory[] | null = null
 
@@ -16,7 +17,7 @@ export namespace SiteCategoryService {
             cached = list
             return list
         } catch (e) {
-            console.log(`获取随笔分类失败: ${<string>e}`)
+            void Alert.err(`获取随笔分类失败: ${<string>e}`)
             return []
         }
     }

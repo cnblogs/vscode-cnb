@@ -36,7 +36,7 @@ export namespace Oauth {
             const resp = await Req.post(url, header, body)
             return <TokenInfo>objectKeys2camelCase(JSON.parse(resp))
         } catch (e) {
-            console.log(`获取 Token 失败: ${<string>e}`)
+            void Alert.err(`获取 Token 失败: ${<string>e}`)
             throw e
         }
     }

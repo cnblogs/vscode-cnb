@@ -19,9 +19,6 @@ export namespace BlogExportApi {
 
     export async function create() {
         const resp = await AuthedReq.post(basePath, consHeader(), '')
-        // TODO: need test
-        console.log(resp)
-
         return <BlogExportRecord>JSON.parse(resp)
     }
 
@@ -32,9 +29,6 @@ export namespace BlogExportApi {
 
     export async function getById(id: number) {
         const resp = await AuthedReq.get(`${basePath}/${id}`, consHeader())
-        // TODO: need test
-        console.log(resp)
-
         return <BlogExportRecord>JSON.parse(resp)
     }
 
