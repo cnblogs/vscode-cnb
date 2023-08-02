@@ -33,6 +33,8 @@ jobs:
 
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> rs"
 
       - name: Fmt
         working-directory: rs
@@ -82,6 +84,8 @@ jobs:
 
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> rs"
 
       - name: Build wasm
         run: ./build-wasm.sh
@@ -167,6 +171,8 @@ jobs:
 
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> rs"
 
       - name: Install
         run: npm ci

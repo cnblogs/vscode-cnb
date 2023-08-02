@@ -77,6 +77,8 @@ jobs:
 
       - name: Setup rust cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> rs"
 
       - name: Install
         run: npm ci
