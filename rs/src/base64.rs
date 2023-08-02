@@ -53,7 +53,8 @@ pub fn decode_url(base64url: &str) -> Result<String> {
 
 #[test]
 fn test_encode_decode() {
-    let text = "hola".into();
+    use alloc::string::ToString;
+    let text = "hola".to_string();
     let base64 = RsBase64::export_encode(text.clone());
     assert_eq!(base64, "aG9sYQ==");
     let decoded = RsBase64::export_decode(&base64);

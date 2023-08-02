@@ -7,7 +7,6 @@ import { BlogExportRecordTreeItem, DownloadedExportTreeItem } from '@/tree-view/
 import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
-import { window } from 'vscode'
 
 function parseInput(input: unknown): DownloadedExportTreeItem | BlogExportRecordTreeItem | null | undefined {
     return input instanceof DownloadedExportTreeItem || input instanceof BlogExportRecordTreeItem ? input : null

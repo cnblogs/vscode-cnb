@@ -4,7 +4,7 @@ import { Alert } from '@/infra/alert'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { PostService } from '@/service/post/post'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
-import { env, MessageItem, Uri, window } from 'vscode'
+import { env, MessageItem, Uri } from 'vscode'
 
 type LinkFormat = 'markdown' | 'raw' | 'id'
 
