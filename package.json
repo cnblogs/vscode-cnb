@@ -1,7 +1,7 @@
 {
     "name": "vscode-cnb",
-    "displayName": "博客园 VSCode 扩展",
-    "description": "VSCode extension for CNBlogs",
+    "displayName": "博客园 VSCode 客户端",
+    "description": "VSCode extension for cnblogs",
     "version": "0.0.1",
     "license": "LICENSE.txt",
     "preview": false,
