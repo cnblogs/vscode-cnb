@@ -63,10 +63,12 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
 
     private async confirm() {
         const options = ['确定']
+        const titles = this.selections.map(x => x.title)
+        const info = `分类 ${titles.join(', ')} 将被删除`
         const clicked = await Alert.warn(
             '确定要删除这些博文分类吗',
             {
-                detail: `${this.selections.map(x => `${x.title}`).join(', ')} 将被删除`,
+                detail: info,
                 modal: true,
             } as MessageOptions,
             ...options
