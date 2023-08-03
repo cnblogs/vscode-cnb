@@ -10,7 +10,6 @@ export class AuthSession implements AuthenticationSession {
         public readonly account: AccountInfo,
         public readonly id = '',
         public readonly accessToken = '',
-        public readonly refreshToken = '',
         public readonly scopes: readonly string[] = []
     ) {}
 

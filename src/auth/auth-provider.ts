@@ -132,7 +132,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
                     const token = await Oauth.fetchToken(verifyCode, authCode)
 
-                    const authSession = await this.onAccessTokenGranted(token, {
+                    const authSession = await this.onAccessTokenGranted(token.accessToken, {
                         cancelToken: cancelTokenSrc.token,
                         onStateChange(state) {
                             progress.report({ message: state })
@@ -174,7 +174,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     protected async getAllSessions(): Promise<AuthSession[]> {
         const legacyToken = LegacyTokenStore.getAccessToken()
         if (legacyToken != null) {
-            await this.onAccessTokenGranted({ accessToken: legacyToken }, { shouldFireSessionAddedEvent: false })
+            await this.onAccessTokenGranted(legacyToken, { shouldFireSessionAddedEvent: false })
                 .then(undefined, console.warn)
                 .finally(() => void LegacyTokenStore.remove())
         }
@@ -198,7 +198,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     private parseOauthCallbackUri = (uri: Uri) => new URLSearchParams(`?${uri.query}`).get('code') // authorizationCode
 
     private async onAccessTokenGranted(
-        { accessToken, refreshToken }: TokenInfo,
+        accessToken: string,
         {
             cancelToken,
             onStateChange,
@@ -228,7 +228,6 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
                 return AuthSession.from({
                     accessToken,
-                    refreshToken,
                     account: AccountInfo.from(spec),
                     scopes: this.ensureScopes(null),
                     id: `${this.providerId}-${spec.account_id}`,

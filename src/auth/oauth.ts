@@ -2,7 +2,6 @@
 import { TokenInfo } from '@/model/token-info'
 import { AccountInfo } from '@/auth/account-info'
 import { globalCtx } from '@/ctx/global-ctx'
-import { objectKeys2camelCase } from '@/infra/convert/object-keys-to-camel-case'
 import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { Req } from '@/infra/http/req'
 import { Alert } from '@/infra/alert'
@@ -34,7 +33,7 @@ export namespace Oauth {
 
         try {
             const resp = await Req.post(url, header, body)
-            return <TokenInfo>objectKeys2camelCase(JSON.parse(resp))
+            return TokenInfo.fromResp(resp)
         } catch (e) {
             void Alert.err(`获取 Token 失败: ${<string>e}`)
             throw e
