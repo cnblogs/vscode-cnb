@@ -1,6 +1,7 @@
 export namespace ReqHeaderKey {
     export const CONTENT_TYPE = 'Content-Type'
     export const AUTHORIZATION = 'Authorization'
+    export const AUTHORIZATION_TYPE = 'Authorization-Type'
 
     export enum ContentType {
         appJson = 'application/json',

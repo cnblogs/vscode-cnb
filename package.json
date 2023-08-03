@@ -43,7 +43,7 @@
         "onView:cnblogs-post-list",
         "onView:vscode-cnb-workspace",
         "onCommand:vscode-cnb.open-workspace",
-        "onCommand:vscode-cnb.login",
+        "onCommand:vscode-cnb.webLogin",
         "onCommand:vscode-cnb.logout",
         "onCommand:vscode-cnb.ing-publish-select"
     ],
@@ -125,7 +125,7 @@
             {
                 "title": "登录到博客园",
                 "enablement": "!vscode-cnb.isAuthorized",
-                "command": "vscode-cnb.login"
+                "command": "vscode-cnb.webLogin"
             },
             {
                 "command": "vscode-cnb.logout",
@@ -969,7 +969,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.login",
+                    "command": "vscode-cnb.webLogin",
                     "when": "false"
                 },
                 {
@@ -1166,7 +1166,7 @@
             ],
             "editor/context": [
                 {
-                    "command": "vscode-cnb.login",
+                    "command": "vscode-cnb.webLogin",
                     "when": "!vscode-cnb.isAuthorized",
                     "group": "cnblogs@0"
                 },
@@ -1235,7 +1235,7 @@
             ],
             "explorer/context": [
                 {
-                    "command": "vscode-cnb.login",
+                    "command": "vscode-cnb.webLogin",
                     "when": "!vscode-cnb.isAuthorized",
                     "group": "cnblogs@1"
                 },
@@ -1306,7 +1306,7 @@
             },
             {
                 "view": "cnblogs-authorize",
-                "contents": "[从浏览器登录](command:vscode-cnb.login)  \n[Access Token 登录](command:vscode-cnb.patLogin)"
+                "contents": "[从浏览器登录](command:vscode-cnb.webLogin)  \n[个人访问令牌登录](command:vscode-cnb.patLogin)"
             },
             {
                 "view": "vscode-cnb-workspace",

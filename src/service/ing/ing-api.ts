@@ -8,8 +8,7 @@ import ContentType = ReqHeaderKey.ContentType
 
 async function getIngComment(id: number) {
     const url = `${globalCtx.config.openApiUrl}/api/statuses/${id}/comments`
-    const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
-    const resp = await AuthedReq.get(url, header)
+    const resp = await AuthedReq.get(url, consHeader())
     const list = JSON.parse(resp) as []
     return list.map(IngComment.parse)
 }
@@ -31,13 +30,11 @@ export namespace IngApi {
 
     export async function list({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}) {
         const para = consUrlPara(['pageIndex', `${pageIndex}`], ['pageSize', `${pageSize}`])
-        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
-
         const url = `${globalCtx.config.openApiUrl}/api/statuses/@${type}?${para}`
 
         let list: Ing[]
         try {
-            const resp = await AuthedReq.get(url, header)
+            const resp = await AuthedReq.get(url, consHeader())
             const arr = JSON.parse(resp) as unknown[]
             list = arr.map(Ing.parse)
         } catch (e) {

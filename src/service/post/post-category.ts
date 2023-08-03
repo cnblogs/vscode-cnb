@@ -75,10 +75,9 @@ export namespace PostCategoryService {
         if (categoryId <= 0) throw Error('Invalid param categoryId')
 
         const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/${categoryId}`
-        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
 
         try {
-            await AuthedReq.del(url, header)
+            await AuthedReq.del(url, consHeader())
         } catch (e) {
             void Alert.err(`删除分类失败: ${<string>e}`)
         }

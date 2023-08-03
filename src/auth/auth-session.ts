@@ -14,6 +14,9 @@ export class AuthSession implements AuthenticationSession {
     ) {}
 
     get isExpired() {
+        // TODO: need better solution
+        if (this.accessToken.length === 64) return false
+
         if (this._parsedAccessToken == null) {
             const buf = Buffer.from(this.accessToken.split('.')[1], 'base64')
             this._parsedAccessToken ??= JSON.parse(buf.toString())

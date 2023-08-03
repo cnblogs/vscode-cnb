@@ -1,6 +1,6 @@
 import { AccountInfo } from './account-info'
 import { globalCtx } from '@/ctx/global-ctx'
-import { authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
+import { window, authentication, AuthenticationGetSessionOptions, Disposable, InputBoxOptions } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
@@ -37,8 +37,22 @@ export namespace AccountManagerNg {
         return authSession
     }
 
-    export function login() {
+    export function webLogin() {
         return ensureSession({ createIfNone: false, forceNewSession: true })
+    }
+
+    export async function patLogin() {
+        const opt = {
+            title: '请输入您的个人访问令牌 (PAT)',
+            prompt: '您可以从账户设置中获取个人访问令牌:\nhttps://account.cnblogs.com/settings/account/personal-access-token',
+            password: true,
+        } as InputBoxOptions
+        const pat = await window.showInputBox(opt)
+        if (pat === undefined) return
+
+        await authProvider.onAccessTokenGranted(pat)
+        await ensureSession()
+        await AccountManagerNg.updateAuthStatus()
     }
 
     export async function logout() {

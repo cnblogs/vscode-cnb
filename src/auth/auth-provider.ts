@@ -166,35 +166,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         this._sessionChangeEmitter.fire({ removed: data.remove, added: undefined, changed: undefined })
     }
 
-    dispose() {
-        this._disposable.dispose()
-    }
-
-    protected async getAllSessions(): Promise<AuthSession[]> {
-        const legacyToken = LegacyTokenStore.getAccessToken()
-        if (legacyToken != null) {
-            await this.onAccessTokenGranted(legacyToken, { shouldFireSessionAddedEvent: false })
-                .then(undefined, console.warn)
-                .finally(() => void LegacyTokenStore.remove())
-        }
-
-        if (this._allSessions == null || this._allSessions.length <= 0) {
-            const storage = await globalCtx.secretsStorage.get(this.sessionStorageKey)
-            const sessions = JSON.parse(storage ?? '[]') as AuthSession[] | null | undefined
-            this._allSessions = isArray(sessions) ? sessions.map(x => AuthSession.from(x)) : []
-        }
-
-        return this._allSessions
-    }
-
-    private ensureScopes(
-        scopes: string[] | null | undefined,
-        { default: defaultScopes = this.allScopes } = {}
-    ): string[] {
-        return scopes == null || scopes.length <= 0 ? defaultScopes : scopes
-    }
-
-    private async onAccessTokenGranted(
+    async onAccessTokenGranted(
         accessToken: string,
         {
             cancelToken,
@@ -256,6 +228,34 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         if (session == null) throw new Error('Failed to create session')
 
         return session
+    }
+
+    dispose() {
+        this._disposable.dispose()
+    }
+
+    protected async getAllSessions(): Promise<AuthSession[]> {
+        const legacyToken = LegacyTokenStore.getAccessToken()
+        if (legacyToken != null) {
+            await this.onAccessTokenGranted(legacyToken, { shouldFireSessionAddedEvent: false })
+                .then(undefined, console.warn)
+                .finally(() => void LegacyTokenStore.remove())
+        }
+
+        if (this._allSessions == null || this._allSessions.length <= 0) {
+            const storage = await globalCtx.secretsStorage.get(this.sessionStorageKey)
+            const sessions = JSON.parse(storage ?? '[]') as AuthSession[] | null | undefined
+            this._allSessions = isArray(sessions) ? sessions.map(x => AuthSession.from(x)) : []
+        }
+
+        return this._allSessions
+    }
+
+    private ensureScopes(
+        scopes: string[] | null | undefined,
+        { default: defaultScopes = this.allScopes } = {}
+    ): string[] {
+        return scopes == null || scopes.length <= 0 ? defaultScopes : scopes
     }
 }
 

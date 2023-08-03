@@ -56,7 +56,8 @@ export function setupExtCmd() {
 
     const tokens = [
         // auth
-        regCmd(withAppName('.login'), AccountManagerNg.login),
+        regCmd(withAppName('.webLogin'), AccountManagerNg.webLogin),
+        regCmd(withAppName('.patLogin'), AccountManagerNg.patLogin),
         regCmd(withAppName('.logout'), AccountManagerNg.logout),
         // post-list
         regCmd(withAppName('.refresh-post-list'), refreshPostList),
