@@ -83,7 +83,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             .filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
     }
 
-    createSession(scopes: string[]) {
+    createSession(scopes: string[]): Thenable<AuthSession> {
         const parsedScopes = this.ensureScopes(scopes)
         const options = {
             title: `${globalCtx.displayName} - 登录`,
@@ -104,52 +104,51 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             30 * 60 * 1000
         ) // 30 min
 
-        const disposable: Disposable[] = [extUriHandler]
-
-        return window.withProgress<AuthSession>(options, async (progress, cancelToken) => {
+        return window.withProgress(options, async (progress, cancelToken) => {
             progress.report({ message: '等待用户在浏览器中进行授权...' })
 
+            cancelToken.onCancellationRequested(() => cancelTokenSrc.cancel())
+
+            const [verifyCode, challengeCode] = genVerifyChallengePair()
+
             const fut = new Promise<AuthSession>((resolve, reject) => {
-                disposable.push(cancelToken.onCancellationRequested(() => cancelTokenSrc.cancel()))
-                disposable.push(
-                    cancelTokenSrc.token.onCancellationRequested(() => {
-                        reject(`${isTimeout ? '由于超时, ' : ''}登录操作已取消`)
-                    })
-                )
-                disposable.push(cancelTokenSrc)
-
-                const [verifyCode, challengeCode] = genVerifyChallengePair()
-
-                extUriHandler.onUri(async uri => {
-                    if (cancelTokenSrc.token.isCancellationRequested) return
-
-                    const authCode = this.parseOauthCallbackUri(uri)
-                    if (authCode == null) return
-
-                    progress.report({ message: '已获得授权, 正在获取令牌...' })
-
-                    console.log(await globalCtx.extCtx.secrets.get('cnblogs.sessions'))
-
-                    const token = await Oauth.fetchToken(verifyCode, authCode)
-
-                    const authSession = await this.onAccessTokenGranted(token.accessToken, {
-                        cancelToken: cancelTokenSrc.token,
-                        onStateChange(state) {
-                            progress.report({ message: state })
-                        },
-                    })
-
-                    resolve(authSession)
+                cancelTokenSrc.token.onCancellationRequested(() => {
+                    reject(`${isTimeout ? '由于超时, ' : ''}登录操作已取消`)
                 })
 
-                void browserSignIn(challengeCode, parsedScopes)
+                const onUri = async (uri: Uri) => {
+                    progress.report({ message: '已授权, 正在获取 Token...' })
+
+                    const authCode = new URLSearchParams(`?${uri.query}`).get('code')
+                    if (authCode == null) {
+                        reject('授权失败: 授权码异常')
+                        extUriHandler.reset()
+                        return
+                    }
+
+                    try {
+                        const token = await Oauth.fetchToken(verifyCode, authCode)
+                        const authSession = await this.onAccessTokenGranted(token.accessToken, {
+                            cancelToken: cancelTokenSrc.token,
+                            onStateChange(state) {
+                                progress.report({ message: state })
+                            },
+                        })
+
+                        resolve(authSession)
+                    } catch (e) {
+                        reject(e)
+                    } finally {
+                        extUriHandler.reset()
+                    }
+                }
+
+                extUriHandler.onUri(onUri)
             })
 
-            try {
-                return await fut
-            } finally {
-                Disposable.from(...disposable).dispose()
-            }
+            await browserSignIn(challengeCode, parsedScopes)
+
+            return fut
         })
     }
 
@@ -194,8 +193,6 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     ): string[] {
         return scopes == null || scopes.length <= 0 ? defaultScopes : scopes
     }
-
-    private parseOauthCallbackUri = (uri: Uri) => new URLSearchParams(`?${uri.query}`).get('code') // authorizationCode
 
     private async onAccessTokenGranted(
         accessToken: string,

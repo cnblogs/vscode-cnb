@@ -1,10 +1,16 @@
-import { Disposable, EventEmitter, ProviderResult, Uri, UriHandler, Event } from 'vscode'
+import { EventEmitter, ProviderResult, Uri, UriHandler } from 'vscode'
 import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
 
-class ExtUriHandler implements UriHandler, Disposable {
-    private _uriEventEmitter?: EventEmitter<Uri>
-    private readonly _disposable = Disposable.from(
-        this.onUri(uri => {
+class ExtUriHandler implements UriHandler {
+    private _evEmitter = new EventEmitter<Uri>()
+
+    get onUri() {
+        return this._evEmitter.event
+    }
+
+    reset() {
+        const evEmitter = new EventEmitter<Uri>()
+        evEmitter.event(uri => {
             const { path } = uri
             const splits = path.split('/')
             if (splits.length >= 3 && splits[1] === 'edit-post') {
@@ -12,25 +18,11 @@ class ExtUriHandler implements UriHandler, Disposable {
                 if (postId > 0) openPostInVscode(postId).then(undefined, () => void 0)
             }
         })
-    )
-    private _onUri?: Event<Uri>
-
-    private get uriEventEmitter() {
-        this._uriEventEmitter ??= new EventEmitter<Uri>()
-        return this._uriEventEmitter
-    }
-
-    get onUri() {
-        this._onUri ??= this.uriEventEmitter.event
-        return this._onUri
+        this._evEmitter = evEmitter
     }
 
     handleUri(uri: Uri): ProviderResult<void> {
-        this._uriEventEmitter?.fire(uri)
-    }
-
-    dispose() {
-        this._disposable.dispose()
+        this._evEmitter.fire(uri)
     }
 }
 
