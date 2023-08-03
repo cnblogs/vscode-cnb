@@ -1,7 +1,7 @@
 import { RsHttp } from '@/wasm'
 
 import fetch, { Headers, Request, Response } from 'node-fetch'
-import { mapToJson } from '@/infra/convert/mapToJson'
+import { mapToJson } from '@/infra/convert/map-to-json'
 
 /* eslint-disable */
 // @ts-ignore

@@ -65,23 +65,14 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
     if (!mappedPostFilePath) {
         // 本地存在和博文同名的文件, 询问用户是要覆盖还是同时保留两者
         if (fs.existsSync(fileUri.fsPath)) {
-            const conflictOptions = [
-                '保留本地文件(这会新建另一个文件名中包含博文id的文件)',
-                '覆盖本地文件(会导致本地文件中内容丢失)',
-            ]
-            const selectedOption = await Alert.info(
-                `无法新建博文与本地文件的关联, 文件名冲突`,
-                { detail: `本地已存在名为"${path.basename(fileUri.fsPath)}"的文件`, modal: true } as MessageOptions,
-                ...conflictOptions
+            const opt = ['保留本地文件, 以博文 ID 为文件名新建另一个文件', '覆盖本地文件']
+            const selected = await Alert.info(
+                `无法建立博文与本地文件的关联, 文件名冲突`,
+                { detail: `本地已存在名为 ${path.basename(fileUri.fsPath)} 的文件`, modal: true } as MessageOptions,
+                ...opt
             )
-            switch (selectedOption) {
-                case conflictOptions[0]:
-                    fileUri = await buildLocalPostFileUri(post, true)
-                    break
-                // 取消, 直接返回, 不进行任何操作
-                case undefined:
-                    return false
-            }
+
+            if (selected === opt[0]) fileUri = await buildLocalPostFileUri(post, true)
         }
     }
 

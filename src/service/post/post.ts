@@ -1,14 +1,9 @@
-import { Post } from '@/model/post'
+import { MyConfig, Post, PostListRespItem } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PageModel } from '@/model/page-model'
 import { PostEditDto } from '@/model/post-edit-dto'
-import { PostUpdatedResponse } from '@/model/post-updated-response'
-import { throwIfNotOkGotResponse } from '@/infra/response-err'
-import { IErrorResponse } from '@/model/error-response'
-import { PostFileMapManager } from './post-file-map'
+import { PostUpdatedResp } from '@/model/post-updated-response'
 import { ZzkSearchResult } from '@/model/zzk-search-result'
-import httpClient from '@/infra/http-client'
-import iconv from 'iconv-lite'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { rmYfm } from '@/infra/filter/rm-yfm'
 import { PostListState } from '@/model/post-list-state'
@@ -49,35 +44,23 @@ export namespace PostService {
         })
     }
 
-    export async function fetchPostEditDto(postId: number, muteErrorNotification = false) {
-        const resp = await httpClient.get(`${getBaseUrl()}/api/posts/${postId}`, {
-            throwHttpErrors: false,
-            responseType: 'buffer',
-        })
+    export async function fetchPostEditDto(postId: number) {
+        const url = `${getBaseUrl()}/api/posts/${postId}`
 
         try {
-            throwIfNotOkGotResponse(resp)
-        } catch (e) {
-            const { statusCode, errors } = e as IErrorResponse
-            if (!muteErrorNotification) {
-                if (statusCode === 404) {
-                    void Alert.err('博文不存在')
-                    const postFilePath = PostFileMapManager.getFilePath(postId)
-                    if (postFilePath) await PostFileMapManager.updateOrCreate(postId, '')
-                } else {
-                    void Alert.err(errors.join('\n'))
-                }
+            const resp = await AuthedReq.get(url, consHeader())
+
+            const { blogPost, myConfig } = <{ blogPost?: Post; myConfig?: MyConfig }>JSON.parse(resp)
+
+            if (blogPost === undefined) return
+
+            return <PostEditDto>{
+                post: Object.assign(new Post(), blogPost),
+                config: myConfig,
             }
-            return undefined
+        } catch (e) {
+            void Alert.err(`获取博文失败: ${<string>e}`)
         }
-
-        const decodedBody = iconv.decode(resp.rawBody, 'utf-8')
-
-        const { blogPost, myConfig } = JSON.parse(decodedBody) as { blogPost?: Post; myConfig?: unknown }
-
-        if (blogPost !== undefined) return new PostEditDto(Object.assign(new Post(), blogPost), myConfig)
-
-        return undefined
     }
 
     export async function deletePost(...postIds: number[]) {
@@ -106,7 +89,7 @@ export namespace PostService {
         const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const resp = await AuthedReq.post(url, header, body)
 
-        return PostUpdatedResponse.parse(JSON.parse(resp))
+        return <PostUpdatedResp>JSON.parse(resp)
     }
 
     export async function updatePostListState(state: PostListState | PageModel<Post>) {
@@ -131,10 +114,10 @@ export namespace PostService {
         newPostTemplate ??= await fetchPostEditDto(-1)
         if (newPostTemplate === undefined) return undefined
 
-        return new PostEditDto(
-            Object.assign(new Post(), newPostTemplate.post),
-            Object.assign({}, newPostTemplate.config)
-        )
+        return <PostEditDto>{
+            post: Object.assign(new Post(), newPostTemplate.post),
+            config: Object.assign({}, newPostTemplate.config),
+        }
     }
 }
 
@@ -143,7 +126,7 @@ interface PostListModel {
     categoryName: string
     pageIndex: number
     pageSize: number
-    postList: []
+    postList: PostListRespItem[]
     postsCount: number
     zzkSearchResult?: ZzkSearchResult
 }

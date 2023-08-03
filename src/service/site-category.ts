@@ -2,7 +2,7 @@ import { SiteCategory } from '@/model/site-category'
 import { globalCtx } from '@/ctx/global-ctx'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { consHeader } from '@/infra/http/infra/header'
-import { Alert } from "@/infra/alert"
+import { Alert } from '@/infra/alert'
 
 let cached: SiteCategory[] | null = null
 

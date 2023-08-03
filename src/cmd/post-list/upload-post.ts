@@ -92,11 +92,11 @@ export async function uploadPost(input: Post | PostTreeItem | PostEditDto | unde
 
     let post: Post | undefined
 
-    if (input instanceof PostEditDto) {
-        post = input.post
-    } else {
+    if (input instanceof Post) {
         const dto = await PostService.fetchPostEditDto(input.id)
         post = dto?.post
+    } else {
+        post = input.post
     }
 
     if (post === undefined) return
@@ -211,11 +211,11 @@ export async function uploadPostNoConfirm(input: Post | PostTreeItem | PostEditD
 
     let post: Post | undefined
 
-    if (input instanceof PostEditDto) {
-        post = input.post
-    } else {
+    if (input instanceof Post) {
         const dto = await PostService.fetchPostEditDto(input.id)
         post = dto?.post
+    } else {
+        post = input.post
     }
 
     if (post === undefined) return

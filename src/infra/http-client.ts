@@ -1,4 +1,4 @@
-import { accountManager } from '@/auth/account-manager'
+import { AccountManagerNg } from '@/auth/account-manager'
 import got, { BeforeRequestHook } from 'got'
 import { isString } from 'lodash-es'
 import { ReqHeaderKey } from '@/infra/http/infra/header'
@@ -11,7 +11,7 @@ const bearerTokenHook: BeforeRequestHook = async opt => {
     const keyIndex = headerKeys.findIndex(x => x.toLowerCase() === ReqHeaderKey.AUTHORIZATION.toLowerCase())
 
     if (keyIndex < 0) {
-        const token = await accountManager.acquireToken()
+        const token = await AccountManagerNg.acquireToken()
 
         if (isString(token)) headers[ReqHeaderKey.AUTHORIZATION] = bearer(token)
     }

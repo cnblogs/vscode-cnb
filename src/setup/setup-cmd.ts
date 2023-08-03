@@ -44,7 +44,7 @@ import { viewPostBlogExport } from '@/cmd/blog-export/view-post'
 import { deleteBlogExport } from '@/cmd/blog-export/delete'
 import { openLocalExport } from '@/cmd/blog-export/open-local'
 import { refreshExportRecord } from '@/cmd/blog-export/refresh'
-import { accountManager } from '@/auth/account-manager'
+import { AccountManagerNg } from '@/auth/account-manager'
 
 function withPrefix(prefix: string) {
     return (rest: string) => `${prefix}${rest}`
@@ -56,8 +56,8 @@ export function setupExtCmd() {
 
     const tokens = [
         // auth
-        regCmd(withAppName('.login'), () => accountManager.login()),
-        regCmd(withAppName('.logout'), () => accountManager.logout()),
+        regCmd(withAppName('.login'), AccountManagerNg.login),
+        regCmd(withAppName('.logout'), AccountManagerNg.logout),
         // post-list
         regCmd(withAppName('.refresh-post-list'), refreshPostList),
         regCmd(withAppName('.prev-post-list'), goPrevPostList),
