@@ -11,7 +11,6 @@ let refreshTask: Promise<boolean> | null = null
 
 export async function refreshPostList({ queue = false } = {}): Promise<boolean> {
     if (isRefreshing && !queue) {
-        alertRefreshing()
         await refreshTask
         return false
     } else if (isRefreshing && refreshTask != null) {
@@ -87,15 +86,9 @@ async function setPostListContext(pageCount: number, hasPrevious: boolean, hasNe
     await execCmd('setContext', `${extName}.post-list.pageCount`, pageCount)
 }
 
-const alertRefreshing = () => {
-    void Alert.info('正在刷新, 请勿重复操作')
-}
-
 async function goPage(pageIndex: (currentIndex: number) => number) {
-    if (isRefreshing) {
-        alertRefreshing()
-        return
-    }
+    if (isRefreshing) return
+
     const state = PostService.getPostListState()
     if (!state) {
         console.warn('Cannot goto previous page post list because post list state not defined')
