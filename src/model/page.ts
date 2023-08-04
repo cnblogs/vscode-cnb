@@ -21,24 +21,3 @@ export namespace PageList {
         return Math.floor(pageListItemCount / pageCap) + (pageListItemCount % pageCap > 0 ? 1 : 0)
     }
 }
-
-export class PageModel<T> {
-    constructor(
-        public pageIndex: number,
-        public pageSize: number,
-        public postsCount: number,
-        public items: T[]
-    ) {}
-
-    get hasPrev() {
-        return this.pageIndex > 1
-    }
-
-    get hasNext() {
-        return this.pageCount > this.pageIndex
-    }
-
-    get pageCount() {
-        return Math.floor(this.postsCount / this.pageSize) + (this.postsCount % this.pageSize > 0 ? 1 : 0)
-    }
-}

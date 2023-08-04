@@ -27,8 +27,9 @@ export const searchPostByTitle = ({ postTitle = '', quickPickTitle = '按标题�
             const value = quickPick.value
             try {
                 quickPick.busy = true
-                const paged = await PostService.fetchPostList({ search: value })
-                const pickItems = paged.items.map(p => new PostPickItem(p))
+                const data = await PostService.fetchPostList({ search: value })
+                const postList = data.page.items
+                const pickItems = postList.map(p => new PostPickItem(p))
                 if (value === quickPick.value) quickPick.items = pickItems
             } catch (e) {
                 throw Error(`请求博文列表失败: ${<string>e}`)

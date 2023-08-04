@@ -1,6 +1,5 @@
 import { MyConfig, Post, PostListRespItem } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
-import { Page, PageList, PageModel } from '@/model/page-model'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostUpdatedResp } from '@/model/post-updated-response'
 import { ZzkSearchResult } from '@/model/zzk-search-result'
@@ -11,6 +10,7 @@ import { Alert } from '@/infra/alert'
 import { consUrlPara } from '@/infra/http/infra/url-para'
 import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { AuthedReq } from '@/infra/http/authed-req'
+import { Page, PageList } from '@/model/page'
 
 let newPostTemplate: PostEditDto | undefined
 
@@ -31,28 +31,6 @@ export namespace PostService {
         const url = `${getBaseUrl()}/api/posts/list?${para}`
         const resp = await AuthedReq.get(url, consHeader())
         const listModel = <PostListModel>JSON.parse(resp)
-
-        const pageModel = new PageModel(
-            listModel.pageIndex,
-            listModel.pageSize,
-            listModel.postsCount,
-            listModel.postList.map(x => Object.assign(new Post(), x))
-        )
-
-        return Object.assign(pageModel, { zzkSearchResult: listModel.zzkSearchResult })
-    }
-
-    export async function fetchPostListNg({ search = '', pageIndex = 1, pageSize = 30, categoryId = <'' | number>'' }) {
-        const para = consUrlPara(
-            ['t', '1'],
-            ['p', pageIndex.toString()],
-            ['s', pageSize.toString()],
-            ['search', search],
-            ['cid', categoryId.toString()]
-        )
-        const url = `${getBaseUrl()}/api/posts/list?${para}`
-        const resp = await AuthedReq.get(url, consHeader())
-        const listModel = <PostListModel>JSON.parse(resp)
         const page = {
             index: listModel.pageIndex,
             cap: listModel.pageSize,
@@ -62,6 +40,8 @@ export namespace PostService {
         return {
             page,
             pageCount: PageList.calcPageCount(listModel.pageSize, listModel.postsCount),
+            matchedPostCount: listModel.postsCount,
+            zzkResult: listModel.zzkSearchResult,
         }
     }
 
@@ -113,24 +93,6 @@ export namespace PostService {
         return <PostUpdatedResp>JSON.parse(resp)
     }
 
-    export async function updatePostListState(state: PostListState | PageModel<Post>) {
-        if (state instanceof PageModel) {
-            const finalState = {
-                pageIndex: state.pageIndex,
-                pageSize: state.pageSize,
-                itemsCount: state.items?.length ?? 0,
-                timestamp: new Date(),
-                hasNext: state.hasNext,
-                hasPrev: state.hasPrev,
-                pageCount: state.pageCount,
-            }
-            await globalCtx.storage.update('postListState', finalState)
-            return
-        }
-
-        await globalCtx.storage.update('postListState', state)
-    }
-
     export async function updatePostListStateNg(
         pageIndex: number,
         pageCap: number,
@@ -142,13 +104,12 @@ export namespace PostService {
 
         const finalState = {
             pageIndex,
-            pageSize: pageCap,
-            itemsCount: pageItemCount,
-            timestamp: new Date(),
+            pageCap,
+            pageItemCount,
             pageCount,
             hasPrev,
             hasNext,
-        }
+        } as PostListState
         await globalCtx.storage.update('postListState', finalState)
     }
 

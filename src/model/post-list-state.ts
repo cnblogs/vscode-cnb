@@ -1,9 +1,8 @@
-export interface PostListState {
+export type PostListState = {
     pageIndex: number
-    pageSize: number
-    itemsCount: number
+    pageCap: number
+    pageItemCount: number
     pageCount: number
     hasPrev: boolean
     hasNext: boolean
-    timestamp: Date
 }

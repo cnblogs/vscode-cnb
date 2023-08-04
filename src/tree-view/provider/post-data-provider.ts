@@ -8,7 +8,7 @@ import { PostEntryMetadata, PostMetadata } from '@/tree-view/model/post-metadata
 import { PostSearchResultEntry } from '@/tree-view/model/post-search-result-entry'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { PostListCfg } from '@/ctx/cfg/post-list'
-import { Page } from '@/model/page-model'
+import { Page } from '@/model/page'
 
 export type PostListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
 
@@ -57,7 +57,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
         const pageSize = PostListCfg.getPostListPageSize()
 
         try {
-            const result = await PostService.fetchPostListNg({ pageIndex, pageSize })
+            const result = await PostService.fetchPostList({ pageIndex, pageSize })
             // TODO: need better design
             this.page = result.page
 
@@ -89,9 +89,12 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
     async search({ key }: { key: string }): Promise<void> {
         if (key.length <= 0) return
 
-        const { items, postsCount, zzkSearchResult } = await PostService.fetchPostList({ search: key })
+        const data = await PostService.fetchPostList({ search: key })
+        const postList = data.page.items
+        const matchedPostCount = data.matchedPostCount
+        const zzkResult = data.zzkResult
 
-        this._searchResultEntry = new PostSearchResultEntry(key, items, postsCount, zzkSearchResult)
+        this._searchResultEntry = new PostSearchResultEntry(key, postList, matchedPostCount, zzkResult)
         this.fireTreeDataChangedEvent(undefined)
     }
 

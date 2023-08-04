@@ -6,7 +6,7 @@ import { Alert } from '@/infra/alert'
 import { PostListState } from '@/model/post-list-state'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { execCmd } from '@/infra/cmd'
-import { PageList } from '@/model/page-model'
+import { PageList } from '@/model/page'
 
 let refreshTask: Promise<boolean> | null = null
 
@@ -89,17 +89,18 @@ async function goPage(f: (currentIndex: number) => number) {
     if (isRefreshing) return
 
     const state = PostService.getPostListState()
-    if (!state) {
+    if (state === undefined) {
         void Alert.warn('操作失败: 状态错误')
         return
     }
+
     const index = f(state.pageIndex)
     if (!isPageIndexInRange(index, state)) {
         void Alert.warn(`操作失败: 已达到最大页数`)
         return
     }
-    state.pageIndex = index
-    await PostService.updatePostListState(state)
+
+    await PostService.updatePostListStateNg(index, state.pageCap, state.pageItemCount, state.pageCount)
     await refreshPostList()
 }
 
