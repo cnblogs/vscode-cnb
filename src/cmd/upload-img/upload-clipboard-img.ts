@@ -6,7 +6,7 @@ import getClipboardImage from '@/infra/get-clipboard-img'
 
 const noImagePath = 'no image'
 
-export async function uploadImgFromClipboard() {
+export async function uploadClipboardImg() {
     const clipboardImage = await getClipboardImage()
 
     if (clipboardImage.imgPath === noImagePath) {
@@ -14,12 +14,17 @@ export async function uploadImgFromClipboard() {
         return
     }
 
-    try {
-        return await window.withProgress({ title: '正在上传图片', location: ProgressLocation.Notification }, p => {
-            p.report({ increment: 10 })
-            return ImgService.upload(fs.createReadStream(clipboardImage.imgPath))
-        })
-    } finally {
-        if (!clipboardImage.shouldKeepAfterUploading) await workspace.fs.delete(Uri.file(clipboardImage.imgPath))
-    }
+    return window.withProgress({ title: '正在上传图片', location: ProgressLocation.Notification }, async p => {
+        p.report({ increment: 20 })
+        const stream = fs.createReadStream(clipboardImage.imgPath)
+        p.report({ increment: 60 })
+        const result = await ImgService.upload(stream)
+        p.report({ increment: 80 })
+        if (!clipboardImage.shouldKeepAfterUploading) {
+            const url = Uri.file(clipboardImage.imgPath)
+            await workspace.fs.delete(url)
+        }
+        p.report({ increment: 100 })
+        return result
+    })
 }

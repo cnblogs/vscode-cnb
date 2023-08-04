@@ -14,6 +14,9 @@ const bearerTokenHook: BeforeRequestHook = async opt => {
         const token = await AccountManagerNg.acquireToken()
 
         if (isString(token)) headers[ReqHeaderKey.AUTHORIZATION] = bearer(token)
+
+        // TODO: need better solution
+        if (token.length === 64) headers[ReqHeaderKey.AUTHORIZATION_TYPE] = 'pat'
     }
 }
 

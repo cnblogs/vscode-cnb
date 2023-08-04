@@ -218,13 +218,13 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.upload-clipboard-image",
+                "command": "vscode-cnb.upload-img-clipboard",
                 "title": "上传剪贴板图片到博客园",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.upload-fs-img",
+                "command": "vscode-cnb.upload-img-fs",
                 "title": "上传本地图片到博客园",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized"
@@ -655,8 +655,8 @@
                             "open-post-in-blog-admin": true,
                             "export-post-to-pdf": true,
                             "copy-post-link": true,
-                            "upload-clipboard-image": true,
-                            "upload-fs-img": true,
+                            "upload-img-clipboard": true,
+                            "upload-img-fs": true,
                             "extract-img": true,
                             "ing:publish-select": false
                         },
@@ -697,12 +697,12 @@
                                 "description": "复制博文链接",
                                 "type": "boolean"
                             },
-                            "upload-clipboard-image": {
+                            "upload-img-clipboard": {
                                 "order": 7,
                                 "description": "上传剪贴板图片到博客园",
                                 "type": "boolean"
                             },
-                            "upload-fs-img": {
+                            "upload-img-fs": {
                                 "order": 8,
                                 "description": "上传本地图片到博客园",
                                 "type": "boolean"
@@ -1196,13 +1196,13 @@
                     "group": "cnblogs@5"
                 },
                 {
-                    "command": "vscode-cnb.upload-clipboard-image",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-clipboard-image",
+                    "command": "vscode-cnb.upload-img-clipboard",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-img-clipboard",
                     "group": "cnblogs@6"
                 },
                 {
-                    "command": "vscode-cnb.upload-fs-img",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-fs-img",
+                    "command": "vscode-cnb.upload-img-fs",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-img-fs",
                     "group": "cnblogs@7"
                 },
                 {
@@ -1278,13 +1278,13 @@
         },
         "keybindings": [
             {
-                "command": "vscode-cnb.upload-clipboard-image",
+                "command": "vscode-cnb.upload-img-clipboard",
                 "key": "ctrl+alt+u",
                 "mac": "cmd+alt+u",
                 "when": "editorTextFocus && resourceLangId == markdown"
             },
             {
-                "command": "vscode-cnb.upload-fs-img",
+                "command": "vscode-cnb.upload-img-fs",
                 "key": "ctrl+alt+f",
                 "mac": "cmd+alt+f",
                 "when": "editorTextFocus && resourceLangId == markdown"

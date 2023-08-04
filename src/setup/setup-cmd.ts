@@ -9,7 +9,7 @@ import { globalCtx } from '@/ctx/global-ctx'
 import { goNextPostList, goPrevPostList, refreshPostList, seekPostList } from '@/cmd/post-list/refresh-post-list'
 import { uploadPostFile, uploadPost, uploadPostNoConfirm, uploadPostFileNoConfirm } from '@/cmd/post-list/upload-post'
 import { createLocalDraft } from '@/cmd/post-list/create-local-draft'
-import { deleteSelectedPost } from '@/cmd/post-list/delete-post'
+import { delSelectedPost } from '@/cmd/post-list/delete-post'
 import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
 import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { osOpenLocalPostFile } from '@/cmd/open/os-open-local-post-file'
@@ -45,6 +45,10 @@ import { deleteBlogExport } from '@/cmd/blog-export/delete'
 import { openLocalExport } from '@/cmd/blog-export/open-local'
 import { refreshExportRecord } from '@/cmd/blog-export/refresh'
 import { AccountManagerNg } from '@/auth/account-manager'
+import { uploadFsImage } from '@/cmd/upload-img/upload-fs-img'
+import { uploadClipboardImg } from '@/cmd/upload-img/upload-clipboard-img'
+import { pipe } from '@/infra/fp/pipe'
+import { insertImgLinkToActiveEditor } from '@/cmd/upload-img/upload-img-util'
 
 function withPrefix(prefix: string) {
     return (rest: string) => `${prefix}${rest}`
@@ -65,7 +69,7 @@ export function setupExtCmd() {
         regCmd(withAppName('.post-list.next'), goNextPostList),
         regCmd(withAppName('.post-list.seek'), seekPostList),
         // post
-        regCmd(withAppName('.delete-post'), deleteSelectedPost),
+        regCmd(withAppName('.delete-post'), delSelectedPost),
         regCmd(withAppName('.edit-post'), openPostInVscode),
         regCmd(withAppName('.search-post'), searchPost),
         regCmd(withAppName('.rename-post'), renamePost),
@@ -87,9 +91,15 @@ export function setupExtCmd() {
         regCmd(withAppName('.show-post-to-local-file-info'), showLocalFileToPostInfo),
         // img
         regCmd(withAppName('.extract-img'), extractImg),
-        regCmd(withAppName('.upload-img'), () => uploadImg(true)),
-        regCmd(withAppName('.upload-fs-img'), () => uploadImg(true, 'local')),
-        regCmd(withAppName('.upload-clipboard-image'), () => uploadImg(true, 'clipboard')),
+        regCmd(withAppName('.upload-img'), uploadImg),
+        regCmd(withAppName('.upload-img-fs'), async () => {
+            const link = await uploadFsImage()
+            if (link !== undefined) await insertImgLinkToActiveEditor(link)
+        }),
+        regCmd(withAppName('.upload-img-clipboard'), async () => {
+            const link = await uploadClipboardImg()
+            if (link !== undefined) await insertImgLinkToActiveEditor(link)
+        }),
         // post category
         regCmd(withAppName('.new-post-category'), newPostCategory),
         regCmd(withAppName('.delete-selected-post-category'), handleDeletePostCategories),
