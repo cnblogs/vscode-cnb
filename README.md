@@ -35,6 +35,8 @@
 
 <kbd><img src="https://img2020.cnblogs.com/blog/1596066/202112/1596066-20211228125556260-986735114.png" height="150"></kbd>
 
+扩展同时支持浏览器授权和个人访问令牌(PAT)授权，PAT 可由[账户设置](https://account.cnblogs.com/settings/account/personal-access-token)创建。
+
 ### 将本地 markdown 发布到博客园
 
 <kbd><img src="https://img2020.cnblogs.com/blog/1596066/202112/1596066-20211228130156308-187058889.png" height="550"></kbd>
