@@ -19,7 +19,7 @@ async function confirm(postList: Post[]): Promise<boolean> {
     return input === options[0]
 }
 
-export async function deletePostToLocalFileMap(post: Post | PostTreeItem) {
+export async function delPostToLocalFileMap(post: Post | PostTreeItem) {
     post = post instanceof PostTreeItem ? post.post : post
     const view = extTreeViews.postList
     let selectedPost = view.selection

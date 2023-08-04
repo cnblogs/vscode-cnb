@@ -64,7 +64,7 @@ export namespace PostService {
         }
     }
 
-    export async function deletePost(...postIds: number[]) {
+    export async function delPost(...postIds: number[]) {
         if (postIds.length === 1) {
             const url = `${getBaseUrl()}/api/posts/${postIds[0]}`
             try {

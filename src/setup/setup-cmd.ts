@@ -9,7 +9,7 @@ import { globalCtx } from '@/ctx/global-ctx'
 import { goNextPostList, goPrevPostList, refreshPostList, seekPostList } from '@/cmd/post-list/refresh-post-list'
 import { uploadPostFile, uploadPost, uploadPostNoConfirm, uploadPostFileNoConfirm } from '@/cmd/post-list/upload-post'
 import { createLocalDraft } from '@/cmd/post-list/create-local-draft'
-import { delSelectedPost } from '@/cmd/post-list/delete-post'
+import { delSelectedPost } from '@/cmd/post-list/del-post'
 import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
 import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { osOpenLocalPostFile } from '@/cmd/open/os-open-local-post-file'
@@ -18,7 +18,7 @@ import { newPostCategory } from '@/cmd/post-category/new-post-category'
 import { refreshPostCategoryList } from '@/cmd/post-category/refresh-post-category-list'
 import { handleUpdatePostCategory } from '@/cmd/post-category/update-post-category'
 import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
-import { deletePostToLocalFileMap } from '@/cmd/post-list/delete-post-to-local-file-map'
+import { delPostToLocalFileMap } from '@/cmd/post-list/del-post-to-local-file-map'
 import { renamePost } from '@/cmd/post-list/rename-post'
 import { openPostInBlogAdmin } from '@/cmd/open/open-post-in-blog-admin'
 import { openWorkspace } from '@/cmd/open/open-workspace'
@@ -28,7 +28,7 @@ import { viewPostOnline } from '@/cmd/view-post-online'
 import { pullRemotePost } from '@/cmd/pull-remote-post'
 import { extractImg } from '@/cmd/extract-img'
 import { clearPostSearchResults, refreshPostSearchResults, searchPost } from '@/cmd/post-list/search'
-import { handleDeletePostCategories } from '@/cmd/post-category/delete-selected-category'
+import { handleDeletePostCategories } from '@/cmd/post-category/del-selected-category'
 import { PublishIngCmdHandler } from '@/cmd/ing/publish-ing'
 import { CopyPostLinkCmdHandler } from '@/cmd/post-list/copy-link'
 import { regCmd } from '@/infra/cmd'
@@ -47,7 +47,6 @@ import { refreshExportRecord } from '@/cmd/blog-export/refresh'
 import { AccountManagerNg } from '@/auth/account-manager'
 import { uploadFsImage } from '@/cmd/upload-img/upload-fs-img'
 import { uploadClipboardImg } from '@/cmd/upload-img/upload-clipboard-img'
-import { pipe } from '@/infra/fp/pipe'
 import { insertImgLinkToActiveEditor } from '@/cmd/upload-img/upload-img-util'
 
 function withPrefix(prefix: string) {
@@ -69,7 +68,7 @@ export function setupExtCmd() {
         regCmd(withAppName('.post-list.next'), goNextPostList),
         regCmd(withAppName('.post-list.seek'), seekPostList),
         // post
-        regCmd(withAppName('.delete-post'), delSelectedPost),
+        regCmd(withAppName('.del-post'), delSelectedPost),
         regCmd(withAppName('.edit-post'), openPostInVscode),
         regCmd(withAppName('.search-post'), searchPost),
         regCmd(withAppName('.rename-post'), renamePost),
@@ -81,7 +80,7 @@ export function setupExtCmd() {
         regCmd(withAppName('.upload-post-file-no-confirm'), uploadPostFileNoConfirm),
         regCmd(withAppName('.pull-remote-post'), pullRemotePost),
         regCmd(withAppName('.open-post-in-blog-admin'), openPostInBlogAdmin),
-        regCmd(withAppName('.delete-post-to-local-file-map'), deletePostToLocalFileMap),
+        regCmd(withAppName('.del-post-to-local-file-map'), delPostToLocalFileMap),
         regCmd(withAppName('.view-post-online'), viewPostOnline),
         regCmd(withAppName('.export-post-to-pdf'), exportPostToPdf),
         regCmd(withAppName('.clear-post-search-results'), clearPostSearchResults),
@@ -102,7 +101,7 @@ export function setupExtCmd() {
         }),
         // post category
         regCmd(withAppName('.new-post-category'), newPostCategory),
-        regCmd(withAppName('.delete-selected-post-category'), handleDeletePostCategories),
+        regCmd(withAppName('.del-selected-post-category'), handleDeletePostCategories),
         regCmd(withAppName('.refresh-post-category-list'), refreshPostCategoryList),
         regCmd(withAppName('.update-post-category'), handleUpdatePostCategory),
         // workspace

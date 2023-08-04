@@ -6,7 +6,7 @@ import { Post } from '@/model/post'
 import { personalCategoriesStore } from './service/personal-category-store'
 import { siteCategoriesStore } from './service/site-category-store'
 import { tagsStore } from './service/tags-store'
-import { webviewMessage } from '@/model/webview-msg'
+import { WebviewMsg } from '@/model/webview-msg'
 import { WebviewCmd } from '@/model/webview-cmd'
 import { PostFormContextProvider } from './components/PostFormContextProvider'
 import { activeThemeProvider } from 'share/active-theme-provider'
@@ -89,7 +89,7 @@ class App extends Component<AppProps, AppState> {
 
             if (command === WebviewCmd.UiCmd.editPostCfg) {
                 const { post, activeTheme, personalCategories, siteCategories, tags, breadcrumbs, fileName } =
-                    message as webviewMessage.EditPostCfgMessage
+                    message as WebviewMsg.EditPostCfgMsg
                 personalCategoriesStore.set(personalCategories)
                 siteCategoriesStore.set(siteCategories)
                 tagsStore.set(tags)
@@ -102,10 +102,10 @@ class App extends Component<AppProps, AppState> {
                     useNestCategoriesSelect: personalCategories.some(c => c.childCount > 0),
                 })
             } else if (command === WebviewCmd.UiCmd.updateBreadcrumbs) {
-                const { breadcrumbs } = message as webviewMessage.UpdateBreadcrumbsMessage
+                const { breadcrumbs } = message as WebviewMsg.UpdateBreadcrumbMsg
                 this.setState({ breadcrumbs })
             } else if (command === WebviewCmd.UiCmd.setFluentIconBaseUrl) {
-                const { baseUrl } = message as webviewMessage.SetFluentIconBaseUrlMessage
+                const { baseUrl } = message as WebviewMsg.SetFluentIconBaseUrlMsg
                 initializeIcons(baseUrl)
             } else if (command === WebviewCmd.UiCmd.updateTheme) {
                 this.setState({ theme: activeThemeProvider.activeTheme() })

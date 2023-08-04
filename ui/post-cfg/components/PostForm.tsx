@@ -14,7 +14,7 @@ import { PasswordInput } from './PasswordInput'
 import { getVsCodeApiSingleton } from '../../share/vscode-api'
 import { ErrorResponse } from './ErrorResponse'
 import { WebviewCmd } from '@/model/webview-cmd'
-import { webviewMessage } from '@/model/webview-msg'
+import { WebviewMsg } from '@/model/webview-msg'
 import { InputSummary } from './InputSummary'
 import { IPostFormContext, PostFormContext } from './PostFormContext'
 import PostEntryNameInput from './PostEntryNameInput'
@@ -148,10 +148,10 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
         getVsCodeApiSingleton().postMessage({
             command: WebviewCmd.ExtCmd.uploadPost,
             post: Object.assign({}, this.props.post, this.state),
-        } as webviewMessage.UploadPostMessage)
+        } as WebviewMsg.UploadPostMsg)
     }
 
     private onCancel() {
-        getVsCodeApiSingleton().postMessage({ command: WebviewCmd.ExtCmd.disposePanel } as webviewMessage.Message)
+        getVsCodeApiSingleton().postMessage({ command: WebviewCmd.ExtCmd.disposePanel } as WebviewMsg.Msg)
     }
 }

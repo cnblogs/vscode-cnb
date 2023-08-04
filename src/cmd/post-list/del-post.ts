@@ -35,7 +35,7 @@ async function confirmDelete(selectedPost: Post[]) {
     return result
 }
 
-export async function deleteSelectedPost(arg: unknown) {
+export async function delSelectedPost(arg: unknown) {
     let post: Post
     if (arg instanceof Post) post = arg
     else if (arg instanceof PostTreeItem) post = arg.post
@@ -66,7 +66,7 @@ export async function deleteSelectedPost(arg: unknown) {
             increment: 0,
         })
         try {
-            await PostService.deletePost(...selectedPost.map(p => p.id))
+            await PostService.delPost(...selectedPost.map(p => p.id))
             if (isToDeleteLocalFile) {
                 selectedPost
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')

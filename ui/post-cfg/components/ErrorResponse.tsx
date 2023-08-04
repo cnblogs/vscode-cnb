@@ -1,6 +1,6 @@
 import { MessageBar, MessageBarType } from '@fluentui/react'
 import { WebviewCmd } from '@/model/webview-cmd'
-import { webviewMessage } from '@/model/webview-msg'
+import { WebviewMsg } from '@/model/webview-msg'
 import React from 'react'
 import { Optional } from 'utility-types'
 import { PostFormContext } from './PostFormContext'
@@ -22,10 +22,7 @@ export class ErrorResponse extends React.Component<IErrorResponseProps, IErrorRe
 
         this.state = { errors: [] }
         window.addEventListener('message', msg => {
-            const { command, errorResponse } = (msg.data ?? {}) as any as Optional<
-                webviewMessage.ShowErrorResponseMessage,
-                'command'
-            >
+            const { command, errorResponse } = (msg.data ?? {}) as any as Optional<WebviewMsg.ShowErrRespMsg, 'command'>
             if (command === WebviewCmd.UiCmd.showErrorResponse) {
                 this.setState({ errors: errorResponse.errors ?? [] }, () => this.reveal())
                 this.context.set({ disabled: false, status: '' })

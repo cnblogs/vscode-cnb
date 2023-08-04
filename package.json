@@ -163,7 +163,7 @@
                 "category": "Cnblogs Post List"
             },
             {
-                "command": "vscode-cnb.delete-post",
+                "command": "vscode-cnb.del-post",
                 "title": "删除随笔(支持多选)",
                 "icon": "$(trash)",
                 "category": "Cnblogs Post List",
@@ -254,7 +254,7 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.delete-selected-post-category",
+                "command": "vscode-cnb.del-selected-post-category",
                 "title": "删除",
                 "icon": "$(trash)",
                 "category": "Cnblogs Post Categories Management",
@@ -275,7 +275,7 @@
                 "enablement": "!vscode-cnb.postCategoriesList.isRefreshing"
             },
             {
-                "command": "vscode-cnb.delete-post-to-local-file-map",
+                "command": "vscode-cnb.del-post-to-local-file-map",
                 "title": "取消关联本地文件(支持多选)",
                 "category": "Cnblogs Post List"
             },
@@ -917,7 +917,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.delete-post",
+                    "command": "vscode-cnb.del-post",
                     "when": "false"
                 },
                 {
@@ -937,7 +937,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.delete-selected-post-category",
+                    "command": "vscode-cnb.del-selected-post-category",
                     "when": "false"
                 },
                 {
@@ -957,7 +957,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.delete-post-to-local-file-map",
+                    "command": "vscode-cnb.del-post-to-local-file-map",
                     "when": "false"
                 },
                 {
@@ -1042,7 +1042,7 @@
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
                 },
                 {
-                    "command": "vscode-cnb.delete-post",
+                    "command": "vscode-cnb.del-post",
                     "group": "inline@4",
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
                 },
@@ -1061,12 +1061,12 @@
                     "group": "1@1"
                 },
                 {
-                    "command": "vscode-cnb.delete-post",
+                    "command": "vscode-cnb.del-post",
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
                     "group": "delete@1"
                 },
                 {
-                    "command": "vscode-cnb.delete-post-to-local-file-map",
+                    "command": "vscode-cnb.del-post-to-local-file-map",
                     "when": "viewItem =~ /^cnb-post-cached/",
                     "group": "delete@2"
                 },
@@ -1101,7 +1101,7 @@
                     "group": "0@6"
                 },
                 {
-                    "command": "vscode-cnb.delete-selected-post-category",
+                    "command": "vscode-cnb.del-selected-post-category",
                     "when": "viewItem == cnb-post-category"
                 },
                 {
@@ -1110,7 +1110,7 @@
                     "group": "inline@1"
                 },
                 {
-                    "command": "vscode-cnb.delete-selected-post-category",
+                    "command": "vscode-cnb.del-selected-post-category",
                     "when": "viewItem == cnb-post-category",
                     "group": "inline@2"
                 },
