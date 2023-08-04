@@ -3,7 +3,7 @@ export interface PostListState {
     pageSize: number
     itemsCount: number
     pageCount: number
-    hasPrevious: boolean
+    hasPrev: boolean
     hasNext: boolean
     timestamp: Date
 }

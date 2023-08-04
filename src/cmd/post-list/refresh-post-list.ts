@@ -6,6 +6,7 @@ import { Alert } from '@/infra/alert'
 import { PostListState } from '@/model/post-list-state'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { execCmd } from '@/infra/cmd'
+import { PageList } from '@/model/page-model'
 
 let refreshTask: Promise<boolean> | null = null
 
@@ -18,32 +19,30 @@ export async function refreshPostList({ queue = false } = {}): Promise<boolean> 
         return refreshPostList()
     }
 
-    refreshTask = setRefreshing(true).then(() =>
-        postDataProvider
-            .loadPost()
-            .then(pagedPost =>
-                setPostListContext(
-                    pagedPost?.pageCount ?? 0,
-                    pagedPost?.hasPrevious ?? false,
-                    pagedPost?.hasNext ?? false
-                )
-                    .catch()
-                    .then(() => pagedPost)
-            )
-            .then(pagedPost => {
-                if (pagedPost == null) {
-                    return Promise.resolve(false).finally(() => void Alert.err('刷新博文列表失败'))
-                } else {
-                    return PostService.updatePostListState(pagedPost)
-                        .then(() => updatePostListViewTitle())
-                        .then(() => true)
-                }
-            })
-            .then(ok => postDataProvider.refreshSearch().then(() => ok))
-            .then(ok => setRefreshing(false).then(() => ok))
-            .catch(() => false)
-            .finally(() => (refreshTask = null))
-    )
+    const fut = async () => {
+        await setRefreshing(true)
+        const data = await postDataProvider.loadPost()
+        const pageIndex = data.page.index
+        const pageCount = data.pageCount
+        const pageCap = data.page.cap
+        const pageItemsCount = data.page.items.length
+        const hasPrev = PageList.hasPrev(pageIndex)
+        const hasNext = PageList.hasNext(pageIndex, pageCount)
+
+        await setPostListContext(pageCount, hasPrev, hasNext)
+        await PostService.updatePostListStateNg(pageIndex, pageCap, pageItemsCount, pageCount)
+        updatePostListViewTitle()
+        await postDataProvider.refreshSearch()
+        await setRefreshing(false)
+    }
+
+    refreshTask = fut()
+        .then(() => true)
+        .catch(() => {
+            void Alert.err('刷新博文列表失败')
+            return false
+        })
+        .finally(() => (refreshTask = null))
 
     return refreshTask
 }
@@ -79,29 +78,27 @@ async function setRefreshing(value = false) {
     isRefreshing = value
 }
 
-async function setPostListContext(pageCount: number, hasPrevious: boolean, hasNext: boolean) {
+async function setPostListContext(pageCount: number, hasPrev: boolean, hasNext: boolean) {
     const extName = globalCtx.extName
-    await execCmd('setContext', `${extName}.post-list.hasPrevious`, hasPrevious)
+    await execCmd('setContext', `${extName}.post-list.hasPrev`, hasPrev)
     await execCmd('setContext', `${extName}.post-list.hasNext`, hasNext)
     await execCmd('setContext', `${extName}.post-list.pageCount`, pageCount)
 }
 
-async function goPage(pageIndex: (currentIndex: number) => number) {
+async function goPage(f: (currentIndex: number) => number) {
     if (isRefreshing) return
 
     const state = PostService.getPostListState()
     if (!state) {
-        console.warn('Cannot goto previous page post list because post list state not defined')
+        void Alert.warn('操作失败: 状态错误')
         return
     }
-    const idx = pageIndex(state.pageIndex)
-    if (!isPageIndexInRange(idx, state)) {
-        console.warn(
-            `Cannot goto page post list, page index out of range, max value of page index is ${state.pageCount}`
-        )
+    const index = f(state.pageIndex)
+    if (!isPageIndexInRange(index, state)) {
+        void Alert.warn(`操作失败: 已达到最大页数`)
         return
     }
-    state.pageIndex = idx
+    state.pageIndex = index
     await PostService.updatePostListState(state)
     await refreshPostList()
 }

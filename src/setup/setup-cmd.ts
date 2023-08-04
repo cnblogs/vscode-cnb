@@ -61,9 +61,9 @@ export function setupExtCmd() {
         regCmd(withAppName('.logout'), AccountManagerNg.logout),
         // post-list
         regCmd(withAppName('.refresh-post-list'), refreshPostList),
-        regCmd(withAppName('.prev-post-list'), goPrevPostList),
-        regCmd(withAppName('.next-post-list'), goNextPostList),
-        regCmd(withAppName('.seek-post-list'), seekPostList),
+        regCmd(withAppName('.post-list.prev'), goPrevPostList),
+        regCmd(withAppName('.post-list.next'), goNextPostList),
+        regCmd(withAppName('.post-list.seek'), seekPostList),
         // post
         regCmd(withAppName('.delete-post'), deleteSelectedPost),
         regCmd(withAppName('.edit-post'), openPostInVscode),
@@ -114,7 +114,7 @@ export function setupExtCmd() {
         // ing list
         regCmd(withAppName('.ing-list.refresh'), refreshIngList),
         regCmd(withAppName('.ing-list.next'), goIngListNextPage),
-        regCmd(withAppName('.ing-list.previous'), goIngListPrevPage),
+        regCmd(withAppName('.ing-list.prev'), goIngListPrevPage),
         regCmd(withAppName('.ing-list.first'), goIngList1stPage),
         regCmd(withAppName('.ing-list.switch-type'), switchIngType),
         regCmd(withAppName('.ing-list.open-in-browser'), openCnbIng),

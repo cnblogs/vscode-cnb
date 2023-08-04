@@ -31,7 +31,7 @@ export type PostListRespItem = {
 
 export type BlogPost = {
     id: number
-    postType: 1
+    postType: PostType
     accessPermission: AccessPermission
     title: string
     url: string

@@ -135,21 +135,21 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.prev-post-list",
+                "command": "vscode-cnb.post-list.prev",
                 "title": "上一页",
                 "icon": "$(chevron-left)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post-list.refreshing && vscode-cnb.post-list.hasPrevious",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post-list.refreshing && vscode-cnb.post-list.hasPrev",
                 "category": "Cnblogs Post List"
             },
             {
-                "command": "vscode-cnb.seek-post-list",
+                "command": "vscode-cnb.post-list.seek",
                 "title": "跳页",
                 "icon": "$(vscode-cnb-icon-seek)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post-list.refreshing && vscode-cnb.post-list.pageCount > 0",
                 "category": "Cnblogs Post List"
             },
             {
-                "command": "vscode-cnb.next-post-list",
+                "command": "vscode-cnb.post-list.next",
                 "title": "下一页",
                 "icon": "$(chevron-right)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post-list.refreshing && vscode-cnb.post-list.hasNext",
@@ -355,7 +355,7 @@
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing"
             },
             {
-                "command": "vscode-cnb.ing-list.previous",
+                "command": "vscode-cnb.ing-list.prev",
                 "title": "上一页",
                 "category": "Cnblogs",
                 "icon": "$(chevron-left)",
@@ -818,17 +818,17 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "vscode-cnb.prev-post-list",
+                    "command": "vscode-cnb.post-list.prev",
                     "when": "view == cnblogs-post-list || view == cnblogs-post-list-another",
                     "group": "navigation@1"
                 },
                 {
-                    "command": "vscode-cnb.next-post-list",
+                    "command": "vscode-cnb.post-list.next",
                     "when": "view == cnblogs-post-list || view == cnblogs-post-list-another",
                     "group": "navigation@2"
                 },
                 {
-                    "command": "vscode-cnb.seek-post-list",
+                    "command": "vscode-cnb.post-list.seek",
                     "when": "view == cnblogs-post-list || view == cnblogs-post-list-another",
                     "group": "navigation@3"
                 },
@@ -868,7 +868,7 @@
                     "group": "navigation@1"
                 },
                 {
-                    "command": "vscode-cnb.ing-list.previous",
+                    "command": "vscode-cnb.ing-list.prev",
                     "when": "view == vscode-cnb.ing-list-webview",
                     "group": "navigation@2"
                 },
@@ -949,11 +949,11 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.next-post-list",
+                    "command": "vscode-cnb.post-list.next",
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.seek-post-list",
+                    "command": "vscode-cnb.post-list.seek",
                     "when": "false"
                 },
                 {

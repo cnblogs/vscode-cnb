@@ -1,6 +1,6 @@
 import { MyConfig, Post, PostListRespItem } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
-import { PageModel } from '@/model/page-model'
+import { Page, PageList, PageModel } from '@/model/page-model'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostUpdatedResp } from '@/model/post-updated-response'
 import { ZzkSearchResult } from '@/model/zzk-search-result'
@@ -39,9 +39,30 @@ export namespace PostService {
             listModel.postList.map(x => Object.assign(new Post(), x))
         )
 
-        return Object.assign(pageModel, {
-            zzkSearchResult: ZzkSearchResult.parse(listModel.zzkSearchResult) || undefined,
-        })
+        return Object.assign(pageModel, { zzkSearchResult: listModel.zzkSearchResult })
+    }
+
+    export async function fetchPostListNg({ search = '', pageIndex = 1, pageSize = 30, categoryId = <'' | number>'' }) {
+        const para = consUrlPara(
+            ['t', '1'],
+            ['p', pageIndex.toString()],
+            ['s', pageSize.toString()],
+            ['search', search],
+            ['cid', categoryId.toString()]
+        )
+        const url = `${getBaseUrl()}/api/posts/list?${para}`
+        const resp = await AuthedReq.get(url, consHeader())
+        const listModel = <PostListModel>JSON.parse(resp)
+        const page = {
+            index: listModel.pageIndex,
+            cap: listModel.pageSize,
+            items: listModel.postList.map(x => Object.assign(new Post(), x)),
+        } as Page<Post>
+
+        return {
+            page,
+            pageCount: PageList.calcPageCount(listModel.pageSize, listModel.postsCount),
+        }
     }
 
     export async function fetchPostEditDto(postId: number) {
@@ -100,7 +121,7 @@ export namespace PostService {
                 itemsCount: state.items?.length ?? 0,
                 timestamp: new Date(),
                 hasNext: state.hasNext,
-                hasPrevious: state.hasPrevious,
+                hasPrev: state.hasPrev,
                 pageCount: state.pageCount,
             }
             await globalCtx.storage.update('postListState', finalState)
@@ -108,6 +129,27 @@ export namespace PostService {
         }
 
         await globalCtx.storage.update('postListState', state)
+    }
+
+    export async function updatePostListStateNg(
+        pageIndex: number,
+        pageCap: number,
+        pageItemCount: number,
+        pageCount: number
+    ) {
+        const hasPrev = PageList.hasPrev(pageIndex)
+        const hasNext = PageList.hasNext(pageIndex, pageCount)
+
+        const finalState = {
+            pageIndex,
+            pageSize: pageCap,
+            itemsCount: pageItemCount,
+            timestamp: new Date(),
+            pageCount,
+            hasPrev,
+            hasNext,
+        }
+        await globalCtx.storage.update('postListState', finalState)
     }
 
     export async function fetchPostEditTemplate() {
@@ -122,11 +164,12 @@ export namespace PostService {
 }
 
 interface PostListModel {
-    category: unknown
+    category: unknown // TODO: need type
     categoryName: string
     pageIndex: number
     pageSize: number
     postList: PostListRespItem[]
     postsCount: number
-    zzkSearchResult?: ZzkSearchResult
+
+    zzkSearchResult: ZzkSearchResult | null
 }

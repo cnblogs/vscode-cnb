@@ -3,7 +3,6 @@ import { Post } from '@/model/post'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostFileMap, PostFileMapManager } from '@/service/post/post-file-map'
-import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { refreshPostList } from './refresh-post-list'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
@@ -45,10 +44,7 @@ export async function deleteSelectedPost(arg: unknown) {
     const selectedPost: Post[] = post ? [post] : []
     extTreeViews.visiblePostList()?.selection.map(item => {
         const post = item instanceof PostTreeItem ? item.post : item
-        if (post instanceof Post && !selectedPost.includes(post)) {
-            postDataProvider.pagedPost?.items.find(item => item === post)
-            selectedPost.push(post)
-        }
+        if (post instanceof Post && !selectedPost.includes(post)) selectedPost.push(post)
     })
     if (selectedPost.length <= 0) return
 
