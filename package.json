@@ -163,6 +163,13 @@
                 "category": "Cnblogs Post List"
             },
             {
+                "command": "vscode-cnb.post.pull-all",
+                "title": "下载全部随笔",
+                "icon": "$(cloud-download)",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post-list.refreshing && vscode-cnb.post-list.pageCount > 0",
+                "category": "Cnblogs Post List"
+            },
+            {
                 "command": "vscode-cnb.del-post",
                 "title": "删除随笔(支持多选)",
                 "icon": "$(trash)",
@@ -235,7 +242,7 @@
                 "category": "Cnblogs"
             },
             {
-                "command": "vscode-cnb.pull-remote-post",
+                "command": "vscode-cnb.post.pull",
                 "title": "拉取博文",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized",
@@ -589,7 +596,7 @@
                         "additionalProperties": false,
                         "default": {
                             "upload-post-file-no-confirm": true,
-                            "pull-remote-post": true,
+                            "post.pull": true,
                             "modify-post-setting": true,
                             "show-post-to-local-file-info": true,
                             "open-post-in-blog-admin": true,
@@ -603,7 +610,7 @@
                                 "type": "boolean",
                                 "default": true
                             },
-                            "pull-remote-post": {
+                            "post.pull": {
                                 "order": 1,
                                 "description": "拉取博文",
                                 "type": "boolean",
@@ -649,7 +656,7 @@
                         "additionalProperties": false,
                         "default": {
                             "upload-post-file-no-confirm": true,
-                            "pull-remote-post": true,
+                            "post.pull": true,
                             "modify-post-setting": true,
                             "show-post-to-local-file-info": true,
                             "open-post-in-blog-admin": true,
@@ -666,7 +673,7 @@
                                 "description": "上传到博客园",
                                 "type": "boolean"
                             },
-                            "pull-remote-post": {
+                            "post.pull": {
                                 "order": 1,
                                 "description": "拉取博文",
                                 "type": "boolean"
@@ -843,9 +850,14 @@
                     "group": "navigation@5"
                 },
                 {
+                    "command": "vscode-cnb.post.pull-all",
+                    "when": "view == cnblogs-post-list || view == cnblogs-post-list-another",
+                    "group": "navigation@6"
+                },
+                {
                     "command": "vscode-cnb.create-local-draft",
-                    "group": "navigation@6",
-                    "when": "view == cnblogs-post-list || view == cnblogs-post-list-another"
+                    "when": "view == cnblogs-post-list || view == cnblogs-post-list-another",
+                    "group": "navigation@7"
                 },
                 {
                     "command": "vscode-cnb.new-post-category",
@@ -1032,7 +1044,7 @@
                     "when": "viewItem == cnb-post-cached"
                 },
                 {
-                    "command": "vscode-cnb.pull-remote-post",
+                    "command": "vscode-cnb.post.pull",
                     "group": "inline@2",
                     "when": "viewItem == cnb-post-cached"
                 },
@@ -1076,7 +1088,7 @@
                     "when": "viewItem == cnb-post-cached"
                 },
                 {
-                    "command": "vscode-cnb.pull-remote-post",
+                    "command": "vscode-cnb.post.pull",
                     "group": "0@2",
                     "when": "viewItem == cnb-post-cached"
                 },
@@ -1181,8 +1193,8 @@
                     "group": "cnblogs@2"
                 },
                 {
-                    "command": "vscode-cnb.pull-remote-post",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.pull-remote-post",
+                    "command": "vscode-cnb.post.pull",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.post.pull",
                     "group": "cnblogs@3"
                 },
                 {
@@ -1245,8 +1257,8 @@
                     "group": "cnblogs@2"
                 },
                 {
-                    "command": "vscode-cnb.pull-remote-post",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.pull-remote-post",
+                    "command": "vscode-cnb.post.pull",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.post.pull",
                     "group": "cnblogs@3"
                 },
                 {

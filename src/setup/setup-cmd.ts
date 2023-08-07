@@ -25,7 +25,7 @@ import { openWorkspace } from '@/cmd/open/open-workspace'
 import { setWorkspace } from '@/cmd/set-workspace'
 import { osOpenWorkspace } from '@/cmd/open/os-open-workspace'
 import { viewPostOnline } from '@/cmd/view-post-online'
-import { pullRemotePost } from '@/cmd/pull-remote-post'
+import { postPull } from '@/cmd/post-list/post-pull'
 import { extractImg } from '@/cmd/extract-img'
 import { clearPostSearchResults, refreshPostSearchResults, searchPost } from '@/cmd/post-list/search'
 import { handleDeletePostCategories } from '@/cmd/post-category/del-selected-category'
@@ -48,6 +48,7 @@ import { AccountManagerNg } from '@/auth/account-manager'
 import { uploadFsImage } from '@/cmd/upload-img/upload-fs-img'
 import { uploadClipboardImg } from '@/cmd/upload-img/upload-clipboard-img'
 import { insertImgLinkToActiveEditor } from '@/cmd/upload-img/upload-img-util'
+import { postPullAll } from "@/cmd/post-list/post-pull-all"
 
 function withPrefix(prefix: string) {
     return (rest: string) => `${prefix}${rest}`
@@ -78,7 +79,8 @@ export function setupExtCmd() {
         regCmd(withAppName('.upload-post-file'), uploadPostFile),
         regCmd(withAppName('.upload-post-no-confirm'), uploadPostNoConfirm),
         regCmd(withAppName('.upload-post-file-no-confirm'), uploadPostFileNoConfirm),
-        regCmd(withAppName('.pull-remote-post'), pullRemotePost),
+        regCmd(withAppName('.post.pull'), postPull),
+        regCmd(withAppName('.post.pull-all'), postPullAll),
         regCmd(withAppName('.open-post-in-blog-admin'), openPostInBlogAdmin),
         regCmd(withAppName('.del-post-to-local-file-map'), delPostToLocalFileMap),
         regCmd(withAppName('.view-post-online'), viewPostOnline),

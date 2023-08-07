@@ -38,8 +38,8 @@ export async function refreshPostList({ queue = false } = {}): Promise<boolean> 
 
     refreshTask = fut()
         .then(() => true)
-        .catch(() => {
-            void Alert.err('刷新博文列表失败')
+        .catch(e => {
+            void Alert.err(`刷新博文列表失败: ${<string>e}`)
             return false
         })
         .finally(() => (refreshTask = null))

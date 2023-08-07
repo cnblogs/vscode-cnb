@@ -12,35 +12,35 @@ import sanitizeFileName from 'sanitize-filename'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { PostCategoryCfg } from '@/ctx/cfg/post-category'
 
-async function buildLocalPostFileUri(post: Post, includePostId = false): Promise<Uri> {
+export async function buildLocalPostFileUri(post: Post, includePostId = false): Promise<Uri> {
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
     const shouldCreateLocalPostFileWithCategory = PostCategoryCfg.isCreateLocalPostFileWithCategory()
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`
     const postIdSegment = includePostId ? `.${post.id}` : ''
     const { text: postTitle } = await PostTitleSanitizer.sanitize(post)
-    if (shouldCreateLocalPostFileWithCategory) {
-        const firstCategoryId = post.categoryIds?.[0]
-        const category = firstCategoryId ? await PostCategoryService.find(firstCategoryId) : null
-        let i: typeof category | undefined = category
-        let categoryTitle = ''
-        while (i != null) {
-            categoryTitle = path.join(
-                sanitizeFileName(i.title, {
-                    replacement: invalidChar => (invalidChar === '/' ? '_' : ''),
-                }),
-                categoryTitle
-            )
-            i = i.parent
-        }
 
-        return Uri.joinPath(workspaceUri, categoryTitle, `${postTitle}${postIdSegment}${ext}`)
-    } else {
-        return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`)
+    if (!shouldCreateLocalPostFileWithCategory) return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`)
+
+    const firstCategoryId = post.categoryIds?.[0] ?? null
+    let i = firstCategoryId ? await PostCategoryService.find(firstCategoryId) : null
+    let categoryTitle = ''
+    while (i != null) {
+        categoryTitle = path.join(
+            sanitizeFileName(i.title, {
+                replacement: invalidChar => (invalidChar === '/' ? '_' : ''),
+            }),
+            categoryTitle
+        )
+        i = i.parent ?? null
     }
+
+    return Uri.joinPath(workspaceUri, categoryTitle, `${postTitle}${postIdSegment}${ext}`)
 }
 
 export async function openPostInVscode(postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> {
     let mappedPostFilePath = PostFileMapManager.getFilePath(postId)
+    if (mappedPostFilePath === '') mappedPostFilePath = undefined
+
     const isFileExist = !!mappedPostFilePath && fs.existsSync(mappedPostFilePath)
     if (mappedPostFilePath && isFileExist && !forceUpdateLocalPostFile) {
         await openPostFile(mappedPostFilePath)
@@ -52,44 +52,37 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
         mappedPostFilePath = undefined
     }
 
-    const postEditDto = await PostService.fetchPostEditDto(postId)
-    if (!postEditDto) return false
-
-    const post = postEditDto.post
+    const { post } = await PostService.fetchPostEditDto(postId)
 
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
-    await createDirectoryIfNotExist(workspaceUri)
+    await mkDirIfNotExist(workspaceUri)
     let fileUri = mappedPostFilePath ? Uri.file(mappedPostFilePath) : await buildLocalPostFileUri(post)
 
     // 博文尚未关联到本地文件的情况
-    if (!mappedPostFilePath) {
-        // 本地存在和博文同名的文件, 询问用户是要覆盖还是同时保留两者
-        if (fs.existsSync(fileUri.fsPath)) {
-            const opt = ['保留本地文件, 以博文 ID 为文件名新建另一个文件', '覆盖本地文件']
-            const selected = await Alert.info(
-                `无法建立博文与本地文件的关联, 文件名冲突`,
-                { detail: `本地已存在名为 ${path.basename(fileUri.fsPath)} 的文件`, modal: true } as MessageOptions,
-                ...opt
-            )
+    // 本地存在和博文同名的文件, 询问用户是要覆盖还是同时保留两者
+    if (!mappedPostFilePath && fs.existsSync(fileUri.fsPath)) {
+        const opt = ['保留本地文件并以博文 ID 为文件名新建另一个文件', '覆盖本地文件']
+        const selected = await Alert.info(
+            `无法建立博文与本地文件的关联, 文件名冲突`,
+            { detail: `本地已存在名为 ${path.basename(fileUri.fsPath)} 的文件`, modal: true },
+            ...opt
+        )
 
-            if (selected === opt[0]) fileUri = await buildLocalPostFileUri(post, true)
-        }
+        if (selected === opt[0]) fileUri = await buildLocalPostFileUri(post, true)
     }
 
     // 博文内容写入本地文件, 若文件不存在, 会自动创建对应的文件
-    await workspace.fs.writeFile(fileUri, Buffer.from(postEditDto.post.postBody))
+    await workspace.fs.writeFile(fileUri, Buffer.from(post.postBody))
     await PostFileMapManager.updateOrCreate(postId, fileUri.fsPath)
     await openPostFile(post)
     return fileUri
 }
 
-async function createDirectoryIfNotExist(uri: Uri) {
+async function mkDirIfNotExist(uri: Uri) {
     try {
         await workspace.fs.readDirectory(uri)
-    } catch (err) {
-        if (err instanceof FileSystemError) await workspace.fs.createDirectory(uri)
-
-        void Alert.err('Create workspace directory failed')
-        console.error(err)
+    } catch (e) {
+        void Alert.err(`创建目录失败: ${<string>e}`)
+        throw e
     }
 }
