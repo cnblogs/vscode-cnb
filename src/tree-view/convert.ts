@@ -40,7 +40,7 @@ const postConverter: Converter<Post> = obj => {
     return Object.assign<TreeItem, TreeItem>(new TreeItem(`${obj.title}`, TreeItemCollapsibleState.Collapsed), {
         tooltip: new MarkdownString(`[${url}](${url})` + descDatePublished + descLocalPath),
         command: {
-            command: `${globalCtx.extName}.edit-post`,
+            command: `${globalCtx.extName}.post.edit`,
             arguments: [obj.id],
             title: '编辑博文',
         },

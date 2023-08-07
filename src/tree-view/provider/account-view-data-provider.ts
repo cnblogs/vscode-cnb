@@ -22,7 +22,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 label: '账户设置',
                 command: {
                     title: '打开账户设置',
-                    command: 'vscode-cnb.open-my-account-setting',
+                    command: 'vscode-cnb.open.account-setting',
                 },
                 iconPath: new ThemeIcon('gear'),
             },
@@ -30,7 +30,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 label: '博客后台',
                 command: {
                     title: '打开博客后台',
-                    command: 'vscode-cnb.open-my-blog-console',
+                    command: 'vscode-cnb.open.blog-console',
                 },
                 iconPath: new ThemeIcon('console'),
             },
@@ -38,7 +38,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 label: '我的博客',
                 command: {
                     title: '打开我的博客',
-                    command: 'vscode-cnb.open-my-blog',
+                    command: 'vscode-cnb.open.my-blog',
                 },
                 iconPath: new ThemeIcon('window'),
             },
@@ -46,7 +46,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 label: '我的主页',
                 command: {
                     title: '打开我的主页',
-                    command: 'vscode-cnb.open-my-home-page',
+                    command: 'vscode-cnb.open.my-home',
                 },
                 iconPath: new ThemeIcon('home'),
             },

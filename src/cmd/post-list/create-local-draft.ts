@@ -5,7 +5,7 @@ import { osOpenActiveFile } from '@/cmd/open/os-open-active-file'
 import { openPostFile } from './open-post-file'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
-export const createLocalDraft = async () => {
+export async function createLocalDraft() {
     let title = await window.showInputBox({
         placeHolder: '请输入标题',
         prompt: `文件将会保存到 ${WorkspaceCfg.getWorkspaceUri().fsPath.replace(homedir(), '~')} 目录下`,
