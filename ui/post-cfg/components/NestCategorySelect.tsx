@@ -1,5 +1,5 @@
 import { ActionButton, Checkbox, Icon, Link, Spinner, Stack } from '@fluentui/react'
-import { PostCategories, PostCategory } from '@/model/post-category'
+import { PostCategory } from '@/model/post-category'
 import { take } from 'lodash-es'
 import { personalCategoriesStore } from 'post-cfg/service/personal-category-store'
 import React from 'react'
@@ -13,7 +13,7 @@ export interface INestCategoriesSelectProps {
 
 export interface INestCategoriesSelectState {
     expanded?: Set<number> | null
-    children?: PostCategories
+    children?: PostCategory[]
     showAll?: boolean
     limit: number
 }

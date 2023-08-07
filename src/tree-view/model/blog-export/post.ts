@@ -8,7 +8,10 @@ import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 export class ExportPostTreeItem extends BaseTreeItemSource {
     readonly contextValue = 'cnblogs-export-post'
 
-    constructor(public readonly parent: ExportPostEntryTreeItem, public readonly post: ExportPost) {
+    constructor(
+        public readonly parent: ExportPostEntryTreeItem,
+        public readonly post: ExportPost
+    ) {
         super()
     }
 

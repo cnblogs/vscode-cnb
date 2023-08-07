@@ -1,11 +1,11 @@
 import { env, ExtensionContext, Uri } from 'vscode'
-import { defaultConfig, devConfig, IExtensionConfig, isDevEnv } from '@/model/config'
+import { defaultConfig, devConfig, ExtConst, isDevEnv } from '@/model/config'
 import path from 'path'
 
 export class GlobalCtx {
     private _extensionContext: ExtensionContext | null = null
-    private readonly _config: IExtensionConfig = defaultConfig
-    private readonly _devConfig: IExtensionConfig = devConfig
+    private readonly _config: ExtConst = defaultConfig
+    private readonly _devConfig: ExtConst = devConfig
 
     get secretsStorage() {
         return this.extCtx.secrets
@@ -15,7 +15,7 @@ export class GlobalCtx {
         return this.extCtx.globalState
     }
 
-    get config(): IExtensionConfig {
+    get config(): ExtConst {
         return isDevEnv() ? this._devConfig : this._config
     }
 

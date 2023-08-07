@@ -2,14 +2,14 @@ import { escapeRegExp } from 'lodash-es'
 import path from 'path'
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/model/post'
-import { PostService } from '@/service/post'
-import { PostFileMapManager } from '@/service/post-file-map'
+import { PostService } from '@/service/post/post'
+import { PostFileMapManager } from '@/service/post/post-file-map'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
-import { revealPostListItem } from '@/service/post-list-view'
+import { revealPostListItem } from '@/service/post/post-list-view'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { Alert } from '@/infra/alert'
 
-const renameLinkedFile = async (post: Post): Promise<void> => {
+async function renameLinkedFile(post: Post): Promise<void> {
     const filePath = PostFileMapManager.getFilePath(post.id)
 
     if (!filePath) return
@@ -34,7 +34,7 @@ const renameLinkedFile = async (post: Post): Promise<void> => {
     }
 }
 
-export const renamePost = async (arg: Post | PostTreeItem) => {
+export async function renamePost(arg: Post | PostTreeItem) {
     const post = arg instanceof PostTreeItem ? arg.post : arg
     if (!post) return
 

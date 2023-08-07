@@ -1,6 +1,6 @@
 import { CmdHandler } from '@/cmd/cmd-handler'
-import { IngApi } from '@/service/ing.api'
-import { getIngListWebviewProvider } from '@/service/ing-list-webview-provider'
+import { IngApi } from '@/service/ing/ing-api'
+import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provider'
 import { ProgressLocation, window } from 'vscode'
 
 export class CommentIngCmdHandler implements CmdHandler {
@@ -28,17 +28,14 @@ export class CommentIngCmdHandler implements CmdHandler {
         const atContent = atUserAlias ? `@${atUserAlias} ` : ''
 
         if (this._content) {
-            return window.withProgress(
-                { location: ProgressLocation.Notification, title: '正在发表评论, 请稍后...' },
-                p => {
-                    p.report({ increment: 30 })
-                    return IngApi.comment(this._ingId, {
-                        replyTo: atUserId,
-                        content: atContent + this._content,
-                        parentCommentId: this._parentCommentId ?? 0,
-                    }).then(hasCommented => (hasCommented ? this.onCommented() : undefined))
-                }
-            )
+            return window.withProgress({ location: ProgressLocation.Notification, title: '正在请求...' }, p => {
+                p.report({ increment: 30 })
+                return IngApi.comment(this._ingId, {
+                    replyTo: atUserId,
+                    content: atContent + this._content,
+                    parentCommentId: this._parentCommentId ?? 0,
+                }).then(hasCommented => (hasCommented ? this.onCommented() : undefined))
+            })
         }
     }
 

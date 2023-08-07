@@ -22,7 +22,10 @@ export class DownloadedExportMetadata extends TreeItem {
 }
 
 export class ExportPostEntryTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<ExportPostTreeItem> {
-    constructor(public readonly parent: BlogExportTreeItem, public readonly downloadedExport: DownloadedBlogExport) {
+    constructor(
+        public readonly parent: BlogExportTreeItem,
+        public readonly downloadedExport: DownloadedBlogExport
+    ) {
         super()
     }
 
@@ -39,7 +42,7 @@ export class ExportPostEntryTreeItem extends BaseTreeItemSource implements BaseE
     }
 
     getChildrenAsync: () => Promise<ExportPostTreeItem[]> = async () => {
-        const { ExportPostStore } = await import('@/service/blog-export-post.store')
+        const { ExportPostStore } = await import('@/service/blog-export/blog-export-post.store')
         const { downloadedExport } = this
         const store = new ExportPostStore(downloadedExport)
         const postTreeItems: ExportPostTreeItem[] = await store.list().then(

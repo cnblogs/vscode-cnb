@@ -1,18 +1,21 @@
 import { QuickPickItem } from 'vscode'
 import { AccessPermission, Post } from '@/model/post'
-import { PostCategories, PostCategory } from '@/model/post-category'
+import { PostCategory } from '@/model/post-category'
 import { Alert } from '@/infra/alert'
 import { InputFlowAction, InputStep, MultiStepInput, QuickPickParameters } from '@/service/multi-step-input'
-import { postCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post/post-category'
 
 class CategoryPickItem implements QuickPickItem {
     label: string
-    description?: string | undefined
-    detail?: string | undefined
-    picked?: boolean | undefined
-    alwaysShow?: boolean | undefined
+    description?: string
+    detail?: string
+    picked?: boolean
+    alwaysShow?: boolean
 
-    constructor(name: string, public id: number) {
+    constructor(
+        name: string,
+        public id: number
+    ) {
         this.label = name
     }
 
@@ -20,18 +23,21 @@ class CategoryPickItem implements QuickPickItem {
         return new CategoryPickItem(category.title, category.categoryId)
     }
 
-    static fromPostCategories(categories: PostCategories): CategoryPickItem[] {
+    static fromPostCategories(categories: PostCategory[]): CategoryPickItem[] {
         return categories.map(this.fromPostCategory)
     }
 }
 
 class AccessPermissionPickItem implements QuickPickItem {
-    description?: string | undefined
-    detail?: string | undefined
-    picked?: boolean | undefined
-    alwaysShow?: boolean | undefined
+    description?: string
+    detail?: string
+    picked?: boolean
+    alwaysShow?: boolean
 
-    constructor(public id: AccessPermission, public label: string) {}
+    constructor(
+        public id: AccessPermission,
+        public label: string
+    ) {}
 }
 
 type PostSettingType = 'categoryIds' | 'tags' | 'description' | 'password' | 'accessPermission' | 'isPublished'
@@ -98,11 +104,11 @@ export const inputPostSetting = (
     // 分类
     const inputCategory = async (input: MultiStepInput) => {
         calculateStepNumber('categoryIds')
-        let categories: PostCategories = []
+        let categories: PostCategory[] = []
         try {
-            categories = await postCategoryService.listCategories()
+            categories = await PostCategoryService.listCategories()
         } catch (err) {
-            Alert.err(err instanceof Error ? err.message : JSON.stringify(err))
+            void Alert.err(err instanceof Error ? err.message : JSON.stringify(err))
             // 取消
             throw InputFlowAction.cancel
         }

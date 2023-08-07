@@ -30,7 +30,7 @@ export async function editExportPost(input: unknown): Promise<void> {
     fs.mkdirSync(dirname, { recursive: true })
     const fullPath = path.join(`${dirname}`, `${fileName}.博客备份-${backupName}-${postId}.${extName}`)
 
-    const { ExportPostStore } = await import('@/service/blog-export-post.store')
+    const { ExportPostStore } = await import('@/service/blog-export/blog-export-post.store')
     const store = new ExportPostStore(downloadedExport)
     await promisify(fs.writeFile)(fullPath, await store.getBody(postId))
 

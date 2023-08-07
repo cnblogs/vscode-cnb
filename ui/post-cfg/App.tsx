@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { ThemeProvider } from '@fluentui/react/lib/Theme'
-import { Theme, PartialTheme, Stack, Breadcrumb, IBreadcrumbItem, Spinner, initializeIcons } from '@fluentui/react'
+import { Breadcrumb, IBreadcrumbItem, initializeIcons, PartialTheme, Spinner, Stack, Theme } from '@fluentui/react'
 import { PostForm } from './components/PostForm'
 import { Post } from '@/model/post'
 import { personalCategoriesStore } from './service/personal-category-store'
 import { siteCategoriesStore } from './service/site-category-store'
 import { tagsStore } from './service/tags-store'
-import { webviewMessage } from '@/model/webview-msg'
+import { WebviewMsg } from '@/model/webview-msg'
 import { WebviewCmd } from '@/model/webview-cmd'
 import { PostFormContextProvider } from './components/PostFormContextProvider'
 import { activeThemeProvider } from 'share/active-theme-provider'
@@ -76,7 +76,7 @@ class App extends Component<AppProps, AppState> {
         const { breadcrumbs } = this.state
         if (!breadcrumbs || breadcrumbs.length <= 0) return <></>
 
-        const items = breadcrumbs.map(breadcrumb => ({ text: breadcrumb, key: breadcrumb } as IBreadcrumbItem))
+        const items = breadcrumbs.map(breadcrumb => ({ text: breadcrumb, key: breadcrumb }) as IBreadcrumbItem)
         return <Breadcrumb styles={{ item: { fontSize: 12 } }} items={items}></Breadcrumb>
     }
 
@@ -89,23 +89,23 @@ class App extends Component<AppProps, AppState> {
 
             if (command === WebviewCmd.UiCmd.editPostCfg) {
                 const { post, activeTheme, personalCategories, siteCategories, tags, breadcrumbs, fileName } =
-                    message as webviewMessage.EditPostCfgMessage
+                    message as WebviewMsg.EditPostCfgMsg
                 personalCategoriesStore.set(personalCategories)
                 siteCategoriesStore.set(siteCategories)
                 tagsStore.set(tags)
 
                 this.setState({
-                    theme: activeTheme === 2 ? darkTheme : lightTheme,
+                    theme: (activeTheme as number) === 2 ? darkTheme : lightTheme,
                     post,
                     breadcrumbs,
                     fileName,
                     useNestCategoriesSelect: personalCategories.some(c => c.childCount > 0),
                 })
             } else if (command === WebviewCmd.UiCmd.updateBreadcrumbs) {
-                const { breadcrumbs } = message as webviewMessage.UpdateBreadcrumbsMessage
+                const { breadcrumbs } = message as WebviewMsg.UpdateBreadcrumbMsg
                 this.setState({ breadcrumbs })
             } else if (command === WebviewCmd.UiCmd.setFluentIconBaseUrl) {
-                const { baseUrl } = message as webviewMessage.SetFluentIconBaseUrlMessage
+                const { baseUrl } = message as WebviewMsg.SetFluentIconBaseUrlMsg
                 initializeIcons(baseUrl)
             } else if (command === WebviewCmd.UiCmd.updateTheme) {
                 this.setState({ theme: activeThemeProvider.activeTheme() })

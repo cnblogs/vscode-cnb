@@ -2,16 +2,16 @@ import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode
 import { Post } from '@/model/post'
 import { LocalDraft } from '@/service/local-draft'
 import { Alert } from '@/infra/alert'
-import { PostService } from '@/service/post'
-import { PostFileMapManager } from '@/service/post-file-map'
+import { PostService } from '@/service/post/post'
+import { PostFileMapManager } from '@/service/post/post-file-map'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { openPostInVscode } from './open-post-in-vscode'
 import { openPostFile } from './open-post-file'
-import { searchPostByTitle } from '@/service/search-post-by-title'
+import { searchPostByTitle } from '@/service/post/search-post-by-title'
 import * as path from 'path'
 import { refreshPostList } from './refresh-post-list'
 import { PostEditDto } from '@/model/post-edit-dto'
-import { PostCfgPanel } from '@/service/post-cfg-panel'
+import { PostCfgPanel } from '@/service/post/post-cfg-panel'
 import { saveFilePendingChanges } from '@/infra/save-file-pending-changes'
 import { extractImg } from '@/cmd/extract-img'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
@@ -92,11 +92,11 @@ export async function uploadPost(input: Post | PostTreeItem | PostEditDto | unde
 
     let post: Post | undefined
 
-    if (input instanceof PostEditDto) {
-        post = input.post
-    } else {
+    if (input instanceof Post) {
         const dto = await PostService.fetchPostEditDto(input.id)
         post = dto?.post
+    } else {
+        post = input.post
     }
 
     if (post === undefined) return
@@ -179,7 +179,7 @@ export async function uploadPostFile(fileUri: Uri | undefined) {
     if (isEmptyBody(fileContent)) return
 
     const options = ['新建博文', '关联已有博文']
-    const selected = await window.showInformationMessage(
+    const selected = await Alert.info(
         '本地文件尚未关联到博客园博文',
         {
             modal: true,
@@ -211,11 +211,11 @@ export async function uploadPostNoConfirm(input: Post | PostTreeItem | PostEditD
 
     let post: Post | undefined
 
-    if (input instanceof PostEditDto) {
-        post = input.post
-    } else {
+    if (input instanceof Post) {
         const dto = await PostService.fetchPostEditDto(input.id)
         post = dto?.post
+    } else {
+        post = input.post
     }
 
     if (post === undefined) return
@@ -286,7 +286,7 @@ export async function uploadPostFileNoConfirm(fileUri: Uri | undefined) {
     if (isEmptyBody(fileContent)) return
 
     const options = ['新建博文', '关联已有博文']
-    const selected = await window.showInformationMessage(
+    const selected = await Alert.info(
         '本地文件尚未关联到博客园博文',
         {
             modal: true,

@@ -94,7 +94,7 @@ const getClipboardImage = (): Promise<IClipboardImg> => {
         execution.stdout.on('data', (data: Buffer) => {
             if (platform === 'linux') {
                 if (data.toString().trim() === 'no xclip') {
-                    Alert.warn('xclip not found, Please install xclip first')
+                    void Alert.warn('xclip not found, Please install xclip first')
                     return reject(new Error('Please install xclip first'))
                 }
             }

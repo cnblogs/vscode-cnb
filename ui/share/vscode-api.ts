@@ -1,4 +1,4 @@
-let instance: VsCodeApi | undefined
+let instance: VsCodeApi | null = null
 
 export function getVsCodeApiSingleton() {
     instance ??= acquireVsCodeApi()

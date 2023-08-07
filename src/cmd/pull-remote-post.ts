@@ -1,12 +1,12 @@
 import { MessageOptions, Uri, window, workspace } from 'vscode'
 import { Post } from '@/model/post'
-import { PostFileMapManager } from '@/service/post-file-map'
+import { PostFileMapManager } from '@/service/post/post-file-map'
 import { openPostInVscode } from './post-list/open-post-in-vscode'
 import fs from 'fs'
-import { PostService } from '@/service/post'
+import { PostService } from '@/service/post/post'
 import { Alert } from '@/infra/alert'
 import path from 'path'
-import { revealPostListItem } from '@/service/post-list-view'
+import { revealPostListItem } from '@/service/post/post-list-view'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 
@@ -41,7 +41,7 @@ type CmdCtx = { postId: number; fileUri: Uri }
 
 const parsePostInput = (input: InputType): input is Post => input instanceof Post
 
-const handlePostInput = async (post: Post, contexts: CmdCtx[]) => {
+async function handlePostInput(post: Post, contexts: CmdCtx[]) {
     const { id: postId } = post
     let filePath = PostFileMapManager.getFilePath(postId)
     if (filePath && !fs.existsSync(filePath)) {

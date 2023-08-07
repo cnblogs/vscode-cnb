@@ -11,7 +11,7 @@ import { BlogExportTreeItem, DownloadedExportTreeItem } from '@/tree-view/model/
 import os from 'os'
 import { escapeRegExp } from 'lodash-es'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
-import { BlogExportApi } from '@/service/blog-export.api'
+import { BlogExportApi } from '@/service/blog-export/blog-export'
 
 export class BlogExportRecordTreeItem extends BaseTreeItemSource implements BaseEntryTreeItem<BlogExportTreeItem> {
     static readonly contextValue = 'cnblogs-export-record'
@@ -23,7 +23,10 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
         message?: string | null
     } | null
 
-    constructor(private readonly _treeDataProvider: BlogExportProvider, public record: BlogExportRecord) {
+    constructor(
+        private readonly _treeDataProvider: BlogExportProvider,
+        public record: BlogExportRecord
+    ) {
         super()
     }
 

@@ -69,23 +69,25 @@ export class MultiStepInput {
         ignoreFocusOut: ignoreFocusout,
     }: TParameters) {
         const disposables: Disposable[] = []
+
+        const input = window.createQuickPick<T>()
+        input.title = title
+        input.step = step
+        input.totalSteps = totalSteps
+        input.placeholder = placeholder
+        input.items = items
+        input.canSelectMany = canSelectMany
+        if (activeItems) {
+            input.activeItems = activeItems
+            input.selectedItems = activeItems
+        }
+        input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])]
+        input.ignoreFocusOut = ignoreFocusout ?? false
+
         try {
             return await new Promise<
                 T | T[] | QuickInputButton | (TParameters extends { buttons: (infer I)[] } ? I : never)
             >((resolve, reject) => {
-                const input = window.createQuickPick<T>()
-                input.title = title
-                input.step = step
-                input.totalSteps = totalSteps
-                input.placeholder = placeholder
-                input.items = items
-                input.canSelectMany = canSelectMany
-                if (activeItems) {
-                    input.activeItems = activeItems
-                    input.selectedItems = activeItems
-                }
-                input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])]
-                input.ignoreFocusOut = ignoreFocusout ?? false
                 disposables.push(
                     input.onDidTriggerButton(item => {
                         if (item === QuickInputButtons.Back) reject(InputFlowAction.back)
@@ -130,21 +132,30 @@ export class MultiStepInput {
         placeHolder,
         password,
         ignoreFocusOut,
-    }: TParameters): Promise<string | (TParameters extends { buttons: any[] } ? QuickInputButton : string)> {
+    }: TParameters): Promise<
+        | string
+        | (TParameters extends {
+              buttons: any[]
+          }
+              ? QuickInputButton
+              : string)
+    > {
         const disposables: Disposable[] = []
+
+        const input = window.createInputBox()
+        input.title = title
+        input.step = step
+        input.placeholder = placeHolder
+        input.password = password ?? false
+        input.totalSteps = totalSteps
+        input.value = value || ''
+        input.prompt = prompt
+        input.ignoreFocusOut = ignoreFocusOut ?? false
+        input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])]
+        let validating = validateInput('')
+
         try {
             return await new Promise((resolve, reject) => {
-                const input = window.createInputBox()
-                input.title = title
-                input.step = step
-                input.placeholder = placeHolder
-                input.password = password ?? false
-                input.totalSteps = totalSteps
-                input.value = value || ''
-                input.prompt = prompt
-                input.ignoreFocusOut = ignoreFocusOut ?? false
-                input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])]
-                let validating = validateInput('')
                 disposables.push(
                     input.onDidTriggerButton(item => {
                         if (item === QuickInputButtons.Back) reject(InputFlowAction.back)

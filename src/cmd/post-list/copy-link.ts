@@ -1,10 +1,10 @@
 import { TreeViewCmdHandler } from '@/cmd/cmd-handler'
 import { Post } from '@/model/post'
 import { Alert } from '@/infra/alert'
-import { PostFileMapManager } from '@/service/post-file-map'
-import { PostService } from '@/service/post'
+import { PostFileMapManager } from '@/service/post/post-file-map'
+import { PostService } from '@/service/post/post'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
-import { env, MessageItem, Uri, window } from 'vscode'
+import { env, MessageItem, Uri } from 'vscode'
 
 type LinkFormat = 'markdown' | 'raw' | 'id'
 
@@ -60,16 +60,14 @@ export class CopyPostLinkCmdHandler implements TreeViewCmdHandler<Thenable<Post 
     }
 
     private askFormat(): Thenable<LinkFormat | undefined | null> {
-        return window
-            .showInformationMessage(
-                '选择链接格式',
-                { modal: true },
-                ...(Object.keys(this._strategies) as LinkFormat[]).map<MessageItem & { format: LinkFormat }>(f => ({
-                    title: this._strategies[f].name,
-                    format: f,
-                    isCloseAffordance: false,
-                }))
-            )
-            .then(x => x?.format)
+        return Alert.info(
+            '选择链接格式',
+            { modal: true },
+            ...(Object.keys(this._strategies) as LinkFormat[]).map<MessageItem & { format: LinkFormat }>(f => ({
+                title: this._strategies[f].name,
+                format: f,
+                isCloseAffordance: false,
+            }))
+        ).then(x => x?.format)
     }
 }

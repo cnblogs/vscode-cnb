@@ -13,7 +13,7 @@ const updateExport = (id: number, value?: DownloadedBlogExport | null) =>
     globalCtx.storage.update(`${metadataKey}${id}`, value)
 
 export namespace DownloadedExportStore {
-    export async function add(filePath: string, id?: number | null): Promise<void> {
+    export async function add(filePath: string, id?: number | null) {
         const item: DownloadedBlogExport = { id, filePath }
         const list = await DownloadedExportStore.list()
         const oldIdx = list.findIndex(x => x.filePath === filePath)
@@ -26,7 +26,7 @@ export namespace DownloadedExportStore {
         ]).then(() => undefined)
     }
 
-    export async function list({ prune = true } = {}): Promise<DownloadedBlogExport[]> {
+    export async function list({ prune = true } = {}) {
         let items = globalCtx.storage.get<DownloadedBlogExport[]>(listKey) ?? []
 
         if (prune) {
@@ -54,18 +54,16 @@ export namespace DownloadedExportStore {
     }
 
     export async function remove(downloaded: DownloadedBlogExport, { shouldRemoveExportRecordMap = true } = {}) {
-        await Promise.all([
+        const futList = [
             updateList((await list()).filter(x => x.filePath !== downloaded.filePath)),
             shouldRemoveExportRecordMap && downloaded.id != null && downloaded.id > 0
                 ? updateExport(downloaded.id, undefined)
-                : Promise.resolve(),
-        ])
+                : await Promise.resolve(),
+        ]
+        await Promise.all(futList)
     }
 
-    export async function findById(
-        id: number,
-        { prune = true } = {}
-    ): Promise<DownloadedBlogExport | null | undefined> {
+    export async function findById(id: number, { prune = true } = {}) {
         const key = `${metadataKey}${id}`
 
         let item = globalCtx.storage.get<DownloadedBlogExport>(key)

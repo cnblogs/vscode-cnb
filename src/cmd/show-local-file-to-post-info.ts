@@ -1,10 +1,10 @@
 import path from 'path'
-import { MessageOptions, Uri, window } from 'vscode'
+import { MessageOptions, Uri } from 'vscode'
 import { Alert } from '@/infra/alert'
-import { PostService } from '@/service/post'
-import { postCategoryService } from '@/service/post-category'
-import { PostFileMapManager } from '@/service/post-file-map'
-import { searchPostByTitle } from '@/service/search-post-by-title'
+import { PostService } from '@/service/post/post'
+import { PostCategoryService } from '@/service/post/post-category'
+import { PostFileMapManager } from '@/service/post/post-file-map'
+import { searchPostByTitle } from '@/service/post/search-post-by-title'
 import { viewPostOnline } from './view-post-online'
 import format from 'date-fns/format'
 
@@ -14,7 +14,7 @@ import format from 'date-fns/format'
  * @param {(Uri | number)} input
  * @returns {*}  {Promise<void>}
  */
-export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void> => {
+export async function showLocalFileToPostInfo(input: Uri | number): Promise<void> {
     let filePath: string | undefined
     let postId: number | undefined
     if (input instanceof Uri && input.scheme === 'file') {
@@ -37,7 +37,7 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
                 })
                 if (selectedPost) {
                     await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
-                    Alert.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`)
+                    void Alert.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`)
                 }
             }
             return
@@ -52,7 +52,7 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
     const post = (await PostService.fetchPostEditDto(postId))?.post
     if (!post) return
 
-    let categories = await postCategoryService.listCategories()
+    let categories = await PostCategoryService.listCategories()
     categories = categories.filter(x => post.categoryIds?.includes(x.categoryId))
     const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : ''
     const tagsDesc = post.tags?.length ?? 0 > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : ''
@@ -75,6 +75,6 @@ export const showLocalFileToPostInfo = async (input: Uri | number): Promise<void
         await viewPostOnline(post)
     } else if (selected === options[1]) {
         await PostFileMapManager.updateOrCreate(postId, '')
-        Alert.info(`博文 ${post.title} 已与 ${filePath} 取消关联`)
+        void Alert.info(`博文 ${post.title} 已与 ${filePath} 取消关联`)
     }
 }

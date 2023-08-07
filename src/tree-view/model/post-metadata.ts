@@ -6,8 +6,8 @@ import zhCN from 'date-fns/locale/zh-CN'
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
 import { AccessPermission, Post, formatAccessPermission } from '@/model/post'
 import { PostEditDto } from '@/model/post-edit-dto'
-import { postCategoryService } from '@/service/post-category'
-import { PostService } from '@/service/post'
+import { PostCategoryService } from '@/service/post/post-category'
+import { PostService } from '@/service/post/post'
 import { BaseEntryTreeItem } from './base-entry-tree-item'
 import { BaseTreeItemSource } from './base-tree-item-source'
 import { PostTreeItem } from './post-tree-item'
@@ -50,7 +50,7 @@ const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto | undefined)
     ] as const
 
 export abstract class PostMetadata extends BaseTreeItemSource {
-    constructor(public parent: Post) {
+    protected constructor(public parent: Post) {
         super()
     }
 
@@ -79,7 +79,10 @@ export abstract class PostEntryMetadata<T extends PostMetadata = PostMetadata>
     extends PostMetadata
     implements BaseEntryTreeItem<T>
 {
-    constructor(parent: Post, public readonly children: T[]) {
+    constructor(
+        parent: Post,
+        public readonly children: T[]
+    ) {
         super(parent)
     }
 
@@ -119,7 +122,12 @@ export class PostTagEntryMetadata extends PostEntryMetadata<PostTagMetadata> {
 
 export class PostCategoryMetadata extends PostMetadata {
     readonly icon = new ThemeIcon('vscode-cnb-folder-close')
-    constructor(parent: Post, public categoryName: string, public categoryId: number) {
+
+    constructor(
+        parent: Post,
+        public categoryName: string,
+        public categoryId: number
+    ) {
         super(parent)
     }
 
@@ -127,10 +135,11 @@ export class PostCategoryMetadata extends PostMetadata {
         editDto = editDto ? editDto : await PostService.fetchPostEditDto(parent.id)
         if (editDto == null) return []
 
-        const {
-            post: { categoryIds },
-        } = editDto
-        return (await Promise.all((categoryIds ?? []).map(categoryId => postCategoryService.find(categoryId))))
+        const categoryIds = editDto.post.categoryIds ?? []
+        const futList = categoryIds.map(PostCategoryService.find)
+        const categoryList = await Promise.all(futList)
+
+        return categoryList
             .filter((x): x is PostCategory => x != null)
             .map(
                 category =>
@@ -153,7 +162,12 @@ export class PostCategoryMetadata extends PostMetadata {
 
 export class PostTagMetadata extends PostMetadata {
     readonly icon = undefined
-    constructor(parent: Post, public tag: string, public tagId?: string) {
+
+    constructor(
+        parent: Post,
+        public tag: string,
+        public tagId?: string
+    ) {
         super(parent)
     }
 
@@ -175,7 +189,12 @@ export class PostTagMetadata extends PostMetadata {
 
 export abstract class PostDateMetadata extends PostMetadata {
     readonly distance: string
-    constructor(public label: string, parent: Post, public readonly date: Date) {
+
+    constructor(
+        public label: string,
+        parent: Post,
+        public readonly date: Date
+    ) {
         super(parent)
         this.distance = this.toDistance()
     }

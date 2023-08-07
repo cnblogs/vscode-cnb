@@ -3,6 +3,7 @@ import { Readable } from 'stream'
 import { isString, merge, pick } from 'lodash-es'
 import httpClient from '@/infra/http-client'
 import path from 'path'
+import { lookup, extension } from 'mime-types'
 
 export namespace ImgService {
     export async function upload<
@@ -11,24 +12,25 @@ export namespace ImgService {
             fileName?: string
             filename?: string
             path?: string | Buffer
-        }
+        },
     >(file: T) {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         const { name, fileName, filename, path: _path } = file
         const finalName = path.basename(isString(_path) ? _path : fileName || filename || name || 'image.png')
         const ext = path.extname(finalName)
 
-        const mime = await import('mime')
-        const mimeType = mime.lookup(ext, 'image/png')
+        let mimeType = lookup(ext)
+        if (mimeType === false) mimeType = 'image/png'
 
         const fd = new (await import('form-data')).default()
         fd.append('image', file, { filename: finalName, contentType: mimeType })
 
-        const res = await httpClient.post(`${globalCtx.config.apiBaseUrl}/api/posts/body/images`, {
+        const url = `${globalCtx.config.apiBaseUrl}/api/posts/body/images`
+
+        const resp = await httpClient.post(url, {
             body: fd,
         })
 
-        return res.body
+        return resp.body
     }
 
     /**
@@ -39,14 +41,15 @@ export namespace ImgService {
      * @returns The {@link Readable} stream
      */
     export async function download(url: string, name?: string): Promise<Readable> {
-        const res = await httpClient.get(url, { responseType: 'buffer' })
-        const contentType = res.headers['content-type'] ?? 'image/png'
+        const resp = await httpClient.get(url, { responseType: 'buffer' })
+        const contentType = resp.headers['content-type'] ?? 'image/png'
         name = !name ? 'image' : name
-        const mime = await import('mime')
 
-        return merge(Readable.from(res.body), {
-            ...pick(res, 'httpVersion', 'headers'),
-            path: `${name}.${mime.extension(contentType) ?? 'png'}`,
+        const readable = Readable.from(resp.body)
+
+        return merge(readable, {
+            ...pick(resp, 'httpVersion', 'headers'),
+            path: `${name}.${extension(contentType) ?? 'png'}`,
         })
     }
 }

@@ -11,10 +11,10 @@ export class PostCategory {
     visibleChildCount = 0
     parent?: PostCategory | null
 
-    flattenParents({ includeSelf = true }: { includeSelf?: boolean } = {}): PostCategories {
+    flattenParents({ includeSelf = true }: { includeSelf?: boolean } = {}): PostCategory[] {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         let i: PostCategory | null | undefined = this
-        const result: PostCategories = []
+        const result: PostCategory[] = []
         while (i != null) {
             if (i !== this || includeSelf) result.unshift(i)
             if (i.parent && !(i.parent instanceof PostCategory)) i.parent = Object.assign(new PostCategory(), i.parent)
@@ -30,5 +30,3 @@ export type PostCategoryUpdateDto = Pick<
     PostCategory,
     'categoryId' | 'description' | 'count' | 'title' | 'order' | 'visible'
 >
-
-export type PostCategories = PostCategory[]

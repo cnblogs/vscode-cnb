@@ -1,8 +1,7 @@
-import { MessageItem, MessageOptions, ProgressLocation, Range, Uri, window, workspace, WorkspaceEdit } from 'vscode'
-import { ImgInfo, ImgSrc, MkdImgExtractor, newImgSrcFilter } from '@/service/mkd-img-extractor'
+import { MessageOptions, ProgressLocation, Range, Uri, window, workspace, WorkspaceEdit } from 'vscode'
+import { ImgInfo, ImgSrc, MkdImgExtractor } from '@/markdown/mkd-img-extractor'
 import { Alert } from '@/infra/alert'
-
-type ExtractOption = MessageItem & Partial<{ imageSrc: ImgSrc }>
+import { findImgLink } from '@/infra/filter/find-img-link'
 
 export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
     if (!(arg instanceof Uri && arg.scheme === 'file')) return
@@ -14,50 +13,57 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
     await textDocument.save()
 
     const markdown = (await workspace.fs.readFile(arg)).toString()
-    const extractor = new MkdImgExtractor(markdown, arg)
+    let imgInfoList = findImgLink(markdown)
 
-    const images = extractor.findImages()
-    if (images.length <= 0) {
+    if (imgInfoList.length <= 0) {
         if (inputImgSrc === undefined) void Alert.info('没有找到可以提取的图片')
         return
     }
 
-    const webImgCount = images.filter(newImgSrcFilter(ImgSrc.web)).length
-    const dataUrlImgCount = images.filter(newImgSrcFilter(ImgSrc.dataUrl)).length
-    const fsImgCount = images.filter(newImgSrcFilter(ImgSrc.fs)).length
+    const webImgCount = imgInfoList.filter(i => i.src === ImgSrc.web).length
+    const dataUrlImgCount = imgInfoList.filter(i => i.src === ImgSrc.dataUrl).length
+    const fsImgCount = imgInfoList.filter(i => i.src === ImgSrc.fs).length
 
-    const displayOptions: ExtractOption[] = [
-        { title: '提取全部', imageSrc: ImgSrc.any },
-        { title: '提取网络图片', imageSrc: ImgSrc.web },
-        { title: '提取 Data Url 图片', imageSrc: ImgSrc.dataUrl },
-        { title: '提取本地图片', imageSrc: ImgSrc.fs },
-        { title: '取消', imageSrc: undefined, isCloseAffordance: true },
+    const options = [
+        { title: '提取全部', src: ImgSrc.any },
+        { title: '取消', src: undefined, isCloseAffordance: true },
     ]
+    const detail = ['共找到:']
 
-    let selectedSrc
+    if (webImgCount > 0) {
+        options.push({ title: '提取网络图片', src: ImgSrc.web })
+        detail.push(`${webImgCount} 张可以提取的网络图片`)
+    }
+    if (dataUrlImgCount > 0) {
+        options.push({ title: '提取 Data Url 图片', src: ImgSrc.dataUrl })
+        detail.push(`${dataUrlImgCount} 张可以提取的 Data Url 图片`)
+    }
+    if (fsImgCount > 0) {
+        options.push({ title: '提取本地图片', src: ImgSrc.fs })
+        detail.push(`${fsImgCount} 张可以提取的本地图片`)
+    }
+
+    let selectedSrc: ImgSrc | undefined
 
     if (inputImgSrc !== undefined) {
-        selectedSrc = displayOptions.find(ent => ent.imageSrc === inputImgSrc)?.imageSrc
+        selectedSrc = inputImgSrc
     } else {
         // if src is not specified:
-        const selectedOption = await Alert.info<ExtractOption>(
+        const selected = await Alert.info(
             '要提取哪些图片? 此操作会替换源文件中的图片链接!',
             {
                 modal: true,
-                detail:
-                    '共找到:\n' +
-                    `${webImgCount} 张可以提取的网络图片\n` +
-                    `${dataUrlImgCount} 张可以提取的 Data Url 图片\n` +
-                    `${fsImgCount} 张可以提取的本地图片`,
+                detail: detail.join('\n'),
             } as MessageOptions,
-            ...displayOptions
+            ...options
         )
-        selectedSrc = selectedOption?.imageSrc
+        selectedSrc = selected?.src
     }
 
     if (selectedSrc === undefined) return
+    if (selectedSrc !== ImgSrc.any) imgInfoList = imgInfoList.filter(i => i.src === selectedSrc)
 
-    extractor.imageSrc = selectedSrc
+    const extractor = new MkdImgExtractor(arg)
 
     const failedImages = await window.withProgress(
         { title: '正在提取图片', location: ProgressLocation.Notification },
@@ -66,42 +72,37 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
                 const total = info.length
                 const image = info[count]
                 progress.report({
-                    increment: (count / total) * 80,
+                    increment: (count / total) * 50,
                     message: `[${count + 1} / ${total}] 正在提取 ${image.data}`,
                 })
             }
 
-            const extracted = await extractor.extract()
+            const extracted = await extractor.extract(imgInfoList)
             const extractedLen = extracted.length
-            const idx = 0
 
             const we = extracted
                 .filter(([, dst]) => dst != null)
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 .map(([src, dst]) => [src, dst!])
-                .map(([src, dst]) => {
-                    const posL = textDocument.positionAt(src.startOffset)
-                    const posR = textDocument.positionAt(
-                        src.startOffset + src.prefix.length + src.data.length + src.postfix.length
-                    )
+                .map(([src, dst], i) => {
+                    const posL = textDocument.positionAt(src.offset)
+                    const posR = textDocument.positionAt(src.offset + src.data.length)
                     const range = new Range(posL, posR)
 
                     // just for ts type inferring
-                    const ret: [Range, ImgInfo] = [range, dst]
+                    const ret: [Range, ImgInfo, number] = [range, dst, i]
                     return ret
                 })
-                .reduce((we, [range, dst]) => {
-                    if (range) {
-                        progress.report({
-                            increment: (idx / extractedLen) * 20 + 80,
-                            message: `[${idx + 1} / ${extractedLen}] 正在替换图片链接 ${dst.data}`,
-                        })
-                        const newText = dst.prefix + dst.data + dst.postfix
-                        we.replace(textDocument.uri, range, newText, {
-                            needsConfirmation: false,
-                            label: dst.data,
-                        })
-                    }
+                .reduce((we, [range, dst, i]) => {
+                    progress.report({
+                        increment: (i / extractedLen) * 20 + 80,
+                        message: `正在替换图片链接 ${dst.data}`,
+                    })
+                    const newText = dst.data
+                    we.replace(textDocument.uri, range, newText, {
+                        needsConfirmation: false,
+                        label: dst.data,
+                    })
 
                     return we
                 }, new WorkspaceEdit())

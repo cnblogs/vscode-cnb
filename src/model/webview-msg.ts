@@ -1,53 +1,53 @@
 import { Post } from './post'
 import { WebviewCmd } from './webview-cmd'
 import { ColorThemeKind } from 'vscode'
-import { PostCategories } from './post-category'
-import { SiteCategories } from './site-category'
 import { PostTags } from './post-tag'
 import { IErrorResponse as ErrorResponse } from './error-response'
 import { ImgUploadStatus } from './img-upload-status'
+import { SiteCategory } from '@/model/site-category'
+import { PostCategory } from '@/model/post-category'
 
-export namespace webviewMessage {
-    export interface Message {
+export namespace WebviewMsg {
+    export interface Msg {
         command: WebviewCmd.UiCmd | WebviewCmd.ExtCmd
     }
 
-    export interface EditPostCfgMessage extends Message {
+    export interface EditPostCfgMsg extends Msg {
         post: Post
         activeTheme: ColorThemeKind
-        personalCategories: PostCategories
-        siteCategories: SiteCategories
+        personalCategories: PostCategory[]
+        siteCategories: SiteCategory[]
         tags: PostTags
         breadcrumbs?: string[]
         fileName: string
     }
 
-    export interface UploadPostMessage extends Message {
+    export interface UploadPostMsg extends Msg {
         post: Post
     }
 
-    export interface ShowErrorResponseMessage extends Message {
+    export interface ShowErrRespMsg extends Msg {
         errorResponse: ErrorResponse
     }
 
-    export interface UpdateBreadcrumbsMessage extends Message {
+    export interface UpdateBreadcrumbMsg extends Msg {
         breadcrumbs?: string[]
     }
 
-    export interface UploadImageMessage extends Message {
+    export interface UploadImgMsg extends Msg {
         imageId: string
     }
 
-    export interface UpdateImageUpdateStatusMessage extends Message {
+    export interface UpdateImgUpdateStatusMsg extends Msg {
         imageId: string
         status: ImgUploadStatus
     }
 
-    export interface SetFluentIconBaseUrlMessage extends Message {
+    export interface SetFluentIconBaseUrlMsg extends Msg {
         baseUrl: string
     }
 
-    export interface ChangeThemeMessage extends Message {
+    export interface ChangeThemeMsg extends Msg {
         colorThemeKind: ColorThemeKind
     }
 }

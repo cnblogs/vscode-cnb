@@ -14,7 +14,7 @@ import { PasswordInput } from './PasswordInput'
 import { getVsCodeApiSingleton } from '../../share/vscode-api'
 import { ErrorResponse } from './ErrorResponse'
 import { WebviewCmd } from '@/model/webview-cmd'
-import { webviewMessage } from '@/model/webview-msg'
+import { WebviewMsg } from '@/model/webview-msg'
 import { InputSummary } from './InputSummary'
 import { IPostFormContext, PostFormContext } from './PostFormContext'
 import PostEntryNameInput from './PostEntryNameInput'
@@ -32,7 +32,7 @@ export interface IPostFormProps {
 export interface IPostFormState extends PostCfg {}
 
 export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
-    static contextType?: React.Context<IPostFormContext> | undefined = PostFormContext
+    static contextType?: React.Context<IPostFormContext> = PostFormContext
     declare context: React.ContextType<typeof PostFormContext>
 
     constructor(props: IPostFormProps) {
@@ -144,15 +144,14 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
     }
 
     private onConfirm() {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         this.context.set({ disabled: true, status: 'submitting' })
         getVsCodeApiSingleton().postMessage({
             command: WebviewCmd.ExtCmd.uploadPost,
             post: Object.assign({}, this.props.post, this.state),
-        } as webviewMessage.UploadPostMessage)
+        } as WebviewMsg.UploadPostMsg)
     }
 
     private onCancel() {
-        getVsCodeApiSingleton().postMessage({ command: WebviewCmd.ExtCmd.disposePanel } as webviewMessage.Message)
+        getVsCodeApiSingleton().postMessage({ command: WebviewCmd.ExtCmd.disposePanel } as WebviewMsg.Msg)
     }
 }

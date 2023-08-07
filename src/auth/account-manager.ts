@@ -1,10 +1,10 @@
 import { AccountInfo } from './account-info'
 import { globalCtx } from '@/ctx/global-ctx'
-import vscode, { authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
+import { window, authentication, AuthenticationGetSessionOptions, Disposable, InputBoxOptions } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
-import { Oauth } from '@/service/oauth.api'
+import { Oauth } from '@/auth/oauth'
 import { authProvider } from '@/auth/auth-provider'
 import { AuthSession } from '@/auth/auth-session'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
@@ -16,59 +16,47 @@ const isAuthorizedStorageKey = 'isAuthorized'
 export const ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED = 'unauthenticated'
 export const ACQUIRE_TOKEN_REJECT_EXPIRED = 'expired'
 
-class AccountManager extends vscode.Disposable {
-    private readonly _disposable = Disposable.from(
-        authProvider.onDidChangeSessions(async ({ added }) => {
-            this._session = null
-            if (added != null && added.length > 0) await this.ensureSession()
+let authSession: AuthSession | null = null
 
-            await this.updateAuthStatus()
+export namespace AccountManagerNg {
+    export async function ensureSession(opt?: AuthenticationGetSessionOptions) {
+        const session = await authentication.getSession(authProvider.providerId, [], opt).then(
+            session => (session ? AuthSession.from(session) : null),
+            e => {
+                void Alert.err(`创建/获取 Session 失败: ${<string>e}`)
+            }
+        )
 
-            accountViewDataProvider.fireTreeDataChangedEvent()
-            postDataProvider.fireTreeDataChangedEvent(undefined)
-            postCategoryDataProvider.fireTreeDataChangedEvent()
+        if (session != null && session.account.accountId < 0) {
+            authSession = null
+            await authProvider.removeSession(session.id)
+        } else {
+            authSession = session
+        }
 
-            BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
-        })
-    )
-
-    private _session: AuthSession | null = null
-
-    constructor() {
-        super(() => {
-            this._disposable.dispose()
-        })
+        return authSession
     }
 
-    get isAuthorized() {
-        return this._session !== null
+    export function webLogin() {
+        return ensureSession({ createIfNone: false, forceNewSession: true })
     }
 
-    get currentUser(): AccountInfo {
-        return this._session?.account ?? AccountInfo.newAnonymous()
+    export async function patLogin() {
+        const opt = {
+            title: '请输入您的个人访问令牌 (PAT)',
+            prompt: '您可以从账户设置中获取个人访问令牌:\nhttps://account.cnblogs.com/settings/account/personal-access-token',
+            password: true,
+        } as InputBoxOptions
+        const pat = await window.showInputBox(opt)
+        if (pat === undefined) return
+
+        await authProvider.onAccessTokenGranted(pat)
+        await ensureSession()
+        await AccountManagerNg.updateAuthStatus()
     }
 
-    /**
-     * Acquire the access token.
-     * This will reject with a human-readable reason string if not sign-in or the token has expired.
-     * @returns The access token of the active session
-     */
-    async acquireToken() {
-        const session = await this.ensureSession({ createIfNone: false })
-
-        if (session == null) return Promise.reject(ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED)
-
-        if (session.isExpired) return Promise.reject(ACQUIRE_TOKEN_REJECT_EXPIRED)
-
-        return session.accessToken
-    }
-
-    async login() {
-        await this.ensureSession({ createIfNone: false, forceNewSession: true })
-    }
-
-    async logout() {
-        if (!this.isAuthorized) return
+    export async function logout() {
+        if (!accountManager.isAuthorized) return
 
         const session = await authentication.getSession(authProvider.providerId, [])
 
@@ -81,39 +69,62 @@ class AccountManager extends vscode.Disposable {
             await Oauth.revokeToken(session.accessToken)
             await authProvider.removeSession(session.id)
         } catch (e: any) {
-            void Alert.err(`登出发生错误: ${e}`)
+            void Alert.err(`登出发生错误: ${<string>e}`)
         }
     }
 
-    async updateAuthStatus() {
-        await this.ensureSession({ createIfNone: false })
+    export async function acquireToken() {
+        const session = await ensureSession({ createIfNone: false })
 
-        await execCmd('setContext', `${globalCtx.extName}.${isAuthorizedStorageKey}`, this.isAuthorized)
+        if (session == null) return Promise.reject(ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED)
 
-        if (this.isAuthorized) {
+        if (session.isExpired) return Promise.reject(ACQUIRE_TOKEN_REJECT_EXPIRED)
+
+        return session.accessToken
+    }
+
+    export async function updateAuthStatus() {
+        await AccountManagerNg.ensureSession({ createIfNone: false })
+
+        await execCmd('setContext', `${globalCtx.extName}.${isAuthorizedStorageKey}`, accountManager.isAuthorized)
+
+        if (accountManager.isAuthorized) {
             await execCmd('setContext', `${globalCtx.extName}.user`, {
-                name: this.currentUser.name,
-                avatar: this.currentUser.avatar,
+                name: accountManager.currentUser.name,
+                avatar: accountManager.currentUser.avatar,
             })
         }
     }
+}
 
-    private async ensureSession(opt?: AuthenticationGetSessionOptions) {
-        const session = await authentication.getSession(authProvider.providerId, [], opt).then(
-            session => (session ? AuthSession.from(session) : null),
-            e => {
-                void Alert.err(`创建/获取 Session 失败: ${e}`)
-            }
-        )
+class AccountManager extends Disposable {
+    private readonly _disposable = Disposable.from(
+        authProvider.onDidChangeSessions(async ({ added }) => {
+            authSession = null
+            if (added != null && added.length > 0) await AccountManagerNg.ensureSession()
 
-        if (session != null && session.account.accountId < 0) {
-            this._session = null
-            await authProvider.removeSession(session.id)
-        } else {
-            this._session = session
-        }
+            await AccountManagerNg.updateAuthStatus()
 
-        return this._session
+            accountViewDataProvider.fireTreeDataChangedEvent()
+            postDataProvider.fireTreeDataChangedEvent(undefined)
+            postCategoryDataProvider.fireTreeDataChangedEvent()
+
+            BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
+        })
+    )
+
+    constructor() {
+        super(() => {
+            this._disposable.dispose()
+        })
+    }
+
+    get isAuthorized() {
+        return authSession !== null
+    }
+
+    get currentUser(): AccountInfo {
+        return authSession?.account ?? AccountInfo.newAnonymous()
     }
 }
 

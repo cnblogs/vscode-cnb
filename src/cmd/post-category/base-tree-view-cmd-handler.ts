@@ -13,7 +13,7 @@ export abstract class BasePostCategoryTreeViewCmdHandler implements TreeViewCmdH
         const { input } = this
         if (input instanceof PostCategory || input instanceof PostCategoryTreeItem) {
             const category = input instanceof PostCategoryTreeItem ? input.category : input
-            this.view.reveal(input).then(undefined, undefined)
+            void this.view.reveal(input).then(undefined, undefined)
             return category
         }
 

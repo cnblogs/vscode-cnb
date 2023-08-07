@@ -1,7 +1,7 @@
 {
     "name": "vscode-cnb",
-    "displayName": "博客园 VSCode 扩展",
-    "description": "VSCode extension for CNBlogs",
+    "displayName": "博客园 VSCode 客户端",
+    "description": "VSCode extension for cnblogs",
     "version": "0.0.1",
     "license": "LICENSE.txt",
     "preview": false,
@@ -21,6 +21,21 @@
     "categories": [
         "Other"
     ],
+    "scripts": {
+        "watch": "./build-wasm.sh && webpack --watch --mode=development",
+        "ui:watch": "webpack watch -c ./ui/webpack.config.mjs",
+        "package": "webpack --mode production --devtool hidden-source-map",
+        "ui:package": "webpack --mode production --devtool hidden-source-map -c ./ui/webpack.config.mjs",
+        "compile-tests": "tsc -p ./tsconfig.integration.json --outDir out",
+        "test:integration:watch": "npm run compile-tests -- --watch",
+        "test:integration": "npm run compile-tests && node ./out/test/runTest.js",
+        "test:unit": "jest -c ./test/jest.config.mjs",
+        "lint": "eslint src/ ui/",
+        "format": "prettier --write .",
+        "format-check": "prettier --check .",
+        "download-icons": "node ./download-iconfont.mjs",
+        "stats": "npm run --silent package -- --env namedChunks=true --profile --json > ./dist/stats.json && webpack-bundle-analyzer ./dist/stats.json ./dist"
+    },
     "activationEvents": [
         "workspaceContains:**",
         "onView:cnblogs-authorize",
@@ -28,7 +43,7 @@
         "onView:cnblogs-post-list",
         "onView:vscode-cnb-workspace",
         "onCommand:vscode-cnb.open-workspace",
-        "onCommand:vscode-cnb.login",
+        "onCommand:vscode-cnb.webLogin",
         "onCommand:vscode-cnb.logout",
         "onCommand:vscode-cnb.ing-publish-select"
     ],
@@ -110,7 +125,7 @@
             {
                 "title": "登录到博客园",
                 "enablement": "!vscode-cnb.isAuthorized",
-                "command": "vscode-cnb.login"
+                "command": "vscode-cnb.webLogin"
             },
             {
                 "command": "vscode-cnb.logout",
@@ -120,21 +135,21 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.previous-post-list",
+                "command": "vscode-cnb.post-list.prev",
                 "title": "上一页",
                 "icon": "$(chevron-left)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post-list.refreshing && vscode-cnb.post-list.hasPrevious",
+                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post-list.refreshing && vscode-cnb.post-list.hasPrev",
                 "category": "Cnblogs Post List"
             },
             {
-                "command": "vscode-cnb.seek-post-list",
+                "command": "vscode-cnb.post-list.seek",
                 "title": "跳页",
                 "icon": "$(vscode-cnb-icon-seek)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post-list.refreshing && vscode-cnb.post-list.pageCount > 0",
                 "category": "Cnblogs Post List"
             },
             {
-                "command": "vscode-cnb.next-post-list",
+                "command": "vscode-cnb.post-list.next",
                 "title": "下一页",
                 "icon": "$(chevron-right)",
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post-list.refreshing && vscode-cnb.post-list.hasNext",
@@ -148,7 +163,7 @@
                 "category": "Cnblogs Post List"
             },
             {
-                "command": "vscode-cnb.delete-post",
+                "command": "vscode-cnb.del-post",
                 "title": "删除随笔(支持多选)",
                 "icon": "$(trash)",
                 "category": "Cnblogs Post List",
@@ -203,13 +218,13 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.upload-clipboard-image",
+                "command": "vscode-cnb.upload-img-clipboard",
                 "title": "上传剪贴板图片到博客园",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.upload-fs-img",
+                "command": "vscode-cnb.upload-img-fs",
                 "title": "上传本地图片到博客园",
                 "category": "Cnblogs",
                 "enablement": "vscode-cnb.isAuthorized"
@@ -239,7 +254,7 @@
                 "enablement": "vscode-cnb.isAuthorized"
             },
             {
-                "command": "vscode-cnb.delete-selected-post-category",
+                "command": "vscode-cnb.del-selected-post-category",
                 "title": "删除",
                 "icon": "$(trash)",
                 "category": "Cnblogs Post Categories Management",
@@ -260,7 +275,7 @@
                 "enablement": "!vscode-cnb.postCategoriesList.isRefreshing"
             },
             {
-                "command": "vscode-cnb.delete-post-to-local-file-map",
+                "command": "vscode-cnb.del-post-to-local-file-map",
                 "title": "取消关联本地文件(支持多选)",
                 "category": "Cnblogs Post List"
             },
@@ -340,7 +355,7 @@
                 "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing"
             },
             {
-                "command": "vscode-cnb.ing-list.previous",
+                "command": "vscode-cnb.ing-list.prev",
                 "title": "上一页",
                 "category": "Cnblogs",
                 "icon": "$(chevron-left)",
@@ -541,7 +556,7 @@
                         "scope": "application",
                         "default": true,
                         "editPresentation": "singlelineText",
-                        "markdownDescription": "博客园 Markdown 语法扩展: 代码块指定行高亮\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n```typescript {1, 3-4}\nconsole.log(1)\nconsole.log(2)\nconsole.log(3)\nconsole.log(4)\nconsole.log(5)\n```\n\n```"
+                        "markdownDescription": "博客园 Markdown 语法扩展: 代码块指定行高亮\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n```typescript {1, 3-4}\nconst a = 1\nconst b = 2\nconst c = a + b\nconst d = c\nconst e = 0\n```\n\n```"
                     },
                     "cnblogsClient.markdown.showConfirmMsgWhenUploadPost": {
                         "order": 11,
@@ -559,6 +574,14 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "在拉取博文时显示确认消息"
                     },
+                    "cnblogsClient.markdown.ignoreYfmWhenUploadPost": {
+                        "order": 13,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": false,
+                        "editPresentation": "singlelineText",
+                        "markdownDescription": "上传博文时忽略 YAML front matter"
+                    },
                     "cnblogsClient.menus.context.explorer": {
                         "order": 13,
                         "markdownDescription": "要在资源管理器右键菜单中显示的命令",
@@ -575,45 +598,45 @@
                         },
                         "properties": {
                             "upload-post-file-no-confirm": {
+                                "order": 0,
                                 "description": "上传到博客园",
                                 "type": "boolean",
-                                "order": 0,
                                 "default": true
                             },
                             "pull-remote-post": {
+                                "order": 1,
                                 "description": "拉取博文",
                                 "type": "boolean",
-                                "order": 1,
                                 "default": true
                             },
                             "modify-post-setting": {
+                                "order": 2,
                                 "description": "博文设置",
                                 "type": "boolean",
-                                "order": 2,
                                 "default": true
                             },
                             "show-post-to-local-file-info": {
+                                "order": 3,
                                 "description": "博客园关联博文",
                                 "type": "boolean",
-                                "order": 3,
                                 "default": true
                             },
                             "open-post-in-blog-admin": {
+                                "order": 4,
                                 "description": "在博客后台中编辑",
                                 "type": "boolean",
-                                "order": 4,
                                 "default": true
                             },
                             "export-post-to-pdf": {
+                                "order": 5,
                                 "description": "导出 PDF",
                                 "type": "boolean",
-                                "order": 5,
                                 "default": true
                             },
                             "copy-post-link": {
+                                "order": 6,
                                 "description": "复制博文链接",
                                 "type": "boolean",
-                                "order": 6,
                                 "default": true
                             }
                         }
@@ -622,6 +645,8 @@
                         "order": 14,
                         "markdownDescription": "要在编辑器右键菜单中显示的命令",
                         "type": "object",
+                        "scope": "application",
+                        "additionalProperties": false,
                         "default": {
                             "upload-post-file-no-confirm": true,
                             "pull-remote-post": true,
@@ -630,8 +655,8 @@
                             "open-post-in-blog-admin": true,
                             "export-post-to-pdf": true,
                             "copy-post-link": true,
-                            "upload-clipboard-image": true,
-                            "upload-fs-img": true,
+                            "upload-img-clipboard": true,
+                            "upload-img-fs": true,
                             "extract-img": true,
                             "ing:publish-select": false
                         },
@@ -672,12 +697,12 @@
                                 "description": "复制博文链接",
                                 "type": "boolean"
                             },
-                            "upload-clipboard-image": {
+                            "upload-img-clipboard": {
                                 "order": 7,
                                 "description": "上传剪贴板图片到博客园",
                                 "type": "boolean"
                             },
-                            "upload-fs-img": {
+                            "upload-img-fs": {
                                 "order": 8,
                                 "description": "上传本地图片到博客园",
                                 "type": "boolean"
@@ -692,9 +717,7 @@
                                 "description": "将选中内容发到闪存",
                                 "type": "boolean"
                             }
-                        },
-                        "scope": "application",
-                        "additionalProperties": false
+                        }
                     },
                     "cnblogsClient.ui.textIngStar": {
                         "order": 15,
@@ -795,17 +818,17 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "vscode-cnb.previous-post-list",
+                    "command": "vscode-cnb.post-list.prev",
                     "when": "view == cnblogs-post-list || view == cnblogs-post-list-another",
                     "group": "navigation@1"
                 },
                 {
-                    "command": "vscode-cnb.next-post-list",
+                    "command": "vscode-cnb.post-list.next",
                     "when": "view == cnblogs-post-list || view == cnblogs-post-list-another",
                     "group": "navigation@2"
                 },
                 {
-                    "command": "vscode-cnb.seek-post-list",
+                    "command": "vscode-cnb.post-list.seek",
                     "when": "view == cnblogs-post-list || view == cnblogs-post-list-another",
                     "group": "navigation@3"
                 },
@@ -845,7 +868,7 @@
                     "group": "navigation@1"
                 },
                 {
-                    "command": "vscode-cnb.ing-list.previous",
+                    "command": "vscode-cnb.ing-list.prev",
                     "when": "view == vscode-cnb.ing-list-webview",
                     "group": "navigation@2"
                 },
@@ -894,7 +917,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.delete-post",
+                    "command": "vscode-cnb.del-post",
                     "when": "false"
                 },
                 {
@@ -914,7 +937,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.delete-selected-post-category",
+                    "command": "vscode-cnb.del-selected-post-category",
                     "when": "false"
                 },
                 {
@@ -926,15 +949,15 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.next-post-list",
+                    "command": "vscode-cnb.post-list.next",
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.seek-post-list",
+                    "command": "vscode-cnb.post-list.seek",
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.delete-post-to-local-file-map",
+                    "command": "vscode-cnb.del-post-to-local-file-map",
                     "when": "false"
                 },
                 {
@@ -946,7 +969,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "vscode-cnb.login",
+                    "command": "vscode-cnb.webLogin",
                     "when": "false"
                 },
                 {
@@ -1019,7 +1042,7 @@
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
                 },
                 {
-                    "command": "vscode-cnb.delete-post",
+                    "command": "vscode-cnb.del-post",
                     "group": "inline@4",
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
                 },
@@ -1038,12 +1061,12 @@
                     "group": "1@1"
                 },
                 {
-                    "command": "vscode-cnb.delete-post",
+                    "command": "vscode-cnb.del-post",
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category",
                     "group": "delete@1"
                 },
                 {
-                    "command": "vscode-cnb.delete-post-to-local-file-map",
+                    "command": "vscode-cnb.del-post-to-local-file-map",
                     "when": "viewItem =~ /^cnb-post-cached/",
                     "group": "delete@2"
                 },
@@ -1078,7 +1101,7 @@
                     "group": "0@6"
                 },
                 {
-                    "command": "vscode-cnb.delete-selected-post-category",
+                    "command": "vscode-cnb.del-selected-post-category",
                     "when": "viewItem == cnb-post-category"
                 },
                 {
@@ -1087,7 +1110,7 @@
                     "group": "inline@1"
                 },
                 {
-                    "command": "vscode-cnb.delete-selected-post-category",
+                    "command": "vscode-cnb.del-selected-post-category",
                     "when": "viewItem == cnb-post-category",
                     "group": "inline@2"
                 },
@@ -1143,7 +1166,7 @@
             ],
             "editor/context": [
                 {
-                    "command": "vscode-cnb.login",
+                    "command": "vscode-cnb.webLogin",
                     "when": "!vscode-cnb.isAuthorized",
                     "group": "cnblogs@0"
                 },
@@ -1173,13 +1196,13 @@
                     "group": "cnblogs@5"
                 },
                 {
-                    "command": "vscode-cnb.upload-clipboard-image",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-clipboard-image",
+                    "command": "vscode-cnb.upload-img-clipboard",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-img-clipboard",
                     "group": "cnblogs@6"
                 },
                 {
-                    "command": "vscode-cnb.upload-fs-img",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-fs-img",
+                    "command": "vscode-cnb.upload-img-fs",
+                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.upload-img-fs",
                     "group": "cnblogs@7"
                 },
                 {
@@ -1212,7 +1235,7 @@
             ],
             "explorer/context": [
                 {
-                    "command": "vscode-cnb.login",
+                    "command": "vscode-cnb.webLogin",
                     "when": "!vscode-cnb.isAuthorized",
                     "group": "cnblogs@1"
                 },
@@ -1255,13 +1278,13 @@
         },
         "keybindings": [
             {
-                "command": "vscode-cnb.upload-clipboard-image",
+                "command": "vscode-cnb.upload-img-clipboard",
                 "key": "ctrl+alt+u",
                 "mac": "cmd+alt+u",
                 "when": "editorTextFocus && resourceLangId == markdown"
             },
             {
-                "command": "vscode-cnb.upload-fs-img",
+                "command": "vscode-cnb.upload-img-fs",
                 "key": "ctrl+alt+f",
                 "mac": "cmd+alt+f",
                 "when": "editorTextFocus && resourceLangId == markdown"
@@ -1279,11 +1302,11 @@
         "viewsWelcome": [
             {
                 "view": "cnblogs-authorize",
-                "contents": "欢迎使用博客园 VSCode 插件!请先登录授权!"
+                "contents": "欢迎使用博客园 VSCode 客户端, 请先登录授权!"
             },
             {
                 "view": "cnblogs-authorize",
-                "contents": "[Login](command:vscode-cnb.login)"
+                "contents": "[从浏览器登录](command:vscode-cnb.webLogin)  \n[个人访问令牌登录](command:vscode-cnb.patLogin)"
             },
             {
                 "view": "vscode-cnb-workspace",
@@ -1306,48 +1329,33 @@
             }
         ]
     },
-    "scripts": {
-        "watch": "webpack --watch --mode=development",
-        "ui:watch": "webpack watch -c ./ui/webpack.config.mjs",
-        "package": "webpack --mode production --devtool hidden-source-map",
-        "ui:package": "webpack --mode production --devtool hidden-source-map -c ./ui/webpack.config.mjs",
-        "compile-tests": "tsc -p ./tsconfig.integration.json --outDir out",
-        "test:integration:watch": "npm run compile-tests -- --watch",
-        "test:integration": "npm run compile-tests && node ./out/test/runTest.js",
-        "test:unit": "jest -c ./test/jest.config.mjs",
-        "lint": "eslint src/ ui/",
-        "format": "prettier --write .",
-        "format-check": "prettier --check .",
-        "download-icons": "node ./download-iconfont.mjs",
-        "stats": "npm run --silent package -- --env namedChunks=true --profile --json > ./dist/stats.json && webpack-bundle-analyzer ./dist/stats.json ./dist"
-    },
     "devDependencies": {
-        "@cnblogs/eslint-config-typescript": "^1.0.1",
+        "@cnblogs/eslint-config-typescript": "^1.0.4",
         "@cnblogs/prettier-config": "^2.0.3",
         "@types/adm-zip": "^0.5.0",
         "@types/express": "^4.17.1",
         "@types/glob": "^7.1.4",
-        "@types/jest": "^29.4.0",
+        "@types/jest": "^29.5.3",
         "@types/lodash-es": "^4.17.6",
         "@types/markdown-it": "^12.2.3",
         "@types/mime-types": "^2.1.1",
         "@types/mocha": "^10.0.1",
-        "@types/node": "14.x",
+        "@types/node": "^16.18.39",
         "@types/randomstring": "^1.1.8",
-        "@types/react": "^17.0.43",
-        "@types/react-dom": "^17.0.14",
-        "@types/vscode": "^1.62.0",
-        "@typescript-eslint/eslint-plugin": "^5.41.0",
-        "@typescript-eslint/parser": "^5.41.0",
-        "@vscode/test-electron": "^1.6.2",
+        "@types/react": "^18.2.18",
+        "@types/react-dom": "^18.2.7",
+        "@types/vscode": "^1.70.0",
+        "@typescript-eslint/eslint-plugin": "^6.2.1",
+        "@typescript-eslint/parser": "^6.2.1",
+        "@vscode/test-electron": "^2.3.4",
         "adm-zip": "^0.5.10",
         "autoprefixer": "^10.4.4",
         "clean-webpack-plugin": "^4.0.0",
-        "copy-webpack-plugin": "^10.0.0",
-        "css-loader": "^6.7.1",
-        "eslint": "^8.1.0",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-plugin-prettier": "^4.2.1",
+        "copy-webpack-plugin": "^11.0.0",
+        "css-loader": "^6.8.1",
+        "eslint": "^8.46.0",
+        "eslint-config-prettier": "^8.9.0",
+        "eslint-plugin-prettier": "^5.0.0",
         "glob": "^7.1.7",
         "i": "^0.3.7",
         "jest": "^29.4.3",
@@ -1357,28 +1365,28 @@
         "lodash": "^4.17.21",
         "mini-css-extract-plugin": "^2.6.0",
         "mocha": "^10.2.0",
-        "npm": "^9.8.0",
+        "npm": "^9.8.1",
         "postcss": "^8.4.12",
         "postcss-loader": "^6.2.1",
         "postcss-preset-env": "^7.4.3",
-        "prettier": "^2.8.8",
+        "prettier": "^3.0.0",
         "style-loader": "^3.3.1",
-        "tailwindcss": "^3.0.23",
+        "tailwindcss": "^3.3.3",
         "terser-webpack-plugin": "^5.3.7",
-        "ts-jest": "^29.0.5",
-        "ts-loader": "^9.2.5",
+        "ts-jest": "^29.1.1",
+        "ts-loader": "^9.4.4",
         "ts-node": "^10.9.1",
-        "tsconfig-paths-webpack-plugin": "^3.5.2",
-        "typescript": "^4.8.4",
+        "tsconfig-paths-webpack-plugin": "^4.1.0",
+        "typescript": "^5.1.6",
         "utility-types": "^3.10.0",
-        "webpack": "^5.76.0",
-        "webpack-cli": "^5.0.1"
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
     },
     "dependencies": {
         "@cnblogs/code-highlight-adapter": "^1.7.1",
         "@cnblogs/code-quality": "^2.0.2",
         "@cnblogs/markdown-it-presets": "1.9",
-        "@fluentui/react": "^8.62.4",
+        "@fluentui/react": "^8.110.11",
         "base64url": "^3.0.1",
         "blob": "^0.1.0",
         "crypto": "^1.0.1",
@@ -1396,10 +1404,11 @@
         "markdown-it-table-of-contents": "^0.6.0",
         "mime-types": "^2.1.34",
         "node-abort-controller": "^3.1.1",
-        "puppeteer-core": "^13.5.1",
+        "node-fetch": "^3.3.2",
+        "puppeteer-core": "^13.7.0",
         "randomstring": "^1.1.4",
-        "react": "^17.0.2",
-        "react-dom": "^17.0.2",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
         "sanitize-filename": "^1.6.3",
         "sequelize": "^6.29.3",
         "sqlite3": "^5.1.4"

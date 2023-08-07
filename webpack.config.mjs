@@ -45,13 +45,12 @@ const preserveModules = [
 ]
 
 //@ts-check
-/** @typedef {import('webpack').Configuration} WebpackConfig **/
+/** @typedef {import("webpack").Configuration} WebpackConfig **/
 
 export default (env, { mode }) => {
     const isProd = mode === 'production'
 
-    /** @type WebpackConfig */
-    const extensionConfig = {
+    return {
         target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
         mode: mode, // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 
@@ -112,6 +111,10 @@ export default (env, { mode }) => {
                         from: 'node_modules/@cnblogs/code-highlight-adapter/index.min.css',
                         to: 'assets/styles/highlight-code-lines.css',
                     },
+                    {
+                        from: 'src/wasm/rs_bg.wasm',
+                        to: 'rs_bg.wasm',
+                    },
                     ...preserveModules.map(m => ({ from: `node_modules/${m}`, to: `node_modules/${m}` })),
                 ],
             }),
@@ -125,6 +128,4 @@ export default (env, { mode }) => {
             usedExports: true,
         },
     }
-
-    return extensionConfig
 }

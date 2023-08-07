@@ -2,16 +2,7 @@ import { accountManager } from '@/auth/account-manager'
 import { EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode'
 
 export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
-    private static _instance: AccountViewDataProvider | null = null
     protected _onDidChangeTreeData = new EventEmitter<null | undefined>()
-
-    protected constructor() {}
-
-    static get instance() {
-        this._instance ??= new AccountViewDataProvider()
-
-        return this._instance
-    }
 
     get onDidChangeTreeData() {
         return this._onDidChangeTreeData.event
@@ -76,4 +67,4 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     }
 }
 
-export const accountViewDataProvider = AccountViewDataProvider.instance
+export const accountViewDataProvider = new AccountViewDataProvider()

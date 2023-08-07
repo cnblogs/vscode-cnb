@@ -8,32 +8,26 @@ import { Alert } from '@/infra/alert'
  * @param {string} imgLink
  */
 export async function showUploadSuccessModel(imgLink: string) {
-    const copyOptions = ['复制链接', '复制链接(markdown)', '复制链接(html)']
-    const option = await Alert.info(
+    const options = ['复制链接', '复制链接(markdown)', '复制链接(html)']
+    const selected = await Alert.info(
         '上传图片成功',
         {
             modal: true,
-            detail: `🔗图片链接: ${imgLink}`,
+            detail: `图片链接: ${imgLink}`,
         } as MessageOptions,
-        ...copyOptions
+        ...options
     )
 
-    let newImgLink
-    switch (option) {
-        case copyOptions[0]:
-            newImgLink = imgLink
-            break
-        case copyOptions[1]:
-            newImgLink = fmtImgLink(imgLink, 'markdown')
-            break
-        case copyOptions[2]:
-            newImgLink = fmtImgLink(imgLink, 'html')
-            break
-    }
-    if (newImgLink) await env.clipboard.writeText(newImgLink)
+    let text = null
+
+    if (selected === options[0]) text = imgLink
+    else if (selected === options[1]) text = fmtImgLink(imgLink, 'markdown')
+    else if (selected === options[2]) text = fmtImgLink(imgLink, 'html')
+
+    if (text !== null) await env.clipboard.writeText(text)
 }
 
-export const insertImgLinkToActiveEditor = async (imgLink: string): Promise<boolean> => {
+export async function insertImgLinkToActiveEditor(imgLink: string): Promise<boolean> {
     const activeEditor = window.activeTextEditor
     if (activeEditor) {
         await activeEditor.insertSnippet(new SnippetString(fmtImgLink(imgLink, 'markdown')))

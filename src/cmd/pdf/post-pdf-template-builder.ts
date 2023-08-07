@@ -1,16 +1,16 @@
 import { Post } from '@/model/post'
-import { PostFileMapManager } from '@/service/post-file-map'
+import { PostFileMapManager } from '@/service/post/post-file-map'
 import fs from 'fs'
 import { BlogSettingService } from '@/service/blog-setting'
 import { accountManager } from '@/auth/account-manager'
-import { postCategoryService } from '@/service/post-category'
+import { PostCategoryService } from '@/service/post/post-category'
 import { PostCategory } from '@/model/post-category'
 import { markdownItFactory } from '@cnblogs/markdown-it-presets'
 
-export namespace postPdfTemplateBuilder {
+export namespace PostPdfTemplateBuilder {
     export const HighlightedMessage = 'markdown-highlight-finished'
 
-    export const build = async (post: Post, blogApp: string): Promise<string> => {
+    export async function build(post: Post, blogApp: string): Promise<string> {
         let { postBody } = post
         const { isMarkdown, id: postId } = post
 
@@ -36,7 +36,7 @@ export namespace postPdfTemplateBuilder {
         }
 
         const buildCategoryHtml = async (): Promise<string> => {
-            const categories = await postCategoryService.listCategories()
+            const categories = await PostCategoryService.listCategories()
             const postCategories =
                 post.categoryIds
                     ?.map(categoryId => categories.find(x => x.categoryId === categoryId))
@@ -56,14 +56,19 @@ export namespace postPdfTemplateBuilder {
 
         const tagHtml = await buildTagHtml()
         const categoryHtml = await buildCategoryHtml()
+        const setting = await BlogSettingService.getBlogSetting()
+        if (setting == null) return '<html lang="en"></html>'
+
         const {
             codeHighlightEngine,
             codeHighlightTheme,
             enableCodeLineNumber: isCodeLineNumberEnabled,
             blogId,
-        } = await BlogSettingService.getBlogSetting()
+        } = setting
+
         const { userId } = accountManager.currentUser
-        return `<html>
+
+        return `<html lang="en">
         <head>
             <title>${post.title}</title>
             <style>
@@ -83,14 +88,14 @@ export namespace postPdfTemplateBuilder {
             </style>
             <link rel="stylesheet" href="https://www.cnblogs.com/css/blog-common.min.css">
             <script>
-            var currentBlogId = ${blogId};
-            var currentBlogApp = '${blogApp}';
-            var cb_enable_mathjax = true;
-            var isLogined = true;
-            var isBlogOwner = true;
-            var skinName = 'LessIsMore';
-            var visitorUserId = '${userId}';
-            var hasCustomScript = false;
+            const currentBlogId = ${blogId};
+            const currentBlogApp = '${blogApp}';
+            const cb_enable_mathjax = true;
+            const isLogined = true;
+            const isBlogOwner = true;
+            const skinName = 'LessIsMore';
+            const visitorUserId = '${userId}';
+            const hasCustomScript = false;
             try {
                 if (hasCustomScript && document.referrer && document.referrer.indexOf('baidu.com') >= 0) {
                     Object.defineProperty(document, 'referrer', { value: '' });

@@ -17,7 +17,17 @@
             }
         ]
     },
-    "ignorePatterns": ["out", "dist", "src/test/**", "**/*.d.ts", "__mocks__/vscode.ts", "src/assets/**"],
+    "ignorePatterns": [
+        "rs",
+        "out",
+        "pkg",
+        "dist",
+        "**/*.d.ts",
+        "src/test/**",
+        "src/wasm/**",
+        "src/assets/**",
+        "__mocks__/vscode.ts"
+    ],
     "overrides": [
         {
             "files": ["*.config.js"],

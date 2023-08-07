@@ -1,9 +1,8 @@
 import { flattenDepth, take } from 'lodash-es'
 import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { PostCategories } from '@/model/post-category'
 import { globalCtx } from '@/ctx/global-ctx'
-import { postCategoryService } from '@/service/post-category'
-import { PostService } from '@/service/post'
+import { PostCategoryService } from '@/service/post/post-category'
+import { PostService } from '@/service/post/post'
 import { toTreeItem } from '@/tree-view/convert'
 import { PostCategoriesListTreeItem } from '@/tree-view/model/category-list-tree-item'
 import { PostCategoryTreeItem } from '@/tree-view/model/post-category-tree-item'
@@ -11,19 +10,12 @@ import { PostEntryMetadata, PostMetadata, RootPostMetadataType } from '@/tree-vi
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { Alert } from '@/infra/alert'
 import { execCmd } from '@/infra/cmd'
+import { PostCategory } from '@/model/post-category'
 
 export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {
-    private static _instance: PostCategoryTreeDataProvider | null = null
     private _treeDataChanged = new EventEmitter<PostCategoriesListTreeItem | null | undefined>()
     private _isRefreshing = false
     private _roots: PostCategoryTreeItem[] | null = null
-
-    private constructor() {}
-
-    static get instance() {
-        this._instance ??= new PostCategoryTreeDataProvider()
-        return this._instance
-    }
 
     get isRefreshing() {
         return this._isRefreshing
@@ -109,17 +101,15 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
             category: { categoryId },
         } = parent
 
-        return take(
-            (await PostService.fetchPostList({ categoryId, pageSize: 100 })).items.map(x =>
-                Object.assign<PostTreeItem<PostCategoryTreeItem>, Partial<PostTreeItem<PostCategoryTreeItem>>>(
-                    new PostTreeItem<PostCategoryTreeItem>(x, true),
-                    {
-                        parent,
-                    }
-                )
-            ),
-            500
+        const data = await PostService.fetchPostList({ categoryId, pageSize: 100 })
+        const postList = data.page.items
+        const arr = postList.map(x =>
+            Object.assign(new PostTreeItem<PostCategoryTreeItem>(x, true), {
+                parent,
+            })
         )
+
+        return take(arr, 500)
     }
 
     private getPostMetadataChildren(parent: PostTreeItem) {
@@ -128,9 +118,9 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
 
     private async getCategories(parentId?: number | null) {
         await this.setIsRefreshing(true)
-        let categories: PostCategories = []
+        let categories: PostCategory[] = []
         try {
-            categories = await postCategoryService.listCategories({
+            categories = await PostCategoryService.listCategories({
                 forceRefresh: true,
                 parentId: parentId ?? undefined,
             })
@@ -144,4 +134,4 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
     }
 }
 
-export const postCategoryDataProvider = PostCategoryTreeDataProvider.instance
+export const postCategoryDataProvider = new PostCategoryTreeDataProvider()

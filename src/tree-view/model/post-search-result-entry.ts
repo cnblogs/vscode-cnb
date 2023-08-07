@@ -12,16 +12,12 @@ export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEnt
         public searchKey: string,
         public readonly postList: Post[],
         public readonly totalCount: number,
-        public readonly zzkSearchResult?: ZzkSearchResult
+        public readonly zzkSearchResult: ZzkSearchResult | null
     ) {
         if (searchKey.length <= 0) throw Error('Empty search key is not allowed')
 
         super()
         this.children = this.parseChildren()
-    }
-
-    private get zzkCount() {
-        return this.zzkSearchResult?.count ?? 0
     }
 
     toTreeItem = (): TreeItem | Promise<TreeItem> =>
@@ -39,12 +35,17 @@ export class PostSearchResultEntry extends BaseTreeItemSource implements BaseEnt
         ...this.postList.map(post => new PostTreeItem(post, false)),
     ]
 
-    private readonly buildSummaryTreeItem = (): TreeItem =>
-        Object.assign<TreeItem, TreeItem>(
-            new TreeItem(
-                `共找到 ${this.totalCount} 篇随笔` +
-                    (this.zzkCount > 0 ? `, ${this.zzkSearchResult?.postIds.length} 篇来自找找看` : '')
-            ),
-            { iconPath: new ThemeIcon('vscode-cnb-post-list-search-result-summary') }
-        )
+    private buildSummaryTreeItem(): TreeItem {
+        const zzkCount = this.zzkSearchResult?.postIds.length ?? 0
+
+        let label
+        if (zzkCount === 0) label = `共找到 ${this.totalCount} 篇随笔`
+        else label = `共找到 ${this.totalCount} 篇随笔, ${zzkCount} 篇来自找找看`
+
+        const ti = new TreeItem(label)
+
+        return Object.assign<TreeItem, TreeItem>(ti, {
+            iconPath: new ThemeIcon('vscode-cnb-post-list-search-result-summary'),
+        })
+    }
 }

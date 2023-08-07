@@ -1,6 +1,5 @@
 import { globalCtx } from '@/ctx/global-ctx'
 import { TreeView, TreeItem } from 'vscode'
-import { accountViewDataProvider } from './provider/account-view-data-provider'
 import { PostListTreeItem, postDataProvider } from './provider/post-data-provider'
 import { postCategoryDataProvider } from './provider/post-category-tree-data-provider'
 import { PostCategoriesListTreeItem } from './model/category-list-tree-item'
@@ -9,6 +8,7 @@ import { BlogExportTreeItem } from '@/tree-view/model/blog-export'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
 import { regTreeView } from '@/infra/tree-view'
 import { naviViewDataProvider } from '@/tree-view/navi-view'
+import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 
 const _views: {
     postList?: TreeView<PostListTreeItem>

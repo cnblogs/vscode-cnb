@@ -3,8 +3,8 @@ import { execCmd } from '@/infra/cmd'
 import { IngPublishModel, IngType } from '@/model/ing'
 import { Alert } from '@/infra/alert'
 import { globalCtx } from '@/ctx/global-ctx'
-import { IngApi } from '@/service/ing.api'
-import { getIngListWebviewProvider } from '@/service/ing-list-webview-provider'
+import { IngApi } from '@/service/ing/ing-api'
+import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provider'
 import { InputStep, MultiStepInput, QuickPickParameters } from '@/service/multi-step-input'
 import { MessageOptions, ProgressLocation, QuickPickItem, Uri, window } from 'vscode'
 
@@ -85,7 +85,7 @@ export class PublishIngCmdHandler implements CmdHandler {
 
     private async publish(model: IngPublishModel): Promise<void> {
         return this.onPublished(
-            await window.withProgress({ location: ProgressLocation.Notification, title: '正在发闪, 请稍候...' }, p => {
+            await window.withProgress({ location: ProgressLocation.Notification, title: '正在发布...' }, p => {
                 p.report({ increment: 30 })
                 return IngApi.publishIng(model).then(isPublished => {
                     p.report({ increment: 70 })

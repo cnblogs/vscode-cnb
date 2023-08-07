@@ -15,12 +15,37 @@ import {
     window,
 } from 'vscode'
 import { globalCtx } from '@/ctx/global-ctx'
-import RandomString from 'randomstring'
-import { Oauth } from '@/service/oauth.api'
+import { Oauth } from '@/auth/oauth'
 import { extUriHandler } from '@/infra/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
 import { TokenInfo } from '@/model/token-info'
 import { Optional } from 'utility-types'
+import { consUrlPara } from '@/infra/http/infra/url-para'
+import { RsRand } from '@/wasm'
+import { Alert } from '@/infra/alert'
+
+async function browserSignIn(challengeCode: string, scopes: string[]) {
+    const { clientId, responseType, authRoute, authority, clientSecret } = globalCtx.config.oauth
+
+    const para = consUrlPara(
+        ['client_id', clientId],
+        ['client_secret', clientSecret],
+        ['response_type', responseType],
+        ['nonce', RsRand.string(32)],
+        ['code_challenge', challengeCode],
+        ['code_challenge_method', 'S256'],
+        ['scope', scopes.join(' ')],
+        ['redirect_uri', globalCtx.extensionUrl]
+    )
+
+    const uri = Uri.parse(`${authority}${authRoute}?${para}`)
+
+    try {
+        await env.openExternal(uri)
+    } catch (e) {
+        void Alert.err(`重定向失败: ${<string>e}`)
+    }
+}
 
 export class AuthProvider implements AuthenticationProvider, Disposable {
     static readonly providerId = 'cnblogs'
@@ -49,7 +74,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         return this._sessionChangeEmitter.event
     }
 
-    async getSessions(scopes?: readonly string[] | undefined): Promise<readonly AuthSession[]> {
+    async getSessions(scopes?: string[]): Promise<readonly AuthSession[]> {
         const sessions = await this.getAllSessions()
         const parsedScopes = this.ensureScopes(scopes)
 
@@ -58,7 +83,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             .filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
     }
 
-    createSession(scopes: readonly string[]): Thenable<AuthSession> {
+    createSession(scopes: string[]): Thenable<AuthSession> {
         const parsedScopes = this.ensureScopes(scopes)
         const options = {
             title: `${globalCtx.displayName} - 登录`,
@@ -66,131 +91,83 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             location: ProgressLocation.Notification,
         }
 
-        let disposable: Disposable | null
         const cancelTokenSrc = new CancellationTokenSource()
 
         let isTimeout = false
 
-        const timeoutId = setTimeout(() => {
-            clearTimeout(timeoutId)
-            isTimeout = true
-            cancelTokenSrc.cancel()
-        }, 30 * 60 * 1000) // 30 min
+        const timeoutId = setTimeout(
+            () => {
+                clearTimeout(timeoutId)
+                isTimeout = true
+                cancelTokenSrc.cancel()
+            },
+            30 * 60 * 1000
+        ) // 30 min
 
-        const verifyCode = this.signInWithBrowser({ scopes: parsedScopes })
-
-        return window.withProgress<AuthSession>(options, async (progress, cancelToken) => {
+        return window.withProgress(options, async (progress, cancelToken) => {
             progress.report({ message: '等待用户在浏览器中进行授权...' })
 
+            cancelToken.onCancellationRequested(() => cancelTokenSrc.cancel())
+
+            const [verifyCode, challengeCode] = genVerifyChallengePair()
+
             const fut = new Promise<AuthSession>((resolve, reject) => {
-                disposable = Disposable.from(
-                    cancelToken.onCancellationRequested(() => cancelTokenSrc.cancel()),
-                    cancelTokenSrc.token.onCancellationRequested(() => {
-                        reject(`${isTimeout ? '由于超时, ' : ''}登录操作已取消`)
-                    }),
-                    cancelTokenSrc,
-                    extUriHandler
-                )
-                extUriHandler.onUri(uri => {
-                    if (cancelTokenSrc.token.isCancellationRequested) return
-
-                    const authorizationCode = this.parseOauthCallbackUri(uri)
-                    if (authorizationCode == null) return
-
-                    progress.report({ message: '已获得授权, 正在获取令牌...' })
-
-                    Oauth.fetchToken(verifyCode, authorizationCode, cancelTokenSrc.token)
-                        .then(token =>
-                            this.onAccessTokenGranted(token, {
-                                cancelToken: cancelTokenSrc.token,
-                                onStateChange(state) {
-                                    progress.report({ message: state })
-                                },
-                            })
-                        )
-                        .then(resolve)
-                        .catch(reject)
+                cancelTokenSrc.token.onCancellationRequested(() => {
+                    reject(`${isTimeout ? '由于超时, ' : ''}登录操作已取消`)
                 })
+
+                const onUri = async (uri: Uri) => {
+                    progress.report({ message: '已授权, 正在获取 Token...' })
+
+                    const authCode = new URLSearchParams(`?${uri.query}`).get('code')
+                    if (authCode == null) {
+                        reject('授权失败: 授权码异常')
+                        extUriHandler.reset()
+                        return
+                    }
+
+                    try {
+                        const token = await Oauth.fetchToken(verifyCode, authCode)
+                        const authSession = await this.onAccessTokenGranted(token.accessToken, {
+                            cancelToken: cancelTokenSrc.token,
+                            onStateChange(state) {
+                                progress.report({ message: state })
+                            },
+                        })
+
+                        resolve(authSession)
+                    } catch (e) {
+                        reject(e)
+                    } finally {
+                        extUriHandler.reset()
+                    }
+                }
+
+                extUriHandler.onUri(onUri)
             })
 
-            try {
-                return await fut
-            } finally {
-                disposable?.dispose()
-            }
+            await browserSignIn(challengeCode, parsedScopes)
+
+            return fut
         })
     }
 
     async removeSession(sessionId: string): Promise<void> {
-        const data = (await this.getAllSessions()).reduce(
-            ({ removed, keep }, c) => {
-                c.id === sessionId ? removed.push(c) : keep.push(c)
-                return { removed, keep }
+        const sessions = await this.getAllSessions()
+        const data = sessions.reduce(
+            ({ remove, keep }, s) => {
+                if (s.id === sessionId) remove.push(s)
+                else keep.push(s)
+                return { remove, keep }
             },
-            { removed: <AuthSession[]>[], keep: <AuthSession[]>[] }
+            { remove: <AuthSession[]>[], keep: <AuthSession[]>[] }
         )
         await globalCtx.extCtx.secrets.store(this.sessionStorageKey, JSON.stringify(data.keep))
-        this._sessionChangeEmitter.fire({ removed: data.removed, added: undefined, changed: undefined })
+        this._sessionChangeEmitter.fire({ removed: data.remove, added: undefined, changed: undefined })
     }
 
-    dispose() {
-        this._disposable.dispose()
-    }
-
-    protected async getAllSessions(): Promise<AuthSession[]> {
-        const legacyToken = LegacyTokenStore.getAccessToken()
-        if (legacyToken != null) {
-            await this.onAccessTokenGranted({ accessToken: legacyToken }, { shouldFireSessionAddedEvent: false })
-                .then(undefined, console.warn)
-                .finally(() => void LegacyTokenStore.remove())
-        }
-
-        if (this._allSessions == null || this._allSessions.length <= 0) {
-            const sessions = JSON.parse((await globalCtx.secretsStorage.get(this.sessionStorageKey)) ?? '[]') as
-                | AuthSession[]
-                | null
-                | undefined
-                | unknown
-            this._allSessions = isArray(sessions) ? sessions.map(x => AuthSession.from(x)) : []
-        }
-
-        return this._allSessions
-    }
-
-    private signInWithBrowser({ scopes }: { scopes: readonly string[] }) {
-        const [verifyCode, challengeCode] = genVerifyChallengePair()
-        const { clientId, responseType, authorizeEndpoint, authority, clientSecret } = globalCtx.config.oauth
-
-        const search = new URLSearchParams([
-            ['client_id', clientId],
-            ['response_type', responseType],
-            ['redirect_uri', globalCtx.extensionUrl],
-            ['nonce', RandomString.generate(32)],
-            ['code_challenge', challengeCode],
-            ['code_challenge_method', 'S256'],
-            ['scope', scopes.join(' ')],
-            ['client_secret', clientSecret],
-        ])
-
-        env.openExternal(Uri.parse(`${authority}${authorizeEndpoint}?${search.toString()}`)).then(
-            undefined,
-            console.warn
-        )
-
-        return verifyCode
-    }
-
-    private ensureScopes(
-        scopes: readonly string[] | null | undefined,
-        { default: defaultScopes = this.allScopes } = {}
-    ): readonly string[] {
-        return scopes == null || scopes.length <= 0 ? defaultScopes : scopes
-    }
-
-    private parseOauthCallbackUri = (uri: Uri) => new URLSearchParams(`?${uri.query}`).get('code') // authorizationCode
-
-    private async onAccessTokenGranted(
-        { accessToken, refreshToken }: TokenInfo,
+    async onAccessTokenGranted(
+        accessToken: string,
         {
             cancelToken,
             onStateChange,
@@ -211,7 +188,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         try {
             onStateChange?.('正在获取账户信息...')
 
-            const spec = await ifNotCancelledThen(() => Oauth.fetchUserInfo(accessToken, cancelToken))
+            const spec = await Oauth.fetchUserInfo(accessToken)
 
             onStateChange?.('即将完成...')
 
@@ -220,7 +197,6 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
                 return AuthSession.from({
                     accessToken,
-                    refreshToken,
                     account: AccountInfo.from(spec),
                     scopes: this.ensureScopes(null),
                     id: `${this.providerId}-${spec.account_id}`,
@@ -252,6 +228,34 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         if (session == null) throw new Error('Failed to create session')
 
         return session
+    }
+
+    dispose() {
+        this._disposable.dispose()
+    }
+
+    protected async getAllSessions(): Promise<AuthSession[]> {
+        const legacyToken = LegacyTokenStore.getAccessToken()
+        if (legacyToken != null) {
+            await this.onAccessTokenGranted(legacyToken, { shouldFireSessionAddedEvent: false })
+                .then(undefined, console.warn)
+                .finally(() => void LegacyTokenStore.remove())
+        }
+
+        if (this._allSessions == null || this._allSessions.length <= 0) {
+            const storage = await globalCtx.secretsStorage.get(this.sessionStorageKey)
+            const sessions = JSON.parse(storage ?? '[]') as AuthSession[] | null | undefined
+            this._allSessions = isArray(sessions) ? sessions.map(x => AuthSession.from(x)) : []
+        }
+
+        return this._allSessions
+    }
+
+    private ensureScopes(
+        scopes: string[] | null | undefined,
+        { default: defaultScopes = this.allScopes } = {}
+    ): string[] {
+        return scopes == null || scopes.length <= 0 ? defaultScopes : scopes
     }
 }
 

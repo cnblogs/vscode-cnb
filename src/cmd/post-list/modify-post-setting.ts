@@ -1,10 +1,10 @@
 import { Uri } from 'vscode'
 import { Post } from '@/model/post'
 import { Alert } from '@/infra/alert'
-import { PostService } from '@/service/post'
-import { PostFileMapManager } from '@/service/post-file-map'
-import { revealPostListItem } from '@/service/post-list-view'
-import { PostCfgPanel } from '@/service/post-cfg-panel'
+import { PostService } from '@/service/post/post'
+import { PostFileMapManager } from '@/service/post/post-file-map'
+import { revealPostListItem } from '@/service/post/post-list-view'
+import { PostCfgPanel } from '@/service/post/post-cfg-panel'
 import fs from 'fs'
 import { LocalDraft } from '@/service/local-draft'
 import { saveFilePendingChanges } from '@/infra/save-file-pending-changes'
@@ -12,7 +12,7 @@ import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 
-export const modifyPostSetting = async (input: Post | PostTreeItem | Uri) => {
+export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
     let post: Post | undefined
     let postId = -1
     input = input instanceof PostTreeItem ? input.post : input
@@ -40,7 +40,7 @@ export const modifyPostSetting = async (input: Post | PostTreeItem | Uri) => {
         post: postEditDto,
         localFileUri: localFilePath ? Uri.file(localFilePath) : undefined,
         successCallback: ({ id }) => {
-            Alert.info('博文已更新')
+            void Alert.info('博文已更新')
             postDataProvider.fireTreeDataChangedEvent(id)
             postCategoryDataProvider.onPostUpdated({ refreshPost: false, postIds: [id] })
         },

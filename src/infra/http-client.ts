@@ -1,18 +1,22 @@
-import { accountManager } from '@/auth/account-manager'
+import { AccountManagerNg } from '@/auth/account-manager'
 import got, { BeforeRequestHook } from 'got'
 import { isString } from 'lodash-es'
-import { Oauth } from '@/service/oauth.api'
+import { ReqHeaderKey } from '@/infra/http/infra/header'
+import { bearer } from '@/infra/http/infra/auth-type'
 
 const bearerTokenHook: BeforeRequestHook = async opt => {
     const { headers } = opt
     const headerKeys = Object.keys(headers)
 
-    const keyIndex = headerKeys.findIndex(x => x.toLowerCase() === Oauth.AuthHeaderKey.toLowerCase())
+    const keyIndex = headerKeys.findIndex(x => x.toLowerCase() === ReqHeaderKey.AUTHORIZATION.toLowerCase())
 
     if (keyIndex < 0) {
-        const token = await accountManager.acquireToken()
+        const token = await AccountManagerNg.acquireToken()
 
-        if (isString(token)) headers[Oauth.AuthHeaderKey] = `Bearer ${token}`
+        if (isString(token)) headers[ReqHeaderKey.AUTHORIZATION] = bearer(token)
+
+        // TODO: need better solution
+        if (token.length === 64) headers[ReqHeaderKey.AUTHORIZATION_TYPE] = 'pat'
     }
 }
 

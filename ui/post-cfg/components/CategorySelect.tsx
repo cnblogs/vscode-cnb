@@ -1,7 +1,7 @@
 import { Checkbox, Stack } from '@fluentui/react'
-import { PostCategories } from '@/model/post-category'
 import { Component } from 'react'
 import { personalCategoriesStore } from '../service/personal-category-store'
+import { PostCategory } from '@/model/post-category'
 
 interface CategoriesSelectorProps {
     categoryIds: number[] | undefined
@@ -9,7 +9,7 @@ interface CategoriesSelectorProps {
 }
 
 interface CategoriesSelectorState {
-    categories: PostCategories
+    categories: PostCategory[]
     categoryIds: number[]
 }
 

@@ -1,3 +1,3 @@
-import { getIngListWebviewProvider } from '@/service/ing-list-webview-provider'
+import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provider'
 
 export const refreshIngList = () => getIngListWebviewProvider().refreshingList()

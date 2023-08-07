@@ -1,7 +1,7 @@
 import { window } from 'vscode'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 
-export const searchPost = async () => {
+export async function searchPost() {
     const searchKey = await window.showInputBox({
         ignoreFocusOut: true,
         title: '搜索博文',

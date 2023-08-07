@@ -1,5 +1,6 @@
-import { Post } from './post'
+import { MyConfig, Post } from '@/model/post'
 
-export class PostEditDto {
-    constructor(public post: Post, public config: any) {}
+export type PostEditDto = {
+    post: Post
+    config: MyConfig
 }

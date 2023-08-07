@@ -3,16 +3,16 @@ import path from 'path'
 import { FileSystemError, MessageOptions, Uri, workspace } from 'vscode'
 import { Post } from '@/model/post'
 import { Alert } from '@/infra/alert'
-import { PostService } from '@/service/post'
-import { PostFileMapManager } from '@/service/post-file-map'
+import { PostService } from '@/service/post/post'
+import { PostFileMapManager } from '@/service/post/post-file-map'
 import { openPostFile } from './open-post-file'
-import { PostTitleSanitizer } from '@/service/post-title-sanitizer'
-import { postCategoryService } from '@/service/post-category'
+import { PostTitleSanitizer } from '@/service/post/post-title-sanitizer'
+import { PostCategoryService } from '@/service/post/post-category'
 import sanitizeFileName from 'sanitize-filename'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { PostCategoryCfg } from '@/ctx/cfg/post-category'
 
-const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise<Uri> => {
+async function buildLocalPostFileUri(post: Post, includePostId = false): Promise<Uri> {
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
     const shouldCreateLocalPostFileWithCategory = PostCategoryCfg.isCreateLocalPostFileWithCategory()
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`
@@ -20,7 +20,7 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
     const { text: postTitle } = await PostTitleSanitizer.sanitize(post)
     if (shouldCreateLocalPostFileWithCategory) {
         const firstCategoryId = post.categoryIds?.[0]
-        const category = firstCategoryId ? await postCategoryService.find(firstCategoryId) : null
+        const category = firstCategoryId ? await PostCategoryService.find(firstCategoryId) : null
         let i: typeof category | undefined = category
         let categoryTitle = ''
         while (i != null) {
@@ -39,7 +39,7 @@ const buildLocalPostFileUri = async (post: Post, includePostId = false): Promise
     }
 }
 
-export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> => {
+export async function openPostInVscode(postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> {
     let mappedPostFilePath = PostFileMapManager.getFilePath(postId)
     const isFileExist = !!mappedPostFilePath && fs.existsSync(mappedPostFilePath)
     if (mappedPostFilePath && isFileExist && !forceUpdateLocalPostFile) {
@@ -65,23 +65,14 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
     if (!mappedPostFilePath) {
         // 本地存在和博文同名的文件, 询问用户是要覆盖还是同时保留两者
         if (fs.existsSync(fileUri.fsPath)) {
-            const conflictOptions = [
-                '保留本地文件(这会新建另一个文件名中包含博文id的文件)',
-                '覆盖本地文件(会导致本地文件中内容丢失)',
-            ]
-            const selectedOption = await Alert.info(
-                `无法新建博文与本地文件的关联, 文件名冲突`,
-                { detail: `本地已存在名为"${path.basename(fileUri.fsPath)}"的文件`, modal: true } as MessageOptions,
-                ...conflictOptions
+            const opt = ['保留本地文件, 以博文 ID 为文件名新建另一个文件', '覆盖本地文件']
+            const selected = await Alert.info(
+                `无法建立博文与本地文件的关联, 文件名冲突`,
+                { detail: `本地已存在名为 ${path.basename(fileUri.fsPath)} 的文件`, modal: true } as MessageOptions,
+                ...opt
             )
-            switch (selectedOption) {
-                case conflictOptions[0]:
-                    fileUri = await buildLocalPostFileUri(post, true)
-                    break
-                // 取消, 直接返回, 不进行任何操作
-                case undefined:
-                    return false
-            }
+
+            if (selected === opt[0]) fileUri = await buildLocalPostFileUri(post, true)
         }
     }
 
@@ -92,13 +83,13 @@ export const openPostInVscode = async (postId: number, forceUpdateLocalPostFile 
     return fileUri
 }
 
-const createDirectoryIfNotExist = async (uri: Uri) => {
+async function createDirectoryIfNotExist(uri: Uri) {
     try {
         await workspace.fs.readDirectory(uri)
     } catch (err) {
         if (err instanceof FileSystemError) await workspace.fs.createDirectory(uri)
 
-        Alert.err('Create workspace directory failed')
+        void Alert.err('Create workspace directory failed')
         console.error(err)
     }
 }
