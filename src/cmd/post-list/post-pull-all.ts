@@ -9,9 +9,9 @@ import { buildLocalPostFileUri } from '@/cmd/post-list/open-post-in-vscode'
 export async function postPullAll() {
     const loc = ProgressLocation.Notification
 
-    await window.withProgress({ title: '拉取博文', location: loc }, async p => {
+    await window.withProgress({ title: '下载随笔', location: loc }, async p => {
         for await (const post of PostService.allPostIter()) {
-            p.report({ message: `正在拉取: ${post.title}` })
+            p.report({ message: `正在下载: ${post.title}` })
 
             const path = PostFileMapManager.getFilePath(post.id)
 
@@ -38,5 +38,5 @@ export async function postPullAll() {
         }
     })
 
-    void Alert.info('拉取博文: 操作完成')
+    void Alert.info('下载随笔: 操作完成')
 }

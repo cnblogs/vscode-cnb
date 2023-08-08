@@ -10,7 +10,6 @@ import { openPostInBlogAdmin } from '@/cmd/open/open-post-in-blog-admin'
 import { viewPostOnline } from '@/cmd/view-post-online'
 import { extractImg } from '@/cmd/extract-img'
 import { handleDeletePostCategories } from '@/cmd/post-category/del-selected-category'
-import { PublishIngCmdHandler } from '@/cmd/ing/publish-ing'
 import { regCmd } from '@/infra/cmd'
 import { exportPostToPdf } from '@/cmd/pdf/export-pdf'
 import { editExportPost } from '@/cmd/blog-export/edit'
@@ -37,6 +36,8 @@ import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
 import { renamePost } from '@/cmd/post-list/rename-post'
 import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
 import { delSelectedPost } from '@/cmd/post-list/del-post'
+import { pubIngWithInput } from '@/cmd/ing/pub-ing-with-input'
+import { pubIngWithSelect } from '@/cmd/ing/pub-ing-with-select'
 
 function withPrefix(prefix: string) {
     return (rest: string) => `${prefix}${rest}`
@@ -100,8 +101,8 @@ export function setupExtCmd() {
         regCmd(withAppName('.workspace.os-open'), Workspace.osOpen),
         regCmd(withAppName('.workspace.code-open'), Workspace.codeOpen),
         // ing
-        regCmd(withAppName('.ing.pub'), () => new PublishIngCmdHandler('input').handle()),
-        regCmd(withAppName('.ing.pub-select'), () => new PublishIngCmdHandler('select').handle()),
+        regCmd(withAppName('.ing.pub'), () => pubIngWithInput('')),
+        regCmd(withAppName('.ing.pub-select'), pubIngWithSelect),
         // open in browser
         regCmd(withAppName('.open.cnb-q'), Browser.Open.Cnb.q),
         regCmd(withAppName('.open.cnb-ing'), Browser.Open.Cnb.ing),
