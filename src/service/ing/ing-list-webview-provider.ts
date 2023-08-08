@@ -2,14 +2,14 @@ import { globalCtx } from '@/ctx/global-ctx'
 import {
     CancellationToken,
     Disposable,
-    Webview,
+    Webview as CodeWebview,
     WebviewView,
     WebviewViewProvider,
     WebviewViewResolveContext,
     window,
 } from 'vscode'
 import { parseWebviewHtml } from '@/service/parse-webview-html'
-import { IngWebviewHostCmd, IngWebviewUiCmd, WebviewCmd } from '@/model/webview-cmd'
+import { IngWebviewHostCmd, IngWebviewUiCmd, Webview } from '@/model/webview-cmd'
 import { IngApi } from '@/service/ing/ing-api'
 import { IngAppState } from '@/model/ing-view'
 import { IngType, IngTypesMetadata } from '@/model/ing'
@@ -61,7 +61,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
         webviewView.webview.onDidReceiveMessage(this.observer.observer, disposables)
         webviewView.webview.html = await this.provideHtml(webviewView.webview)
         window.onDidChangeActiveColorTheme(
-            () => webviewView.webview.postMessage(WebviewCmd.UiCmd.updateTheme),
+            () => webviewView.webview.postMessage(Webview.Cmd.Ui.updateTheme),
             disposables
         )
         webviewView.onDidDispose(() => {
@@ -81,7 +81,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
             await this._view.webview
                 .postMessage({
                     payload: { isRefreshing: true },
-                    command: WebviewCmd.IngCmd.UiCmd.setAppState,
+                    command: Webview.Cmd.Ing.Ui.setAppState,
                 } as IngWebviewUiCmd<Partial<IngAppState>>)
                 .then(undefined, () => undefined)
             const rawIngList = await IngApi.list({
@@ -97,7 +97,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
             const comments = await IngApi.listComments(...ingList.map(x => x.id))
             await this._view.webview
                 .postMessage({
-                    command: WebviewCmd.IngCmd.UiCmd.setAppState,
+                    command: Webview.Cmd.Ing.Ui.setAppState,
                     payload: {
                         ingList,
                         isRefreshing: false,
@@ -119,14 +119,14 @@ export class IngListWebviewProvider implements WebviewViewProvider {
         if (!this._view || !this._view.visible) return
         const comments = await IngApi.listComments(...ingIds)
         await this._view.webview.postMessage({
-            command: WebviewCmd.IngCmd.UiCmd.setAppState,
+            command: Webview.Cmd.Ing.Ui.setAppState,
             payload: {
                 comments,
             },
         } as IngWebviewUiCmd<Omit<IngAppState, ''>>)
     }
 
-    private provideHtml(webview: Webview) {
+    private provideHtml(webview: CodeWebview) {
         return parseWebviewHtml('ing', webview)
     }
 
@@ -171,7 +171,7 @@ class IngWebviewMessageObserver {
 
     observer = ({ command, payload }: IngWebviewHostCmd) => {
         switch (command) {
-            case WebviewCmd.IngCmd.ExtCmd.refreshingList: {
+            case Webview.Cmd.Ing.Ext.refreshingList: {
                 const { ingType, pageIndex } = payload
                 return this._provider.refreshingList({
                     ingType:
@@ -181,8 +181,8 @@ class IngWebviewMessageObserver {
                     pageIndex: isNumber(pageIndex) ? pageIndex : undefined,
                 })
             }
-            case WebviewCmd.IngCmd.ExtCmd.comment: {
-                const { atUser, ingId, ingContent, parentCommentId } = payload as WebviewCmd.IngCmd.CommentCmdPayload
+            case Webview.Cmd.Ing.Ext.comment: {
+                const { atUser, ingId, ingContent, parentCommentId } = payload as Webview.Cmd.Ing.CommentCmdPayload
                 return new CommentIngCmdHandler(ingId, ingContent, parentCommentId, atUser).handle()
             }
         }

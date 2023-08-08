@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react'
-import { IngWebviewUiCmd, WebviewCmd } from '@/model/webview-cmd'
+import { IngWebviewUiCmd, Webview } from '@/model/webview-cmd'
 import { IngList } from 'ing/IngList'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 import { IngAppState } from '@/model/ing-view'
@@ -48,7 +48,7 @@ export class App extends Component<unknown, IngAppState> {
 
     private observeMessages() {
         window.addEventListener('message', ({ data: { command, payload } }: { data: IngWebviewUiCmd }) => {
-            if (command === WebviewCmd.IngCmd.UiCmd.setAppState) {
+            if (command === Webview.Cmd.Ing.Ui.setAppState) {
                 const { ingList, isRefreshing, comments } = payload as Partial<IngAppState>
                 this.setState({
                     ingList: ingList?.map(Ing.parse) ?? this.state.ingList,
@@ -66,7 +66,7 @@ export class App extends Component<unknown, IngAppState> {
                 })
                 return
             }
-            if (command === WebviewCmd.IngCmd.UiCmd.updateTheme) {
+            if (command === Webview.Cmd.Ing.Ui.updateTheme) {
                 this.setState({ theme: activeThemeProvider.activeTheme() })
                 return
             }
@@ -75,7 +75,7 @@ export class App extends Component<unknown, IngAppState> {
 
     private refresh() {
         getVsCodeApiSingleton().postMessage({
-            command: WebviewCmd.IngCmd.ExtCmd.refreshingList,
+            command: Webview.Cmd.Ing.Ext.refreshingList,
             payload: {},
         })
     }

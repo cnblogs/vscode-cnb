@@ -1,7 +1,7 @@
 import { PostCategory } from '@/model/post-category'
 
-export namespace WebviewCmd {
-    export enum UiCmd {
+export namespace Webview.Cmd {
+    export enum Ui {
         editPostCfg = 'editPostCfg',
         showErrorResponse = 'showErrorResponse',
         updateBreadcrumbs = 'updateBreadcrumbs',
@@ -11,7 +11,7 @@ export namespace WebviewCmd {
         updateChildCategories = 'updateChildCategories',
     }
 
-    export enum ExtCmd {
+    export enum Ext {
         uploadPost = 'uploadPost',
         disposePanel = 'disposePanel',
         uploadImg = 'uploadImg',
@@ -19,22 +19,22 @@ export namespace WebviewCmd {
         getChildCategories = 'getChildCategories',
     }
 
-    export interface GetChildCategoriesPayload {
+    export type GetChildCategoriesPayload = {
         parentId: number
     }
 
-    export interface UpdateChildCategoriesPayload {
+    export type UpdateChildCategoriesPayload = {
         parentId: number
         value: PostCategory[]
     }
 
-    export namespace IngCmd {
-        export enum UiCmd {
+    export namespace Ing {
+        export enum Ui {
             setAppState = 'setAppState',
             updateTheme = 'updateTheme',
         }
 
-        export enum ExtCmd {
+        export enum Ext {
             refreshingList = 'refreshingList',
             comment = 'comment',
         }
@@ -55,10 +55,10 @@ export interface WebviewCommonCmd<T> {
 
 export interface IngWebviewUiCmd<T extends Record<string, unknown> = Record<string, unknown>>
     extends WebviewCommonCmd<T> {
-    command: WebviewCmd.IngCmd.UiCmd
+    command: Webview.Cmd.Ing.Ui
 }
 
 export interface IngWebviewHostCmd<T extends Record<string, unknown> = Record<string, unknown>>
     extends WebviewCommonCmd<T> {
-    command: WebviewCmd.IngCmd.ExtCmd
+    command: Webview.Cmd.Ing.Ext
 }

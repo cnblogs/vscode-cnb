@@ -1,4 +1,4 @@
-import { WebviewCommonCmd, WebviewCmd } from '@/model/webview-cmd'
+import { WebviewCommonCmd, Webview } from '@/model/webview-cmd'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 import { PostCategory } from '@/model/post-category'
 
@@ -28,7 +28,7 @@ export namespace personalCategoriesStore {
                     const onUpdate = ({
                         data: message,
                     }: {
-                        data: WebviewCommonCmd<WebviewCmd.UpdateChildCategoriesPayload>
+                        data: WebviewCommonCmd<Webview.Cmd.UpdateChildCategoriesPayload>
                     }) => {
                         console.log('onUpdate', message)
                         if (message.payload.parentId === parent) {
@@ -40,14 +40,14 @@ export namespace personalCategoriesStore {
                         }
                     }
 
-                    window.addEventListener<WebviewCommonCmd<WebviewCmd.UpdateChildCategoriesPayload>>(
+                    window.addEventListener<WebviewCommonCmd<Webview.Cmd.UpdateChildCategoriesPayload>>(
                         'message',
                         onUpdate
                     )
                 }).finally(() => pendingChildrenQuery?.delete(parent))
 
-                vscode.postMessage<WebviewCommonCmd<WebviewCmd.GetChildCategoriesPayload>>({
-                    command: WebviewCmd.ExtCmd.getChildCategories,
+                vscode.postMessage<WebviewCommonCmd<Webview.Cmd.GetChildCategoriesPayload>>({
+                    command: Webview.Cmd.Ext.getChildCategories,
                     payload: { parentId: parent },
                 })
             }

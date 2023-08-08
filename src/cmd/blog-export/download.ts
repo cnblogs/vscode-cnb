@@ -99,5 +99,5 @@ export async function downloadBlogExport(input: unknown) {
 }
 
 function setIsDownloading(value: boolean) {
-    return execCmd('setContext', `${globalCtx.extName}.blog-export.downloading`, value || undefined)
+    return execCmd('setContext', `${globalCtx.extName}.backup.downloading`, value || undefined)
 }

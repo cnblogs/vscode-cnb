@@ -1,4 +1,3 @@
-import { MyConfig, Post, PostListRespItem } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostUpdatedResp } from '@/model/post-updated-response'
@@ -11,6 +10,9 @@ import { consUrlPara } from '@/infra/http/infra/url-para'
 import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { Page, PageList } from '@/model/page'
+import { Post } from '@/model/post'
+import { PostListRespItem } from '@/model/post-list-resp-item'
+import { MyConfig } from '@/model/my-config'
 
 let newPostTemplate: PostEditDto | undefined
 

@@ -2,10 +2,10 @@ import { workspace } from 'vscode'
 import { isTargetWorkspace } from '@/service/is-target-workspace'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { refreshPostCategoryList } from '@/cmd/post-category/refresh-post-category-list'
-import { refreshPostList } from '@/cmd/post-list/refresh-post-list'
 import { execCmd } from '@/infra/cmd'
 import { setupUi } from '@/setup/setup-ui'
 import { LocalState } from '@/ctx/local-state'
+import { PostListView } from '@/cmd/post-list/post-list-view'
 
 export const setupCfgWatch = () =>
     workspace.onDidChangeConfiguration(ev => {
@@ -14,7 +14,7 @@ export const setupCfgWatch = () =>
         if (ev.affectsConfiguration('workbench.iconTheme')) refreshPostCategoryList()
 
         if (ev.affectsConfiguration('cnblogsClient.pageSize.postList'))
-            refreshPostList({ queue: true }).catch(() => undefined)
+            PostListView.refresh({ queue: true }).catch(() => undefined)
 
         if (ev.affectsConfiguration('cnblogsClient.markdown'))
             execCmd('markdown.preview.refresh').then(undefined, () => undefined)

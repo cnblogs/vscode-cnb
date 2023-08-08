@@ -6,7 +6,7 @@ import { ActivityItem, IPersonaProps, Link, Text } from '@fluentui/react'
 import { format, formatDistanceStrict } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
-import { IngWebviewHostCmd, WebviewCmd } from '@/model/webview-cmd'
+import { IngWebviewHostCmd, Webview } from '@/model/webview-cmd'
 
 interface IngItemProps {
     ing: Ing
@@ -197,11 +197,11 @@ class IngItem extends Component<IngItemProps, IngItemState> {
         }
     }
 
-    private comment(payload: WebviewCmd.IngCmd.CommentCmdPayload) {
+    private comment(payload: Webview.Cmd.Ing.CommentCmdPayload) {
         getVsCodeApiSingleton().postMessage({
-            command: WebviewCmd.IngCmd.ExtCmd.comment,
+            command: Webview.Cmd.Ing.Ext.comment,
             payload,
-        } as IngWebviewHostCmd<WebviewCmd.IngCmd.CommentCmdPayload>)
+        } as IngWebviewHostCmd<Webview.Cmd.Ing.CommentCmdPayload>)
     }
 }
 

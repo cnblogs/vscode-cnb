@@ -4,7 +4,7 @@ import { ExportPostTreeItem } from '@/tree-view/model/blog-export/post'
 import { URLSearchParams } from 'url'
 import { languages, TextDocumentContentProvider, Uri, window, workspace } from 'vscode'
 
-const schema = 'vscode-cnb.blog-export.post'
+const schema = 'vscode-cnb.backup.post'
 
 function parseInput(input: unknown): ExportPostTreeItem | null | undefined {
     return input instanceof ExportPostTreeItem ? input : null

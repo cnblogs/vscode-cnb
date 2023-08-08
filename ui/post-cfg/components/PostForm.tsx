@@ -4,7 +4,6 @@ import React from 'react'
 import { CategorySelect } from './CategorySelect'
 import { SiteHomeContributionOptionsSelector } from './SiteHomeContributionOptionsSelector'
 import { PostCfg } from '@/model/post-cfg'
-import { Post } from '@/model/post'
 import { Label, Spinner } from '@fluentui/react'
 import { SiteCategorySelector } from './SiteCategorySelector'
 import { TagsInput } from './TagsInput'
@@ -13,13 +12,14 @@ import { AccessPermissionSelector } from './AccessPermissionSelector'
 import { PasswordInput } from './PasswordInput'
 import { getVsCodeApiSingleton } from '../../share/vscode-api'
 import { ErrorResponse } from './ErrorResponse'
-import { WebviewCmd } from '@/model/webview-cmd'
+import { Webview } from '@/model/webview-cmd'
 import { WebviewMsg } from '@/model/webview-msg'
 import { InputSummary } from './InputSummary'
 import { IPostFormContext, PostFormContext } from './PostFormContext'
 import PostEntryNameInput from './PostEntryNameInput'
 import PostTitleInput from 'post-cfg/components/PostTitleInput'
 import NestCategorySelect from './NestCategorySelect'
+import { Post } from '@/model/post'
 
 export interface IPostFormProps {
     post?: Post
@@ -146,12 +146,12 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
     private onConfirm() {
         this.context.set({ disabled: true, status: 'submitting' })
         getVsCodeApiSingleton().postMessage({
-            command: WebviewCmd.ExtCmd.uploadPost,
+            command: Webview.Cmd.Ext.uploadPost,
             post: Object.assign({}, this.props.post, this.state),
         } as WebviewMsg.UploadPostMsg)
     }
 
     private onCancel() {
-        getVsCodeApiSingleton().postMessage({ command: WebviewCmd.ExtCmd.disposePanel } as WebviewMsg.Msg)
+        getVsCodeApiSingleton().postMessage({ command: Webview.Cmd.Ext.disposePanel } as WebviewMsg.Msg)
     }
 }

@@ -11,5 +11,5 @@ export async function refreshExportRecord() {
 }
 
 function setIsRefreshing(value: boolean) {
-    return execCmd('setContext', `${globalCtx.extName}.blog-export.records.isRefreshing`, value || undefined)
+    return execCmd('setContext', `${globalCtx.extName}.backup.records.isRefreshing`, value || undefined)
 }
