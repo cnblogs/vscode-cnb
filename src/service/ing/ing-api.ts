@@ -14,7 +14,7 @@ async function getIngComment(id: number) {
 }
 
 export namespace IngApi {
-    export async function publishIng(ing: IngPublishModel): Promise<boolean> {
+    export async function pubIng(ing: IngPublishModel) {
         const url = `${globalCtx.config.openApiUrl}/api/statuses`
         const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
         const body = JSON.stringify(ing)
