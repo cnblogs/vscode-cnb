@@ -18,7 +18,8 @@ export async function postPullAll() {
             // 本地没有博文或关联到的文件不存在
             if (path === undefined || !existsSync(path)) {
                 const uri = await buildLocalPostFileUri(post, false)
-                await workspace.fs.writeFile(uri, Buffer.from(post.postBody))
+                const buf = Buffer.from(post.postBody)
+                await workspace.fs.writeFile(uri, buf)
                 await PostFileMapManager.updateOrCreate(post.id, uri.path)
                 continue
             }
@@ -33,8 +34,12 @@ export async function postPullAll() {
             if (answer === undefined) continue
             if (answer === '跳过此操作') continue
             if (answer === '退出') return
-
-            await workspace.fs.writeFile(Uri.parse(path), Buffer.from(post.postBody))
+            if (answer === '覆盖本地文件') {
+                const uri = Uri.file(path)
+                const buf = Buffer.from(post.postBody)
+                await workspace.fs.delete(uri, { useTrash: true })
+                await workspace.fs.writeFile(uri, buf)
+            }
         }
     })
 
