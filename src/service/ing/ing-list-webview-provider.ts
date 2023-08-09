@@ -84,7 +84,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                     command: Webview.Cmd.Ing.Ui.setAppState,
                 } as IngWebviewUiCmd<Partial<IngAppState>>)
                 .then(undefined, () => undefined)
-            const rawIngList = await IngApi.list({
+            const rawIngList = await IngApi.getList({
                 type: ingType,
                 pageIndex,
                 pageSize: 30,
@@ -94,7 +94,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                 if (UiCfg.isEnableTextIngStar()) ing.icons = ingStarToText(ing.icons)
                 return ing
             })
-            const comments = await IngApi.listComments(...ingList.map(x => x.id))
+            const comments = await IngApi.getCommentList(...ingList.map(x => x.id))
             await this._view.webview
                 .postMessage({
                     command: Webview.Cmd.Ing.Ui.setAppState,
@@ -117,7 +117,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
 
     async updateComments(ingIds: number[]) {
         if (!this._view || !this._view.visible) return
-        const comments = await IngApi.listComments(...ingIds)
+        const comments = await IngApi.getCommentList(...ingIds)
         await this._view.webview.postMessage({
             command: Webview.Cmd.Ing.Ui.setAppState,
             payload: {

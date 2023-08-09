@@ -27,11 +27,6 @@ async function afterPub(ingIsPrivate: boolean) {
 }
 
 export function pubIng(content: string, isPrivate: boolean) {
-    const model = {
-        content: content,
-        isPrivate: isPrivate,
-    }
-
     const opt = {
         location: ProgressLocation.Notification,
         title: '正在发布...',
@@ -39,7 +34,7 @@ export function pubIng(content: string, isPrivate: boolean) {
 
     void window.withProgress(opt, async p => {
         p.report({ increment: 40 })
-        const isSuccess = await IngApi.pubIng(model)
+        const isSuccess = await IngApi.pub(content, isPrivate)
         p.report({ increment: 100 })
         if (isSuccess) void afterPub(isPrivate)
         p.report({ increment: 100 })
