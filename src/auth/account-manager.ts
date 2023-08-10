@@ -1,5 +1,5 @@
 import { globalCtx } from '@/ctx/global-ctx'
-import { window, authentication, AuthenticationGetSessionOptions, Disposable, InputBoxOptions } from 'vscode'
+import { window, authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
