@@ -20,6 +20,7 @@ export type UserInfo = {
     BlogApp: string
     FollowingCount: number
     FollowerCount: number
+    IsVip: boolean
 }
 
 export class AccountInfo implements ASAI {
