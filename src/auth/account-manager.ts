@@ -20,12 +20,15 @@ let authSession: AuthSession | null = null
 
 export namespace AccountManagerNg {
     export async function ensureSession(opt?: AuthenticationGetSessionOptions) {
-        const session = await authentication.getSession(authProvider.providerId, [], opt).then(
-            session => (session ? AuthSession.from(session) : null),
-            e => {
-                void Alert.err(`创建/获取 Session 失败: ${<string>e}`)
-            }
-        )
+        let session
+        try {
+            const result = await authentication.getSession(authProvider.providerId, [], opt)
+            if (result === undefined) session = null
+            else session = AuthSession.from(result)
+        } catch (e) {
+            void Alert.err(`创建/获取 Session 失败: ${<string>e}`)
+            session = null
+        }
 
         if (session != null && session.account.accountId < 0) {
             authSession = null
@@ -88,12 +91,12 @@ export namespace AccountManagerNg {
 
         await execCmd('setContext', `${globalCtx.extName}.${isAuthorizedStorageKey}`, accountManager.isAuthorized)
 
-        if (accountManager.isAuthorized) {
-            await execCmd('setContext', `${globalCtx.extName}.user`, {
-                name: accountManager.currentUser.name,
-                avatar: accountManager.currentUser.avatar,
-            })
-        }
+        if (!accountManager.isAuthorized) return
+
+        await execCmd('setContext', `${globalCtx.extName}.user`, {
+            name: accountManager.currentUser.name,
+            avatar: accountManager.currentUser.avatar,
+        })
     }
 }
 
@@ -124,7 +127,7 @@ class AccountManager extends Disposable {
     }
 
     get currentUser(): AccountInfo {
-        return authSession?.account ?? AccountInfo.newAnonymous()
+        return authSession?.account ?? AccountInfo.anonymous()
     }
 }
 

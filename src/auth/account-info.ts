@@ -1,39 +1,39 @@
-import { UserInfoSpec } from '@/auth/oauth'
+import { UserInfo } from '@/auth/oauth'
 import { trim } from 'lodash-es'
-import { AuthenticationSessionAccountInformation } from 'vscode'
+import { AuthenticationSessionAccountInformation as ASAI } from 'vscode'
 import { AuthProvider } from './auth-provider'
 
-export class AccountInfo implements AuthenticationSessionAccountInformation {
-    readonly label: string
+export class AccountInfo implements ASAI {
     readonly id: string
+    readonly label: string
 
-    private _blogApp: string | null = null
+    readonly blogApp: string
 
-    private constructor(
+    constructor(
         public readonly name: string,
         public readonly avatar: string,
-        public readonly website: string, //The user blog home page url
+        public readonly website: string, // User blog home page url
         public readonly blogId: number,
-        public readonly sub: string, //UserId(data type is Guid)
-        public readonly accountId: number //SpaceUserId
+        public readonly sub: string, // User id (GUID)
+        public readonly accountId: number // Space user id
     ) {
         this.id = `${this.accountId}-${AuthProvider.providerId}`
         this.label = name
+        this.blogApp = trim(this.website, '/').split('/').pop() ?? ''
     }
 
     get userId() {
         return this.sub
     }
+}
 
-    get blogApp(): string | null {
-        this._blogApp ??= this.parseBlogApp()
-        return this._blogApp
+export namespace AccountInfo {
+    export function anonymous() {
+        return new AccountInfo('anonymous', '', '', -1, '', -1)
     }
 
-    static newAnonymous = () => new AccountInfo('anonymous', '', '', -1, '', -1)
-
-    static from = (userInfo: UserInfoSpec) =>
-        new AccountInfo(
+    export function fromUserInfo(userInfo: UserInfo) {
+        return new AccountInfo(
             userInfo.name,
             userInfo.picture,
             userInfo.website,
@@ -41,9 +41,5 @@ export class AccountInfo implements AuthenticationSessionAccountInformation {
             userInfo.sub,
             parseInt(userInfo.account_id, 10)
         )
-
-    private parseBlogApp = () =>
-        trim(this.website ?? '', '/')
-            .split('/')
-            .pop() ?? null
+    }
 }

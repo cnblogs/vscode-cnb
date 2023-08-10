@@ -1,18 +1,26 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { TokenInfo } from '@/model/token-info'
-import { AccountInfo } from '@/auth/account-info'
 import { globalCtx } from '@/ctx/global-ctx'
 import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { Req } from '@/infra/http/req'
 import { Alert } from '@/infra/alert'
 import { consUrlPara } from '@/infra/http/infra/url-para'
 import { basic } from '@/infra/http/infra/auth-type'
-import { RsBase64 } from '@/wasm'
+import { RsBase64, UserReq } from '@/wasm'
 
-export type UserInfoSpec = Pick<AccountInfo, 'sub' | 'website' | 'name'> & {
-    readonly blog_id: string
-    readonly account_id: string
-    readonly picture: string
+export type UserInfo = {
+    account_id: string
+    blog_id: string
+    name: string
+    picture: string
+    sub: string
+    website: string
+}
+
+function getAuthedUserReq(token: string) {
+    // TODO: need better solution
+    const isPatToken = token.length === 64
+    return new UserReq(token, isPatToken)
 }
 
 export namespace Oauth {
@@ -40,15 +48,11 @@ export namespace Oauth {
         }
     }
 
-    export async function fetchUserInfo(token: string) {
-        const { authority, userInfoRoute } = globalCtx.config.oauth
-
-        const url = `${authority}${userInfoRoute}`
-        const header = consHeader([ReqHeaderKey.AUTHORIZATION, `Bearer ${token}`])
-
+    export async function getUserInfo(token: string) {
         try {
-            const resp = await Req.get(url, header)
-            return JSON.parse(resp) as UserInfoSpec
+            const req = getAuthedUserReq(token)
+            const resp = await req.getInfo()
+            return <UserInfo>JSON.parse(resp)
         } catch (e) {
             void Alert.err(`获取用户信息失败: ${<string>e}`)
         }

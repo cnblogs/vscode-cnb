@@ -27,7 +27,7 @@ export class AuthSession implements AuthenticationSession {
     }
 
     static from<T extends AuthenticationSession | Partial<AuthSession>>(t?: T) {
-        const session = new AuthSession(AccountInfo.newAnonymous())
+        const session = new AuthSession(AccountInfo.anonymous())
 
         merge(session, pick(t, keys(session)))
 
