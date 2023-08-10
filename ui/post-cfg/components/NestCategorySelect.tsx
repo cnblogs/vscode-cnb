@@ -1,17 +1,17 @@
 import { ActionButton, Checkbox, Icon, Link, Spinner, Stack } from '@fluentui/react'
 import { PostCategory } from '@/model/post-category'
 import { take } from 'lodash-es'
-import { personalCategoriesStore } from 'post-cfg/service/personal-category-store'
+import { PersonalCategoryStore } from 'post-cfg/service/personal-category-store'
 import React from 'react'
 
-export interface INestCategoriesSelectProps {
+export type INestCategoriesSelectProps = {
     selected?: number[]
     parent?: number | null
     onSelect?: (value: number[]) => void
     level?: number
 }
 
-export interface INestCategoriesSelectState {
+export type INestCategoriesSelectState = {
     expanded?: Set<number> | null
     children?: PostCategory[]
     showAll?: boolean
@@ -36,14 +36,13 @@ export default class NestCategorySelect extends React.Component<
 
     render() {
         if (this.props.parent && !this.state.children) {
-            personalCategoriesStore
-                .getByParent(this.props.parent)
+            PersonalCategoryStore.getByParent(this.props.parent)
                 .then(v => this.setState({ children: v }))
                 .catch(console.warn)
             return <Spinner />
         }
 
-        const categories = this.isRoot ? personalCategoriesStore.get() : this.state.children ?? []
+        const categories = this.isRoot ? PersonalCategoryStore.get() : this.state.children ?? []
         return (
             <Stack tokens={{ childrenGap: 10 }}>
                 {(this.state.showAll ? categories : take(categories, this.state.limit)).map(c => (
@@ -137,7 +136,7 @@ export default class NestCategorySelect extends React.Component<
     }
 }
 
-export interface ICategoryItemProps {
+export type ICategoryItemProps = {
     category: PostCategory
     onChange: (isChecked: boolean) => void
     isChecked: boolean

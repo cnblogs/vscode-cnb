@@ -1,17 +1,18 @@
 import { ActionButton, ITextField, Label, Stack, TextField } from '@fluentui/react'
 import * as React from 'react'
 
-export interface IPostEntryNameInputProps {
+export type IPostEntryNameInputProps = {
     entryName?: string
     onChange?: (value: string) => void
 }
 
-export interface IPostEntryNameInputState {
+export type IPostEntryNameInputState = {
     isCollapsed: boolean
 }
 
 export default class PostEntryNameInput extends React.Component<IPostEntryNameInputProps, IPostEntryNameInputState> {
     textFieldComp?: ITextField | null
+
     constructor(props: IPostEntryNameInputProps) {
         super(props)
 

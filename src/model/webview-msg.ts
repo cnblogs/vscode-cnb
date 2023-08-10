@@ -8,7 +8,7 @@ import { SiteCategory } from '@/model/site-category'
 import { PostCategory } from '@/model/post-category'
 
 export namespace WebviewMsg {
-    export interface Msg {
+    export type Msg = {
         command: Webview.Cmd.Ui | Webview.Cmd.Ext
     }
 

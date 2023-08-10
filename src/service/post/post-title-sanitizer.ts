@@ -33,7 +33,7 @@ export namespace PostTitleSanitizer {
         const { id: postId } = post
         const localFilePath = PostFileMapManager.getFilePath(postId)
         const { title: postTitle } = post
-        if (!localFilePath) return postTitle
+        if (localFilePath === undefined) return postTitle
 
         const localFilename = path.basename(localFilePath, path.extname(localFilePath))
         const { text: sanitizedTitle } = await sanitize(post)

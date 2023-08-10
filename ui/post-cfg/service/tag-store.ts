@@ -1,6 +1,6 @@
 import { PostTag } from '@/model/post-tag'
 
-export namespace tagsStore {
+export namespace TagStore {
     let tags: PostTag[] = []
 
     export const set = (value: PostTag[]) => (tags = value ?? [])

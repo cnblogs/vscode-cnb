@@ -8,7 +8,7 @@ import { promisify } from 'util'
 import { Readable } from 'stream'
 import { tmpdir } from 'os'
 
-export interface ImgInfo {
+export type ImgInfo = {
     offset: number
     data: string
     src: ImgSrc

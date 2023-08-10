@@ -1,7 +1,7 @@
 import { Label, Stack, TextField } from '@fluentui/react'
 import React from 'react'
 
-export interface IPasswordInputProps {
+export type IPasswordInputProps = {
     password?: string
     onChange?: (password: string) => void
 }

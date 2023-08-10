@@ -5,7 +5,7 @@ import { PostCategory } from '@/model/post-category'
 let children: Map<number, PostCategory[]>
 let pendingChildrenQuery: Map<number, Promise<PostCategory[]>> | undefined | null
 
-export namespace personalCategoriesStore {
+export namespace PersonalCategoryStore {
     let items: PostCategory[] = []
     export const get = (): PostCategory[] => items ?? []
 
@@ -14,14 +14,14 @@ export namespace personalCategoriesStore {
         let result = children.get(parent)
         const vscode = getVsCodeApiSingleton()
 
-        if (!result) {
+        if (result === undefined) {
             let promise = pendingChildrenQuery?.get(parent)
             if (promise == null) {
                 promise = new Promise<PostCategory[]>(resolve => {
                     const timeoutId = setTimeout(() => {
                         clearTimeout(timeoutId)
                         window.removeEventListener('message', onUpdate)
-                        console.warn(`timeout: personalCategoriesStore.getByParent: parent: ${parent}`)
+                        console.warn(`timeout: PersonalCategoryStore.getByParent: parent: ${parent}`)
                         resolve([])
                     }, 30 * 1000)
 

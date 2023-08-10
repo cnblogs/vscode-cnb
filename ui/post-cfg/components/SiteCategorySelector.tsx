@@ -1,14 +1,14 @@
 import { ActionButton, Checkbox, Label, Stack } from '@fluentui/react'
 import { SiteCategory } from '@/model/site-category'
 import React from 'react'
-import { siteCategoriesStore } from '../service/site-category-store'
+import { SiteCategoryStore } from '../service/site-category-store'
 
-export interface ISiteCategoriesSelectorProps {
+export type ISiteCategoriesSelectorProps = {
     categoryIds?: number[]
     onChange?: (siteCategoryId: number) => void
 }
 
-export interface ISiteCategoriesSelectorState {
+export type ISiteCategoriesSelectorState = {
     siteCategories: SiteCategory[]
     isCollapsed: boolean
     categoryIds: number[]
@@ -19,7 +19,7 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
     constructor(props: ISiteCategoriesSelectorProps) {
         super(props)
 
-        const siteCategories = siteCategoriesStore.get()
+        const siteCategories = SiteCategoryStore.get()
         const categoryExpandState: { selectedParentCategoryId?: boolean } = {}
         let selectedParentCategoryId = -1
         if (props.categoryIds && props.categoryIds.length > 0) {

@@ -9,7 +9,7 @@ export interface ISiteHomeContributionOptionsSelectorProps extends ISiteHomeCont
     onInSiteCandidateChange: (value: boolean) => void
 }
 
-export interface ISiteHomeContributionOptionsSelector {
+export type ISiteHomeContributionOptionsSelector = {
     isCollapse: boolean
 }
 

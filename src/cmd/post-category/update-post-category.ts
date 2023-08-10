@@ -17,7 +17,7 @@ class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHa
             title: '编辑博文分类',
             category,
         })
-        if (!addDto) return
+        if (addDto === undefined) return
 
         const updateDto = Object.assign(new PostCategory(), category, addDto)
         if (!updateDto) return

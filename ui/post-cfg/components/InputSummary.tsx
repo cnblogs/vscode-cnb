@@ -5,14 +5,14 @@ import { WebviewMsg } from '@/model/webview-msg'
 import React from 'react'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 
-export interface IInputSummaryProps {
+export type IInputSummaryProps = {
     summary?: string
     featureImageUrl?: string
     onChange?: (summary: string) => void
     onFeatureImageChange?: (imageUrl: string) => void
 }
 
-export interface IInputSummaryState {
+export type IInputSummaryState = {
     isCollapse: boolean
     disabled: boolean
     errors?: string[]
@@ -20,6 +20,7 @@ export interface IInputSummaryState {
 
 export class InputSummary extends React.Component<IInputSummaryProps, IInputSummaryState> {
     private uploadingImageId = ''
+
     constructor(props: IInputSummaryProps) {
         super(props)
         const { featureImageUrl, summary } = props
@@ -128,7 +129,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
 
     private renderFeatureImage() {
         const { featureImageUrl } = this.props
-        if (!featureImageUrl) {
+        if (featureImageUrl === undefined) {
             return (
                 <ActionButton
                     onClick={() => this.uploadFeatureImage()}

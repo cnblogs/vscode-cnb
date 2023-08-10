@@ -12,7 +12,7 @@ import { Alert } from '@/infra/alert'
 async function renameLinkedFile(post: Post): Promise<void> {
     const filePath = PostFileMapManager.getFilePath(post.id)
 
-    if (!filePath) return
+    if (filePath === undefined) return
 
     const fileUri = Uri.file(filePath)
 
@@ -46,7 +46,7 @@ export async function renamePost(arg: Post | PostTreeItem) {
         value: post.title,
     })
 
-    if (!input) return
+    if (input === undefined) return
 
     return window
         .withProgress(

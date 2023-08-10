@@ -9,7 +9,7 @@ export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
     const editor = window.visibleTextEditors.find(x => x.document.fileName === arg.fsPath)
     const textDocument = editor?.document ?? workspace.textDocuments.find(x => x.fileName === arg.fsPath)
 
-    if (!textDocument) return
+    if (textDocument === undefined) return
     await textDocument.save()
 
     const markdown = (await workspace.fs.readFile(arg)).toString()

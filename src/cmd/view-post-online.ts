@@ -14,7 +14,7 @@ export async function viewPostOnline(input?: Post | PostTreeItem | Uri) {
         if (postId !== undefined) post = (await PostService.fetchPostEditDto(postId))?.post
     }
 
-    if (!post) return
+    if (post === undefined) return
 
     await execCmd('vscode.open', Uri.parse(post.url))
 }

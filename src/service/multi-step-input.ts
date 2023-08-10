@@ -22,7 +22,7 @@ export class InputFlowAction {
 
 export type InputStep = (input: MultiStepInput) => Thenable<InputStep | void>
 
-export interface QuickPickParameters<T extends QuickPickItem> {
+export type QuickPickParameters<T extends QuickPickItem> = {
     title: string
     step: number
     totalSteps: number

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export interface IPostFormContext {
+export type IPostFormContext = {
     disabled: boolean
     status: 'loading' | 'submitting' | ''
     set(v: Omit<IPostFormContext, 'set'>): void

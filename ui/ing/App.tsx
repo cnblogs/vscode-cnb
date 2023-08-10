@@ -4,7 +4,7 @@ import { IngList } from 'ing/IngList'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 import { IngAppState } from '@/model/ing-view'
 import { Ing, IngComment } from '@/model/ing'
-import { activeThemeProvider } from 'share/active-theme-provider'
+import { ActiveThemeProvider } from 'share/active-theme-provider'
 import { ThemeProvider } from '@fluentui/react/lib/Theme'
 import { Spinner, Stack } from '@fluentui/react'
 import { cloneWith } from 'lodash-es'
@@ -14,7 +14,7 @@ export class App extends Component<unknown, IngAppState> {
         super(props)
 
         this.state = {
-            theme: activeThemeProvider.activeTheme(),
+            theme: ActiveThemeProvider.activeTheme(),
             isRefreshing: false,
         }
 
@@ -24,7 +24,7 @@ export class App extends Component<unknown, IngAppState> {
 
     override componentDidMount(): void {
         console.debug('IngApp mounted')
-        this.setState({ theme: activeThemeProvider.activeTheme() })
+        this.setState({ theme: ActiveThemeProvider.activeTheme() })
     }
 
     render(): ReactNode {
@@ -67,7 +67,7 @@ export class App extends Component<unknown, IngAppState> {
                 return
             }
             if (command === Webview.Cmd.Ing.Ui.updateTheme) {
-                this.setState({ theme: activeThemeProvider.activeTheme() })
+                this.setState({ theme: ActiveThemeProvider.activeTheme() })
                 return
             }
         })

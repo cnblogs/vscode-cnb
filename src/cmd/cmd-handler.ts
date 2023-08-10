@@ -1,8 +1,8 @@
-export interface CmdHandler {
+export type CmdHandler = {
     handle(): Promise<void> | void
 }
 
-export interface TreeViewCmdHandler<TData> {
+export type TreeViewCmdHandler<TData> = {
     readonly input: unknown
 
     parseInput(): TData | null | undefined

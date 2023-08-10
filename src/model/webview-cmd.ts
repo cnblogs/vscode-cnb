@@ -48,7 +48,7 @@ export namespace Webview.Cmd {
     }
 }
 
-export interface WebviewCommonCmd<T> {
+export type WebviewCommonCmd<T> = {
     payload: T
     command: unknown
 }

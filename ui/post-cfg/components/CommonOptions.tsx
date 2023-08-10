@@ -3,7 +3,7 @@ import * as React from 'react'
 
 type Option = { [key: string]: { label: string; checked: boolean } }
 
-export interface ICommonOptionsProps<TOption extends Option = Option> {
+export type ICommonOptionsProps<TOption extends Option = Option> = {
     options: TOption
     onChange?: (optionKey: keyof TOption, checked: boolean, stateObj: { [p in typeof optionKey]: boolean }) => void
 }
@@ -18,7 +18,7 @@ export class CommonOptions<TOption extends Option = Option> extends React.Compon
     render() {
         return (
             <Stack tokens={{ childrenGap: 8 }}>
-                <Label>常用选项</Label>
+                <Label>选项</Label>
                 <Stack horizontal tokens={{ childrenGap: 16 }}>
                     {this.renderOptions()}
                 </Stack>
