@@ -124,7 +124,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
                     }
 
                     try {
-                        const token = await Oauth.fetchToken(verifyCode, authCode)
+                        const token = await Oauth.getToken(verifyCode, authCode)
                         const authSession = await this.onAccessTokenGranted(token.accessToken, cancelTokenSrc.token, {
                             onStateChange(state) {
                                 progress.report({ message: state })
@@ -176,17 +176,17 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         onStateChange?.('正在获取账户信息...')
 
         if (cancelToken?.isCancellationRequested) throw Error('已取消')
-        const userInfo = await Oauth.getUserInfo(accessToken)
-        if (userInfo === undefined) throw Error('用户信息获取失败')
+        const accountInfo = await AccountInfo.get(accessToken)
+        if (accountInfo === undefined) throw Error('用户信息获取失败')
 
         onStateChange?.('即将完成...')
 
         if (cancelToken?.isCancellationRequested) throw Error('已取消')
         const session = AuthSession.from({
             accessToken,
-            account: AccountInfo.fromUserInfo(userInfo),
+            account: accountInfo,
             scopes: this.ensureScopes(null),
-            id: `${this.providerId}-${userInfo.account_id}`,
+            id: `${this.providerId}-${accountInfo.accountId}`,
         })
         await globalCtx.secretsStorage.store(this.sessionStorageKey, JSON.stringify([session]))
 

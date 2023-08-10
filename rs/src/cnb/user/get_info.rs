@@ -1,28 +1,22 @@
-use crate::cnb::ing::{IngReq, ING_API_BASE_URL};
+use crate::cnb::user::{UserReq, OAUTH_API_BASE_URL};
 use crate::infra::http::setup_auth;
 use crate::infra::result::{homo_result_string, HomoResult, IntoResult};
 use crate::panic_hook;
+use alloc::format;
 use alloc::string::String;
-use alloc::{format, vec};
 use anyhow::{anyhow, Result};
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen(js_class = IngReq)]
-impl IngReq {
-    #[wasm_bindgen(js_name = getList)]
-    pub async fn export_get_list(
-        &self,
-        page_index: usize,
-        page_size: usize,
-        ing_type: usize,
-    ) -> HomoResult<String> {
+#[wasm_bindgen(js_class = UserReq)]
+impl UserReq {
+    #[wasm_bindgen(js_name = getInfo)]
+    pub async fn export_get_info(&self) -> HomoResult<String> {
         panic_hook!();
-        let url = format!("{ING_API_BASE_URL}/@{ing_type}");
+        let url = format!("{OAUTH_API_BASE_URL}/connect/userinfo");
 
         let client = reqwest::Client::new().get(url);
 
-        let queries = vec![("pageIndex", page_index), ("pageSize", page_size)];
-        let req = setup_auth(client, &self.token, self.is_pat_token).query(&queries);
+        let req = setup_auth(client, &self.token, self.is_pat_token);
 
         let result: Result<String> = try {
             let resp = req.send().await?;

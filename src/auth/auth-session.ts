@@ -1,7 +1,10 @@
-import { AccessToken } from '@/auth/access-token'
 import { AccountInfo } from '@/auth/account-info'
 import { keys, merge, pick } from 'lodash-es'
 import { AuthenticationSession } from 'vscode'
+
+type AccessToken = {
+    exp: number
+}
 
 export class AuthSession implements AuthenticationSession {
     private _parsedAccessToken: AccessToken | null = null
@@ -27,7 +30,7 @@ export class AuthSession implements AuthenticationSession {
     }
 
     static from<T extends AuthenticationSession | Partial<AuthSession>>(t?: T) {
-        const session = new AuthSession(AccountInfo.anonymous())
+        const session = new AuthSession(AccountInfo.getAnonymous())
 
         merge(session, pick(t, keys(session)))
 

@@ -127,7 +127,7 @@ class AccountManager extends Disposable {
     }
 
     get currentUser(): AccountInfo {
-        return authSession?.account ?? AccountInfo.anonymous()
+        return authSession?.account ?? AccountInfo.getAnonymous()
     }
 }
 
