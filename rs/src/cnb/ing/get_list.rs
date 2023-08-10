@@ -1,4 +1,4 @@
-use crate::cnb::ing::IngReq;
+use crate::cnb::ing::{IngReq, ING_API_BASE_URL};
 use crate::infra::http::setup_auth;
 use crate::infra::result::{homo_result_string, HomoResult, IntoResult};
 use crate::panic_hook;
@@ -17,11 +17,11 @@ impl IngReq {
         ing_type: usize,
     ) -> HomoResult<String> {
         panic_hook!();
-        let query = vec![("pageIndex", page_index), ("pageSize", page_size)];
-        let url = format!("https://api.cnblogs.com/api/statuses/@{}", ing_type);
+        let url = format!("{ING_API_BASE_URL}/@{ing_type}");
 
         let client = reqwest::Client::new().get(url);
 
+        let query = vec![("pageIndex", page_index), ("pageSize", page_size)];
         let req = setup_auth(client, &self.token, self.is_pat_token).query(&query);
 
         let result: Result<String> = try {

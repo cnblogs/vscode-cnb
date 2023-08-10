@@ -1,4 +1,4 @@
-use crate::cnb::ing::IngReq;
+use crate::cnb::ing::{IngReq, ING_API_BASE_URL};
 use crate::infra::http::{setup_auth, APPLICATION_JSON};
 use crate::infra::result::IntoResult;
 use crate::panic_hook;
@@ -14,7 +14,7 @@ impl IngReq {
     #[wasm_bindgen(js_name = pub)]
     pub async fn export_pub(&self, content: &str, is_private: bool) -> Result<(), String> {
         panic_hook!();
-        let url = "https://api.cnblogs.com/api/statuses";
+        let url = ING_API_BASE_URL;
 
         let body = json!({
             "content": content,

@@ -1,4 +1,4 @@
-use crate::cnb::ing::IngReq;
+use crate::cnb::ing::{IngReq, ING_API_BASE_URL};
 use crate::infra::http::setup_auth;
 use crate::infra::result::{homo_result_string, HomoResult, IntoResult};
 use crate::panic_hook;
@@ -12,7 +12,7 @@ impl IngReq {
     #[wasm_bindgen(js_name = getComment)]
     pub async fn export_get_comment(&self, ing_id: usize) -> HomoResult<String> {
         panic_hook!();
-        let url = format!("https://api.cnblogs.com/api/statuses/{}/comments", ing_id);
+        let url = format!("{ING_API_BASE_URL}/{ing_id}/comments");
 
         let client = reqwest::Client::new().get(url);
 
