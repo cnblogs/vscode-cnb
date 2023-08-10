@@ -1,11 +1,9 @@
 import { AuthSession } from '@/auth/auth-session'
 import { genVerifyChallengePair } from '@/service/code-challenge'
-import { isArray } from 'lodash-es'
 import {
     authentication,
     AuthenticationProvider,
     AuthenticationProviderAuthenticationSessionsChangeEvent as VscAuthProviderAuthSessionChEv,
-    CancellationToken,
     CancellationTokenSource,
     Disposable,
     env,
@@ -75,9 +73,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         const sessions = await this.getAllSessions()
         const parsedScopes = this.ensureScopes(scopes)
 
-        return sessions
-            .map(x => AuthSession.from(x))
-            .filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
+        return sessions.filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
     }
 
     createSession(scopes: string[]): Thenable<AuthSession> {
@@ -125,7 +121,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
                     try {
                         const token = await Oauth.getToken(verifyCode, authCode)
-                        const authSession = await this.onAccessTokenGranted(token.accessToken, cancelTokenSrc.token, {
+                        const authSession = await this.onAccessTokenGranted(token.accessToken, {
                             onStateChange(state) {
                                 progress.report({ message: state })
                             },
@@ -164,7 +160,6 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
     async onAccessTokenGranted(
         accessToken: string,
-        cancelToken?: CancellationToken,
         {
             onStateChange,
             shouldFireSessionAddedEvent = true,
@@ -175,25 +170,18 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     ) {
         onStateChange?.('正在获取账户信息...')
 
-        if (cancelToken?.isCancellationRequested) throw Error('已取消')
         const accountInfo = await AccountInfo.get(accessToken)
         if (accountInfo === undefined) throw Error('用户信息获取失败')
 
         onStateChange?.('即将完成...')
 
-        if (cancelToken?.isCancellationRequested) throw Error('已取消')
-        const session = AuthSession.from({
+        const session = new AuthSession(
+            accountInfo,
+            `${this.providerId}-${accountInfo.userInfo.SpaceUserID}`,
             accessToken,
-            account: accountInfo,
-            scopes: this.ensureScopes(null),
-            id: `${this.providerId}-${accountInfo.accountId}`,
-        })
+            this.ensureScopes(null)
+        )
         await globalCtx.secretsStorage.store(this.sessionStorageKey, JSON.stringify([session]))
-
-        if (cancelToken?.isCancellationRequested) {
-            await this.removeSession(session.id)
-            throw Error('已取消')
-        }
 
         if (!shouldFireSessionAddedEvent) return session
 
@@ -213,14 +201,16 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     protected async getAllSessions(): Promise<AuthSession[]> {
         const legacyToken = LegacyTokenStore.getAccessToken()
         if (legacyToken !== undefined) {
-            await this.onAccessTokenGranted(legacyToken, undefined, { shouldFireSessionAddedEvent: false })
+            await this.onAccessTokenGranted(legacyToken, { shouldFireSessionAddedEvent: false })
             void LegacyTokenStore.remove()
         }
 
         if (this._allSessions == null || this._allSessions.length <= 0) {
             const storage = await globalCtx.secretsStorage.get(this.sessionStorageKey)
             const sessions = JSON.parse(storage ?? '[]') as AuthSession[] | null | undefined
-            this._allSessions = isArray(sessions) ? sessions.map(x => AuthSession.from(x)) : []
+
+            if (Array.isArray(sessions)) this._allSessions = sessions
+            else this._allSessions = []
         }
 
         return this._allSessions

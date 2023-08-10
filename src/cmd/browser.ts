@@ -19,15 +19,15 @@ export namespace Browser.Open.User {
     export const accountSetting = () => open('https://account.cnblogs.com/settings/account')
 
     export const blog = () => {
-        const userBlogUrl = accountManager.currentUser?.website
-        if (userBlogUrl) return open(userBlogUrl)
+        const blogApp = accountManager.currentUser?.userInfo.BlogApp
+        if (blogApp !== undefined) void open(`https://www.cnblogs.com/${blogApp}`)
     }
 
     export const blogConsole = () => open('https://i.cnblogs.com')
 
     export const home = () => {
-        const { accountId } = accountManager.currentUser
-        if (!accountId || accountId <= 0) return
+        const accountId = accountManager.currentUser?.userInfo.SpaceUserID
+        if (accountId === undefined || accountId <= 0) return
 
         const url = `https://home.cnblogs.com/u/${accountId}`
         return open(url)

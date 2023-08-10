@@ -4,7 +4,7 @@ use crate::panic_hook;
 use alloc::string::{String, ToString};
 use wasm_bindgen::prelude::*;
 
-const OAUTH_API_BASE_URL: &str = "https://oauth.cnblogs.com";
+const API_BASE_URL: &str = "https://api.cnblogs.com/api";
 
 #[wasm_bindgen(js_name = UserReq)]
 pub struct UserReq {

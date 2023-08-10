@@ -1,4 +1,3 @@
-import { AccountInfo } from './account-info'
 import { globalCtx } from '@/ctx/global-ctx'
 import { window, authentication, AuthenticationGetSessionOptions, Disposable, InputBoxOptions } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
@@ -24,13 +23,14 @@ export namespace AccountManagerNg {
         try {
             const result = await authentication.getSession(authProvider.providerId, [], opt)
             if (result === undefined) session = null
-            else session = AuthSession.from(result)
+            // TODO: need better impl
+            else session = <AuthSession>result
         } catch (e) {
             void Alert.err(`创建/获取 Session 失败: ${<string>e}`)
             session = null
         }
 
-        if (session != null && session.account.accountId < 0) {
+        if (session != null && session.account.userInfo.SpaceUserID < 0) {
             authSession = null
             await authProvider.removeSession(session.id)
         } else {
@@ -49,13 +49,17 @@ export namespace AccountManagerNg {
             title: '请输入您的个人访问令牌 (PAT)',
             prompt: '您可以从账户设置中获取个人访问令牌:\nhttps://account.cnblogs.com/settings/account/personal-access-token',
             password: true,
-        } as InputBoxOptions
+        }
         const pat = await window.showInputBox(opt)
         if (pat === undefined) return
 
-        await authProvider.onAccessTokenGranted(pat)
-        await ensureSession()
-        await AccountManagerNg.updateAuthStatus()
+        try {
+            await authProvider.onAccessTokenGranted(pat)
+            await ensureSession()
+            await AccountManagerNg.updateAuthStatus()
+        } catch (e) {
+            void Alert.err(`授权失败: ${<string>e}`)
+        }
     }
 
     export async function logout() {
@@ -94,8 +98,8 @@ export namespace AccountManagerNg {
         if (!accountManager.isAuthorized) return
 
         await execCmd('setContext', `${globalCtx.extName}.user`, {
-            name: accountManager.currentUser.name,
-            avatar: accountManager.currentUser.avatar,
+            name: accountManager.currentUser?.userInfo.DisplayName,
+            avatar: accountManager.currentUser?.userInfo.Avatar,
         })
     }
 }
@@ -126,8 +130,8 @@ class AccountManager extends Disposable {
         return authSession !== null
     }
 
-    get currentUser(): AccountInfo {
-        return authSession?.account ?? AccountInfo.getAnonymous()
+    get currentUser() {
+        return authSession?.account
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::cnb::user::{UserReq, OAUTH_API_BASE_URL};
+use crate::cnb::user::{UserReq, API_BASE_URL};
 use crate::infra::http::setup_auth;
 use crate::infra::result::{homo_result_string, HomoResult, IntoResult};
 use crate::panic_hook;
@@ -12,7 +12,7 @@ impl UserReq {
     #[wasm_bindgen(js_name = getInfo)]
     pub async fn export_get_info(&self) -> HomoResult<String> {
         panic_hook!();
-        let url = format!("{OAUTH_API_BASE_URL}/connect/userinfo");
+        let url = format!("{API_BASE_URL}/users");
 
         let client = reqwest::Client::new().get(url);
 
