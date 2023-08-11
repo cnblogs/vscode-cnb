@@ -6,6 +6,7 @@ import { Alert } from '@/infra/alert'
 
 let cached: SiteCategory[] | null = null
 
+// TODO: refactor
 export namespace SiteCategoryService {
     export async function fetchAll(forceRefresh = false) {
         if (cached && !forceRefresh) return cached
