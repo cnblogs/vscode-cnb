@@ -124,7 +124,7 @@
         "commands": [
             {
                 "title": "登录到博客园",
-                "enablement": "!vscode-cnb.isAuthorized",
+                "enablement": "!vscode-cnb.isAuthed",
                 "command": "vscode-cnb.login.web"
             },
             {
@@ -132,41 +132,41 @@
                 "title": "登出",
                 "icon": "$(log-out)",
                 "category": "Cnblogs Account",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post.list-view.prev",
                 "title": "上一页",
                 "icon": "$(chevron-left)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.hasPrev",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.hasPrev",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.list-view.seek",
                 "title": "跳页",
                 "icon": "$(vscode-cnb-icon-seek)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.pageCount > 0",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.pageCount > 0",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.list-view.next",
                 "title": "下一页",
                 "icon": "$(chevron-right)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.hasNext",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.hasNext",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.list-view.refresh",
                 "title": "刷新",
                 "icon": "$(refresh)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post.list-view.refreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.pull-all",
                 "title": "下载全部随笔",
                 "icon": "$(cloud-download)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.pageCount > 0",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.pageCount > 0",
                 "category": "Cnblogs Post List"
             },
             {
@@ -174,7 +174,7 @@
                 "title": "删除随笔(支持多选)",
                 "icon": "$(trash)",
                 "category": "Cnblogs Post List",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post.create-local-draft",
@@ -187,20 +187,20 @@
                 "title": "博文设置",
                 "icon": "$(gear)",
                 "category": "Cnblogs Post List",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post.upload",
                 "title": "上传博文",
                 "icon": "$(cloud-upload)",
                 "category": "Cnblogs Post List",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post.upload-file",
                 "title": "上传到博客园",
                 "icon": "$(vscode-cnb-cloud-upload)",
-                "enablement": "vscode-cnb.isAuthorized",
+                "enablement": "vscode-cnb.isAuthed",
                 "category": "Cnblogs"
             },
             {
@@ -208,13 +208,13 @@
                 "title": "上传博文",
                 "icon": "$(cloud-upload)",
                 "category": "Cnblogs Post List",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post.upload-file-no-confirm",
                 "title": "上传到博客园",
                 "icon": "$(vscode-cnb-cloud-upload)",
-                "enablement": "vscode-cnb.isAuthorized",
+                "enablement": "vscode-cnb.isAuthed",
                 "category": "Cnblogs"
             },
             {
@@ -222,19 +222,19 @@
                 "title": "上传图片到博客园",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-image-upload)",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.img.upload-clipboard",
                 "title": "上传剪贴板图片到博客园",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.img.upload-fs",
                 "title": "上传本地图片到博客园",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post.os-open-local-file",
@@ -245,27 +245,27 @@
                 "command": "vscode-cnb.post.pull",
                 "title": "拉取博文",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized",
+                "enablement": "vscode-cnb.isAuthed",
                 "icon": "$(cloud-download)"
             },
             {
                 "command": "vscode-cnb.post.show-local-file-info",
                 "title": "博客园关联博文",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post-category.new",
                 "title": "新建博文分类",
                 "icon": "$(add)",
                 "category": "Cnblogs Post Categories Management",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post-category.del-select",
                 "title": "删除",
                 "icon": "$(trash)",
                 "category": "Cnblogs Post Categories Management",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.postCategoriesList.isRefreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.postCategoriesList.isRefreshing"
             },
             {
                 "command": "vscode-cnb.post-category.refresh",
@@ -290,13 +290,13 @@
                 "command": "vscode-cnb.post.rename",
                 "title": "重命名博文",
                 "category": "Cnblogs Post List",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post.open-in-blog-admin",
                 "title": "在博客后台中编辑",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.workspace.code-open",
@@ -312,142 +312,142 @@
                 "command": "vscode-cnb.post.export-to-pdf",
                 "title": "导出 PDF",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.img.extract",
                 "title": "提取图片",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post.search",
                 "title": "搜索博文",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-post-list-search)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post.list-view.refreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing"
             },
             {
                 "command": "vscode-cnb.post.list-view.search.clear",
                 "title": "清除随笔搜索结果",
                 "category": "Cnblogs",
                 "icon": "$(clear-all)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post.list-view.refreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing"
             },
             {
                 "command": "vscode-cnb.post.list-view.search.refresh",
                 "title": "刷新随笔搜索结果",
                 "category": "Cnblogs",
                 "icon": "$(refresh)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.post.list-view-refreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view-refreshing"
             },
             {
                 "command": "vscode-cnb.ing.pub",
                 "title": "发闪存",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing",
                 "icon": "$(add)"
             },
             {
                 "command": "vscode-cnb.ing.pub-select",
                 "title": "将选中内容发到闪存",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized && editorHasSelection == true && isInDiffEditor == false && isInEmbeddedEditor == false"
+                "enablement": "vscode-cnb.isAuthed && editorHasSelection == true && isInDiffEditor == false && isInEmbeddedEditor == false"
             },
             {
                 "command": "vscode-cnb.ing-list.refresh",
                 "title": "刷新闪存列表",
                 "category": "Cnblogs",
                 "icon": "$(refresh)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing"
             },
             {
                 "command": "vscode-cnb.ing-list.prev",
                 "title": "上一页",
                 "category": "Cnblogs",
                 "icon": "$(chevron-left)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex > 1"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex > 1"
             },
             {
                 "command": "vscode-cnb.ing-list.next",
                 "title": "下一页",
                 "category": "Cnblogs",
                 "icon": "$(chevron-right)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex < 500"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex < 500"
             },
             {
                 "command": "vscode-cnb.ing-list.first",
                 "title": "第一页",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-first-page)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex < 500"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex < 500"
             },
             {
                 "command": "vscode-cnb.ing-list.switch-type",
                 "title": "切换闪存类型",
                 "category": "Cnblogs",
                 "icon": "$(list-filter)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing"
             },
             {
                 "command": "vscode-cnb.ing-list.open-in-browser",
                 "title": "在浏览器中打开闪存",
                 "icon": "$(globe)",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.post.copy-link",
                 "title": "复制博文链接",
                 "icon": "$(link)",
-                "enablement": "vscode-cnb.isAuthorized"
+                "enablement": "vscode-cnb.isAuthed"
             },
             {
                 "command": "vscode-cnb.backup.refresh-record",
                 "title": "刷新博客备份记录",
                 "category": "Cnblogs",
                 "icon": "$(refresh)",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.backup.records.isRefreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing"
             },
             {
                 "command": "vscode-cnb.backup.open-local",
                 "title": "打开本地已下载博客备份文件",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.backup.records.isRefreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing",
                 "icon": "$(file-add)"
             },
             {
                 "command": "vscode-cnb.backup.edit",
                 "title": "编辑博文",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized",
+                "enablement": "vscode-cnb.isAuthed",
                 "icon": "$(pencil)"
             },
             {
                 "command": "vscode-cnb.backup.create",
                 "title": "新建博客备份",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.backup.records.isRefreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing",
                 "icon": "$(add)"
             },
             {
                 "command": "vscode-cnb.backup.download",
                 "title": "下载备份",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.backup.records.isRefreshing && !vscode-cnb.backup.downloading",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing && !vscode-cnb.backup.downloading",
                 "icon": "$(cloud-download)"
             },
             {
                 "command": "vscode-cnb.backup.view-post",
                 "title": "查看备份博文",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.backup.records.isRefreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing",
                 "icon": "$(eye)"
             },
             {
                 "command": "vscode-cnb.backup.delete",
                 "title": "delete",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthorized && !vscode-cnb.backup.records.isRefreshing && !vscode-cnb.backup.downloading",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing && !vscode-cnb.backup.downloading",
                 "icon": "$(trash)"
             }
         ],
@@ -762,57 +762,57 @@
                 {
                     "id": "cnblogs-post-list",
                     "name": "随笔列表",
-                    "when": "vscode-cnb.isAuthorized && vscode-cnb.isTargetWorkspace"
+                    "when": "vscode-cnb.isAuthed && vscode-cnb.isTargetWorkspace"
                 }
             ],
             "cnblogs": [
                 {
                     "id": "cnblogs-authorize",
                     "name": "登录/授权",
-                    "when": "!vscode-cnb.isAuthorized",
+                    "when": "!vscode-cnb.isAuthed",
                     "visibility": "visible"
                 },
                 {
                     "id": "vscode-cnb-workspace",
                     "name": "工作空间",
-                    "when": "vscode-cnb.isAuthorized",
+                    "when": "vscode-cnb.isAuthed",
                     "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-post-list-another",
                     "name": "随笔列表",
-                    "when": "vscode-cnb.isAuthorized",
+                    "when": "vscode-cnb.isAuthed",
                     "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-post-category-list",
                     "name": "分类列表",
-                    "when": "vscode-cnb.isAuthorized",
+                    "when": "vscode-cnb.isAuthed",
                     "visibility": "collapsed"
                 },
                 {
                     "id": "vscode-cnb.blog-export",
                     "name": "博客备份",
-                    "when": "vscode-cnb.isAuthorized",
+                    "when": "vscode-cnb.isAuthed",
                     "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-account",
                     "name": "账户信息",
-                    "when": "vscode-cnb.isAuthorized",
+                    "when": "vscode-cnb.isAuthed",
                     "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-navi",
                     "name": "博客园导航",
-                    "when": "vscode-cnb.isAuthorized",
+                    "when": "vscode-cnb.isAuthed",
                     "visibility": "collapsed"
                 },
                 {
                     "id": "vscode-cnb.ing-list-webview",
                     "type": "webview",
                     "name": "闪存",
-                    "when": "vscode-cnb.isAuthorized",
+                    "when": "vscode-cnb.isAuthed",
                     "visibility": "collapsed"
                 }
             ]
@@ -876,7 +876,7 @@
                 },
                 {
                     "command": "vscode-cnb.ing-list.first",
-                    "when": "view == vscode-cnb.ing-list-webview && vscode-cnb.isAuthorized && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex > 2",
+                    "when": "view == vscode-cnb.ing-list-webview && vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex > 2",
                     "group": "navigation@1"
                 },
                 {
@@ -1179,7 +1179,7 @@
             "editor/context": [
                 {
                     "command": "vscode-cnb.login.web",
-                    "when": "!vscode-cnb.isAuthorized"
+                    "when": "!vscode-cnb.isAuthed"
                 },
                 {
                     "command": "vscode-cnb.post.show-local-file-info",
@@ -1237,7 +1237,7 @@
             "explorer/context": [
                 {
                     "command": "vscode-cnb.login.web",
-                    "when": "!vscode-cnb.isAuthorized"
+                    "when": "!vscode-cnb.isAuthed"
                 },
                 {
                     "command": "vscode-cnb.post.upload-file",

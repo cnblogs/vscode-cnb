@@ -1,4 +1,4 @@
-import { accountManager } from '@/auth/account-manager'
+import { AccountManager } from '@/auth/account-manager'
 import { EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode'
 
 export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
@@ -13,9 +13,9 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     }
 
     getChildren(element?: TreeItem): ProviderResult<TreeItem[]> {
-        if (!accountManager.isAuthorized || element) return []
+        if (!AccountManager.isAuthed || element) return []
 
-        const userName = accountManager.currentUser?.userInfo.DisplayName
+        const userName = AccountManager.getUserInfo()?.DisplayName
         return [
             { label: userName, tooltip: '用户名', iconPath: new ThemeIcon('account') },
             {

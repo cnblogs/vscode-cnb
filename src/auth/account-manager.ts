@@ -1,5 +1,5 @@
 import { globalCtx } from '@/ctx/global-ctx'
-import { window, authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
+import { window, authentication, AuthenticationGetSessionOptions as AuthGetSessionOpt } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
@@ -10,42 +10,31 @@ import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
 import { Alert } from '@/infra/alert'
 import { execCmd } from '@/infra/cmd'
 
-const isAuthorizedStorageKey = 'isAuthorized'
 let authSession: AuthSession | null = null
 
-export class AccountManager extends Disposable {
-    private readonly _disposable = Disposable.from(
-        authProvider.onDidChangeSessions(async ({ added }) => {
-            authSession = null
-            if (added != null && added.length > 0) await AccountManager.ensureSession()
+authProvider.onDidChangeSessions(async ({ added }) => {
+    authSession = null
+    if (added != null && added.length > 0) await AccountManager.ensureSession()
 
-            await AccountManager.updateAuthStatus()
+    await AccountManager.updateAuthStatus()
 
-            accountViewDataProvider.fireTreeDataChangedEvent()
-            postDataProvider.fireTreeDataChangedEvent(undefined)
-            postCategoryDataProvider.fireTreeDataChangedEvent()
+    accountViewDataProvider.fireTreeDataChangedEvent()
+    postDataProvider.fireTreeDataChangedEvent(undefined)
+    postCategoryDataProvider.fireTreeDataChangedEvent()
 
-            BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
-        })
-    )
+    BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
+})
 
-    constructor() {
-        super(() => {
-            this._disposable.dispose()
-        })
-    }
-
-    get isAuthorized() {
+export namespace AccountManager {
+    export function isAuthed() {
         return authSession !== null
     }
 
-    get currentUser() {
-        return authSession?.account
+    export function getUserInfo() {
+        return authSession?.account.userInfo
     }
-}
 
-export namespace AccountManager {
-    export async function ensureSession(opt?: AuthenticationGetSessionOptions) {
+    export async function ensureSession(opt?: AuthGetSessionOpt) {
         let session
         try {
             const result = await authentication.getSession(authProvider.providerId, [], opt)
@@ -90,7 +79,7 @@ export namespace AccountManager {
     }
 
     export async function logout() {
-        if (!accountManager.isAuthorized) return
+        if (!AccountManager.isAuthed()) return
 
         const session = await authentication.getSession(authProvider.providerId, [])
 
@@ -118,16 +107,15 @@ export namespace AccountManager {
 
     export async function updateAuthStatus() {
         await AccountManager.ensureSession({ createIfNone: false })
+        const isAuthed = AccountManager.isAuthed()
 
-        await execCmd('setContext', `${globalCtx.extName}.${isAuthorizedStorageKey}`, accountManager.isAuthorized)
+        await execCmd('setContext', `${globalCtx.extName}.isAuthed`, isAuthed)
 
-        if (!accountManager.isAuthorized) return
+        if (!isAuthed) return
 
         await execCmd('setContext', `${globalCtx.extName}.user`, {
-            name: accountManager.currentUser?.userInfo.DisplayName,
-            avatar: accountManager.currentUser?.userInfo.Avatar,
+            name: AccountManager.getUserInfo()?.DisplayName,
+            avatar: AccountManager.getUserInfo()?.Avatar,
         })
     }
 }
-
-export const accountManager = new AccountManager()

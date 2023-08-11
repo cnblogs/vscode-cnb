@@ -5,7 +5,7 @@ import { existsSync } from 'fs'
 import { basename } from 'path'
 import { ProgressLocation, Uri, window, workspace } from 'vscode'
 import { buildLocalPostFileUri } from '@/cmd/post-list/open-post-in-vscode'
-import { accountManager } from '@/auth/account-manager'
+import { AccountManager } from '@/auth/account-manager'
 
 enum ConflictStrategy {
     ask,
@@ -26,7 +26,7 @@ const MAX_POST_LIMIT = 1000
 const MAX_BYTE_LIMIT = MAX_POST_LIMIT * 10000
 
 export async function postPullAll() {
-    const isVip = accountManager.currentUser?.userInfo.IsVip ?? false
+    const isVip = AccountManager.getUserInfo()?.IsVip ?? false
     if (!isVip) {
         void Alert.info('下载随笔: 您是普通用户, 此功能目前仅面向 [VIP](https://cnblogs.vip/) 用户开放')
         return

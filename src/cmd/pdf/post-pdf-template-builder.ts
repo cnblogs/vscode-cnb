@@ -2,10 +2,10 @@ import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import fs from 'fs'
 import { BlogSettingService } from '@/service/blog-setting'
-import { accountManager } from '@/auth/account-manager'
 import { PostCategoryService } from '@/service/post/post-category'
 import { PostCategory } from '@/model/post-category'
 import { markdownItFactory } from '@cnblogs/markdown-it-presets'
+import { AccountManager } from '@/auth/account-manager'
 
 export namespace PostPdfTemplateBuilder {
     export const HighlightedMessage = 'markdown-highlight-finished'
@@ -66,7 +66,7 @@ export namespace PostPdfTemplateBuilder {
             blogId,
         } = setting
 
-        const userId = accountManager.currentUser?.userInfo.UserId
+        const userId = AccountManager.getUserInfo()?.UserId
 
         return `<html lang="en">
         <head>

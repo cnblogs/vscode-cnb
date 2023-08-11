@@ -1,4 +1,3 @@
-import { MessageOptions } from 'vscode'
 import { Post } from '@/model/post'
 import { PostFileMap, PostFileMapManager } from '@/service/post/post-file-map'
 import { revealPostListItem } from '@/service/post/post-list-view'
