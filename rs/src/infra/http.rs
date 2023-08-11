@@ -35,9 +35,13 @@ pub fn setup_auth(builder: RequestBuilder, token: &str, is_pat_token: bool) -> R
     }
 }
 
-pub fn cons_query_string(queries: Vec<(&str, &str)>) -> String {
+pub fn cons_query_string(queries: Vec<(impl ToString, impl ToString)>) -> String {
     queries
         .into_iter()
-        .map(|(k, v)| format!("{k}={v}"))
+        .map(|(k, v)| {
+            let s_k = k.to_string();
+            let s_v = v.to_string();
+            format!("{}={}", s_k, s_v)
+        })
         .fold("".to_string(), |acc, q| format!("{acc}&{q}"))
 }

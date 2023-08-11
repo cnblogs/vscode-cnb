@@ -19,7 +19,7 @@ impl OauthReq {
         callback_url: &str,
     ) -> HomoResult<String> {
         panic_hook!();
-        let url = format!("{OAUTH_API_BASE_URL}/connect/token");
+        let url = format!("{}/connect/token", OAUTH_API_BASE_URL);
 
         let client = reqwest::Client::new().post(url);
 

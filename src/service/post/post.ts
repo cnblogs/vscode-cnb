@@ -7,19 +7,27 @@ import { rmYfm } from '@/infra/filter/rm-yfm'
 import { PostListState } from '@/model/post-list-state'
 import { Alert } from '@/infra/alert'
 import { consUrlPara } from '@/infra/http/infra/url-para'
-import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
+import { consHeader } from '@/infra/http/infra/header'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { Page, PageList } from '@/model/page'
 import { Post } from '@/model/post'
 import { PostListRespItem } from '@/model/post-list-resp-item'
 import { MyConfig } from '@/model/my-config'
+import { AccountManagerNg } from '@/auth/account-manager'
+import { PostReq } from '@/wasm'
 
 let newPostTemplate: PostEditDto | undefined
 
 const getBaseUrl = () => globalCtx.config.apiBaseUrl
 
+async function getAuthedPostReq() {
+    const token = await AccountManagerNg.acquireToken()
+    // TODO: need better solution
+    const isPatToken = token.length === 64
+    return new PostReq(token, isPatToken)
+}
+
 export namespace PostService {
-    import ContentType = ReqHeaderKey.ContentType
     export const getPostListState = () => globalCtx.storage.get<PostListState>('postListState')
 
     export async function fetchPostList({ search = '', pageIndex = 1, pageSize = 30, categoryId = <'' | number>'' }) {
@@ -81,35 +89,25 @@ export namespace PostService {
     }
 
     export async function delPost(...postIds: number[]) {
-        if (postIds.length === 1) {
-            const url = `${getBaseUrl()}/api/posts/${postIds[0]}`
-            try {
-                await AuthedReq.del(url, consHeader())
-            } catch (e) {
-                void Alert.err(`删除博文失败: ${<string>e}`)
-            }
-        } else {
-            const para = consUrlPara(...postIds.map(id => ['postIds', id.toString()] as [string, string]))
-            const url = `${getBaseUrl()}/api/bulk-operation/post?${para}`
-            try {
-                await AuthedReq.del(url, consHeader())
-            } catch (e) {
-                void Alert.err(`删除博文失败: ${<string>e}`)
-            }
+        const req = await getAuthedPostReq()
+        try {
+            if (postIds.length === 1) await req.delOne(postIds[0])
+            else await req.delSome(new Uint32Array(postIds))
+        } catch (e) {
+            void Alert.err(`删除博文失败: ${<string>e}`)
         }
     }
 
     export async function updatePost(post: Post) {
         if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
-        const url = `${getBaseUrl()}/api/posts`
         const body = JSON.stringify(post)
-        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
-        const resp = await AuthedReq.post(url, header, body)
+        const req = await getAuthedPostReq()
+        const resp = await req.update(body)
 
         return <PostUpdatedResp>JSON.parse(resp)
     }
 
-    export async function updatePostListStateNg(
+    export async function updatePostListState(
         pageIndex: number,
         pageCap: number,
         pageItemCount: number,

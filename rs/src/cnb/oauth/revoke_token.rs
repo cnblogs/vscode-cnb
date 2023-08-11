@@ -19,7 +19,7 @@ impl OauthReq {
         panic_hook!();
         let credentials = format!("{}:{}", self.client_id, self.client_secret);
         let credentials = general_purpose::STANDARD.encode(credentials);
-        let url = format!("{OAUTH_API_BASE_URL}/connect/revocation");
+        let url = format!("{}/connect/revocation", OAUTH_API_BASE_URL);
 
         let client = reqwest::Client::new().post(url);
 

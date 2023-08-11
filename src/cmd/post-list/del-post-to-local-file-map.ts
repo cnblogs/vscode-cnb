@@ -7,16 +7,12 @@ import { extTreeViews } from '@/tree-view/tree-view-register'
 import { Alert } from '@/infra/alert'
 
 async function confirm(postList: Post[]): Promise<boolean> {
-    const options = ['确定']
-    const input = await Alert.info(
-        '确定要取消这些博文与本地文件的关联吗?',
-        {
-            detail: postList.map(x => x.title).join(', '),
-            modal: true,
-        } as MessageOptions,
-        ...options
-    )
-    return input === options[0]
+    const options = {
+        detail: postList.map(x => x.title).join(', '),
+        modal: true,
+    }
+    const answer = await Alert.info('确定要取消这些博文与本地文件的关联吗?', options)
+    return answer === '确定'
 }
 
 export async function delPostToLocalFileMap(post: Post | PostTreeItem) {

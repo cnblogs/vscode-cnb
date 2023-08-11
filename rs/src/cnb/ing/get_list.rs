@@ -17,7 +17,7 @@ impl IngReq {
         ing_type: usize,
     ) -> HomoResult<String> {
         panic_hook!();
-        let url = format!("{ING_API_BASE_URL}/@{ing_type}");
+        let url = format!("{}/@{}", ING_API_BASE_URL, ing_type);
 
         let client = reqwest::Client::new().get(url);
 

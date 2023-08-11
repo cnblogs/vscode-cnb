@@ -32,7 +32,7 @@ impl IngReq {
         parent_comment_id: Option<usize>,
     ) -> Result<(), String> {
         panic_hook!();
-        let url = format!("{ING_API_BASE_URL}/{ing_id}/comments");
+        let url = format!("{}/{}/comments", ING_API_BASE_URL, ing_id);
 
         let client = reqwest::Client::new().post(url);
 

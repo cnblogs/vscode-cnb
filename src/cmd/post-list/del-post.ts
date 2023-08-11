@@ -84,15 +84,11 @@ export async function delSelectedPost(arg: unknown) {
                 refreshPost: true,
                 postIds: selectedPost.map(({ id }) => id),
             })
-        } catch (err) {
-            void Alert.err('删除博文失败', {
-                detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
-            } as MessageOptions)
-        } finally {
-            progress.report({
-                increment: 100,
-            })
+        } catch (e) {
+            void Alert.err(`删除博文失败: ${<string>e}`)
         }
+
+        progress.report({ increment: 100 })
     })
 
     isDeleting = false

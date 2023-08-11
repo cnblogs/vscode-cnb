@@ -39,7 +39,7 @@ async function goPage(f: (currentIndex: number) => number) {
         return
     }
 
-    await PostService.updatePostListStateNg(index, state.pageCap, state.pageItemCount, state.pageCount)
+    await PostService.updatePostListState(index, state.pageCap, state.pageItemCount, state.pageCount)
     await PostListView.refresh()
 }
 
@@ -82,7 +82,7 @@ export namespace PostListView {
             const hasNext = PageList.hasNext(pageIndex, pageCount)
 
             await setPostListContext(pageCount, hasPrev, hasNext)
-            await PostService.updatePostListStateNg(pageIndex, pageCap, pageItemsCount, pageCount)
+            await PostService.updatePostListState(pageIndex, pageCap, pageItemsCount, pageCount)
             updatePostListViewTitle()
             await postDataProvider.refreshSearch()
             await setRefreshing(false)

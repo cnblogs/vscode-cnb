@@ -12,7 +12,7 @@ impl UserReq {
     #[wasm_bindgen(js_name = getInfo)]
     pub async fn export_get_info(&self) -> HomoResult<String> {
         panic_hook!();
-        let url = format!("{API_BASE_URL}/users");
+        let url = format!("{}/users", API_BASE_URL);
 
         let client = reqwest::Client::new().get(url);
 
