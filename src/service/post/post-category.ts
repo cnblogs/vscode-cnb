@@ -1,7 +1,7 @@
 import { PostCategory, PostCategoryAddDto } from '@/model/post-category'
 import { globalCtx } from '@/ctx/global-ctx'
 import { AuthedReq } from '@/infra/http/authed-req'
-import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
+import { consHeader } from '@/infra/http/infra/header'
 import { Alert } from '@/infra/alert'
 import { consUrlPara } from '@/infra/http/infra/url-para'
 import { SiteCategory } from '@/model/site-category'
@@ -19,8 +19,6 @@ async function getAuthedPostCategoryReq() {
 }
 
 export namespace PostCategoryService {
-    import ContentType = ReqHeaderKey.ContentType
-
     export async function findCategories(ids: number[], { useCache = true } = {}) {
         ids = ids.filter(x => x > 0)
         if (ids.length <= 0) return []
@@ -67,28 +65,29 @@ export namespace PostCategoryService {
     }
 
     export async function newCategory(dto: PostCategoryAddDto) {
-        const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/1`
-        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+        const req = await getAuthedPostCategoryReq()
         const body = JSON.stringify(dto)
-
-        await AuthedReq.post(url, header, body)
+        try {
+            await req.create(body)
+        } catch (e) {
+            void Alert.err(`创建分类失败: ${<string>e}`)
+        }
     }
 
     export async function updateCategory(category: PostCategory) {
-        const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/${category.categoryId}`
-        const header = consHeader([ReqHeaderKey.CONTENT_TYPE, ContentType.appJson])
+        const req = await getAuthedPostCategoryReq()
         const body = JSON.stringify(category)
-
-        await AuthedReq.put(url, header, body)
+        try {
+            await req.update(category.categoryId, body)
+        } catch (e) {
+            void Alert.err(`更新分类失败: ${<string>e}`)
+        }
     }
 
     export async function deleteCategory(categoryId: number) {
-        if (categoryId <= 0) throw Error('Invalid param categoryId')
-
-        const url = `${globalCtx.config.apiBaseUrl}/api/category/blog/${categoryId}`
-
+        const req = await getAuthedPostCategoryReq()
         try {
-            await AuthedReq.del(url, consHeader())
+            await req.del(categoryId)
         } catch (e) {
             void Alert.err(`删除分类失败: ${<string>e}`)
         }
