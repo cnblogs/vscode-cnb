@@ -13,7 +13,7 @@ import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostPdfTemplateBuilder } from '@/cmd/pdf/post-pdf-template-builder'
 import { ChromiumCfg } from '@/ctx/cfg/chromium'
-import { AccountManager } from '@/auth/account-manager'
+import { AuthManager } from '@/auth/auth-manager'
 
 async function launchBrowser(chromiumPath: string) {
     try {
@@ -183,7 +183,7 @@ export async function exportPostToPdf(input?: Post | PostTreeItem | Uri): Promis
     const chromiumPath = await retrieveChromiumPath()
     if (chromiumPath === undefined) return
 
-    const blogApp = AccountManager.getUserInfo()?.BlogApp
+    const blogApp = AuthManager.getUserInfo()?.BlogApp
     if (blogApp === undefined) return void Alert.warn('无法获取博客地址, 请检查登录状态')
 
     reportErrors(

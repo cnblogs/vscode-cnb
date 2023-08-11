@@ -13,7 +13,7 @@ import { Page, PageList } from '@/model/page'
 import { Post } from '@/model/post'
 import { PostListRespItem } from '@/model/post-list-resp-item'
 import { MyConfig } from '@/model/my-config'
-import { AccountManager } from '@/auth/account-manager'
+import { AuthManager } from '@/auth/auth-manager'
 import { PostReq } from '@/wasm'
 
 let newPostTemplate: PostEditDto | undefined
@@ -21,7 +21,7 @@ let newPostTemplate: PostEditDto | undefined
 const getBaseUrl = () => globalCtx.config.apiBaseUrl
 
 async function getAuthedPostReq() {
-    const token = await AccountManager.acquireToken()
+    const token = await AuthManager.acquireToken()
     // TODO: need better solution
     const isPatToken = token.length === 64
     return new PostReq(token, isPatToken)

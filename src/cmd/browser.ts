@@ -1,6 +1,6 @@
 import { Uri } from 'vscode'
 import { execCmd } from '@/infra/cmd'
-import { AccountManager } from '@/auth/account-manager'
+import { AuthManager } from '@/auth/auth-manager'
 
 export namespace Browser.Open {
     export function open(url: string) {
@@ -19,14 +19,14 @@ export namespace Browser.Open.User {
     export const accountSetting = () => open('https://account.cnblogs.com/settings/account')
 
     export const blog = () => {
-        const blogApp = AccountManager.getUserInfo()?.BlogApp
+        const blogApp = AuthManager.getUserInfo()?.BlogApp
         if (blogApp !== undefined) void open(`https://www.cnblogs.com/${blogApp}`)
     }
 
     export const blogConsole = () => open('https://i.cnblogs.com')
 
     export const home = () => {
-        const accountId = AccountManager.getUserInfo()?.SpaceUserID
+        const accountId = AuthManager.getUserInfo()?.SpaceUserID
         if (accountId === undefined || accountId <= 0) return
 
         const url = `https://home.cnblogs.com/u/${accountId}`

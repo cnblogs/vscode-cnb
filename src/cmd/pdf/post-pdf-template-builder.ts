@@ -5,7 +5,7 @@ import { BlogSettingService } from '@/service/blog-setting'
 import { PostCategoryService } from '@/service/post/post-category'
 import { PostCategory } from '@/model/post-category'
 import { markdownItFactory } from '@cnblogs/markdown-it-presets'
-import { AccountManager } from '@/auth/account-manager'
+import { AuthManager } from '@/auth/auth-manager'
 
 export namespace PostPdfTemplateBuilder {
     export const HighlightedMessage = 'markdown-highlight-finished'
@@ -66,7 +66,7 @@ export namespace PostPdfTemplateBuilder {
             blogId,
         } = setting
 
-        const userId = AccountManager.getUserInfo()?.UserId
+        const userId = AuthManager.getUserInfo()?.UserId
 
         return `<html lang="en">
         <head>

@@ -14,9 +14,9 @@ let authSession: AuthSession | null = null
 
 authProvider.onDidChangeSessions(async ({ added }) => {
     authSession = null
-    if (added != null && added.length > 0) await AccountManager.ensureSession()
+    if (added != null && added.length > 0) await AuthManager.ensureSession()
 
-    await AccountManager.updateAuthStatus()
+    await AuthManager.updateAuthStatus()
 
     accountViewDataProvider.fireTreeDataChangedEvent()
     postDataProvider.fireTreeDataChangedEvent(undefined)
@@ -25,7 +25,7 @@ authProvider.onDidChangeSessions(async ({ added }) => {
     BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
 })
 
-export namespace AccountManager {
+export namespace AuthManager {
     export function isAuthed() {
         return authSession !== null
     }
@@ -72,14 +72,14 @@ export namespace AccountManager {
         try {
             await authProvider.onAccessTokenGranted(pat)
             await ensureSession()
-            await AccountManager.updateAuthStatus()
+            await AuthManager.updateAuthStatus()
         } catch (e) {
             void Alert.err(`授权失败: ${<string>e}`)
         }
     }
 
     export async function logout() {
-        if (!AccountManager.isAuthed()) return
+        if (!AuthManager.isAuthed()) return
 
         const session = await authentication.getSession(authProvider.providerId, [])
 
@@ -106,16 +106,16 @@ export namespace AccountManager {
     }
 
     export async function updateAuthStatus() {
-        await AccountManager.ensureSession({ createIfNone: false })
-        const isAuthed = AccountManager.isAuthed()
+        await AuthManager.ensureSession({ createIfNone: false })
+        const isAuthed = AuthManager.isAuthed()
 
         await execCmd('setContext', `${globalCtx.extName}.isAuthed`, isAuthed)
 
         if (!isAuthed) return
 
         await execCmd('setContext', `${globalCtx.extName}.user`, {
-            name: AccountManager.getUserInfo()?.DisplayName,
-            avatar: AccountManager.getUserInfo()?.Avatar,
+            name: AuthManager.getUserInfo()?.DisplayName,
+            avatar: AuthManager.getUserInfo()?.Avatar,
         })
     }
 }
