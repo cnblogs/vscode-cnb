@@ -4,10 +4,14 @@ import { PostCategory } from '@/model/post-category'
 
 let children: Map<number, PostCategory[]>
 let pendingChildrenQuery: Map<number, Promise<PostCategory[]>> | undefined | null
+let items: PostCategory[] = []
 
 export namespace PersonalCategoryStore {
-    let items: PostCategory[] = []
-    export const get = (): PostCategory[] => items ?? []
+    export const get = () => items
+
+    export function set(value: PostCategory[]) {
+        items = value
+    }
 
     export const getByParent = async (parent: number): Promise<PostCategory[]> => {
         children ??= new Map()
@@ -40,10 +44,7 @@ export namespace PersonalCategoryStore {
                         }
                     }
 
-                    window.addEventListener<WebviewCommonCmd<Webview.Cmd.UpdateChildCategoriesPayload>>(
-                        'message',
-                        onUpdate
-                    )
+                    window.addEventListener('message', onUpdate)
                 }).finally(() => pendingChildrenQuery?.delete(parent))
 
                 vscode.postMessage<WebviewCommonCmd<Webview.Cmd.GetChildCategoriesPayload>>({
@@ -57,6 +58,4 @@ export namespace PersonalCategoryStore {
 
         return result
     }
-
-    export const set = (value: PostCategory[]) => (items = value ?? [])
 }

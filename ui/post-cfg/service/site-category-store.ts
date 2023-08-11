@@ -1,7 +1,11 @@
 import { SiteCategory } from '@/model/site-category'
 
+let items: SiteCategory[] = []
+
 export namespace SiteCategoryStore {
-    let items: SiteCategory[] = []
-    export const get = (): SiteCategory[] => items ?? []
-    export const set = (value: SiteCategory[]) => (items = value ?? [])
+    export const get = () => items
+
+    export function set(value: SiteCategory[]) {
+        items = value
+    }
 }

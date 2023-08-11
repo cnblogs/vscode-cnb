@@ -37,7 +37,8 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
     }
 
     render() {
-        const { siteCategories, categoryIds } = this.state
+        const { siteCategories } = this.state
+        const { categoryIds } = this.state
         const group = siteCategories.map(parent => {
             const { children, id: parentId } = parent
             const { categoryExpandState } = this.state

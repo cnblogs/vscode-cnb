@@ -2,6 +2,7 @@ import { Checkbox, Stack } from '@fluentui/react'
 import { Component } from 'react'
 import { PersonalCategoryStore } from '../service/personal-category-store'
 import { PostCategory } from '@/model/post-category'
+import { eq } from '../../../src/infra/fp/ord'
 
 interface CategoriesSelectorProps {
     categoryIds: number[] | undefined
@@ -20,7 +21,8 @@ class CategorySelect extends Component<CategoriesSelectorProps, CategoriesSelect
     }
 
     render() {
-        const { categories, categoryIds } = this.state
+        const categories = this.state.categories
+        const categoryIds = this.state.categoryIds
         const items = categories.map(category => (
             <Checkbox
                 key={category.categoryId}
@@ -39,16 +41,12 @@ class CategorySelect extends Component<CategoriesSelectorProps, CategoriesSelect
     private onCheckboxChanged(categoryId: number, isChecked?: boolean) {
         const { categoryIds } = this.state
 
-        const position = categoryIds.findIndex(x => x === categoryId)
+        const position = categoryIds.findIndex(eq(categoryId))
         const isInclude = position >= 0
-        switch (isChecked) {
-            case true:
-                if (!isInclude) categoryIds.push(categoryId)
 
-                break
-            default:
-                if (isInclude) categoryIds.splice(position, 1)
-        }
+        if (isChecked && !isInclude) categoryIds.push(categoryId)
+        else if (isInclude) categoryIds.splice(position, 1)
+
         this.props.onChange?.apply(this, [categoryIds])
     }
 }

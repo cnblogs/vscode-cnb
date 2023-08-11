@@ -9,28 +9,28 @@ export type IAccessPermissionSelectorProps = {
 
 export interface IAccessPermissionSelectorState extends Record<string, never> {}
 
+const options: IChoiceGroupOption[] = [
+    {
+        text: formatAccessPermission(AccessPermission.undeclared),
+        value: AccessPermission.undeclared,
+        key: AccessPermission.undeclared.toString(),
+    },
+    {
+        text: formatAccessPermission(AccessPermission.authenticated),
+        value: AccessPermission.authenticated,
+        key: AccessPermission.authenticated.toString(),
+    },
+    {
+        text: formatAccessPermission(AccessPermission.owner),
+        value: AccessPermission.owner,
+        key: AccessPermission.owner.toString(),
+    },
+]
+
 export class AccessPermissionSelector extends React.Component<
     IAccessPermissionSelectorProps,
     IAccessPermissionSelectorState
 > {
-    private options: IChoiceGroupOption[] = [
-        {
-            text: formatAccessPermission(AccessPermission.undeclared),
-            value: AccessPermission.undeclared,
-            key: AccessPermission.undeclared.toString(),
-        },
-        {
-            text: formatAccessPermission(AccessPermission.authenticated),
-            value: AccessPermission.authenticated,
-            key: AccessPermission.authenticated.toString(),
-        },
-        {
-            text: formatAccessPermission(AccessPermission.owner),
-            value: AccessPermission.owner,
-            key: AccessPermission.owner.toString(),
-        },
-    ]
-
     constructor(props: IAccessPermissionSelectorProps) {
         props.accessPermission ??= AccessPermission.undeclared
         super(props)
@@ -43,7 +43,7 @@ export class AccessPermissionSelector extends React.Component<
             <Stack>
                 <Label>谁能访问这篇博文</Label>
                 <ChoiceGroup
-                    options={this.options}
+                    options={options}
                     onChange={(_, option) =>
                         this.props.onChange?.apply(this, [option?.value ?? AccessPermission.undeclared])
                     }

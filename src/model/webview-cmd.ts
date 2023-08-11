@@ -19,11 +19,11 @@ export namespace Webview.Cmd {
         getChildCategories = 'getChildCategories',
     }
 
-    export type GetChildCategoriesPayload = {
+    export interface GetChildCategoriesPayload {
         parentId: number
     }
 
-    export type UpdateChildCategoriesPayload = {
+    export interface UpdateChildCategoriesPayload {
         parentId: number
         value: PostCategory[]
     }
@@ -48,7 +48,7 @@ export namespace Webview.Cmd {
     }
 }
 
-export type WebviewCommonCmd<T> = {
+export interface WebviewCommonCmd<T> {
     payload: T
     command: unknown
 }

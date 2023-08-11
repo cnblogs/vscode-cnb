@@ -26,9 +26,9 @@ const accent: PartialTheme = {
     },
 }
 
-const lightTheme: PartialTheme = accent
+export const lightTheme: PartialTheme = accent
 
-const darkTheme: PartialTheme = {
+export const darkTheme: PartialTheme = {
     palette: Object.assign(
         {
             neutralLighterAlt: '#282828',
@@ -60,5 +60,3 @@ const darkTheme: PartialTheme = {
     semanticColors: accent.semanticColors,
     defaultFontStyle: accent.defaultFontStyle,
 }
-
-export { lightTheme, darkTheme }

@@ -37,7 +37,7 @@ export class ErrorResponse extends React.Component<IErrorResponseProps, IErrorRe
     }
 
     render() {
-        const { errors } = this.state
+        const errors = this.state.errors
         if (errors.length <= 0) return <></>
 
         this.elementId = `errorResponse ${Date.now()}`

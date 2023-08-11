@@ -23,7 +23,7 @@ interface AppState {
 
 export interface AppProps extends Record<string, never> {}
 
-class App extends Component<AppProps, AppState> {
+export class App extends Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props)
         this.state = { theme: ActiveThemeProvider.activeTheme(), fileName: '', useNestCategoriesSelect: false }
@@ -73,7 +73,7 @@ class App extends Component<AppProps, AppState> {
     }
 
     private renderBreadcrumbs() {
-        const { breadcrumbs } = this.state
+        const breadcrumbs = this.state.breadcrumbs
         if (!breadcrumbs || breadcrumbs.length <= 0) return <></>
 
         const items = breadcrumbs.map(breadcrumb => ({ text: breadcrumb, key: breadcrumb }) as IBreadcrumbItem)
@@ -113,5 +113,3 @@ class App extends Component<AppProps, AppState> {
         })
     }
 }
-
-export { App }
