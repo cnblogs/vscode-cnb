@@ -1,5 +1,5 @@
 use crate::http::{body_or_err, header_json_to_header_map, RsHttp};
-use crate::infra::result::{homo_result_string, HomoResult};
+use crate::infra::result::{HomoResult, ResultExt};
 use crate::panic_hook;
 use alloc::string::String;
 use anyhow::Result;
@@ -12,7 +12,7 @@ impl RsHttp {
         panic_hook!();
         let body = get(url, header_json).await;
 
-        homo_result_string(body)
+        body.homo_string()
     }
 }
 

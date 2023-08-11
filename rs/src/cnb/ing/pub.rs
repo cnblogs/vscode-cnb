@@ -1,10 +1,10 @@
 use crate::cnb::ing::{IngReq, ING_API_BASE_URL};
+use crate::http::unit_or_err;
 use crate::infra::http::{setup_auth, APPLICATION_JSON};
-use crate::infra::result::IntoResult;
+use crate::infra::result::ResultExt;
 use crate::panic_hook;
 use alloc::string::{String, ToString};
-use anyhow::{anyhow, Result};
-use core::ops::Not;
+use anyhow::Result;
 use reqwest::header::CONTENT_TYPE;
 use serde_json::json;
 use wasm_bindgen::prelude::*;
@@ -30,14 +30,9 @@ impl IngReq {
 
         let result: Result<()> = try {
             let resp = req.send().await?;
-            let code = resp.status();
-
-            if code.is_success().not() {
-                let text = resp.text().await?;
-                anyhow!("{}: {}", code, text).into_err()?
-            }
+            unit_or_err(resp).await?
         };
 
-        result.map_err(|e| e.to_string())
+        result.err_to_string()
     }
 }

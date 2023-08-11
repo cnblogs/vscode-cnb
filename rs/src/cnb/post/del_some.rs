@@ -1,12 +1,12 @@
 use crate::cnb::post::{PostReq, API_BASE_URL};
+use crate::http::unit_or_err;
 use crate::infra::http::{cons_query_string, setup_auth};
-use crate::infra::result::IntoResult;
+use crate::infra::result::ResultExt;
 use crate::panic_hook;
 use alloc::format;
-use alloc::string::{String, ToString};
+use alloc::string::String;
 use alloc::vec::Vec;
-use anyhow::{anyhow, Result};
-use core::ops::Not;
+use anyhow::Result;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_class = PostReq)]
@@ -24,14 +24,9 @@ impl PostReq {
 
         let result: Result<()> = try {
             let resp = req.send().await?;
-            let code = resp.status();
-
-            if code.is_success().not() {
-                let text = resp.text().await?;
-                anyhow!("{}: {}", code, text).into_err()?
-            }
+            unit_or_err(resp).await?
         };
 
-        result.map_err(|e| e.to_string())
+        result.err_to_string()
     }
 }

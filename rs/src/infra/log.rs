@@ -9,8 +9,8 @@ extern "C" {
 #[macro_export]
 macro_rules! console_log {
     ($text:expr) => {
-        use crate::infra::log::log;
         use alloc::format;
+        use $crate::infra::log::log;
         let text = format!("{}", $text.to_string());
         log(&text);
     };

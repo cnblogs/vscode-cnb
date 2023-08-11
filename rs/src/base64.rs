@@ -1,4 +1,4 @@
-use crate::infra::result::{homo_result_string, HomoResult, IntoResult};
+use crate::infra::result::{HomoResult, IntoResult, ResultExt};
 use crate::panic_hook;
 use alloc::string::String;
 use anyhow::Result;
@@ -20,7 +20,7 @@ impl RsBase64 {
         panic_hook!();
         let text = decode(base64);
 
-        homo_result_string(text)
+        text.homo_string()
     }
 
     #[wasm_bindgen(js_name = encodeUrl)]
@@ -33,7 +33,7 @@ impl RsBase64 {
         panic_hook!();
         let text = decode_url(base64url);
 
-        homo_result_string(text)
+        text.homo_string()
     }
 }
 
