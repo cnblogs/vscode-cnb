@@ -4,8 +4,19 @@ import { AuthedReq } from '@/infra/http/authed-req'
 import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { Alert } from '@/infra/alert'
 import { consUrlPara } from '@/infra/http/infra/url-para'
+import { SiteCategory } from '@/model/site-category'
+import { AccountManagerNg } from '@/auth/account-manager'
+import { PostCategoryReq } from '@/wasm'
 
 let cache: Map<number, PostCategory[]> | null = null
+let siteCategoryCache: SiteCategory[] | null = null
+
+async function getAuthedPostCategoryReq() {
+    const token = await AccountManagerNg.acquireToken()
+    // TODO: need better solution
+    const isPatToken = token.length === 64
+    return new PostCategoryReq(token, isPatToken)
+}
 
 export namespace PostCategoryService {
     import ContentType = ReqHeaderKey.ContentType
@@ -83,7 +94,22 @@ export namespace PostCategoryService {
         }
     }
 
+    // TODO: consider remove this
     export function clearCache() {
         cache = null
+    }
+
+    export async function getSiteCategoryList(forceRefresh = false) {
+        if (siteCategoryCache != null && !forceRefresh) return siteCategoryCache
+        const req = await getAuthedPostCategoryReq()
+
+        try {
+            const resp = await req.getSiteCategoryList()
+            siteCategoryCache = <SiteCategory[]>JSON.parse(resp)
+        } catch (e) {
+            void Alert.err(`获取随笔分类失败: ${<string>e}`)
+        }
+
+        return siteCategoryCache
     }
 }

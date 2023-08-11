@@ -1,9 +1,8 @@
 use crate::cnb::oauth::OauthReq;
-use crate::cnb::oauth::OAUTH_API_BASE_URL;
 use crate::http::body_or_err;
 use crate::infra::http::{cons_query_string, APPLICATION_X3WFU};
 use crate::infra::result::{HomoResult, ResultExt};
-use crate::panic_hook;
+use crate::{oauth, panic_hook};
 use alloc::string::String;
 use alloc::{format, vec};
 use anyhow::Result;
@@ -20,7 +19,7 @@ impl OauthReq {
         callback_url: &str,
     ) -> HomoResult<String> {
         panic_hook!();
-        let url = format!("{}/connect/token", OAUTH_API_BASE_URL);
+        let url = oauth!("/connect/token");
 
         let client = reqwest::Client::new().post(url);
 

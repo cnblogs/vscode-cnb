@@ -1,8 +1,8 @@
-use crate::cnb::ing::{IngReq, ING_API_BASE_URL};
+use crate::cnb::ing::IngReq;
 use crate::http::unit_or_err;
 use crate::infra::http::{setup_auth, APPLICATION_JSON};
 use crate::infra::result::ResultExt;
-use crate::panic_hook;
+use crate::{openapi, panic_hook};
 use alloc::format;
 use alloc::string::String;
 use anyhow::Result;
@@ -32,7 +32,7 @@ impl IngReq {
         parent_comment_id: Option<usize>,
     ) -> Result<(), String> {
         panic_hook!();
-        let url = format!("{}/{}/comments", ING_API_BASE_URL, ing_id);
+        let url = openapi!("/statuses/{}/comments", ing_id);
 
         let client = reqwest::Client::new().post(url);
 

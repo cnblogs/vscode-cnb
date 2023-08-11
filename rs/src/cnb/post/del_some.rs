@@ -1,8 +1,8 @@
-use crate::cnb::post::{PostReq, API_BASE_URL};
+use crate::cnb::post::PostReq;
 use crate::http::unit_or_err;
 use crate::infra::http::{cons_query_string, setup_auth};
 use crate::infra::result::ResultExt;
-use crate::panic_hook;
+use crate::{blog_backend, panic_hook};
 use alloc::format;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -16,7 +16,7 @@ impl PostReq {
         panic_hook!();
         let post_ids: Vec<(&str, &usize)> = post_ids.iter().map(|id| ("postIds", id)).collect();
         let query = cons_query_string(post_ids);
-        let url = format!("{}/bulk-operation/post?{}", API_BASE_URL, query);
+        let url = blog_backend!("/bulk-operation/post?{}", query);
 
         let client = reqwest::Client::new().delete(url);
 

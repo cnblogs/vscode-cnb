@@ -6,8 +6,6 @@ use crate::panic_hook;
 use alloc::string::String;
 use wasm_bindgen::prelude::*;
 
-const API_BASE_URL: &str = "https://i.cnblogs.com/api";
-
 #[wasm_bindgen(js_name = PostReq)]
 pub struct PostReq {
     token: String,

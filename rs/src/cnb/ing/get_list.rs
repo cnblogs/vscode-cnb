@@ -1,8 +1,8 @@
-use crate::cnb::ing::{IngReq, ING_API_BASE_URL};
+use crate::cnb::ing::IngReq;
 use crate::http::body_or_err;
 use crate::infra::http::setup_auth;
 use crate::infra::result::{HomoResult, ResultExt};
-use crate::panic_hook;
+use crate::{openapi, panic_hook};
 use alloc::string::String;
 use alloc::{format, vec};
 use anyhow::Result;
@@ -18,7 +18,7 @@ impl IngReq {
         ing_type: usize,
     ) -> HomoResult<String> {
         panic_hook!();
-        let url = format!("{}/@{}", ING_API_BASE_URL, ing_type);
+        let url = openapi!("/statuses/@{}", ing_type);
 
         let client = reqwest::Client::new().get(url);
 

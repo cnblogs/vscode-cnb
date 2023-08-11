@@ -1,19 +1,19 @@
-use crate::cnb::ing::IngReq;
+use crate::cnb::post_category::PostCategoryReq;
 use crate::http::body_or_err;
 use crate::infra::http::setup_auth;
 use crate::infra::result::{HomoResult, ResultExt};
-use crate::{openapi, panic_hook};
+use crate::{blog_backend, panic_hook};
 use alloc::format;
 use alloc::string::String;
 use anyhow::Result;
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen(js_class = IngReq)]
-impl IngReq {
-    #[wasm_bindgen(js_name = getComment)]
-    pub async fn export_get_comment(&self, ing_id: usize) -> HomoResult<String> {
+#[wasm_bindgen(js_class = PostCategoryReq)]
+impl PostCategoryReq {
+    #[wasm_bindgen(js_name = getSiteCategoryList)]
+    pub async fn export_get_site_category_list(&self) -> HomoResult<String> {
         panic_hook!();
-        let url = openapi!("/statuses/{}/comments", ing_id);
+        let url = blog_backend!("/category/site");
 
         let client = reqwest::Client::new().get(url);
 
@@ -24,6 +24,6 @@ impl IngReq {
             body_or_err(resp).await?
         };
 
-        result.homo_string()
+        result.err_to_string()
     }
 }

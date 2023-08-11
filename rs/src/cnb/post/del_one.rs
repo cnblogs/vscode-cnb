@@ -1,8 +1,8 @@
-use crate::cnb::post::{PostReq, API_BASE_URL};
+use crate::cnb::post::PostReq;
 use crate::http::unit_or_err;
 use crate::infra::http::setup_auth;
 use crate::infra::result::ResultExt;
-use crate::panic_hook;
+use crate::{blog_backend, panic_hook};
 use alloc::format;
 use alloc::string::String;
 use anyhow::Result;
@@ -13,7 +13,7 @@ impl PostReq {
     #[wasm_bindgen(js_name = delOne)]
     pub async fn export_del_one(&self, post_id: usize) -> Result<(), String> {
         panic_hook!();
-        let url = format!("{}/posts/{}", API_BASE_URL, post_id);
+        let url = blog_backend!("/posts/{}", post_id);
 
         let client = reqwest::Client::new().delete(url);
 

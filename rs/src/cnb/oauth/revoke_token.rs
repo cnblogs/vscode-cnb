@@ -1,9 +1,8 @@
 use crate::cnb::oauth::OauthReq;
-use crate::cnb::oauth::OAUTH_API_BASE_URL;
 use crate::http::unit_or_err;
 use crate::infra::http::{cons_query_string, APPLICATION_X3WFU};
 use crate::infra::result::ResultExt;
-use crate::{basic, panic_hook};
+use crate::{basic, oauth, panic_hook};
 use alloc::string::String;
 use alloc::{format, vec};
 use anyhow::Result;
@@ -19,7 +18,7 @@ impl OauthReq {
         panic_hook!();
         let credentials = format!("{}:{}", self.client_id, self.client_secret);
         let credentials = general_purpose::STANDARD.encode(credentials);
-        let url = format!("{}/connect/revocation", OAUTH_API_BASE_URL);
+        let url = oauth!("/connect/revocation");
 
         let client = reqwest::Client::new().post(url);
 

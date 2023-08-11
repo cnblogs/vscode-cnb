@@ -1,8 +1,8 @@
-use crate::cnb::post::{PostReq, API_BASE_URL};
+use crate::cnb::post::PostReq;
 use crate::http::body_or_err;
 use crate::infra::http::{setup_auth, APPLICATION_JSON};
 use crate::infra::result::{HomoResult, ResultExt};
-use crate::panic_hook;
+use crate::{blog_backend, panic_hook};
 use alloc::format;
 use alloc::string::String;
 use anyhow::Result;
@@ -14,7 +14,7 @@ impl PostReq {
     #[wasm_bindgen(js_name = update)]
     pub async fn export_update(&self, post_json: String) -> HomoResult<String> {
         panic_hook!();
-        let url = format!("{}/posts", API_BASE_URL);
+        let url = blog_backend!("/posts");
 
         let client = reqwest::Client::new().post(url);
 
