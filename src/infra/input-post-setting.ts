@@ -106,7 +106,7 @@ export const inputPostSetting = (
         calculateStepNumber('categoryIds')
         let categories: PostCategory[] = []
         try {
-            categories = await PostCategoryService.listCategories()
+            categories = await PostCategoryService.getAll()
         } catch (err) {
             void Alert.err(err instanceof Error ? err.message : JSON.stringify(err))
             // 取消

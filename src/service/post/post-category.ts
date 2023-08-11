@@ -19,18 +19,9 @@ async function getAuthedPostCategoryReq() {
 }
 
 export namespace PostCategoryService {
-    export async function findCategories(ids: number[], { useCache = true } = {}) {
-        ids = ids.filter(x => x > 0)
-        if (ids.length <= 0) return []
-
-        const categories = await listCategories(!useCache)
-        return categories.filter(({ categoryId }) => ids.includes(categoryId))
-    }
-
-    export async function listCategories(option: boolean | { forceRefresh?: boolean | null; parentId?: number } = {}) {
-        const parentId = typeof option === 'object' ? option.parentId ?? -1 : -1
-        const shouldForceRefresh =
-            option === true || (typeof option === 'object' ? option.forceRefresh ?? false : false)
+    export async function listCategories(option: { forceRefresh?: boolean | null; parentId?: number }) {
+        const parentId = option.parentId ?? -1
+        const shouldForceRefresh = option.forceRefresh ?? false
         cache ??= new Map<number, PostCategory[]>()
         const map = cache
         const cachedCategories = map.get(parentId)
@@ -50,17 +41,28 @@ export namespace PostCategoryService {
         }
     }
 
-    export async function find(id: number) {
-        const para = consUrlPara(['parent', id <= 0 ? '' : id.toString()])
-        const url = `${globalCtx.config.apiBaseUrl}/api/v2/blog-category-types/1/categories?${para}`
-
+    export async function getAll() {
+        const req = await getAuthedPostCategoryReq()
         try {
-            const resp = await AuthedReq.get(url, consHeader())
-            const { parent } = <{ parent?: PostCategory | null }>JSON.parse(resp)
+            const resp = await req.getAll()
+            let { categories } = <{ categories: PostCategory[] }>JSON.parse(resp)
+            categories = categories.map(x => Object.assign(new PostCategory(), x))
+            return categories
+        } catch (e) {
+            void Alert.err(`查询随笔分类失败: ${<string>e}`)
+            throw e
+        }
+    }
+
+    export async function getOne(categoryId: number) {
+        const req = await getAuthedPostCategoryReq()
+        try {
+            const resp = await req.getOne(categoryId)
+            const { parent } = <{ parent: PostCategory | null }>JSON.parse(resp)
             return Object.assign(new PostCategory(), parent)
         } catch (e) {
             void Alert.err(`查询随笔分类失败: ${<string>e}`)
-            return new PostCategory()
+            throw e
         }
     }
 

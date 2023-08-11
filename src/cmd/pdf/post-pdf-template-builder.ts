@@ -36,7 +36,7 @@ export namespace PostPdfTemplateBuilder {
         }
 
         const buildCategoryHtml = async (): Promise<string> => {
-            const categories = await PostCategoryService.listCategories()
+            const categories = await PostCategoryService.getAll()
             const postCategories =
                 post.categoryIds
                     ?.map(categoryId => categories.find(x => x.categoryId === categoryId))

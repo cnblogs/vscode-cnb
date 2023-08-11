@@ -52,21 +52,21 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
     }
 
     getChildren(parent?: PostCategoriesListTreeItem): ProviderResult<PostCategoriesListTreeItem[]> {
-        if (!this.isRefreshing) {
-            if (parent == null) {
-                return this.getCategories()
-            } else if (parent instanceof PostCategoryTreeItem) {
-                return Promise.all([this.getCategories(parent.category.categoryId), this.getPost(parent)]).then(
-                    ([childCategories, childPost]) => (parent.children = [...childCategories, ...childPost])
-                )
-            } else if (parent instanceof PostTreeItem) {
-                return this.getPostMetadataChildren(parent)
-            } else if (parent instanceof PostEntryMetadata) {
-                return parent.getChildrenAsync()
-            }
+        if (this.isRefreshing) return []
+
+        if (parent === undefined) {
+            return []
+        } else if (parent instanceof PostCategoryTreeItem) {
+            return Promise.all([this.getCategories(parent.category.categoryId), this.getPost(parent)]).then(
+                ([childCategories, childPost]) => (parent.children = [...childCategories, ...childPost])
+            )
+        } else if (parent instanceof PostTreeItem) {
+            return this.getPostMetadataChildren(parent)
+        } else if (parent instanceof PostEntryMetadata) {
+            return parent.getChildrenAsync()
         }
 
-        return Promise.resolve([])
+        return []
     }
 
     getParent = (el: any) => el.parent as PostCategoriesListTreeItem | null | undefined
@@ -116,13 +116,13 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
         return PostMetadata.parseRoots({ post: parent, exclude: [RootPostMetadataType.categoryEntry] })
     }
 
-    private async getCategories(parentId?: number | null) {
+    private async getCategories(parentId?: number) {
         await this.setIsRefreshing(true)
         let categories: PostCategory[] = []
         try {
             categories = await PostCategoryService.listCategories({
                 forceRefresh: true,
-                parentId: parentId ?? undefined,
+                parentId,
             })
         } catch (e) {
             void Alert.err(`获取博文分类失败: ${(<Error>e).message}`)

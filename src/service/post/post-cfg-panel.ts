@@ -60,7 +60,7 @@ export namespace PostCfgPanel {
                     command: Webview.Cmd.Ui.editPostCfg,
                     post: cloneDeep(post),
                     activeTheme: vscode.window.activeColorTheme.kind,
-                    personalCategories: cloneDeep(await PostCategoryService.listCategories()),
+                    personalCategories: cloneDeep(await PostCategoryService.getAll()),
                     siteCategories: cloneDeep(await PostCategoryService.getSiteCategoryList()),
                     tags: cloneDeep(await PostTagService.fetchTags()),
                     breadcrumbs,

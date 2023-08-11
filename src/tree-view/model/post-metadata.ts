@@ -136,7 +136,7 @@ export class PostCategoryMetadata extends PostMetadata {
         if (editDto == null) return []
 
         const categoryIds = editDto.post.categoryIds ?? []
-        const futList = categoryIds.map(PostCategoryService.find)
+        const futList = categoryIds.map(PostCategoryService.getOne)
         const categoryList = await Promise.all(futList)
 
         return categoryList
