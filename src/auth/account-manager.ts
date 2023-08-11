@@ -11,13 +11,40 @@ import { Alert } from '@/infra/alert'
 import { execCmd } from '@/infra/cmd'
 
 const isAuthorizedStorageKey = 'isAuthorized'
-
-export const ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED = 'unauthenticated'
-export const ACQUIRE_TOKEN_REJECT_EXPIRED = 'expired'
-
 let authSession: AuthSession | null = null
 
-export namespace AccountManagerNg {
+export class AccountManager extends Disposable {
+    private readonly _disposable = Disposable.from(
+        authProvider.onDidChangeSessions(async ({ added }) => {
+            authSession = null
+            if (added != null && added.length > 0) await AccountManager.ensureSession()
+
+            await AccountManager.updateAuthStatus()
+
+            accountViewDataProvider.fireTreeDataChangedEvent()
+            postDataProvider.fireTreeDataChangedEvent(undefined)
+            postCategoryDataProvider.fireTreeDataChangedEvent()
+
+            BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
+        })
+    )
+
+    constructor() {
+        super(() => {
+            this._disposable.dispose()
+        })
+    }
+
+    get isAuthorized() {
+        return authSession !== null
+    }
+
+    get currentUser() {
+        return authSession?.account
+    }
+}
+
+export namespace AccountManager {
     export async function ensureSession(opt?: AuthenticationGetSessionOptions) {
         let session
         try {
@@ -56,7 +83,7 @@ export namespace AccountManagerNg {
         try {
             await authProvider.onAccessTokenGranted(pat)
             await ensureSession()
-            await AccountManagerNg.updateAuthStatus()
+            await AccountManager.updateAuthStatus()
         } catch (e) {
             void Alert.err(`授权失败: ${<string>e}`)
         }
@@ -83,15 +110,14 @@ export namespace AccountManagerNg {
     export async function acquireToken() {
         const session = await ensureSession({ createIfNone: false })
 
-        if (session == null) return Promise.reject(ACQUIRE_TOKEN_REJECT_UNAUTHENTICATED)
-
-        if (session.isExpired) return Promise.reject(ACQUIRE_TOKEN_REJECT_EXPIRED)
+        if (session == null) throw Error('未授权')
+        if (session.isExpired) throw Error('授权已过期')
 
         return session.accessToken
     }
 
     export async function updateAuthStatus() {
-        await AccountManagerNg.ensureSession({ createIfNone: false })
+        await AccountManager.ensureSession({ createIfNone: false })
 
         await execCmd('setContext', `${globalCtx.extName}.${isAuthorizedStorageKey}`, accountManager.isAuthorized)
 
@@ -101,37 +127,6 @@ export namespace AccountManagerNg {
             name: accountManager.currentUser?.userInfo.DisplayName,
             avatar: accountManager.currentUser?.userInfo.Avatar,
         })
-    }
-}
-
-class AccountManager extends Disposable {
-    private readonly _disposable = Disposable.from(
-        authProvider.onDidChangeSessions(async ({ added }) => {
-            authSession = null
-            if (added != null && added.length > 0) await AccountManagerNg.ensureSession()
-
-            await AccountManagerNg.updateAuthStatus()
-
-            accountViewDataProvider.fireTreeDataChangedEvent()
-            postDataProvider.fireTreeDataChangedEvent(undefined)
-            postCategoryDataProvider.fireTreeDataChangedEvent()
-
-            BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
-        })
-    )
-
-    constructor() {
-        super(() => {
-            this._disposable.dispose()
-        })
-    }
-
-    get isAuthorized() {
-        return authSession !== null
-    }
-
-    get currentUser() {
-        return authSession?.account
     }
 }
 

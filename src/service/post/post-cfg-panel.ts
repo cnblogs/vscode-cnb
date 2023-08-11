@@ -50,24 +50,24 @@ export namespace PostCfgPanel {
 
         disposables.push(
             webview.onDidReceiveMessage(async ({ command }: WebviewMsg.Msg) => {
-                if (command === Webview.Cmd.Ext.refreshPost) {
-                    await webview.postMessage({
-                        command: Webview.Cmd.Ui.setFluentIconBaseUrl,
-                        baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
-                    } as WebviewMsg.SetFluentIconBaseUrlMsg)
-                    await webview.postMessage({
-                        command: Webview.Cmd.Ui.editPostCfg,
-                        post: cloneDeep(post),
-                        activeTheme: vscode.window.activeColorTheme.kind,
-                        personalCategories: cloneDeep(await PostCategoryService.listCategories()),
-                        siteCategories: cloneDeep(await PostCategoryService.getSiteCategoryList()),
-                        tags: cloneDeep(await PostTagService.fetchTags()),
-                        breadcrumbs,
-                        fileName: localFileUri
-                            ? path.basename(localFileUri.fsPath, path.extname(localFileUri?.fsPath))
-                            : '',
-                    } as WebviewMsg.EditPostCfgMsg)
-                }
+                if (command !== Webview.Cmd.Ext.refreshPost) return
+
+                await webview.postMessage({
+                    command: Webview.Cmd.Ui.setFluentIconBaseUrl,
+                    baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
+                } as WebviewMsg.SetFluentIconBaseUrlMsg)
+                await webview.postMessage({
+                    command: Webview.Cmd.Ui.editPostCfg,
+                    post: cloneDeep(post),
+                    activeTheme: vscode.window.activeColorTheme.kind,
+                    personalCategories: cloneDeep(await PostCategoryService.listCategories()),
+                    siteCategories: cloneDeep(await PostCategoryService.getSiteCategoryList()),
+                    tags: cloneDeep(await PostTagService.fetchTags()),
+                    breadcrumbs,
+                    fileName: localFileUri
+                        ? path.basename(localFileUri.fsPath, path.extname(localFileUri?.fsPath))
+                        : '',
+                } as WebviewMsg.EditPostCfgMsg)
             }),
             observeWebviewMessages(panel, option),
             observeActiveColorSchemaChange(panel),

@@ -5,14 +5,14 @@ import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { Alert } from '@/infra/alert'
 import { consUrlPara } from '@/infra/http/infra/url-para'
 import { SiteCategory } from '@/model/site-category'
-import { AccountManagerNg } from '@/auth/account-manager'
+import { AccountManager } from '@/auth/account-manager'
 import { PostCategoryReq } from '@/wasm'
 
 let cache: Map<number, PostCategory[]> | null = null
 let siteCategoryCache: SiteCategory[] | null = null
 
 async function getAuthedPostCategoryReq() {
-    const token = await AccountManagerNg.acquireToken()
+    const token = await AccountManager.acquireToken()
     // TODO: need better solution
     const isPatToken = token.length === 64
     return new PostCategoryReq(token, isPatToken)

@@ -3,7 +3,7 @@ import { genVerifyChallengePair } from '@/service/code-challenge'
 import {
     authentication,
     AuthenticationProvider,
-    AuthenticationProviderAuthenticationSessionsChangeEvent as VscAuthProviderAuthSessionChEv,
+    AuthenticationProviderAuthenticationSessionsChangeEvent as APASCE,
     CancellationTokenSource,
     Disposable,
     env,
@@ -54,7 +54,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
     private _allSessions?: AuthSession[] | null
 
-    private readonly _sessionChangeEmitter = new EventEmitter<VscAuthProviderAuthSessionChEv>()
+    private readonly _sessionChangeEmitter = new EventEmitter<APASCE>()
     private readonly _disposable = Disposable.from(
         this._sessionChangeEmitter,
         authentication.registerAuthenticationProvider(this.providerId, this.providerName, this, {

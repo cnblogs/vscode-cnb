@@ -19,7 +19,7 @@ import { viewPostBlogExport } from '@/cmd/blog-export/view-post'
 import { deleteBlogExport } from '@/cmd/blog-export/delete'
 import { openLocalExport } from '@/cmd/blog-export/open-local'
 import { refreshExportRecord } from '@/cmd/blog-export/refresh'
-import { AccountManagerNg } from '@/auth/account-manager'
+import { AccountManager } from '@/auth/account-manager'
 import { uploadFsImage } from '@/cmd/upload-img/upload-fs-img'
 import { uploadClipboardImg } from '@/cmd/upload-img/upload-clipboard-img'
 import { insertImgLinkToActiveEditor } from '@/cmd/upload-img/upload-img-util'
@@ -49,9 +49,9 @@ export function setupExtCmd() {
 
     const tokens = [
         // auth
-        regCmd(withAppName('.login.web'), AccountManagerNg.webLogin),
-        regCmd(withAppName('.login.pat'), AccountManagerNg.patLogin),
-        regCmd(withAppName('.logout'), AccountManagerNg.logout),
+        regCmd(withAppName('.login.web'), AccountManager.webLogin),
+        regCmd(withAppName('.login.pat'), AccountManager.patLogin),
+        regCmd(withAppName('.logout'), AccountManager.logout),
         // post.list-view
         regCmd(withAppName('.post.list-view.refresh'), PostListView.refresh),
         regCmd(withAppName('.post.list-view.prev'), PostListView.goPrev),
