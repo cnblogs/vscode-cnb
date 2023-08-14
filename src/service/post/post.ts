@@ -1,4 +1,3 @@
-import { globalCtx } from '@/ctx/global-ctx'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostUpdatedResp } from '@/model/post-updated-response'
 import { ZzkSearchResult } from '@/model/zzk-search-result'
@@ -16,10 +15,9 @@ import { MyConfig } from '@/model/my-config'
 import { AuthManager } from '@/auth/auth-manager'
 import { PostReq } from '@/wasm'
 import { LocalState } from '@/ctx/local-state'
+import { AppConst } from '@/ctx/app-const'
 
 let newPostTemplate: PostEditDto | undefined
-
-const getBaseUrl = () => globalCtx.config.apiBaseUrl
 
 async function getAuthedPostReq() {
     const token = await AuthManager.acquireToken()
@@ -39,7 +37,7 @@ export namespace PostService {
             ['search', search],
             ['cid', categoryId.toString()]
         )
-        const url = `${getBaseUrl()}/api/posts/list?${para}`
+        const url = `${AppConst.ApiBase.BLOG_BACKEND}/posts/list?${para}`
         const resp = await AuthedReq.get(url, consHeader())
         const listModel = <PostListModel>JSON.parse(resp)
         const page = {
@@ -69,7 +67,7 @@ export namespace PostService {
     }
 
     export async function fetchPostEditDto(postId: number) {
-        const url = `${getBaseUrl()}/api/posts/${postId}`
+        const url = `${AppConst.ApiBase.BLOG_BACKEND}/posts/${postId}`
 
         try {
             const resp = await AuthedReq.get(url, consHeader())

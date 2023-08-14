@@ -3,7 +3,7 @@ import { ExportPostModel } from '@/model/blog-export/export-post'
 import { DataTypes, Op, Sequelize } from 'sequelize'
 import { Disposable } from 'vscode'
 import sqlite3 from 'sqlite3'
-import { isDevEnv } from '@/model/config'
+import { isDevEnv } from '@/ctx/app-const'
 
 export class ExportPostStore implements Disposable {
     private _sequelize = new Sequelize({

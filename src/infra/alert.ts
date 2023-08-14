@@ -1,6 +1,5 @@
 import path from 'path'
 import { ProgressLocation, Uri, window } from 'vscode'
-import { isDevEnv } from '@/model/config'
 
 export namespace Alert {
     export const err = window.showErrorMessage
@@ -20,10 +19,6 @@ export namespace Alert {
                     setTimeout(resolve, sec * 1000)
                 })
         )
-    }
-
-    export function dev(log: string) {
-        if (isDevEnv()) console.log(log)
     }
 
     /**

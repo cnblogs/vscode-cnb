@@ -1,11 +1,11 @@
 import { BlogExportRecord, BlogExportRecordList } from '@/model/blog-export'
-import { globalCtx } from '@/ctx/global-ctx'
 import got from '@/infra/http-client'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { consHeader } from '@/infra/http/infra/header'
 import { consUrlPara } from '@/infra/http/infra/url-para'
+import { AppConst } from '@/ctx/app-const'
 
-const basePath = `${globalCtx.config.apiBaseUrl}/api/blogExports`
+const basePath = `${AppConst.ApiBase.BLOG_BACKEND}/blogExports`
 const downloadOrigin = 'https://export.cnblogs.com'
 
 export namespace BlogExportApi {

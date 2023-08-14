@@ -20,14 +20,13 @@ import { consUrlPara } from '@/infra/http/infra/url-para'
 import { RsRand } from '@/wasm'
 import { Alert } from '@/infra/alert'
 import { LocalState } from '@/ctx/local-state'
+import { AppConst } from '@/ctx/app-const'
 
 async function browserSignIn(challengeCode: string, scopes: string[]) {
-    const { clientId, responseType, authRoute, authority, clientSecret } = globalCtx.config.oauth
-
     const para = consUrlPara(
-        ['client_id', clientId],
-        ['client_secret', clientSecret],
-        ['response_type', responseType],
+        ['client_id', AppConst.CLIENT_ID],
+        ['client_secret', AppConst.CLIENT_SEC],
+        ['response_type', 'code'],
         ['nonce', RsRand.string(32)],
         ['code_challenge', challengeCode],
         ['code_challenge_method', 'S256'],
@@ -35,7 +34,7 @@ async function browserSignIn(challengeCode: string, scopes: string[]) {
         ['redirect_uri', globalCtx.extUrl]
     )
 
-    const uri = Uri.parse(`${authority}${authRoute}?${para}`)
+    const uri = Uri.parse(`${AppConst.ApiBase.OAUTH}/connect/authorize?${para}`)
 
     try {
         await env.openExternal(uri)
@@ -49,7 +48,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     readonly providerName = '博客园Cnblogs'
 
     protected readonly sessionStorageKey = `${this.providerId}.sessions`
-    protected readonly allScopes = globalCtx.config.oauth.scope.split(' ')
+    protected readonly allScopes = AppConst.OAUTH_SCOPES
 
     private _allSessions?: AuthSession[] | null
 

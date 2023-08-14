@@ -1,18 +1,11 @@
 import { env, ExtensionContext, Uri } from 'vscode'
-import { defaultConfig, devConfig, ExtConst, isDevEnv } from '@/model/config'
 import path from 'path'
 
 export class GlobalCtx {
     private _extensionContext: ExtensionContext | null = null
-    private readonly _config: ExtConst = defaultConfig
-    private readonly _devConfig: ExtConst = devConfig
-
-    get config(): ExtConst {
-        return isDevEnv() ? this._devConfig : this._config
-    }
 
     get extCtx(): ExtensionContext {
-        if (this._extensionContext == null) throw Error('extension context not exist')
+        if (this._extensionContext == null) throw Error('ext ctx not exist')
         return this._extensionContext
     }
 
@@ -21,21 +14,26 @@ export class GlobalCtx {
     }
 
     get extName(): string {
-        const { name } = <{ name?: string }>this.extCtx.extension.packageJSON
-        return name ?? 'vscode-cnb'
+        const name = <string | undefined>this.extCtx.extension.packageJSON.name
+        if (name === undefined) throw Error('ext name not exist')
+        return name
     }
 
     get publisher(): string {
-        const { publisher } = <{ publisher?: string }>this.extCtx.extension.packageJSON
-        return publisher ?? 'cnblogs'
+        const publisher = <string | undefined>this.extCtx.extension.packageJSON.publisher
+        if (publisher === undefined) throw Error('ext publisher not exist')
+        return publisher
     }
 
     get displayName() {
-        return this.extCtx.extension.packageJSON.displayName as string
+        const displayName = <string | undefined>this.extCtx.extension.packageJSON.displayName
+        if (displayName === undefined) throw Error('ext displayName not exist')
+        return displayName
     }
 
     get assetsUri() {
-        return Uri.file(path.join(globalCtx.extCtx.extensionPath, 'dist', 'assets'))
+        const joined = path.join(globalCtx.extCtx.extensionPath, 'dist', 'assets')
+        return Uri.file(joined)
     }
 
     get extUrl() {
