@@ -27,7 +27,7 @@ export class ExportPostTreeItem extends BaseTreeItemSource {
             collapsibleState: TreeItemCollapsibleState.None,
             command: {
                 title: '查看博文',
-                command: `${globalCtx.extName}.blog-export.view-post`,
+                command: `${globalCtx.extName}.backup.view-post`,
                 arguments: [this],
             },
             resourceUri: Uri.joinPath(WorkspaceCfg.getWorkspaceUri(), title + (isMarkdown ? '.md' : '.html')),

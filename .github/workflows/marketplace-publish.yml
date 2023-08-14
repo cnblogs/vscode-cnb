@@ -56,7 +56,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out
+        uses: actions/checkout@v3
 
       - name: Setup node.js
         uses: actions/setup-node@v3
@@ -97,16 +98,16 @@ jobs:
       - name: Target
         id: target
         shell: bash
-        run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+        run: echo "TARGET=${{ matrix.platform }}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
       - name: Package
         run: |
-          npx @vscode/vsce package --target ${{ steps.target.outputs.target }} --no-git-tag-version --no-update-package-json ${{ steps.version.outputs.VERSION }}
+          npx @vscode/vsce package --target ${{ steps.target.outputs.TARGET }} --no-git-tag-version --no-update-package-json ${{ steps.version.outputs.VERSION }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.target.outputs.target }}
+          name: ${{ steps.target.outputs.TARGET }}
           path: '*.vsix'
 
   publish:

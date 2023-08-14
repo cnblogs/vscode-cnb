@@ -1,11 +1,9 @@
 import { AuthSession } from '@/auth/auth-session'
 import { genVerifyChallengePair } from '@/service/code-challenge'
-import { isArray, isUndefined } from 'lodash-es'
 import {
     authentication,
     AuthenticationProvider,
     AuthenticationProviderAuthenticationSessionsChangeEvent as VscAuthProviderAuthSessionChEv,
-    CancellationToken,
     CancellationTokenSource,
     Disposable,
     env,
@@ -48,13 +46,10 @@ async function browserSignIn(challengeCode: string, scopes: string[]) {
 }
 
 export class AuthProvider implements AuthenticationProvider, Disposable {
-    static readonly providerId = 'cnblogs'
-    static readonly providerName = '博客园Cnblogs'
+    readonly providerId = 'cnblogs'
+    readonly providerName = '博客园Cnblogs'
 
-    readonly providerId = AuthProvider.providerId
-    readonly providerName = AuthProvider.providerName
-
-    protected readonly sessionStorageKey = `${AuthProvider.providerId}.sessions`
+    protected readonly sessionStorageKey = `${this.providerId}.sessions`
     protected readonly allScopes = globalCtx.config.oauth.scope.split(' ')
 
     private _allSessions?: AuthSession[] | null
@@ -62,7 +57,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     private readonly _sessionChangeEmitter = new EventEmitter<VscAuthProviderAuthSessionChEv>()
     private readonly _disposable = Disposable.from(
         this._sessionChangeEmitter,
-        authentication.registerAuthenticationProvider(AuthProvider.providerId, AuthProvider.providerName, this, {
+        authentication.registerAuthenticationProvider(this.providerId, this.providerName, this, {
             supportsMultipleAccounts: false,
         }),
         this.onDidChangeSessions(() => {
@@ -78,9 +73,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         const sessions = await this.getAllSessions()
         const parsedScopes = this.ensureScopes(scopes)
 
-        return sessions
-            .map(x => AuthSession.from(x))
-            .filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
+        return sessions.filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
     }
 
     createSession(scopes: string[]): Thenable<AuthSession> {
@@ -127,9 +120,8 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
                     }
 
                     try {
-                        const token = await Oauth.fetchToken(verifyCode, authCode)
+                        const token = await Oauth.getToken(verifyCode, authCode)
                         const authSession = await this.onAccessTokenGranted(token.accessToken, {
-                            cancelToken: cancelTokenSrc.token,
                             onStateChange(state) {
                                 progress.report({ message: state })
                             },
@@ -169,63 +161,35 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     async onAccessTokenGranted(
         accessToken: string,
         {
-            cancelToken,
             onStateChange,
             shouldFireSessionAddedEvent = true,
         }: {
             onStateChange?: (state: string) => void
-            cancelToken?: CancellationToken
             shouldFireSessionAddedEvent?: boolean
         } = {}
     ) {
-        const ifNotCancelledThen = <TR>(f: () => TR): TR | undefined => {
-            if (cancelToken?.isCancellationRequested) return
-            return f()
-        }
+        onStateChange?.('正在获取账户信息...')
 
-        let session: AuthSession | undefined
+        const accountInfo = await AccountInfo.get(accessToken)
+        if (accountInfo === undefined) throw Error('用户信息获取失败')
 
-        try {
-            onStateChange?.('正在获取账户信息...')
+        onStateChange?.('即将完成...')
 
-            const spec = await Oauth.fetchUserInfo(accessToken)
+        const session = new AuthSession(
+            accountInfo,
+            `${this.providerId}-${accountInfo.userInfo.SpaceUserID}`,
+            accessToken,
+            this.ensureScopes(null)
+        )
+        await globalCtx.secretsStorage.store(this.sessionStorageKey, JSON.stringify([session]))
 
-            onStateChange?.('即将完成...')
+        if (!shouldFireSessionAddedEvent) return session
 
-            session = ifNotCancelledThen(() => {
-                if (isUndefined(spec)) return
-
-                return AuthSession.from({
-                    accessToken,
-                    account: AccountInfo.from(spec),
-                    scopes: this.ensureScopes(null),
-                    id: `${this.providerId}-${spec.account_id}`,
-                })
-            })
-
-            const hasStored = await ifNotCancelledThen(() => {
-                if (isUndefined(session)) return Promise.resolve(false)
-
-                return globalCtx.secretsStorage.store(this.sessionStorageKey, JSON.stringify([session])).then(
-                    () => true,
-                    () => false
-                )
-            })
-
-            ifNotCancelledThen(() => {
-                if (!hasStored || isUndefined(session) || !shouldFireSessionAddedEvent) return
-
-                return this._sessionChangeEmitter.fire({
-                    added: [session],
-                    removed: undefined,
-                    changed: undefined,
-                })
-            })
-        } finally {
-            if (session != null && cancelToken?.isCancellationRequested) await this.removeSession(session.id)
-        }
-
-        if (session == null) throw new Error('Failed to create session')
+        this._sessionChangeEmitter.fire({
+            added: [session],
+            removed: undefined,
+            changed: undefined,
+        })
 
         return session
     }
@@ -236,16 +200,17 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
     protected async getAllSessions(): Promise<AuthSession[]> {
         const legacyToken = LegacyTokenStore.getAccessToken()
-        if (legacyToken != null) {
+        if (legacyToken !== undefined) {
             await this.onAccessTokenGranted(legacyToken, { shouldFireSessionAddedEvent: false })
-                .then(undefined, console.warn)
-                .finally(() => void LegacyTokenStore.remove())
+            void LegacyTokenStore.remove()
         }
 
         if (this._allSessions == null || this._allSessions.length <= 0) {
             const storage = await globalCtx.secretsStorage.get(this.sessionStorageKey)
             const sessions = JSON.parse(storage ?? '[]') as AuthSession[] | null | undefined
-            this._allSessions = isArray(sessions) ? sessions.map(x => AuthSession.from(x)) : []
+
+            if (Array.isArray(sessions)) this._allSessions = sessions
+            else this._allSessions = []
         }
 
         return this._allSessions

@@ -9,13 +9,13 @@ import { openPostInVscode } from './open-post-in-vscode'
 import { openPostFile } from './open-post-file'
 import { searchPostByTitle } from '@/service/post/search-post-by-title'
 import * as path from 'path'
-import { refreshPostList } from './refresh-post-list'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostCfgPanel } from '@/service/post/post-cfg-panel'
 import { saveFilePendingChanges } from '@/infra/save-file-pending-changes'
 import { extractImg } from '@/cmd/extract-img'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
+import { PostListView } from '@/cmd/post-list/post-list-view'
 
 async function parseFileUri(fileUri: Uri | undefined) {
     if (fileUri !== undefined && fileUri.scheme !== 'file') return undefined
@@ -53,7 +53,7 @@ async function saveLocalDraft(localDraft: LocalDraft) {
         breadcrumbs: ['新建博文', '博文设置', post.title],
         post,
         successCallback: async savedPost => {
-            await refreshPostList()
+            await PostListView.refresh()
             await openPostFile(localDraft)
 
             await PostFileMapManager.updateOrCreate(savedPost.id, localDraft.filePath)
@@ -150,7 +150,7 @@ export async function uploadPost(input: Post | PostTreeItem | PostEditDto | unde
                 isSaved = true
                 progress.report({ increment: 100 })
                 void Alert.info('上传成功')
-                await refreshPostList()
+                await PostListView.refresh()
             } catch (err) {
                 progress.report({ increment: 100 })
                 void Alert.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
@@ -257,11 +257,10 @@ export async function uploadPostNoConfirm(input: Post | PostTreeItem | PostEditD
                 isSaved = true
                 progress.report({ increment: 100 })
                 void Alert.info('上传成功')
-                await refreshPostList()
-            } catch (err) {
+                await PostListView.refresh()
+            } catch (e) {
                 progress.report({ increment: 100 })
-                void Alert.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
-                console.error(err)
+                void Alert.err(`上传失败: ${<string>e}`)
             }
 
             return isSaved

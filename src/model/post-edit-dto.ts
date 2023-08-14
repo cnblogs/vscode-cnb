@@ -1,4 +1,5 @@
-import { MyConfig, Post } from '@/model/post'
+import { Post } from '@/model/post'
+import { MyConfig } from '@/model/my-config'
 
 export type PostEditDto = {
     post: Post

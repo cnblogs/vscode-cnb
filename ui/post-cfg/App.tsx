@@ -7,7 +7,7 @@ import { personalCategoriesStore } from './service/personal-category-store'
 import { siteCategoriesStore } from './service/site-category-store'
 import { tagsStore } from './service/tags-store'
 import { WebviewMsg } from '@/model/webview-msg'
-import { WebviewCmd } from '@/model/webview-cmd'
+import { Webview } from '@/model/webview-cmd'
 import { PostFormContextProvider } from './components/PostFormContextProvider'
 import { activeThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
@@ -28,7 +28,7 @@ class App extends Component<AppProps, AppState> {
         super(props)
         this.state = { theme: activeThemeProvider.activeTheme(), fileName: '', useNestCategoriesSelect: false }
         this.observerMessages()
-        getVsCodeApiSingleton().postMessage({ command: WebviewCmd.ExtCmd.refreshPost })
+        getVsCodeApiSingleton().postMessage({ command: Webview.Cmd.Ext.refreshPost })
     }
 
     render() {
@@ -87,7 +87,7 @@ class App extends Component<AppProps, AppState> {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const message = ev.data as any
 
-            if (command === WebviewCmd.UiCmd.editPostCfg) {
+            if (command === Webview.Cmd.Ui.editPostCfg) {
                 const { post, activeTheme, personalCategories, siteCategories, tags, breadcrumbs, fileName } =
                     message as WebviewMsg.EditPostCfgMsg
                 personalCategoriesStore.set(personalCategories)
@@ -101,13 +101,13 @@ class App extends Component<AppProps, AppState> {
                     fileName,
                     useNestCategoriesSelect: personalCategories.some(c => c.childCount > 0),
                 })
-            } else if (command === WebviewCmd.UiCmd.updateBreadcrumbs) {
+            } else if (command === Webview.Cmd.Ui.updateBreadcrumbs) {
                 const { breadcrumbs } = message as WebviewMsg.UpdateBreadcrumbMsg
                 this.setState({ breadcrumbs })
-            } else if (command === WebviewCmd.UiCmd.setFluentIconBaseUrl) {
+            } else if (command === Webview.Cmd.Ui.setFluentIconBaseUrl) {
                 const { baseUrl } = message as WebviewMsg.SetFluentIconBaseUrlMsg
                 initializeIcons(baseUrl)
-            } else if (command === WebviewCmd.UiCmd.updateTheme) {
+            } else if (command === Webview.Cmd.Ui.updateTheme) {
                 this.setState({ theme: activeThemeProvider.activeTheme() })
             }
         })

@@ -1,49 +1,49 @@
-import { UserInfoSpec } from '@/auth/oauth'
-import { trim } from 'lodash-es'
-import { AuthenticationSessionAccountInformation } from 'vscode'
-import { AuthProvider } from './auth-provider'
+import { AuthenticationSessionAccountInformation as ASAI } from 'vscode'
+import { UserReq } from '@/wasm'
+import { Alert } from '@/infra/alert'
 
-export class AccountInfo implements AuthenticationSessionAccountInformation {
-    readonly label: string
+function getAuthedUserReq(token: string) {
+    // TODO: need better solution
+    const isPatToken = token.length === 64
+    return new UserReq(token, isPatToken)
+}
+
+/* eslint-disable @typescript-eslint/naming-convention */
+export type UserInfo = {
+    UserId: string
+    SpaceUserID: number
+    BlogId: number
+    DisplayName: string
+    Face: string
+    Avatar: string
+    Seniority: string
+    BlogApp: string
+    FollowingCount: number
+    FollowerCount: number
+    IsVip: boolean
+}
+
+export class AccountInfo implements ASAI {
     readonly id: string
+    readonly label: string
 
-    private _blogApp: string | null = null
-
-    private constructor(
-        public readonly name: string,
-        public readonly avatar: string,
-        public readonly website: string, //The user blog home page url
-        public readonly blogId: number,
-        public readonly sub: string, //UserId(data type is Guid)
-        public readonly accountId: number //SpaceUserId
-    ) {
-        this.id = `${this.accountId}-${AuthProvider.providerId}`
-        this.label = name
+    constructor(public readonly userInfo: UserInfo) {
+        this.id = `${userInfo.SpaceUserID}-cnblogs`
+        this.label = userInfo.DisplayName
     }
+}
 
-    get userId() {
-        return this.sub
+export namespace AccountInfo {
+    export async function get(token: string) {
+        const req = getAuthedUserReq(token)
+
+        try {
+            const resp = await req.getInfo()
+            const userInfo = <UserInfo>JSON.parse(resp)
+
+            return new AccountInfo(userInfo)
+        } catch (e) {
+            void Alert.err(`获取用户信息失败: ${<string>e}`)
+        }
     }
-
-    get blogApp(): string | null {
-        this._blogApp ??= this.parseBlogApp()
-        return this._blogApp
-    }
-
-    static newAnonymous = () => new AccountInfo('anonymous', '', '', -1, '', -1)
-
-    static from = (userInfo: UserInfoSpec) =>
-        new AccountInfo(
-            userInfo.name,
-            userInfo.picture,
-            userInfo.website,
-            parseInt(userInfo.blog_id, 10),
-            userInfo.sub,
-            parseInt(userInfo.account_id, 10)
-        )
-
-    private parseBlogApp = () =>
-        trim(this.website ?? '', '/')
-            .split('/')
-            .pop() ?? null
 }

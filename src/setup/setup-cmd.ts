@@ -1,42 +1,17 @@
-import { switchIngType } from '@/cmd/ing/select-ing-type'
-import { refreshIngList } from '@/cmd/ing/refresh-ing-list'
-import { goIngList1stPage, goIngListNextPage, goIngListPrevPage } from '@/cmd/ing/switch-ing-list-page'
-import { openMyAccountSetting } from '@/cmd/open/open-my-account-setting'
-import { openMyWebBlogConsole } from '@/cmd/open/open-my-blog-console'
-import { openMyHomePage } from '@/cmd/open/open-my-home-page'
-import { openMyBlog } from '@/cmd/open/open-my-blog'
 import { globalCtx } from '@/ctx/global-ctx'
-import { goNextPostList, goPrevPostList, refreshPostList, seekPostList } from '@/cmd/post-list/refresh-post-list'
 import { uploadPostFile, uploadPost, uploadPostNoConfirm, uploadPostFileNoConfirm } from '@/cmd/post-list/upload-post'
-import { createLocalDraft } from '@/cmd/post-list/create-local-draft'
-import { delSelectedPost } from '@/cmd/post-list/del-post'
-import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
 import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { osOpenLocalPostFile } from '@/cmd/open/os-open-local-post-file'
 import { showLocalFileToPostInfo } from '@/cmd/show-local-file-to-post-info'
 import { newPostCategory } from '@/cmd/post-category/new-post-category'
 import { refreshPostCategoryList } from '@/cmd/post-category/refresh-post-category-list'
 import { handleUpdatePostCategory } from '@/cmd/post-category/update-post-category'
-import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
-import { delPostToLocalFileMap } from '@/cmd/post-list/del-post-to-local-file-map'
-import { renamePost } from '@/cmd/post-list/rename-post'
 import { openPostInBlogAdmin } from '@/cmd/open/open-post-in-blog-admin'
-import { openWorkspace } from '@/cmd/open/open-workspace'
-import { setWorkspace } from '@/cmd/set-workspace'
-import { osOpenWorkspace } from '@/cmd/open/os-open-workspace'
 import { viewPostOnline } from '@/cmd/view-post-online'
-import { pullRemotePost } from '@/cmd/pull-remote-post'
 import { extractImg } from '@/cmd/extract-img'
-import { clearPostSearchResults, refreshPostSearchResults, searchPost } from '@/cmd/post-list/search'
 import { handleDeletePostCategories } from '@/cmd/post-category/del-selected-category'
-import { PublishIngCmdHandler } from '@/cmd/ing/publish-ing'
-import { CopyPostLinkCmdHandler } from '@/cmd/post-list/copy-link'
 import { regCmd } from '@/infra/cmd'
 import { exportPostToPdf } from '@/cmd/pdf/export-pdf'
-import { openCnbHome } from '@/cmd/open/open-cnb-home'
-import { openCnbNews } from '@/cmd/open/open-cnb-news'
-import { openCnbQ } from '@/cmd/open/open-cnb-q'
-import { openCnbIng } from '@/cmd/open/open-cnb-ing'
 import { editExportPost } from '@/cmd/blog-export/edit'
 import { createBlogExport } from '@/cmd/blog-export/create'
 import { downloadBlogExport } from '@/cmd/blog-export/download'
@@ -48,6 +23,21 @@ import { AccountManagerNg } from '@/auth/account-manager'
 import { uploadFsImage } from '@/cmd/upload-img/upload-fs-img'
 import { uploadClipboardImg } from '@/cmd/upload-img/upload-clipboard-img'
 import { insertImgLinkToActiveEditor } from '@/cmd/upload-img/upload-img-util'
+import { Workspace } from '@/cmd/workspace'
+import { Browser } from '@/cmd/browser'
+import { Ing } from '@/cmd/ing/ing-page-list'
+import { PostListView } from '@/cmd/post-list/post-list-view'
+import { postPull } from '@/cmd/post-list/post-pull'
+import { postPullAll } from '@/cmd/post-list/post-pull-all'
+import { delPostToLocalFileMap } from '@/cmd/post-list/del-post-to-local-file-map'
+import { CopyPostLinkCmdHandler } from '@/cmd/post-list/copy-link'
+import { createLocalDraft } from '@/cmd/post-list/create-local-draft'
+import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
+import { renamePost } from '@/cmd/post-list/rename-post'
+import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
+import { delSelectedPost } from '@/cmd/post-list/del-post'
+import { pubIngWithInput } from '@/cmd/ing/pub-ing-with-input'
+import { pubIngWithSelect } from '@/cmd/ing/pub-ing-with-select'
 
 function withPrefix(prefix: string) {
     return (rest: string) => `${prefix}${rest}`
@@ -59,82 +49,84 @@ export function setupExtCmd() {
 
     const tokens = [
         // auth
-        regCmd(withAppName('.webLogin'), AccountManagerNg.webLogin),
-        regCmd(withAppName('.patLogin'), AccountManagerNg.patLogin),
+        regCmd(withAppName('.login.web'), AccountManagerNg.webLogin),
+        regCmd(withAppName('.login.pat'), AccountManagerNg.patLogin),
         regCmd(withAppName('.logout'), AccountManagerNg.logout),
-        // post-list
-        regCmd(withAppName('.refresh-post-list'), refreshPostList),
-        regCmd(withAppName('.post-list.prev'), goPrevPostList),
-        regCmd(withAppName('.post-list.next'), goNextPostList),
-        regCmd(withAppName('.post-list.seek'), seekPostList),
+        // post.list-view
+        regCmd(withAppName('.post.list-view.refresh'), PostListView.refresh),
+        regCmd(withAppName('.post.list-view.prev'), PostListView.goPrev),
+        regCmd(withAppName('.post.list-view.next'), PostListView.goNext),
+        regCmd(withAppName('.post.list-view.seek'), PostListView.seek),
+
+        regCmd(withAppName('.post.list-view.search.clear'), PostListView.Search.clear),
+        regCmd(withAppName('.post.list-view.search.refresh'), PostListView.Search.refresh),
         // post
-        regCmd(withAppName('.del-post'), delSelectedPost),
-        regCmd(withAppName('.edit-post'), openPostInVscode),
-        regCmd(withAppName('.search-post'), searchPost),
-        regCmd(withAppName('.rename-post'), renamePost),
-        regCmd(withAppName('.modify-post-setting'), modifyPostSetting),
-        regCmd(withAppName('.create-local-draft'), createLocalDraft),
-        regCmd(withAppName('.upload-post'), uploadPost),
-        regCmd(withAppName('.upload-post-file'), uploadPostFile),
-        regCmd(withAppName('.upload-post-no-confirm'), uploadPostNoConfirm),
-        regCmd(withAppName('.upload-post-file-no-confirm'), uploadPostFileNoConfirm),
-        regCmd(withAppName('.pull-remote-post'), pullRemotePost),
-        regCmd(withAppName('.open-post-in-blog-admin'), openPostInBlogAdmin),
-        regCmd(withAppName('.del-post-to-local-file-map'), delPostToLocalFileMap),
-        regCmd(withAppName('.view-post-online'), viewPostOnline),
-        regCmd(withAppName('.export-post-to-pdf'), exportPostToPdf),
-        regCmd(withAppName('.clear-post-search-results'), clearPostSearchResults),
-        regCmd(withAppName('.refresh-post-search-results'), refreshPostSearchResults),
-        regCmd(withAppName('.copy-post-link'), input => new CopyPostLinkCmdHandler(input).handle()),
-        regCmd(withAppName('.reveal-local-post-file-in-os'), osOpenLocalPostFile),
-        regCmd(withAppName('.show-post-to-local-file-info'), showLocalFileToPostInfo),
+        regCmd(withAppName('.post.del'), delSelectedPost),
+        regCmd(withAppName('.post.edit'), openPostInVscode),
+        regCmd(withAppName('.post.search'), PostListView.Search.search),
+        regCmd(withAppName('.post.rename'), renamePost),
+        regCmd(withAppName('.post.modify-setting'), modifyPostSetting),
+        regCmd(withAppName('.post.create-local-draft'), createLocalDraft),
+        regCmd(withAppName('.post.upload'), uploadPost),
+        regCmd(withAppName('.post.upload-file'), uploadPostFile),
+        regCmd(withAppName('.post.upload-no-confirm'), uploadPostNoConfirm),
+        regCmd(withAppName('.post.upload-file-no-confirm'), uploadPostFileNoConfirm),
+        regCmd(withAppName('.post.pull'), postPull),
+        regCmd(withAppName('.post.pull-all'), postPullAll),
+        regCmd(withAppName('.post.open-in-blog-admin'), openPostInBlogAdmin),
+        regCmd(withAppName('.post.del-local-map'), delPostToLocalFileMap),
+        regCmd(withAppName('.post.view-in-browser'), viewPostOnline),
+        regCmd(withAppName('.post.export-to-pdf'), exportPostToPdf),
+        regCmd(withAppName('.post.copy-link'), input => new CopyPostLinkCmdHandler(input).handle()),
+        regCmd(withAppName('.post.os-open-local-file'), osOpenLocalPostFile),
+        regCmd(withAppName('.post.show-local-file-info'), showLocalFileToPostInfo),
         // img
-        regCmd(withAppName('.extract-img'), extractImg),
-        regCmd(withAppName('.upload-img'), uploadImg),
-        regCmd(withAppName('.upload-img-fs'), async () => {
+        regCmd(withAppName('.img.extract'), extractImg),
+        regCmd(withAppName('.img.upload'), uploadImg),
+        regCmd(withAppName('.img.upload-fs'), async () => {
             const link = await uploadFsImage()
             if (link !== undefined) await insertImgLinkToActiveEditor(link)
         }),
-        regCmd(withAppName('.upload-img-clipboard'), async () => {
+        regCmd(withAppName('.img.upload-clipboard'), async () => {
             const link = await uploadClipboardImg()
             if (link !== undefined) await insertImgLinkToActiveEditor(link)
         }),
         // post category
-        regCmd(withAppName('.new-post-category'), newPostCategory),
-        regCmd(withAppName('.del-selected-post-category'), handleDeletePostCategories),
-        regCmd(withAppName('.refresh-post-category-list'), refreshPostCategoryList),
-        regCmd(withAppName('.update-post-category'), handleUpdatePostCategory),
+        regCmd(withAppName('.post-category.new'), newPostCategory),
+        regCmd(withAppName('.post-category.del-select'), handleDeletePostCategories),
+        regCmd(withAppName('.post-category.refresh'), refreshPostCategoryList),
+        regCmd(withAppName('.post-category.update'), handleUpdatePostCategory),
         // workspace
-        regCmd(withAppName('.open-workspace'), openWorkspace),
-        regCmd(withAppName('.set-workspace'), setWorkspace),
-        regCmd(withAppName('.reveal-workspace-in-os'), osOpenWorkspace),
+        regCmd(withAppName('.workspace.set'), Workspace.set),
+        regCmd(withAppName('.workspace.os-open'), Workspace.osOpen),
+        regCmd(withAppName('.workspace.code-open'), Workspace.codeOpen),
         // ing
-        regCmd(withAppName('.ing.publish'), () => new PublishIngCmdHandler('input').handle()),
-        regCmd(withAppName('.ing.publish-select'), () => new PublishIngCmdHandler('select').handle()),
+        regCmd(withAppName('.ing.pub'), () => pubIngWithInput('')),
+        regCmd(withAppName('.ing.pub-select'), pubIngWithSelect),
         // open in browser
-        regCmd(withAppName('.open-cnb-home'), openCnbHome),
-        regCmd(withAppName('.open-cnb-news'), openCnbNews),
-        regCmd(withAppName('.open-cnb-q'), openCnbQ),
-        regCmd(withAppName('.open-cnb-ing'), openCnbIng),
-        regCmd(withAppName('.open-my-blog'), openMyBlog),
-        regCmd(withAppName('.open-my-home-page'), openMyHomePage),
-        regCmd(withAppName('.open-my-blog-console'), openMyWebBlogConsole),
-        regCmd(withAppName('.open-my-account-setting'), openMyAccountSetting),
+        regCmd(withAppName('.open.cnb-q'), Browser.Open.Cnb.q),
+        regCmd(withAppName('.open.cnb-ing'), Browser.Open.Cnb.ing),
+        regCmd(withAppName('.open.cnb-home'), Browser.Open.Cnb.home),
+        regCmd(withAppName('.open.cnb-news'), Browser.Open.Cnb.news),
+        regCmd(withAppName('.open.my-blog'), Browser.Open.User.blog),
+        regCmd(withAppName('.open.my-home'), Browser.Open.User.home),
+        regCmd(withAppName('.open.blog-console'), Browser.Open.User.blogConsole),
+        regCmd(withAppName('.open.account-setting'), Browser.Open.User.accountSetting),
         // ing list
-        regCmd(withAppName('.ing-list.refresh'), refreshIngList),
-        regCmd(withAppName('.ing-list.next'), goIngListNextPage),
-        regCmd(withAppName('.ing-list.prev'), goIngListPrevPage),
-        regCmd(withAppName('.ing-list.first'), goIngList1stPage),
-        regCmd(withAppName('.ing-list.switch-type'), switchIngType),
-        regCmd(withAppName('.ing-list.open-in-browser'), openCnbIng),
+        regCmd(withAppName('.ing-list.next'), Ing.ListView.goNext),
+        regCmd(withAppName('.ing-list.prev'), Ing.ListView.goPrev),
+        regCmd(withAppName('.ing-list.first'), Ing.ListView.goFirst),
+        regCmd(withAppName('.ing-list.refresh'), Ing.ListView.refresh),
+        regCmd(withAppName('.ing-list.switch-type'), Ing.ListView.switchType),
+        regCmd(withAppName('.ing-list.open-in-browser'), Browser.Open.Cnb.ing),
         // blog export
-        regCmd(withAppName('.blog-export.refresh-record'), refreshExportRecord),
-        regCmd(withAppName('.blog-export.open-local-export'), openLocalExport),
-        regCmd(withAppName('.blog-export.edit'), editExportPost),
-        regCmd(withAppName('.blog-export.create'), createBlogExport),
-        regCmd(withAppName('.blog-export.download'), downloadBlogExport),
-        regCmd(withAppName('.blog-export.view-post'), viewPostBlogExport),
-        regCmd(withAppName('.blog-export.delete'), deleteBlogExport),
+        regCmd(withAppName('.backup.refresh-record'), refreshExportRecord),
+        regCmd(withAppName('.backup.open-local'), openLocalExport),
+        regCmd(withAppName('.backup.edit'), editExportPost),
+        regCmd(withAppName('.backup.create'), createBlogExport),
+        regCmd(withAppName('.backup.download'), downloadBlogExport),
+        regCmd(withAppName('.backup.view-post'), viewPostBlogExport),
+        regCmd(withAppName('.backup.delete'), deleteBlogExport),
     ]
 
     ctx.subscriptions.push(...tokens)

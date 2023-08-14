@@ -1,6 +1,5 @@
-import { AccountInfo } from './account-info'
 import { globalCtx } from '@/ctx/global-ctx'
-import { window, authentication, AuthenticationGetSessionOptions, Disposable, InputBoxOptions } from 'vscode'
+import { window, authentication, AuthenticationGetSessionOptions, Disposable } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
@@ -20,14 +19,18 @@ let authSession: AuthSession | null = null
 
 export namespace AccountManagerNg {
     export async function ensureSession(opt?: AuthenticationGetSessionOptions) {
-        const session = await authentication.getSession(authProvider.providerId, [], opt).then(
-            session => (session ? AuthSession.from(session) : null),
-            e => {
-                void Alert.err(`创建/获取 Session 失败: ${<string>e}`)
-            }
-        )
+        let session
+        try {
+            const result = await authentication.getSession(authProvider.providerId, [], opt)
+            if (result === undefined) session = null
+            // TODO: need better impl
+            else session = <AuthSession>result
+        } catch (e) {
+            void Alert.err(`创建/获取 Session 失败: ${<string>e}`)
+            session = null
+        }
 
-        if (session != null && session.account.accountId < 0) {
+        if (session != null && session.account.userInfo.SpaceUserID < 0) {
             authSession = null
             await authProvider.removeSession(session.id)
         } else {
@@ -46,13 +49,17 @@ export namespace AccountManagerNg {
             title: '请输入您的个人访问令牌 (PAT)',
             prompt: '可通过 https://account.cnblogs.com/tokens 获取',
             password: true,
-        } as InputBoxOptions
+        }
         const pat = await window.showInputBox(opt)
         if (pat === undefined) return
 
-        await authProvider.onAccessTokenGranted(pat)
-        await ensureSession()
-        await AccountManagerNg.updateAuthStatus()
+        try {
+            await authProvider.onAccessTokenGranted(pat)
+            await ensureSession()
+            await AccountManagerNg.updateAuthStatus()
+        } catch (e) {
+            void Alert.err(`授权失败: ${<string>e}`)
+        }
     }
 
     export async function logout() {
@@ -88,12 +95,12 @@ export namespace AccountManagerNg {
 
         await execCmd('setContext', `${globalCtx.extName}.${isAuthorizedStorageKey}`, accountManager.isAuthorized)
 
-        if (accountManager.isAuthorized) {
-            await execCmd('setContext', `${globalCtx.extName}.user`, {
-                name: accountManager.currentUser.name,
-                avatar: accountManager.currentUser.avatar,
-            })
-        }
+        if (!accountManager.isAuthorized) return
+
+        await execCmd('setContext', `${globalCtx.extName}.user`, {
+            name: accountManager.currentUser?.userInfo.DisplayName,
+            avatar: accountManager.currentUser?.userInfo.Avatar,
+        })
     }
 }
 
@@ -123,8 +130,8 @@ class AccountManager extends Disposable {
         return authSession !== null
     }
 
-    get currentUser(): AccountInfo {
-        return authSession?.account ?? AccountInfo.newAnonymous()
+    get currentUser() {
+        return authSession?.account
     }
 }
 

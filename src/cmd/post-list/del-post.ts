@@ -1,12 +1,12 @@
 import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
-import { Post } from '@/model/post'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostFileMap, PostFileMapManager } from '@/service/post/post-file-map'
 import { extTreeViews } from '@/tree-view/tree-view-register'
-import { refreshPostList } from './refresh-post-list'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
+import { Post } from '@/model/post'
+import { PostListView } from '@/cmd/post-list/post-list-view'
 
 let isDeleting = false
 
@@ -79,7 +79,7 @@ export async function delSelectedPost(arg: unknown) {
                 emitEvent: false,
                 maps: selectedPost.map<PostFileMap>(p => [p.id, '']),
             })
-            await refreshPostList().catch()
+            await PostListView.refresh()
             postCategoryDataProvider.onPostUpdated({
                 refreshPost: true,
                 postIds: selectedPost.map(({ id }) => id),

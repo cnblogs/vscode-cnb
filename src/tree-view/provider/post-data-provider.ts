@@ -1,5 +1,4 @@
 import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { refreshPostList } from '@/cmd/post-list/refresh-post-list'
 import { Post } from '@/model/post'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
@@ -9,6 +8,7 @@ import { PostSearchResultEntry } from '@/tree-view/model/post-search-result-entr
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { PostListCfg } from '@/ctx/cfg/post-list'
 import { Page } from '@/model/page'
+import { PostListView } from '@/cmd/post-list/post-list-view'
 
 export type PostListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
 
@@ -30,7 +30,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
             const items: PostListTreeItem[] = this._searchResultEntry == null ? [] : [this._searchResultEntry]
 
             if (this.page == null) {
-                void refreshPostList()
+                void PostListView.refresh()
                 return items
             }
 

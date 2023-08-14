@@ -1,5 +1,5 @@
 import { Post } from './post'
-import { WebviewCmd } from './webview-cmd'
+import { Webview } from './webview-cmd'
 import { ColorThemeKind } from 'vscode'
 import { PostTags } from './post-tag'
 import { IErrorResponse as ErrorResponse } from './error-response'
@@ -9,7 +9,7 @@ import { PostCategory } from '@/model/post-category'
 
 export namespace WebviewMsg {
     export interface Msg {
-        command: WebviewCmd.UiCmd | WebviewCmd.ExtCmd
+        command: Webview.Cmd.Ui | Webview.Cmd.Ext
     }
 
     export interface EditPostCfgMsg extends Msg {

@@ -181,13 +181,10 @@ export async function exportPostToPdf(input?: Post | PostTreeItem | Uri): Promis
     if (!(input instanceof Post) && !(input instanceof PostTreeItem) && !(input instanceof Uri)) return
 
     const chromiumPath = await retrieveChromiumPath()
-    if (!chromiumPath) return
+    if (chromiumPath === undefined) return
 
-    const {
-        currentUser: { blogApp },
-    } = accountManager
-
-    if (!blogApp) return void Alert.warn('无法获取到博客地址, 请检查登录状态')
+    const blogApp = accountManager.currentUser?.userInfo.BlogApp
+    if (blogApp === undefined) return void Alert.warn('无法获取博客地址, 请检查登录状态')
 
     reportErrors(
         await window.withProgress<string[] | undefined>(

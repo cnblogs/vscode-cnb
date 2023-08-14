@@ -13,7 +13,7 @@ class ExtUriHandler implements UriHandler {
         evEmitter.event(uri => {
             const { path } = uri
             const splits = path.split('/')
-            if (splits.length >= 3 && splits[1] === 'edit-post') {
+            if (splits.length >= 3 && splits[1] === 'post.edit') {
                 const postId = parseInt(splits[2])
                 if (postId > 0) openPostInVscode(postId).then(undefined, () => void 0)
             }

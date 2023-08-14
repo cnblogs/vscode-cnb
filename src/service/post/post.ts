@@ -1,4 +1,3 @@
-import { MyConfig, Post, PostListRespItem } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostUpdatedResp } from '@/model/post-updated-response'
@@ -11,6 +10,9 @@ import { consUrlPara } from '@/infra/http/infra/url-para'
 import { consHeader, ReqHeaderKey } from '@/infra/http/infra/header'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { Page, PageList } from '@/model/page'
+import { Post } from '@/model/post'
+import { PostListRespItem } from '@/model/post-list-resp-item'
+import { MyConfig } from '@/model/my-config'
 
 let newPostTemplate: PostEditDto | undefined
 
@@ -45,6 +47,18 @@ export namespace PostService {
         }
     }
 
+    // TODO: need better impl
+    export async function* allPostIter() {
+        const result = await PostService.fetchPostList({ pageSize: 1 })
+        const postCount = result.matchedPostCount
+        for (const i of Array(postCount).keys()) {
+            const { page } = await PostService.fetchPostList({ pageIndex: i + 1, pageSize: 1 })
+            const id = page.items[0].id
+            const dto = await PostService.fetchPostEditDto(id)
+            yield dto.post
+        }
+    }
+
     export async function fetchPostEditDto(postId: number) {
         const url = `${getBaseUrl()}/api/posts/${postId}`
 
@@ -53,7 +67,8 @@ export namespace PostService {
 
             const { blogPost, myConfig } = <{ blogPost?: Post; myConfig?: MyConfig }>JSON.parse(resp)
 
-            if (blogPost === undefined) return
+            // TODO: need better impl
+            if (blogPost === undefined) throw Error('博文不存在')
 
             return <PostEditDto>{
                 post: Object.assign(new Post(), blogPost),
@@ -61,6 +76,7 @@ export namespace PostService {
             }
         } catch (e) {
             void Alert.err(`获取博文失败: ${<string>e}`)
+            throw e
         }
     }
 
