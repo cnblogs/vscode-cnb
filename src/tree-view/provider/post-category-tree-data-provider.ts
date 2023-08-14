@@ -10,7 +10,6 @@ import { PostEntryMetadata, PostMetadata, RootPostMetadataType } from '@/tree-vi
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { Alert } from '@/infra/alert'
 import { execCmd } from '@/infra/cmd'
-import { PostCategory } from '@/model/post-category'
 
 export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {
     private _treeDataChanged = new EventEmitter<PostCategoriesListTreeItem | null | undefined>()
@@ -51,22 +50,23 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
         return toTreeItem(element)
     }
 
-    getChildren(parent?: PostCategoriesListTreeItem): ProviderResult<PostCategoriesListTreeItem[]> {
-        if (this.isRefreshing) return []
+    getChildren(item?: PostCategoriesListTreeItem): ProviderResult<PostCategoriesListTreeItem[]> {
+        if (this.isRefreshing) return Promise.resolve([])
 
-        if (parent === undefined) {
-            return []
-        } else if (parent instanceof PostCategoryTreeItem) {
-            return Promise.all([this.getCategories(parent.category.categoryId), this.getPost(parent)]).then(
-                ([childCategories, childPost]) => (parent.children = [...childCategories, ...childPost])
+        if (item === undefined) {
+            return PostCategoryService.getAll().then(list => list.map(c => new PostCategoryTreeItem(c)))
+        } else if (item instanceof PostCategoryTreeItem) {
+            const categoryId = item.category.categoryId
+            return Promise.all([this.getCategories(categoryId), this.getPost(item)]).then(
+                ([childCategories, childPost]) => (item.children = [...childCategories, ...childPost])
             )
-        } else if (parent instanceof PostTreeItem) {
-            return this.getPostMetadataChildren(parent)
-        } else if (parent instanceof PostEntryMetadata) {
-            return parent.getChildrenAsync()
+        } else if (item instanceof PostTreeItem) {
+            return this.getPostMetadataChildren(item)
+        } else if (item instanceof PostEntryMetadata) {
+            return item.getChildrenAsync()
         }
 
-        return []
+        return Promise.resolve([])
     }
 
     getParent = (el: any) => el.parent as PostCategoriesListTreeItem | null | undefined
@@ -116,21 +116,17 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
         return PostMetadata.parseRoots({ post: parent, exclude: [RootPostMetadataType.categoryEntry] })
     }
 
-    private async getCategories(parentId?: number) {
+    private async getCategories(parentId: number) {
         await this.setIsRefreshing(true)
-        let categories: PostCategory[] = []
         try {
-            categories = await PostCategoryService.listCategories({
-                forceRefresh: true,
-                parentId,
-            })
-        } catch (e) {
-            void Alert.err(`获取博文分类失败: ${(<Error>e).message}`)
-        } finally {
+            const categories = await PostCategoryService.getAllUnder(parentId)
             await this.setIsRefreshing(false)
+            return categories.map(x => new PostCategoryTreeItem(x))
+        } catch (e) {
+            void Alert.err(`获取博文分类失败: ${<string>e}`)
+            await this.setIsRefreshing(false)
+            throw e
         }
-
-        return categories.map(x => new PostCategoryTreeItem(x))
     }
 }
 

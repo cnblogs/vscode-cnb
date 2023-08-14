@@ -19,7 +19,7 @@ export const newPostCategory = async () => {
         p.report({
             increment: 30,
         })
-        await PostCategoryService.newCategory(input)
+        await PostCategoryService.create(input)
         p.report({
             increment: 70,
         })

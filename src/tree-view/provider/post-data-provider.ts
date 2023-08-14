@@ -65,7 +65,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
 
             return result
         } catch (e) {
-            void Alert.err(`加载博文失败\n${JSON.stringify(e)}`)
+            void Alert.err(`加载博文失败: ${<string>e}`)
             throw e
         }
     }

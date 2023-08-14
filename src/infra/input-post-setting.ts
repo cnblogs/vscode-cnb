@@ -107,8 +107,8 @@ export const inputPostSetting = (
         let categories: PostCategory[] = []
         try {
             categories = await PostCategoryService.getAll()
-        } catch (err) {
-            void Alert.err(err instanceof Error ? err.message : JSON.stringify(err))
+        } catch (e) {
+            void Alert.err(<string>e)
             // 取消
             throw InputFlowAction.cancel
         }

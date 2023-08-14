@@ -13,7 +13,7 @@ impl PostCategoryReq {
     #[wasm_bindgen(js_name = getAll)]
     pub async fn export_get_all(&self) -> HomoResult<String> {
         panic_hook!();
-        let url = blog_backend!("/api/v2/blog-category-types/1/categories");
+        let url = blog_backend!("/v2/blog-category-types/1/categories");
 
         let client = reqwest::Client::new().get(url);
 

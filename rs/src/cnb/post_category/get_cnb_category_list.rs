@@ -10,8 +10,8 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_class = PostCategoryReq)]
 impl PostCategoryReq {
-    #[wasm_bindgen(js_name = getSiteCategoryList)]
-    pub async fn export_get_site_category_list(&self) -> HomoResult<String> {
+    #[wasm_bindgen(js_name = getSitePresetList)]
+    pub async fn export_get_site_preset_list(&self) -> HomoResult<String> {
         panic_hook!();
         let url = blog_backend!("/category/site");
 

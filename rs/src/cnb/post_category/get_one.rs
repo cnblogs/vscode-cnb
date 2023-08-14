@@ -14,7 +14,7 @@ impl PostCategoryReq {
     pub async fn export_get_one(&self, category_id: usize) -> HomoResult<String> {
         panic_hook!();
         let query = format!("parent={}", category_id);
-        let url = blog_backend!("/api/v2/blog-category-types/1/categories?{}", query);
+        let url = blog_backend!("/v2/blog-category-types/1/categories?{}", query);
 
         let client = reqwest::Client::new().get(url);
 

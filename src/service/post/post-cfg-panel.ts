@@ -61,7 +61,7 @@ export namespace PostCfgPanel {
                     post: cloneDeep(post),
                     activeTheme: vscode.window.activeColorTheme.kind,
                     personalCategories: cloneDeep(await PostCategoryService.getAll()),
-                    siteCategories: cloneDeep(await PostCategoryService.getSiteCategoryList()),
+                    siteCategories: cloneDeep(await PostCategoryService.getSitePresetList()),
                     tags: cloneDeep(await PostTagService.fetchTags()),
                     breadcrumbs,
                     fileName: localFileUri
@@ -207,9 +207,7 @@ export namespace PostCfgPanel {
                         await webview.postMessage({
                             command: Webview.Cmd.Ui.updateChildCategories,
                             payload: {
-                                value: await PostCategoryService.listCategories({ parentId: payload.parentId }).catch(
-                                    () => []
-                                ),
+                                value: await PostCategoryService.getAllUnder(payload.parentId).catch(() => []),
                                 parentId: payload.parentId,
                             },
                         } as WebviewCommonCmd<Webview.Cmd.UpdateChildCategoriesPayload>)

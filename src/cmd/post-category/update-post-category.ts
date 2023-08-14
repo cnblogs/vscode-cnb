@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { MessageOptions, ProgressLocation, window, Uri, workspace } from 'vscode'
+import { ProgressLocation, window, Uri, workspace } from 'vscode'
 import { PostCategory } from '@/model/post-category'
 import { PostCategoryService } from '@/service/post/post-category'
 import { inputPostCategory } from './input-post-category'
@@ -7,6 +7,7 @@ import { refreshPostCategoryList } from './refresh-post-category-list'
 import { BasePostCategoryTreeViewCmdHandler } from './base-tree-view-cmd-handler'
 import { PostCategoryCfg } from '@/ctx/cfg/post-category'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
+import { Alert } from '@/infra/alert'
 
 class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHandler {
     async handle(): Promise<void> {
@@ -30,7 +31,7 @@ class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHa
             async p => {
                 p.report({ increment: 10 })
                 try {
-                    await PostCategoryService.updateCategory(updateDto)
+                    await PostCategoryService.update(updateDto)
                     refreshPostCategoryList()
                     // 如果选择了createLocalPostFileWithCategory模式且本地有该目录,则重命名该目录
                     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
@@ -42,22 +43,13 @@ class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHa
                         const newUri = Uri.joinPath(workspaceUri, addDto.title)
                         await workspace.fs.rename(oldUri, newUri)
                     }
-                } catch (err) {
-                    this.notifyFailed(err)
-                } finally {
+                    p.report({ increment: 100 })
+                } catch (e) {
+                    void Alert.err(`更新博文失败: ${<string>e}`)
                     p.report({ increment: 100 })
                 }
             }
         )
-    }
-
-    private notifyFailed(err: unknown) {
-        void window
-            .showErrorMessage('更新博文分类失败', {
-                detail: `服务器返回了错误, ${err instanceof Error ? err.message : JSON.stringify(err)}`,
-                modal: true,
-            } as MessageOptions)
-            .then(undefined, undefined)
     }
 }
 
