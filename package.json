@@ -29,7 +29,7 @@
         "compile-tests": "tsc -p ./tsconfig.integration.json --outDir out",
         "test:integration:watch": "npm run compile-tests -- --watch",
         "test:integration": "npm run compile-tests && node ./out/test/runTest.js",
-        "test:unit": "jest -c ./test/jest.config.mjs",
+        "test:unit": "jest -c ./test/jest.config.mjs --passWithNoTests",
         "lint": "eslint src/ ui/",
         "format": "prettier --write .",
         "format-check": "prettier --check .",
