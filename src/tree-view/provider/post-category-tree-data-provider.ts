@@ -84,14 +84,14 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
         const postTreeItems = this.flattenPostItems.filter(x => postIds.includes(x.post.id))
         const categories = new Set<PostCategoryTreeItem>()
         postTreeItems.forEach(treeItem => {
-            if (treeItem.parent) {
-                if (refreshPost) treeItem.parent.children = undefined
-                else this.fireTreeDataChangedEvent(treeItem)
+            if (treeItem.parent === undefined) return
 
-                if (!categories.has(treeItem.parent)) {
-                    categories.add(treeItem.parent)
-                    this.fireTreeDataChangedEvent(treeItem.parent)
-                }
+            if (refreshPost) treeItem.parent.children = []
+            else this.fireTreeDataChangedEvent(treeItem)
+
+            if (!categories.has(treeItem.parent)) {
+                categories.add(treeItem.parent)
+                this.fireTreeDataChangedEvent(treeItem.parent)
             }
         })
     }

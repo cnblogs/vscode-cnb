@@ -17,7 +17,7 @@ async function getComment(id: number) {
     return list.map(IngComment.parse)
 }
 
-export namespace IngApi {
+export namespace IngService {
     export async function pub(content: string, isPrivate: boolean) {
         try {
             const req = await getAuthedIngReq()

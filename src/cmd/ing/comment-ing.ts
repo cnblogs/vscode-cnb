@@ -1,5 +1,5 @@
 import { CmdHandler } from '@/cmd/cmd-handler'
-import { IngApi } from '@/service/ing/ing-api'
+import { IngService } from '@/service/ing/ing'
 import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provider'
 import { ProgressLocation, window } from 'vscode'
 
@@ -30,7 +30,7 @@ export class CommentIngCmdHandler implements CmdHandler {
         if (this._content) {
             return window.withProgress({ location: ProgressLocation.Notification, title: '正在请求...' }, async p => {
                 p.report({ increment: 30 })
-                const isSuccess = await IngApi.comment(
+                const isSuccess = await IngService.comment(
                     this._ingId,
                     atContent + this._content,
                     atUserId,

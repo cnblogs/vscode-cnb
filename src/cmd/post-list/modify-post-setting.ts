@@ -47,8 +47,7 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
         beforeUpdate: async post => {
             if (localFilePath && fs.existsSync(localFilePath)) {
                 await saveFilePendingChanges(localFilePath)
-                const content = await new LocalDraft(localFilePath).readAllText()
-                post.postBody = content
+                post.postBody = await new LocalDraft(localFilePath).readAllText()
             }
             return true
         },

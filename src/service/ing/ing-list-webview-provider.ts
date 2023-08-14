@@ -10,7 +10,7 @@ import {
 } from 'vscode'
 import { parseWebviewHtml } from '@/service/parse-webview-html'
 import { IngWebviewHostCmd, IngWebviewUiCmd, Webview } from '@/model/webview-cmd'
-import { IngApi } from '@/service/ing/ing-api'
+import { IngService } from '@/service/ing/ing'
 import { IngAppState } from '@/model/ing-view'
 import { IngType, IngTypesMetadata } from '@/model/ing'
 import { isNumber } from 'lodash-es'
@@ -84,7 +84,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                     command: Webview.Cmd.Ing.Ui.setAppState,
                 } as IngWebviewUiCmd<Partial<IngAppState>>)
                 .then(undefined, () => undefined)
-            const rawIngList = await IngApi.getList({
+            const rawIngList = await IngService.getList({
                 type: ingType,
                 pageIndex,
                 pageSize: 30,
@@ -94,7 +94,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                 if (UiCfg.isEnableTextIngStar()) ing.icons = ingStarToText(ing.icons)
                 return ing
             })
-            const comments = await IngApi.getCommentList(...ingList.map(x => x.id))
+            const comments = await IngService.getCommentList(...ingList.map(x => x.id))
             await this._view.webview
                 .postMessage({
                     command: Webview.Cmd.Ing.Ui.setAppState,
@@ -117,7 +117,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
 
     async updateComments(ingIds: number[]) {
         if (!this._view || !this._view.visible) return
-        const comments = await IngApi.getCommentList(...ingIds)
+        const comments = await IngService.getCommentList(...ingIds)
         await this._view.webview.postMessage({
             command: Webview.Cmd.Ing.Ui.setAppState,
             payload: {
