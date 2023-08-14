@@ -13,6 +13,9 @@ import { LocalState } from '@/ctx/local-state'
 export function activate(ctx: ExtensionContext) {
     globalCtx.extCtx = ctx
 
+    // WRN: For old version compatibility, NEVER remove this line
+    void LocalState.delSecret('user')
+
     setupExtCmd()
     setupExtTreeView()
 

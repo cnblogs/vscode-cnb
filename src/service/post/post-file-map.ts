@@ -1,6 +1,6 @@
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
-import { globalCtx } from '@/ctx/global-ctx'
+import { LocalState } from '@/ctx/local-state'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && !!map[1]
 
@@ -9,7 +9,7 @@ export type PostFileMap = [postId: number, filePath: string]
 const storageKey = 'postFileMaps'
 
 function getMaps(): PostFileMap[] {
-    return globalCtx.storage.get<PostFileMap[]>(storageKey) ?? []
+    return <PostFileMap[]>LocalState.getState(storageKey) ?? []
 }
 
 export namespace PostFileMapManager {
@@ -44,7 +44,7 @@ export namespace PostFileMapManager {
         if (exist) exist[1] = filePath
         else maps.push([postId, filePath])
 
-        await globalCtx.storage.update(storageKey, maps.filter(validatePostFileMap))
+        await LocalState.setState(storageKey, maps.filter(validatePostFileMap))
         if (emitEvent) {
             postDataProvider.fireTreeDataChangedEvent(postId)
             postCategoryDataProvider.onPostUpdated({ refreshPost: false, postIds: [postId] })

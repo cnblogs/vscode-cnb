@@ -16,11 +16,10 @@ import { globalCtx } from '@/ctx/global-ctx'
 import { Oauth } from '@/auth/oauth'
 import { extUriHandler } from '@/infra/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
-import { TokenInfo } from '@/model/token-info'
-import { Optional } from 'utility-types'
 import { consUrlPara } from '@/infra/http/infra/url-para'
 import { RsRand } from '@/wasm'
 import { Alert } from '@/infra/alert'
+import { LocalState } from '@/ctx/local-state'
 
 async function browserSignIn(challengeCode: string, scopes: string[]) {
     const { clientId, responseType, authRoute, authority, clientSecret } = globalCtx.config.oauth
@@ -33,7 +32,7 @@ async function browserSignIn(challengeCode: string, scopes: string[]) {
         ['code_challenge', challengeCode],
         ['code_challenge_method', 'S256'],
         ['scope', scopes.join(' ')],
-        ['redirect_uri', globalCtx.extensionUrl]
+        ['redirect_uri', globalCtx.extUrl]
     )
 
     const uri = Uri.parse(`${authority}${authRoute}?${para}`)
@@ -154,7 +153,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             },
             { remove: <AuthSession[]>[], keep: <AuthSession[]>[] }
         )
-        await globalCtx.extCtx.secrets.store(this.sessionStorageKey, JSON.stringify(data.keep))
+        await LocalState.setSecret(this.sessionStorageKey, JSON.stringify(data.keep))
         this._sessionChangeEmitter.fire({ removed: data.remove, added: undefined, changed: undefined })
     }
 
@@ -181,7 +180,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             accessToken,
             this.ensureScopes(null)
         )
-        await globalCtx.secretsStorage.store(this.sessionStorageKey, JSON.stringify([session]))
+        await LocalState.setSecret(this.sessionStorageKey, JSON.stringify([session]))
 
         if (!shouldFireSessionAddedEvent) return session
 
@@ -199,14 +198,8 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     }
 
     protected async getAllSessions(): Promise<AuthSession[]> {
-        const legacyToken = LegacyTokenStore.getAccessToken()
-        if (legacyToken !== undefined) {
-            await this.onAccessTokenGranted(legacyToken, { shouldFireSessionAddedEvent: false })
-            void LegacyTokenStore.remove()
-        }
-
         if (this._allSessions == null || this._allSessions.length <= 0) {
-            const storage = await globalCtx.secretsStorage.get(this.sessionStorageKey)
+            const storage = await LocalState.getSecret(this.sessionStorageKey)
             const sessions = JSON.parse(storage ?? '[]') as AuthSession[] | null | undefined
 
             if (Array.isArray(sessions)) this._allSessions = sessions
@@ -225,10 +218,3 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 }
 
 export const authProvider = new AuthProvider()
-
-class LegacyTokenStore {
-    static getAccessToken = () =>
-        globalCtx.storage.get<Optional<{ authorizationInfo?: TokenInfo }>>('user')?.authorizationInfo?.accessToken
-
-    static remove = () => globalCtx.storage.update('user', undefined).then(undefined, console.error)
-}

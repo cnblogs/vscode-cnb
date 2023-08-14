@@ -13,7 +13,7 @@ function getAuthedOauthReq() {
 export namespace Oauth {
     export async function getToken(verifyCode: string, authCode: string) {
         const req = getAuthedOauthReq()
-        const callback_url = globalCtx.extensionUrl
+        const callback_url = globalCtx.extUrl
         try {
             const resp = await req.getToken(authCode, verifyCode, callback_url)
             return TokenInfo.fromResp(resp)

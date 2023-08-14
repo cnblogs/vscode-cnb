@@ -15,6 +15,7 @@ import { PostListRespItem } from '@/model/post-list-resp-item'
 import { MyConfig } from '@/model/my-config'
 import { AuthManager } from '@/auth/auth-manager'
 import { PostReq } from '@/wasm'
+import { LocalState } from '@/ctx/local-state'
 
 let newPostTemplate: PostEditDto | undefined
 
@@ -28,7 +29,7 @@ async function getAuthedPostReq() {
 }
 
 export namespace PostService {
-    export const getPostListState = () => globalCtx.storage.get<PostListState>('postListState')
+    export const getPostListState = () => <PostListState>LocalState.getState('postListState')
 
     export async function fetchPostList({ search = '', pageIndex = 1, pageSize = 30, categoryId = <'' | number>'' }) {
         const para = consUrlPara(
@@ -124,7 +125,7 @@ export namespace PostService {
             hasPrev,
             hasNext,
         } as PostListState
-        await globalCtx.storage.update('postListState', finalState)
+        await LocalState.setState('postListState', finalState)
     }
 
     export async function fetchPostEditTemplate() {

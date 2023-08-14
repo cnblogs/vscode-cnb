@@ -82,10 +82,6 @@ export namespace AuthManager {
         if (!AuthManager.isAuthed()) return
 
         const session = await authentication.getSession(authProvider.providerId, [])
-
-        // WRN: For old version compatibility, **never** remove this line
-        await globalCtx.storage.update('user', undefined)
-
         if (session === undefined) return
 
         try {

@@ -7,14 +7,6 @@ export class GlobalCtx {
     private readonly _config: ExtConst = defaultConfig
     private readonly _devConfig: ExtConst = devConfig
 
-    get secretsStorage() {
-        return this.extCtx.secrets
-    }
-
-    get storage() {
-        return this.extCtx.globalState
-    }
-
     get config(): ExtConst {
         return isDevEnv() ? this._devConfig : this._config
     }
@@ -46,7 +38,7 @@ export class GlobalCtx {
         return Uri.file(path.join(globalCtx.extCtx.extensionPath, 'dist', 'assets'))
     }
 
-    get extensionUrl() {
+    get extUrl() {
         return `${env.uriScheme}://${this.publisher}.${this.extName}`
     }
 }
