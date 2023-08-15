@@ -63,7 +63,7 @@ export namespace AuthManager {
     export async function patLogin() {
         const opt = {
             title: '请输入您的个人访问令牌 (PAT)',
-            prompt: '您可以从账户设置中获取个人访问令牌:\nhttps://account.cnblogs.com/settings/account/personal-access-token',
+            prompt: '可通过 https://account.cnblos.com/tokens 获取',
             password: true,
         }
         const pat = await window.showInputBox(opt)
