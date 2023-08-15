@@ -1295,7 +1295,7 @@
         "viewsWelcome": [
             {
                 "view": "cnblogs-authorize",
-                "contents": "欢迎使用博客园 VSCode 客户端, 请先登录授权!"
+                "contents": "欢迎使用博客园客户端, 请先登录"
             },
             {
                 "view": "cnblogs-authorize",
