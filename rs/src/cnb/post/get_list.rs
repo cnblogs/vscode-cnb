@@ -13,7 +13,7 @@ impl PostReq {
     #[wasm_bindgen(js_name = getList)]
     pub async fn export_get_list(&self, page_index: usize, page_cap: usize) -> HomoResult<String> {
         panic_hook!();
-        let query = vec![('p', page_index), ('s', page_cap)];
+        let query = vec![('t', 1), ('p', page_index), ('s', page_cap)];
         let query = cons_query_string(query);
         let url = blog_backend!("/posts/list?{}", query);
 
