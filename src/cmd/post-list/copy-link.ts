@@ -53,7 +53,7 @@ export class CopyPostLinkCmdHandler implements TreeViewCmdHandler<Thenable<Post 
             const postId = PostFileMapManager.findByFilePath(input.fsPath)?.[0]
             return postId == null || postId <= 0
                 ? Promise.resolve(undefined).then(() => void Alert.fileNotLinkedToPost(input))
-                : PostService.fetchPostEditDto(postId).then(v => v?.post)
+                : PostService.getPostEditDto(postId).then(v => v?.post)
         }
 
         return Promise.resolve(undefined)

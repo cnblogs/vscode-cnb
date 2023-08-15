@@ -62,6 +62,8 @@ function updatePostListViewTitle() {
 }
 
 export namespace PostListView {
+    import calcPageCount = PageList.calcPageCount
+
     export async function refresh({ queue = false } = {}): Promise<boolean> {
         if (isRefreshing && !queue) {
             await refreshTask
@@ -73,16 +75,15 @@ export namespace PostListView {
 
         const fut = async () => {
             await setRefreshing(true)
-            const data = await postDataProvider.loadPost()
-            const pageIndex = data.page.index
-            const pageCount = data.pageCount
-            const pageCap = data.page.cap
-            const pageItemsCount = data.page.items.length
+            const page = await postDataProvider.loadPost()
+            const postCount = await PostService.getPostCount()
+            const pageCount = calcPageCount(page.cap, postCount)
+            const pageIndex = page.index
             const hasPrev = PageList.hasPrev(pageIndex)
             const hasNext = PageList.hasNext(pageIndex, pageCount)
 
             await setPostListContext(pageCount, hasPrev, hasNext)
-            await PostService.updatePostListState(pageIndex, pageCap, pageItemsCount, pageCount)
+            await PostService.updatePostListState(pageIndex, page.cap, page.items.length, pageCount)
             updatePostListViewTitle()
             await postDataProvider.refreshSearch()
             await setRefreshing(false)

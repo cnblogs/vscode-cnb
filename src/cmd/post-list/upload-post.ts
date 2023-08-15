@@ -93,7 +93,7 @@ export async function uploadPost(input: Post | PostTreeItem | PostEditDto | unde
     let post: Post | undefined
 
     if (input instanceof Post) {
-        const dto = await PostService.fetchPostEditDto(input.id)
+        const dto = await PostService.getPostEditDto(input.id)
         post = dto?.post
     } else {
         post = input.post
@@ -170,7 +170,7 @@ export async function uploadPostFile(fileUri: Uri | undefined) {
     const postId = PostFileMapManager.getPostId(filePath)
 
     if (postId !== undefined && postId >= 0) {
-        const dto = await PostService.fetchPostEditDto(postId)
+        const dto = await PostService.getPostEditDto(postId)
         if (dto !== undefined) await uploadPost(dto)
         return
     }
@@ -195,7 +195,7 @@ export async function uploadPostFile(fileUri: Uri | undefined) {
         if (selectedPost === undefined) return
 
         await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
-        const postEditDto = await PostService.fetchPostEditDto(selectedPost.id)
+        const postEditDto = await PostService.getPostEditDto(selectedPost.id)
         if (postEditDto === undefined) return
         if (!fileContent) await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
 
@@ -212,7 +212,7 @@ export async function uploadPostNoConfirm(input: Post | PostTreeItem | PostEditD
     let post: Post | undefined
 
     if (input instanceof Post) {
-        const dto = await PostService.fetchPostEditDto(input.id)
+        const dto = await PostService.getPostEditDto(input.id)
         post = dto?.post
     } else {
         post = input.post
@@ -276,7 +276,7 @@ export async function uploadPostFileNoConfirm(fileUri: Uri | undefined) {
     const postId = PostFileMapManager.getPostId(filePath)
 
     if (postId !== undefined && postId >= 0) {
-        const dto = await PostService.fetchPostEditDto(postId)
+        const dto = await PostService.getPostEditDto(postId)
         if (dto !== undefined) await uploadPostNoConfirm(dto)
         return
     }
@@ -301,7 +301,7 @@ export async function uploadPostFileNoConfirm(fileUri: Uri | undefined) {
         if (selectedPost === undefined) return
 
         await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
-        const postEditDto = await PostService.fetchPostEditDto(selectedPost.id)
+        const postEditDto = await PostService.getPostEditDto(selectedPost.id)
         if (postEditDto === undefined) return
         if (!fileContent) await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
 

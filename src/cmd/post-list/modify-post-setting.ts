@@ -20,7 +20,8 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
     if (input instanceof Post) {
         post = input
         postId = input.id
-    } else if (input instanceof Uri) {
+    } else {
+        //type of input is Uri
         postId = PostFileMapManager.getPostId(input.fsPath) ?? -1
         if (postId < 0) return Alert.fileNotLinkedToPost(input)
     }
@@ -29,7 +30,7 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
 
     if (post) await revealPostListItem(post)
 
-    const editDto = await PostService.fetchPostEditDto(postId)
+    const editDto = await PostService.getPostEditDto(postId)
     if (!editDto) return
 
     const postEditDto = editDto.post

@@ -54,27 +54,45 @@ export namespace PostService {
         }
     }
 
+    export async function getPostList(pageIndex: number, pageCap: number) {
+        const req = await getAuthedPostReq()
+        try {
+            const resp = await req.getList(pageIndex, pageCap)
+            return <PostListRespItem[]>JSON.parse(resp)
+        } catch (e) {
+            void Alert.err(`获取随笔列表失败: ${<string>e}`)
+            return []
+        }
+    }
+
+    export async function getPostCount() {
+        const req = await getAuthedPostReq()
+        try {
+            return await req.getCount()
+        } catch (e) {
+            void Alert.err(`获取随笔列表失败: ${<string>e}`)
+            return 0
+        }
+    }
+
     // TODO: need better impl
     export async function* allPostIter() {
-        const result = await PostService.fetchPostList({ pageSize: 1 })
-        const postCount = result.matchedPostCount
+        const postCount = await getPostCount()
         for (const i of Array(postCount).keys()) {
-            const { page } = await PostService.fetchPostList({ pageIndex: i + 1, pageSize: 1 })
-            const id = page.items[0].id
-            const dto = await PostService.fetchPostEditDto(id)
+            const list = await PostService.getPostList(i + 1, 1)
+            const id = list[0].id
+            const dto = await PostService.getPostEditDto(id)
             yield dto.post
         }
     }
 
-    export async function fetchPostEditDto(postId: number) {
-        const url = `${AppConst.ApiBase.BLOG_BACKEND}/posts/${postId}`
-
+    export async function getPostEditDto(postId: number) {
+        const req = await getAuthedPostReq()
         try {
-            const resp = await AuthedReq.get(url, consHeader())
-
-            const { blogPost, myConfig } = <{ blogPost?: Post; myConfig?: MyConfig }>JSON.parse(resp)
+            const resp = await req.getOne(postId)
 
             // TODO: need better impl
+            const { blogPost, myConfig } = <{ blogPost?: Post; myConfig?: MyConfig }>JSON.parse(resp)
             if (blogPost === undefined) throw Error('博文不存在')
 
             return <PostEditDto>{
@@ -127,7 +145,7 @@ export namespace PostService {
     }
 
     export async function fetchPostEditTemplate() {
-        newPostTemplate ??= await fetchPostEditDto(-1)
+        newPostTemplate ??= await getPostEditDto(-1)
         if (newPostTemplate === undefined) return undefined
 
         return <PostEditDto>{

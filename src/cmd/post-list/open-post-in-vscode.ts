@@ -52,7 +52,7 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
         mappedPostFilePath = undefined
     }
 
-    const { post } = await PostService.fetchPostEditDto(postId)
+    const { post } = await PostService.getPostEditDto(postId)
 
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
     await mkDirIfNotExist(workspaceUri)

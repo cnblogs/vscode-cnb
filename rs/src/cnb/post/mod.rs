@@ -1,5 +1,8 @@
 mod del_one;
 mod del_some;
+mod get_count;
+mod get_list;
+mod get_one;
 mod update;
 
 use crate::panic_hook;

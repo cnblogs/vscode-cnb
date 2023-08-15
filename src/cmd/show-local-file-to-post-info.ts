@@ -49,7 +49,7 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
 
     if (!filePath || !postId || !(postId >= 0)) return
 
-    const post = (await PostService.fetchPostEditDto(postId))?.post
+    const post = (await PostService.getPostEditDto(postId))?.post
     if (!post) return
 
     let categories = await PostCategoryService.getAll()

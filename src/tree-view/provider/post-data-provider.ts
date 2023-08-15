@@ -53,17 +53,21 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
     }
 
     async loadPost() {
-        const { pageIndex } = PostService.getPostListState() ?? {}
-        const pageSize = PostListCfg.getPostListPageSize()
+        const { pageIndex } = PostService.getPostListState()
+        const pageCap = PostListCfg.getPostListPageSize()
 
         try {
-            const result = await PostService.fetchPostList({ pageIndex, pageSize })
-            // TODO: need better design
-            this.page = result.page
+            const result = await PostService.getPostList(pageIndex, pageCap)
+            this.page = {
+                index: pageIndex,
+                cap: pageCap,
+                // TODO: need better design
+                items: result.map(it => Object.assign(new Post(), it)),
+            }
 
             this.fireTreeDataChangedEvent(undefined)
 
-            return result
+            return this.page
         } catch (e) {
             void Alert.err(`加载博文失败: ${<string>e}`)
             throw e

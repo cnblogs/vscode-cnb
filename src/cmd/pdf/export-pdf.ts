@@ -146,7 +146,7 @@ async function handleUriInput(uri: Uri) {
     const postList: Post[] = []
     const { fsPath } = uri
     const postId = PostFileMapManager.getPostId(fsPath)
-    const { post: inputPost } = (await PostService.fetchPostEditDto(postId && postId > 0 ? postId : -1)) ?? {}
+    const { post: inputPost } = (await PostService.getPostEditDto(postId && postId > 0 ? postId : -1)) ?? {}
 
     if (!inputPost) {
         return []
@@ -164,7 +164,7 @@ async function handleUriInput(uri: Uri) {
 }
 
 const mapToPostEditDto = async (postList: Post[]) =>
-    (await Promise.all(postList.map(p => PostService.fetchPostEditDto(p.id))))
+    (await Promise.all(postList.map(p => PostService.getPostEditDto(p.id))))
         .filter((x): x is PostEditDto => x != null)
         .map(x => x?.post)
 
