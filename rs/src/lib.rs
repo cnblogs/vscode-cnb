@@ -8,3 +8,4 @@ pub mod http;
 pub mod infra;
 pub mod rand;
 pub mod regex;
+pub mod text;

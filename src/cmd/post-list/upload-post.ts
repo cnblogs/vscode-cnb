@@ -12,10 +12,10 @@ import * as path from 'path'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostCfgPanel } from '@/service/post/post-cfg-panel'
 import { saveFilePendingChanges } from '@/infra/save-file-pending-changes'
-import { extractImg } from '@/cmd/extract-img'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { PostListView } from '@/cmd/post-list/post-list-view'
+import { extractImg } from '@/cmd/extract-img/extract-img'
 
 async function parseFileUri(fileUri: Uri | undefined) {
     if (fileUri !== undefined && fileUri.scheme !== 'file') return undefined

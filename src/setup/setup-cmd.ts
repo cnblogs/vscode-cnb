@@ -8,7 +8,6 @@ import { refreshPostCategoryList } from '@/cmd/post-category/refresh-post-catego
 import { handleUpdatePostCategory } from '@/cmd/post-category/update-post-category'
 import { openPostInBlogAdmin } from '@/cmd/open/open-post-in-blog-admin'
 import { viewPostOnline } from '@/cmd/view-post-online'
-import { extractImg } from '@/cmd/extract-img'
 import { handleDeletePostCategories } from '@/cmd/post-category/del-selected-category'
 import { regCmd } from '@/infra/cmd'
 import { exportPostToPdf } from '@/cmd/pdf/export-pdf'
@@ -38,6 +37,7 @@ import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
 import { delSelectedPost } from '@/cmd/post-list/del-post'
 import { pubIngWithInput } from '@/cmd/ing/pub-ing-with-input'
 import { pubIngWithSelect } from '@/cmd/ing/pub-ing-with-select'
+import { extractImg } from '@/cmd/extract-img/extract-img'
 
 function withPrefix(prefix: string) {
     return (rest: string) => `${prefix}${rest}`

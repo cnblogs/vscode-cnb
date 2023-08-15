@@ -1,4 +1,4 @@
-import { ImgInfo, ImgSrc } from '@/markdown/mkd-img-extractor'
+import { ImgInfo, ImgSrc } from '@/cmd/extract-img/convert-img-info'
 import { r } from '@/infra/convert/string-literal'
 import { RsMatch, RsRegex } from '@/wasm'
 
@@ -20,16 +20,17 @@ const cnbDomain = r`\.cnblogs\.com\/`
 export function findImgLink(text: string): ImgInfo[] {
     const imgTagUrlImgMgs = RsRegex.matches(imgTagUrlImgPat, text) as RsMatch[]
     const mkdUrlImgMgs = RsRegex.matches(mkdUrlImgPat, text) as RsMatch[]
-    const urlImgInfo = imgTagUrlImgMgs.concat(mkdUrlImgMgs).map<ImgInfo>(mg => {
+    const urlImgInfo = imgTagUrlImgMgs.concat(mkdUrlImgMgs).map(mg => {
         const data = mg.groups[2]
         const prefix = mg.groups[1]
+        const byteOffset = mg.byte_offset + Buffer.from(prefix).length
 
         let src
         if (/https?:\/\//.test(data)) src = ImgSrc.web
         else src = ImgSrc.fs
 
-        return {
-            offset: mg.offset + prefix.length,
+        return <ImgInfo>{
+            byteOffset,
             data,
             src,
         }
@@ -37,12 +38,13 @@ export function findImgLink(text: string): ImgInfo[] {
 
     const imgTagDataUrlImgMgs = RsRegex.matches(imgTagDataUrlImgPat, text) as RsMatch[]
     const mkdDataUrlImgMgs = RsRegex.matches(mkdDataUrlImgPat, text) as RsMatch[]
-    const dataUrlImgInfo = imgTagDataUrlImgMgs.concat(mkdDataUrlImgMgs).map<ImgInfo>(mg => {
+    const dataUrlImgInfo = imgTagDataUrlImgMgs.concat(mkdDataUrlImgMgs).map(mg => {
         const data = mg.groups[2]
         const prefix = mg.groups[1]
+        const byteOffset = mg.byte_offset + Buffer.from(prefix).length
 
-        return {
-            offset: mg.offset + prefix.length,
+        return <ImgInfo>{
+            byteOffset,
             data,
             src: ImgSrc.dataUrl,
         }
