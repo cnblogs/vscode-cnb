@@ -49,10 +49,10 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
 
     if (!filePath || !postId || !(postId >= 0)) return
 
-    const post = (await PostService.fetchPostEditDto(postId))?.post
+    const post = (await PostService.getPostEditDto(postId))?.post
     if (!post) return
 
-    let categories = await PostCategoryService.listCategories()
+    let categories = await PostCategoryService.getAll()
     categories = categories.filter(x => post.categoryIds?.includes(x.categoryId))
     const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : ''
     const tagsDesc = post.tags?.length ?? 0 > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : ''

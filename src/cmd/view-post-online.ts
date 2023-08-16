@@ -11,10 +11,10 @@ export async function viewPostOnline(input?: Post | PostTreeItem | Uri) {
 
     if (input instanceof Uri) {
         const postId = PostFileMapManager.getPostId(input.fsPath)
-        if (postId !== undefined) post = (await PostService.fetchPostEditDto(postId))?.post
+        if (postId !== undefined) post = (await PostService.getPostEditDto(postId))?.post
     }
 
-    if (!post) return
+    if (post === undefined) return
 
     await execCmd('vscode.open', Uri.parse(post.url))
 }

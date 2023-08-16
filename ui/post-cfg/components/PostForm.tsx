@@ -21,7 +21,7 @@ import PostTitleInput from 'post-cfg/components/PostTitleInput'
 import NestCategorySelect from './NestCategorySelect'
 import { Post } from '@/model/post'
 
-export interface IPostFormProps {
+export type IPostFormProps = {
     post?: Post
     fileName?: string
     useNestCategoriesSelect: boolean
@@ -71,6 +71,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                             )}
                         </Stack>
                     </Stack>
+                    <TagsInput selectedTagNames={this.state.tags} onChange={tags => this.setState({ tags })} />
                     <TagsInput selectedTagNames={this.state.tags} onChange={tags => this.setState({ tags })} />
                     <AccessPermissionSelector
                         accessPermission={this.state.accessPermission}

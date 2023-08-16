@@ -7,7 +7,7 @@ import { PostFormContext } from './PostFormContext'
 
 export interface IErrorResponseProps extends Record<string, never> {}
 
-export interface IErrorResponseState {
+export type IErrorResponseState = {
     errors: string[]
 }
 
@@ -22,7 +22,9 @@ export class ErrorResponse extends React.Component<IErrorResponseProps, IErrorRe
 
         this.state = { errors: [] }
         window.addEventListener('message', msg => {
-            const { command, errorResponse } = (msg.data ?? {}) as any as Optional<WebviewMsg.ShowErrRespMsg, 'command'>
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const data = msg.data ?? {}
+            const { command, errorResponse } = data as Optional<WebviewMsg.ShowErrRespMsg, 'command'>
             if (command === Webview.Cmd.Ui.showErrorResponse) {
                 this.setState({ errors: errorResponse.errors ?? [] }, () => this.reveal())
                 this.context.set({ disabled: false, status: '' })
@@ -35,7 +37,7 @@ export class ErrorResponse extends React.Component<IErrorResponseProps, IErrorRe
     }
 
     render() {
-        const { errors } = this.state
+        const errors = this.state.errors
         if (errors.length <= 0) return <></>
 
         this.elementId = `errorResponse ${Date.now()}`

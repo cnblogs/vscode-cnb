@@ -2,12 +2,12 @@ import * as React from 'react'
 import { PostFormContext, IPostFormContext, defaultPostFormContext } from './PostFormContext'
 import { ReactNode } from 'react'
 
-export interface IPostFormContextProviderProps {
+export type IPostFormContextProviderProps = {
     value?: Partial<IPostFormContext>
     children: ReactNode
 }
 
-export interface IPostFormContextProviderState {
+export type IPostFormContextProviderState = {
     value: IPostFormContext
 }
 

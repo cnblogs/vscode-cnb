@@ -62,7 +62,7 @@ export abstract class PostMetadata extends BaseTreeItemSource {
         exclude?: RootPostMetadataType[]
     }): Promise<PostMetadata[]> {
         let parsedPost = post instanceof PostTreeItem ? post.post : post
-        const postEditDto = await PostService.fetchPostEditDto(parsedPost.id)
+        const postEditDto = await PostService.getPostEditDto(parsedPost.id)
         parsedPost = postEditDto?.post || parsedPost
         return Promise.all(
             rootMetadataMap(parsedPost, postEditDto)
@@ -132,11 +132,11 @@ export class PostCategoryMetadata extends PostMetadata {
     }
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCategoryMetadata[]> {
-        editDto = editDto ? editDto : await PostService.fetchPostEditDto(parent.id)
+        editDto = editDto ? editDto : await PostService.getPostEditDto(parent.id)
         if (editDto == null) return []
 
         const categoryIds = editDto.post.categoryIds ?? []
-        const futList = categoryIds.map(PostCategoryService.find)
+        const futList = categoryIds.map(PostCategoryService.getOne)
         const categoryList = await Promise.all(futList)
 
         return categoryList
@@ -172,7 +172,7 @@ export class PostTagMetadata extends PostMetadata {
     }
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostMetadata[]> {
-        editDto = editDto ? editDto : await PostService.fetchPostEditDto(parent.id)
+        editDto = editDto ? editDto : await PostService.getPostEditDto(parent.id)
         if (editDto == null) return []
 
         const {

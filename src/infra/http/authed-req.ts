@@ -1,4 +1,4 @@
-import { AccountManagerNg } from '@/auth/account-manager'
+import { AuthManager } from '@/auth/auth-manager'
 
 import { ReqHeaderKey } from '@/infra/http/infra/header'
 import { bearer } from '@/infra/http/infra/auth-type'
@@ -7,7 +7,7 @@ import { Req } from '@/infra/http/req'
 type Header = Map<string, string>
 
 async function makeAuthed(header: Header) {
-    const token = await AccountManagerNg.acquireToken()
+    const token = await AuthManager.acquireToken()
     header.set(ReqHeaderKey.AUTHORIZATION, bearer(token))
 
     // TODO: need better solution

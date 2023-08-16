@@ -3,13 +3,13 @@ import { ThemeProvider } from '@fluentui/react/lib/Theme'
 import { Breadcrumb, IBreadcrumbItem, initializeIcons, PartialTheme, Spinner, Stack, Theme } from '@fluentui/react'
 import { PostForm } from './components/PostForm'
 import { Post } from '@/model/post'
-import { personalCategoriesStore } from './service/personal-category-store'
-import { siteCategoriesStore } from './service/site-category-store'
-import { tagsStore } from './service/tags-store'
+import { PersonalCategoryStore } from './service/personal-category-store'
+import { SiteCategoryStore } from './service/site-category-store'
+import { TagStore } from './service/tag-store'
 import { WebviewMsg } from '@/model/webview-msg'
 import { Webview } from '@/model/webview-cmd'
 import { PostFormContextProvider } from './components/PostFormContextProvider'
-import { activeThemeProvider } from 'share/active-theme-provider'
+import { ActiveThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 
@@ -23,10 +23,10 @@ interface AppState {
 
 export interface AppProps extends Record<string, never> {}
 
-class App extends Component<AppProps, AppState> {
+export class App extends Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props)
-        this.state = { theme: activeThemeProvider.activeTheme(), fileName: '', useNestCategoriesSelect: false }
+        this.state = { theme: ActiveThemeProvider.activeTheme(), fileName: '', useNestCategoriesSelect: false }
         this.observerMessages()
         getVsCodeApiSingleton().postMessage({ command: Webview.Cmd.Ext.refreshPost })
     }
@@ -73,7 +73,7 @@ class App extends Component<AppProps, AppState> {
     }
 
     private renderBreadcrumbs() {
-        const { breadcrumbs } = this.state
+        const breadcrumbs = this.state.breadcrumbs
         if (!breadcrumbs || breadcrumbs.length <= 0) return <></>
 
         const items = breadcrumbs.map(breadcrumb => ({ text: breadcrumb, key: breadcrumb }) as IBreadcrumbItem)
@@ -83,16 +83,16 @@ class App extends Component<AppProps, AppState> {
     private observerMessages() {
         window.addEventListener('message', ev => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const { command } = ev.data
+            const command = ev.data.command
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const message = ev.data as any
+            const message = ev.data
 
             if (command === Webview.Cmd.Ui.editPostCfg) {
                 const { post, activeTheme, personalCategories, siteCategories, tags, breadcrumbs, fileName } =
                     message as WebviewMsg.EditPostCfgMsg
-                personalCategoriesStore.set(personalCategories)
-                siteCategoriesStore.set(siteCategories)
-                tagsStore.set(tags)
+                PersonalCategoryStore.set(personalCategories)
+                SiteCategoryStore.set(siteCategories)
+                TagStore.set(tags)
 
                 this.setState({
                     theme: (activeTheme as number) === 2 ? darkTheme : lightTheme,
@@ -108,10 +108,8 @@ class App extends Component<AppProps, AppState> {
                 const { baseUrl } = message as WebviewMsg.SetFluentIconBaseUrlMsg
                 initializeIcons(baseUrl)
             } else if (command === Webview.Cmd.Ui.updateTheme) {
-                this.setState({ theme: activeThemeProvider.activeTheme() })
+                this.setState({ theme: ActiveThemeProvider.activeTheme() })
             }
         })
     }
 }
-
-export { App }

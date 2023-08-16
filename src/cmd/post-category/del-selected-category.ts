@@ -36,7 +36,7 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
                     try {
                         const increment = Math.round(10 + idx / selectedCategories.length / 90)
                         p.report({ increment, message: `正在删除: 📂${category.title}` })
-                        await PostCategoryService.deleteCategory(category.categoryId)
+                        await PostCategoryService.del(category.categoryId)
                         idx++
                     } catch (err) {
                         errs.push([category, err])

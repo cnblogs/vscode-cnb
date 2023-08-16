@@ -4,24 +4,28 @@ import { PostCategory } from '@/model/post-category'
 
 let children: Map<number, PostCategory[]>
 let pendingChildrenQuery: Map<number, Promise<PostCategory[]>> | undefined | null
+let items: PostCategory[] = []
 
-export namespace personalCategoriesStore {
-    let items: PostCategory[] = []
-    export const get = (): PostCategory[] => items ?? []
+export namespace PersonalCategoryStore {
+    export const get = () => items
+
+    export function set(value: PostCategory[]) {
+        items = value
+    }
 
     export const getByParent = async (parent: number): Promise<PostCategory[]> => {
         children ??= new Map()
         let result = children.get(parent)
         const vscode = getVsCodeApiSingleton()
 
-        if (!result) {
+        if (result === undefined) {
             let promise = pendingChildrenQuery?.get(parent)
             if (promise == null) {
                 promise = new Promise<PostCategory[]>(resolve => {
                     const timeoutId = setTimeout(() => {
                         clearTimeout(timeoutId)
                         window.removeEventListener('message', onUpdate)
-                        console.warn(`timeout: personalCategoriesStore.getByParent: parent: ${parent}`)
+                        console.warn(`timeout: PersonalCategoryStore.getByParent: parent: ${parent}`)
                         resolve([])
                     }, 30 * 1000)
 
@@ -40,10 +44,7 @@ export namespace personalCategoriesStore {
                         }
                     }
 
-                    window.addEventListener<WebviewCommonCmd<Webview.Cmd.UpdateChildCategoriesPayload>>(
-                        'message',
-                        onUpdate
-                    )
+                    window.addEventListener('message', onUpdate)
                 }).finally(() => pendingChildrenQuery?.delete(parent))
 
                 vscode.postMessage<WebviewCommonCmd<Webview.Cmd.GetChildCategoriesPayload>>({
@@ -57,6 +58,4 @@ export namespace personalCategoriesStore {
 
         return result
     }
-
-    export const set = (value: PostCategory[]) => (items = value ?? [])
 }

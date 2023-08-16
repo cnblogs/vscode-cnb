@@ -1,10 +1,10 @@
 import { Ing, IngComment, IngType } from '@/model/ing'
 import { Alert } from '@/infra/alert'
 import { IngReq } from '@/wasm'
-import { AccountManagerNg } from '@/auth/account-manager'
+import { AuthManager } from '@/auth/auth-manager'
 
 async function getAuthedIngReq() {
-    const token = await AccountManagerNg.acquireToken()
+    const token = await AuthManager.acquireToken()
     // TODO: need better solution
     const isPatToken = token.length === 64
     return new IngReq(token, isPatToken)
@@ -17,7 +17,7 @@ async function getComment(id: number) {
     return list.map(IngComment.parse)
 }
 
-export namespace IngApi {
+export namespace IngService {
     export async function pub(content: string, isPrivate: boolean) {
         try {
             const req = await getAuthedIngReq()

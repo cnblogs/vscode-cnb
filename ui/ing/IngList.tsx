@@ -8,7 +8,7 @@ interface IngListProps {
     comments: Record<number, IngComment[]>
 }
 
-class IngList extends Component<IngListProps> {
+export class IngList extends Component<IngListProps> {
     constructor(props: IngListProps) {
         super(props)
     }
@@ -24,7 +24,7 @@ class IngList extends Component<IngListProps> {
     }
 
     private renderItems() {
-        const { comments } = this.props
+        const comments = this.props.comments
         return this.props.ingList.map(ing => (
             <Stack.Item>
                 <IngItem ing={ing} comments={comments[ing.id]} />
@@ -32,5 +32,3 @@ class IngList extends Component<IngListProps> {
         ))
     }
 }
-
-export { IngList }

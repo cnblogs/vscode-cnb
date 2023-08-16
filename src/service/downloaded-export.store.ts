@@ -1,16 +1,16 @@
 import { DownloadedBlogExport } from '@/model/blog-export'
-import { globalCtx } from '@/ctx/global-ctx'
 import { exists, existsSync } from 'fs'
 import { take } from 'lodash-es'
 import { promisify } from 'util'
+import { LocalState } from '@/ctx/local-state'
 
 const listKey = 'downloadExports'
 const metadataKey = 'downloadedExport-'
 
-const updateList = (value?: DownloadedBlogExport[] | null) => globalCtx.storage.update(listKey, value)
+const updateList = (value?: DownloadedBlogExport[] | null) => LocalState.setState(listKey, value)
 
 const updateExport = (id: number, value?: DownloadedBlogExport | null) =>
-    globalCtx.storage.update(`${metadataKey}${id}`, value)
+    LocalState.setState(`${metadataKey}${id}`, value)
 
 export namespace DownloadedExportStore {
     export async function add(filePath: string, id?: number | null) {
@@ -27,7 +27,7 @@ export namespace DownloadedExportStore {
     }
 
     export async function list({ prune = true } = {}) {
-        let items = globalCtx.storage.get<DownloadedBlogExport[]>(listKey) ?? []
+        let items = <DownloadedBlogExport[]>LocalState.getState(listKey) ?? []
 
         if (prune) {
             const prunedItems: DownloadedBlogExport[] = []
@@ -50,7 +50,7 @@ export namespace DownloadedExportStore {
             }
         }
 
-        return Promise.resolve(globalCtx.storage.get<DownloadedBlogExport[]>(listKey) ?? [])
+        return Promise.resolve(<DownloadedBlogExport[]>LocalState.getState(listKey) ?? [])
     }
 
     export async function remove(downloaded: DownloadedBlogExport, { shouldRemoveExportRecordMap = true } = {}) {
@@ -66,7 +66,7 @@ export namespace DownloadedExportStore {
     export async function findById(id: number, { prune = true } = {}) {
         const key = `${metadataKey}${id}`
 
-        let item = globalCtx.storage.get<DownloadedBlogExport>(key)
+        let item = LocalState.getState(key) as DownloadedBlogExport | undefined
 
         if (prune && item) {
             const isExist = await promisify(exists)(item.filePath)

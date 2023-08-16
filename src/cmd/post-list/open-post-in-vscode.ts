@@ -22,7 +22,7 @@ export async function buildLocalPostFileUri(post: Post, includePostId = false): 
     if (!shouldCreateLocalPostFileWithCategory) return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`)
 
     const firstCategoryId = post.categoryIds?.[0] ?? null
-    let i = firstCategoryId ? await PostCategoryService.find(firstCategoryId) : null
+    let i = firstCategoryId ? await PostCategoryService.getOne(firstCategoryId) : null
     let categoryTitle = ''
     while (i != null) {
         categoryTitle = path.join(
@@ -52,7 +52,7 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
         mappedPostFilePath = undefined
     }
 
-    const { post } = await PostService.fetchPostEditDto(postId)
+    const { post } = await PostService.getPostEditDto(postId)
 
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
     await mkDirIfNotExist(workspaceUri)

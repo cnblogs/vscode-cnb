@@ -6,14 +6,14 @@ export enum BlogExportStatus {
     failed = 4,
 }
 
-export interface BlogExportRecordList {
+export type BlogExportRecordList = {
     items: BlogExportRecord[]
     pageIndex: number
     pageSize: number
     totalCount: number
 }
 
-export interface BlogExportRecord {
+export type BlogExportRecord = {
     id: number
     blogId: number
     fileName: string
@@ -28,7 +28,7 @@ export interface BlogExportRecord {
     dateAdded: string
 }
 
-export interface DownloadedBlogExport {
+export type DownloadedBlogExport = {
     filePath: string
     id?: number | null
 }

@@ -1,11 +1,11 @@
 use crate::cnb::oauth::OauthReq;
-use crate::cnb::oauth::OAUTH_API_BASE_URL;
+use crate::http::body_or_err;
 use crate::infra::http::{cons_query_string, APPLICATION_X3WFU};
-use crate::infra::result::{homo_result_string, HomoResult, IntoResult};
-use crate::panic_hook;
+use crate::infra::result::{HomoResult, ResultExt};
+use crate::{oauth, panic_hook};
 use alloc::string::String;
 use alloc::{format, vec};
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use reqwest::header::CONTENT_TYPE;
 use wasm_bindgen::prelude::*;
 
@@ -19,7 +19,7 @@ impl OauthReq {
         callback_url: &str,
     ) -> HomoResult<String> {
         panic_hook!();
-        let url = format!("{OAUTH_API_BASE_URL}/connect/token");
+        let url = oauth!("/connect/token");
 
         let client = reqwest::Client::new().post(url);
 
@@ -38,16 +38,9 @@ impl OauthReq {
 
         let result: Result<String> = try {
             let resp = req.send().await?;
-            let code = resp.status();
-
-            if code.is_success() {
-                resp.text().await?
-            } else {
-                let text = resp.text().await?;
-                anyhow!("{}: {}", code, text).into_err()?
-            }
+            body_or_err(resp).await?
         };
 
-        homo_result_string(result)
+        result.homo_string()
     }
 }

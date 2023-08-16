@@ -7,8 +7,6 @@ use crate::panic_hook;
 use alloc::string::{String, ToString};
 use wasm_bindgen::prelude::*;
 
-const ING_API_BASE_URL: &str = "https://api.cnblogs.com/api/statuses";
-
 #[wasm_bindgen(js_name = IngReq)]
 pub struct IngReq {
     token: String,

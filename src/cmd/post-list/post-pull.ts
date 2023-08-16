@@ -78,7 +78,7 @@ async function update(contexts: CmdCtx[]) {
     for (const ctx of contexts) {
         const { fileUri, postId } = ctx
 
-        const { post } = await PostService.fetchPostEditDto(postId)
+        const { post } = await PostService.getPostEditDto(postId)
 
         const textEditors = window.visibleTextEditors.filter(x => x.document.uri.fsPath === fileUri.fsPath)
         await Promise.all(textEditors.map(editor => editor.document.save()))

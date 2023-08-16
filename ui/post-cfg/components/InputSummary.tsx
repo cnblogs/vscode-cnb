@@ -5,14 +5,14 @@ import { WebviewMsg } from '@/model/webview-msg'
 import React from 'react'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 
-export interface IInputSummaryProps {
+export type IInputSummaryProps = {
     summary?: string
     featureImageUrl?: string
     onChange?: (summary: string) => void
     onFeatureImageChange?: (imageUrl: string) => void
 }
 
-export interface IInputSummaryState {
+export type IInputSummaryState = {
     isCollapse: boolean
     disabled: boolean
     errors?: string[]
@@ -20,6 +20,7 @@ export interface IInputSummaryState {
 
 export class InputSummary extends React.Component<IInputSummaryProps, IInputSummaryState> {
     private uploadingImageId = ''
+
     constructor(props: IInputSummaryProps) {
         super(props)
         const { featureImageUrl, summary } = props
@@ -29,8 +30,8 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
     }
 
     render() {
-        const { isCollapse } = this.state
-        const { featureImageUrl } = this.props
+        const isCollapse = this.state.isCollapse
+        const featureImageUrl = this.props.featureImageUrl
         return (
             <Stack tokens={{ childrenGap: 16 }}>
                 <Stack horizontal horizontalAlign="space-between">
@@ -103,18 +104,13 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
 
     private observerMessage = (ev: MessageEvent<any>) => {
         const data = ev.data as WebviewMsg.Msg
-        const { command } = data
-        switch (command) {
-            case Webview.Cmd.Ui.updateImageUploadStatus:
-                {
-                    const { imageId, status } = data as WebviewMsg.UpdateImgUpdateStatusMsg
-                    if (imageId === this.uploadingImageId) {
-                        this.setState({ disabled: status.id === ImgUploadStatusId.uploading })
-                        if (status.id === ImgUploadStatusId.uploaded)
-                            this.props.onFeatureImageChange?.apply(this, [status.imageUrl ?? ''])
-                    }
-                }
-                break
+        if (data.command === Webview.Cmd.Ui.updateImageUploadStatus) {
+            const { imageId, status } = data as WebviewMsg.UpdateImgUpdateStatusMsg
+            if (imageId === this.uploadingImageId) {
+                this.setState({ disabled: status.id === ImgUploadStatusId.uploading })
+                if (status.id === ImgUploadStatusId.uploaded)
+                    this.props.onFeatureImageChange?.apply(this, [status.imageUrl ?? ''])
+            }
         }
     }
 
@@ -128,7 +124,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
 
     private renderFeatureImage() {
         const { featureImageUrl } = this.props
-        if (!featureImageUrl) {
+        if (featureImageUrl === undefined) {
             return (
                 <ActionButton
                     onClick={() => this.uploadFeatureImage()}

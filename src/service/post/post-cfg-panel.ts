@@ -3,7 +3,6 @@ import vscode, { Uri } from 'vscode'
 import { Post } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PostCategoryService } from './post-category'
-import { SiteCategoryService } from '@/service/site-category'
 import { PostTagService } from './post-tag'
 import { PostService } from './post'
 import { isErrorResponse } from '@/model/error-response'
@@ -51,24 +50,24 @@ export namespace PostCfgPanel {
 
         disposables.push(
             webview.onDidReceiveMessage(async ({ command }: WebviewMsg.Msg) => {
-                if (command === Webview.Cmd.Ext.refreshPost) {
-                    await webview.postMessage({
-                        command: Webview.Cmd.Ui.setFluentIconBaseUrl,
-                        baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
-                    } as WebviewMsg.SetFluentIconBaseUrlMsg)
-                    await webview.postMessage({
-                        command: Webview.Cmd.Ui.editPostCfg,
-                        post: cloneDeep(post),
-                        activeTheme: vscode.window.activeColorTheme.kind,
-                        personalCategories: cloneDeep(await PostCategoryService.listCategories()),
-                        siteCategories: cloneDeep(await SiteCategoryService.fetchAll()),
-                        tags: cloneDeep(await PostTagService.fetchTags()),
-                        breadcrumbs,
-                        fileName: localFileUri
-                            ? path.basename(localFileUri.fsPath, path.extname(localFileUri?.fsPath))
-                            : '',
-                    } as WebviewMsg.EditPostCfgMsg)
-                }
+                if (command !== Webview.Cmd.Ext.refreshPost) return
+
+                await webview.postMessage({
+                    command: Webview.Cmd.Ui.setFluentIconBaseUrl,
+                    baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
+                } as WebviewMsg.SetFluentIconBaseUrlMsg)
+                await webview.postMessage({
+                    command: Webview.Cmd.Ui.editPostCfg,
+                    post: cloneDeep(post),
+                    activeTheme: vscode.window.activeColorTheme.kind,
+                    personalCategories: cloneDeep(await PostCategoryService.getAll()),
+                    siteCategories: cloneDeep(await PostCategoryService.getSitePresetList()),
+                    tags: cloneDeep(await PostTagService.fetchTags()),
+                    breadcrumbs,
+                    fileName: localFileUri
+                        ? path.basename(localFileUri.fsPath, path.extname(localFileUri?.fsPath))
+                        : '',
+                } as WebviewMsg.EditPostCfgMsg)
             }),
             observeWebviewMessages(panel, option),
             observeActiveColorSchemaChange(panel),
@@ -208,9 +207,7 @@ export namespace PostCfgPanel {
                         await webview.postMessage({
                             command: Webview.Cmd.Ui.updateChildCategories,
                             payload: {
-                                value: await PostCategoryService.listCategories({ parentId: payload.parentId }).catch(
-                                    () => []
-                                ),
+                                value: await PostCategoryService.getAllUnder(payload.parentId).catch(() => []),
                                 parentId: payload.parentId,
                             },
                         } as WebviewCommonCmd<Webview.Cmd.UpdateChildCategoriesPayload>)

@@ -2,10 +2,10 @@ import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import fs from 'fs'
 import { BlogSettingService } from '@/service/blog-setting'
-import { accountManager } from '@/auth/account-manager'
 import { PostCategoryService } from '@/service/post/post-category'
 import { PostCategory } from '@/model/post-category'
 import { markdownItFactory } from '@cnblogs/markdown-it-presets'
+import { AuthManager } from '@/auth/auth-manager'
 
 export namespace PostPdfTemplateBuilder {
     export const HighlightedMessage = 'markdown-highlight-finished'
@@ -36,7 +36,7 @@ export namespace PostPdfTemplateBuilder {
         }
 
         const buildCategoryHtml = async (): Promise<string> => {
-            const categories = await PostCategoryService.listCategories()
+            const categories = await PostCategoryService.getAll()
             const postCategories =
                 post.categoryIds
                     ?.map(categoryId => categories.find(x => x.categoryId === categoryId))
@@ -66,7 +66,7 @@ export namespace PostPdfTemplateBuilder {
             blogId,
         } = setting
 
-        const userId = accountManager.currentUser?.userInfo.UserId
+        const userId = AuthManager.getUserInfo()?.UserId
 
         return `<html lang="en">
         <head>

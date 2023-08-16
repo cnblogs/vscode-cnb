@@ -3,7 +3,7 @@ import { genVerifyChallengePair } from '@/service/code-challenge'
 import {
     authentication,
     AuthenticationProvider,
-    AuthenticationProviderAuthenticationSessionsChangeEvent as VscAuthProviderAuthSessionChEv,
+    AuthenticationProviderAuthenticationSessionsChangeEvent as APASCE,
     CancellationTokenSource,
     Disposable,
     env,
@@ -16,27 +16,25 @@ import { globalCtx } from '@/ctx/global-ctx'
 import { Oauth } from '@/auth/oauth'
 import { extUriHandler } from '@/infra/uri-handler'
 import { AccountInfo } from '@/auth/account-info'
-import { TokenInfo } from '@/model/token-info'
-import { Optional } from 'utility-types'
 import { consUrlPara } from '@/infra/http/infra/url-para'
 import { RsRand } from '@/wasm'
 import { Alert } from '@/infra/alert'
+import { LocalState } from '@/ctx/local-state'
+import { AppConst } from '@/ctx/app-const'
 
 async function browserSignIn(challengeCode: string, scopes: string[]) {
-    const { clientId, responseType, authRoute, authority, clientSecret } = globalCtx.config.oauth
-
     const para = consUrlPara(
-        ['client_id', clientId],
-        ['client_secret', clientSecret],
-        ['response_type', responseType],
+        ['client_id', AppConst.CLIENT_ID],
+        ['client_secret', AppConst.CLIENT_SEC],
+        ['response_type', 'code'],
         ['nonce', RsRand.string(32)],
         ['code_challenge', challengeCode],
         ['code_challenge_method', 'S256'],
         ['scope', scopes.join(' ')],
-        ['redirect_uri', globalCtx.extensionUrl]
+        ['redirect_uri', globalCtx.extUrl]
     )
 
-    const uri = Uri.parse(`${authority}${authRoute}?${para}`)
+    const uri = Uri.parse(`${AppConst.ApiBase.OAUTH}/connect/authorize?${para}`)
 
     try {
         await env.openExternal(uri)
@@ -50,11 +48,11 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     readonly providerName = '博客园Cnblogs'
 
     protected readonly sessionStorageKey = `${this.providerId}.sessions`
-    protected readonly allScopes = globalCtx.config.oauth.scope.split(' ')
+    protected readonly allScopes = AppConst.OAUTH_SCOPES
 
     private _allSessions?: AuthSession[] | null
 
-    private readonly _sessionChangeEmitter = new EventEmitter<VscAuthProviderAuthSessionChEv>()
+    private readonly _sessionChangeEmitter = new EventEmitter<APASCE>()
     private readonly _disposable = Disposable.from(
         this._sessionChangeEmitter,
         authentication.registerAuthenticationProvider(this.providerId, this.providerName, this, {
@@ -154,7 +152,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             },
             { remove: <AuthSession[]>[], keep: <AuthSession[]>[] }
         )
-        await globalCtx.extCtx.secrets.store(this.sessionStorageKey, JSON.stringify(data.keep))
+        await LocalState.setSecret(this.sessionStorageKey, JSON.stringify(data.keep))
         this._sessionChangeEmitter.fire({ removed: data.remove, added: undefined, changed: undefined })
     }
 
@@ -181,7 +179,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             accessToken,
             this.ensureScopes(null)
         )
-        await globalCtx.secretsStorage.store(this.sessionStorageKey, JSON.stringify([session]))
+        await LocalState.setSecret(this.sessionStorageKey, JSON.stringify([session]))
 
         if (!shouldFireSessionAddedEvent) return session
 
@@ -199,14 +197,8 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     }
 
     protected async getAllSessions(): Promise<AuthSession[]> {
-        const legacyToken = LegacyTokenStore.getAccessToken()
-        if (legacyToken !== undefined) {
-            await this.onAccessTokenGranted(legacyToken, { shouldFireSessionAddedEvent: false })
-            void LegacyTokenStore.remove()
-        }
-
         if (this._allSessions == null || this._allSessions.length <= 0) {
-            const storage = await globalCtx.secretsStorage.get(this.sessionStorageKey)
+            const storage = await LocalState.getSecret(this.sessionStorageKey)
             const sessions = JSON.parse(storage ?? '[]') as AuthSession[] | null | undefined
 
             if (Array.isArray(sessions)) this._allSessions = sessions
@@ -225,10 +217,3 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 }
 
 export const authProvider = new AuthProvider()
-
-class LegacyTokenStore {
-    static getAccessToken = () =>
-        globalCtx.storage.get<Optional<{ authorizationInfo?: TokenInfo }>>('user')?.authorizationInfo?.accessToken
-
-    static remove = () => globalCtx.storage.update('user', undefined).then(undefined, console.error)
-}

@@ -8,12 +8,12 @@ import { PostFileMapManager } from '@/service/post/post-file-map'
 import { PostService } from '@/service/post/post'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { ChromiumPathProvider } from '@/infra/chromium-path-provider'
-import { accountManager } from '@/auth/account-manager'
 import { Alert } from '@/infra/alert'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostPdfTemplateBuilder } from '@/cmd/pdf/post-pdf-template-builder'
 import { ChromiumCfg } from '@/ctx/cfg/chromium'
+import { AuthManager } from '@/auth/auth-manager'
 
 async function launchBrowser(chromiumPath: string) {
     try {
@@ -146,7 +146,7 @@ async function handleUriInput(uri: Uri) {
     const postList: Post[] = []
     const { fsPath } = uri
     const postId = PostFileMapManager.getPostId(fsPath)
-    const { post: inputPost } = (await PostService.fetchPostEditDto(postId && postId > 0 ? postId : -1)) ?? {}
+    const { post: inputPost } = (await PostService.getPostEditDto(postId && postId > 0 ? postId : -1)) ?? {}
 
     if (!inputPost) {
         return []
@@ -164,7 +164,7 @@ async function handleUriInput(uri: Uri) {
 }
 
 const mapToPostEditDto = async (postList: Post[]) =>
-    (await Promise.all(postList.map(p => PostService.fetchPostEditDto(p.id))))
+    (await Promise.all(postList.map(p => PostService.getPostEditDto(p.id))))
         .filter((x): x is PostEditDto => x != null)
         .map(x => x?.post)
 
@@ -183,7 +183,7 @@ export async function exportPostToPdf(input?: Post | PostTreeItem | Uri): Promis
     const chromiumPath = await retrieveChromiumPath()
     if (chromiumPath === undefined) return
 
-    const blogApp = accountManager.currentUser?.userInfo.BlogApp
+    const blogApp = AuthManager.getUserInfo()?.BlogApp
     if (blogApp === undefined) return void Alert.warn('无法获取博客地址, 请检查登录状态')
 
     reportErrors(

@@ -13,7 +13,7 @@ interface IngItemProps {
     comments?: IngComment[]
 }
 
-class IngItem extends Component<IngItemProps, IngItemState> {
+export class IngItem extends Component<IngItemProps, IngItemState> {
     readonly icons = {
         vscodeLogo: (
             <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
@@ -189,12 +189,8 @@ class IngItem extends Component<IngItemProps, IngItemState> {
     )
 
     private renderSendFromIcon(value: IngSendFromType) {
-        switch (value) {
-            case IngSendFromType.code:
-                return this.icons.vscodeLogo
-            case IngSendFromType.cellPhone:
-                return this.icons.mobile
-        }
+        if (value === IngSendFromType.code) return this.icons.vscodeLogo
+        if (value === IngSendFromType.cellPhone) return this.icons.mobile
     }
 
     private comment(payload: Webview.Cmd.Ing.CommentCmdPayload) {
@@ -204,5 +200,3 @@ class IngItem extends Component<IngItemProps, IngItemState> {
         } as IngWebviewHostCmd<Webview.Cmd.Ing.CommentCmdPayload>)
     }
 }
-
-export { IngItem }

@@ -1,13 +1,13 @@
 import { ActionButton, Label, Stack, Text, TextField } from '@fluentui/react'
 import React from 'react'
 
-export interface IPostTitleInputProps {
+export type IPostTitleInputProps = {
     value: string
     fileName: string
     onChange: (value: string | null | undefined) => unknown
 }
 
-export interface IPostTitleInputState {
+export type IPostTitleInputState = {
     value: IPostTitleInputProps['value']
 }
 

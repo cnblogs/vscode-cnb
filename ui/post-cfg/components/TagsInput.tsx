@@ -11,15 +11,15 @@ import {
     Text,
 } from '@fluentui/react'
 import React from 'react'
-import { tagsStore } from '../service/tags-store'
+import { TagStore } from '../service/tag-store'
 import { PostTags, PostTag } from '@/model/post-tag'
 
-export interface ITagsInputProps {
+export type ITagsInputProps = {
     selectedTagNames?: string[]
     onChange?: (tagNames: string[]) => void
 }
 
-export interface ITagsInputState {
+export type ITagsInputState = {
     tags: PostTags
     selectedTags: ITag[]
 }
@@ -32,7 +32,7 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
     constructor(props: ITagsInputProps) {
         super(props)
 
-        const tags = tagsStore.get()
+        const tags = TagStore.get()
         this.state = {
             tags,
             selectedTags:
@@ -58,7 +58,7 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
                             loadingText: '加载中',
                         }}
                         onRenderSuggestionsItem={tag => {
-                            const isNewTag = (tag as INewTag).isNew === true
+                            const isNewTag = (tag as INewTag).isNew
                             const tagEl = (
                                 <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
                                     <Icon iconName="Tag" />

@@ -2,7 +2,7 @@ import { setupExtTreeView } from '@/tree-view/tree-view-register'
 import { setupExtCmd } from '@/setup/setup-cmd'
 import { globalCtx } from '@/ctx/global-ctx'
 import { window, ExtensionContext } from 'vscode'
-import { accountManager, AccountManagerNg } from '@/auth/account-manager'
+import { AuthManager } from '@/auth/auth-manager'
 import { setupWorkspaceWatch, setupCfgWatch, setupWorkspaceFileWatch } from '@/setup/setup-watch'
 import { extUriHandler } from '@/infra/uri-handler'
 import { extendMarkdownIt } from '@/markdown/extend-markdownIt'
@@ -13,7 +13,8 @@ import { LocalState } from '@/ctx/local-state'
 export function activate(ctx: ExtensionContext) {
     globalCtx.extCtx = ctx
 
-    ctx.subscriptions.push(accountManager)
+    // WRN: For old version compatibility, NEVER remove this line
+    void LocalState.delSecret('user')
 
     setupExtCmd()
     setupExtTreeView()
@@ -27,7 +28,7 @@ export function activate(ctx: ExtensionContext) {
 
     window.registerUriHandler(extUriHandler)
 
-    void AccountManagerNg.updateAuthStatus()
+    void AuthManager.updateAuthStatus()
 
     setupUi(LocalState.getExtCfg())
 

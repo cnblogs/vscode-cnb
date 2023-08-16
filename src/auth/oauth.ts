@@ -3,17 +3,16 @@ import { TokenInfo } from '@/model/token-info'
 import { globalCtx } from '@/ctx/global-ctx'
 import { Alert } from '@/infra/alert'
 import { OauthReq } from '@/wasm'
+import { AppConst } from '@/ctx/app-const'
 
 function getAuthedOauthReq() {
-    const clientId = globalCtx.config.oauth.clientId
-    const clientSec = globalCtx.config.oauth.clientSecret
-    return new OauthReq(clientId, clientSec)
+    return new OauthReq(AppConst.CLIENT_ID, AppConst.CLIENT_SEC)
 }
 
 export namespace Oauth {
     export async function getToken(verifyCode: string, authCode: string) {
         const req = getAuthedOauthReq()
-        const callback_url = globalCtx.extensionUrl
+        const callback_url = globalCtx.extUrl
         try {
             const resp = await req.getToken(authCode, verifyCode, callback_url)
             return TokenInfo.fromResp(resp)

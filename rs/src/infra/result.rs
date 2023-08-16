@@ -19,12 +19,35 @@ impl<T> IntoResult for T {}
 
 pub type HomoResult<T> = Result<T, T>;
 
-pub fn homo_result_string<E>(r: Result<impl Into<String>, E>) -> HomoResult<String>
-where
-    E: ToString,
-{
-    match r {
-        Ok(o) => Ok(o.into()),
-        Err(e) => Err(e.to_string()),
+pub trait ResultExt<O, E> {
+    fn err_to_string(self) -> Result<O, String>
+    where
+        E: ToString;
+
+    fn homo_string(self) -> HomoResult<String>
+    where
+        O: ToString,
+        E: ToString;
+}
+
+impl<O, E> ResultExt<O, E> for Result<O, E> {
+    #[inline]
+    fn err_to_string(self) -> Result<O, String>
+    where
+        E: ToString,
+    {
+        self.map_err(|e| e.to_string())
+    }
+
+    #[inline]
+    fn homo_string(self) -> HomoResult<String>
+    where
+        O: ToString,
+        E: ToString,
+    {
+        match self {
+            Ok(o) => Ok(o.to_string()),
+            Err(e) => Err(e.to_string()),
+        }
     }
 }

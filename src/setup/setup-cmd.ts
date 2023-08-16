@@ -8,7 +8,6 @@ import { refreshPostCategoryList } from '@/cmd/post-category/refresh-post-catego
 import { handleUpdatePostCategory } from '@/cmd/post-category/update-post-category'
 import { openPostInBlogAdmin } from '@/cmd/open/open-post-in-blog-admin'
 import { viewPostOnline } from '@/cmd/view-post-online'
-import { extractImg } from '@/cmd/extract-img'
 import { handleDeletePostCategories } from '@/cmd/post-category/del-selected-category'
 import { regCmd } from '@/infra/cmd'
 import { exportPostToPdf } from '@/cmd/pdf/export-pdf'
@@ -19,7 +18,7 @@ import { viewPostBlogExport } from '@/cmd/blog-export/view-post'
 import { deleteBlogExport } from '@/cmd/blog-export/delete'
 import { openLocalExport } from '@/cmd/blog-export/open-local'
 import { refreshExportRecord } from '@/cmd/blog-export/refresh'
-import { AccountManagerNg } from '@/auth/account-manager'
+import { AuthManager } from '@/auth/auth-manager'
 import { uploadFsImage } from '@/cmd/upload-img/upload-fs-img'
 import { uploadClipboardImg } from '@/cmd/upload-img/upload-clipboard-img'
 import { insertImgLinkToActiveEditor } from '@/cmd/upload-img/upload-img-util'
@@ -38,6 +37,7 @@ import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
 import { delSelectedPost } from '@/cmd/post-list/del-post'
 import { pubIngWithInput } from '@/cmd/ing/pub-ing-with-input'
 import { pubIngWithSelect } from '@/cmd/ing/pub-ing-with-select'
+import { extractImg } from '@/cmd/extract-img/extract-img'
 
 function withPrefix(prefix: string) {
     return (rest: string) => `${prefix}${rest}`
@@ -49,9 +49,9 @@ export function setupExtCmd() {
 
     const tokens = [
         // auth
-        regCmd(withAppName('.login.web'), AccountManagerNg.webLogin),
-        regCmd(withAppName('.login.pat'), AccountManagerNg.patLogin),
-        regCmd(withAppName('.logout'), AccountManagerNg.logout),
+        regCmd(withAppName('.login.web'), AuthManager.webLogin),
+        regCmd(withAppName('.login.pat'), AuthManager.patLogin),
+        regCmd(withAppName('.logout'), AuthManager.logout),
         // post.list-view
         regCmd(withAppName('.post.list-view.refresh'), PostListView.refresh),
         regCmd(withAppName('.post.list-view.prev'), PostListView.goPrev),

@@ -35,7 +35,7 @@ export enum CodeHighlightEngineEnum {
     prismJs,
 }
 
-export interface BlogSiteDto {
+export type BlogSiteDto = {
     title: string
     subTitle: string
     application: string
@@ -56,7 +56,7 @@ export interface BlogSiteDto {
     blogNewsUseMarkdown: boolean
 }
 
-export interface BlogSiteExtendDto {
+export type BlogSiteExtendDto = {
     blogId: number
     blogNews: string
     secondaryCss: string
