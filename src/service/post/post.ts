@@ -17,8 +17,6 @@ import { PostReq } from '@/wasm'
 import { LocalState } from '@/ctx/local-state'
 import { AppConst } from '@/ctx/app-const'
 
-let newPostTemplate: PostEditDto | undefined
-
 async function getAuthedPostReq() {
     const token = await AuthManager.acquireToken()
     // TODO: need better solution
@@ -144,6 +142,7 @@ export namespace PostService {
         await LocalState.setState('postListState', finalState)
     }
 
+    // TODO: need caahe
     export async function fetchPostEditTemplate() {
         const req = await getAuthedPostReq()
         try {
