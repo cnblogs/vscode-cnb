@@ -1,8 +1,8 @@
 import { TextDocumentShowOptions, Uri } from 'vscode'
 import { execCmd } from '@/infra/cmd'
 import { Post } from '@/model/post'
-import { LocalPost } from '@/service/local-post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
+import { LocalPost } from '@/service/local-post'
 
 export async function openPostFile(post: LocalPost | Post | string, options?: TextDocumentShowOptions) {
     let filePath = ''

@@ -102,7 +102,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
             ? await BlogExportRecordsStore?.refresh()
                   .then(() => true)
                   .catch(e => {
-                      if (notifyOnError) void Alert.err(`刷新博客备份记录失败: ${e.message}`)
+                      if (notifyOnError) void Alert.err(`刷新博客备份记录失败: ${<string>e}`)
                   })
             : clearCache
             ? await BlogExportRecordsStore.clearCache().then(
