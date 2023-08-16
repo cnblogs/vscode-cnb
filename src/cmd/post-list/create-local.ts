@@ -5,7 +5,7 @@ import { osOpenActiveFile } from '@/cmd/open/os-open-active-file'
 import { openPostFile } from './open-post-file'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
-export async function createLocalDraft() {
+export async function createLocal() {
     const dir = WorkspaceCfg.getWorkspaceUri().fsPath.replace(homedir(), '~')
     let title = await window.showInputBox({
         placeHolder: '请输入标题',

@@ -2,7 +2,7 @@ import path from 'path'
 import fs from 'fs'
 import { Uri, workspace } from 'vscode'
 
-export class LocalDraft {
+export class LocalPost {
     constructor(public filePath: string) {}
 
     get fileName(): string {

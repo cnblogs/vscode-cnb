@@ -1,6 +1,6 @@
 import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
 import { Post } from '@/model/post'
-import { LocalDraft } from '@/service/local-draft'
+import { LocalPost } from '@/service/local-post'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
@@ -17,7 +17,7 @@ import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { PostListView } from '@/cmd/post-list/post-list-view'
 import { extractImg } from '@/cmd/extract-img/extract-img'
 
-async function parseFileUri(fileUri: Uri | undefined) {
+async function parseFileUri(fileUri?: Uri) {
     if (fileUri !== undefined && fileUri.scheme !== 'file') return undefined
     if (fileUri !== undefined) return fileUri
 
@@ -33,7 +33,7 @@ async function parseFileUri(fileUri: Uri | undefined) {
     return undefined
 }
 
-async function saveLocalDraft(localDraft: LocalDraft) {
+async function saveLocalPost(localDraft: LocalPost) {
     // check format
     if (!['.md', '.mkd'].some(x => localDraft.fileExt === x)) {
         void Alert.warn('格式错误, 只支持 Markdown 文件')
@@ -86,7 +86,7 @@ function isEmptyBody(body: string) {
     return false
 }
 
-export async function uploadPost(input: Post | PostTreeItem | PostEditDto | undefined) {
+export async function uploadPost(input?: Post | PostTreeItem | PostEditDto) {
     if (input === undefined) return
     if (input instanceof PostTreeItem) input = input.post
 
@@ -162,7 +162,7 @@ export async function uploadPost(input: Post | PostTreeItem | PostEditDto | unde
     )
 }
 
-export async function uploadPostFile(fileUri: Uri | undefined) {
+export async function uploadPostFile(fileUri?: Uri) {
     const parsedFileUri = await parseFileUri(fileUri)
     if (parsedFileUri === undefined) return
 
@@ -201,11 +201,11 @@ export async function uploadPostFile(fileUri: Uri | undefined) {
 
         await uploadPost(postEditDto.post)
     } else if (selected === '新建博文') {
-        await saveLocalDraft(new LocalDraft(filePath))
+        await saveLocalPost(new LocalPost(filePath))
     }
 }
 
-export async function uploadPostNoConfirm(input: Post | PostTreeItem | PostEditDto | undefined) {
+export async function uploadPostNoConfirm(input?: Post | PostTreeItem | PostEditDto) {
     if (input === undefined) return
     if (input instanceof PostTreeItem) input = input.post
 
@@ -268,7 +268,7 @@ export async function uploadPostNoConfirm(input: Post | PostTreeItem | PostEditD
     )
 }
 
-export async function uploadPostFileNoConfirm(fileUri: Uri | undefined) {
+export async function uploadPostFileNoConfirm(fileUri?: Uri) {
     const parsedFileUri = await parseFileUri(fileUri)
     if (parsedFileUri === undefined) return
 
@@ -307,6 +307,6 @@ export async function uploadPostFileNoConfirm(fileUri: Uri | undefined) {
 
         await uploadPostNoConfirm(postEditDto.post)
     } else if (selected === '新建博文') {
-        await saveLocalDraft(new LocalDraft(filePath))
+        await saveLocalPost(new LocalPost(filePath))
     }
 }

@@ -177,7 +177,7 @@
                 "enablement": "vscode-cnb.isAuthed"
             },
             {
-                "command": "vscode-cnb.post.create-local-draft",
+                "command": "vscode-cnb.post.create-local",
                 "title": "新建博文",
                 "icon": "$(new-file)",
                 "category": "Cnblogs Local Draft"
@@ -855,7 +855,7 @@
                     "group": "navigation@6"
                 },
                 {
-                    "command": "vscode-cnb.post.create-local-draft",
+                    "command": "vscode-cnb.post.create-local",
                     "when": "view == cnblogs-post-list || view == cnblogs-post-list-another",
                     "group": "navigation@7"
                 },
@@ -1059,8 +1059,8 @@
                     "when": "viewItem =~ /^cnb-post/ && viewItem != cnb-post-category"
                 },
                 {
-                    "command": "vscode-cnb.post.create-local-draft",
-                    "when": "viewItem == cnb-local-drafts-folder"
+                    "command": "vscode-cnb.post.create-local",
+                    "when": "viewItem == cnb-local-posts-folder"
                 },
                 {
                     "command": "vscode-cnb.post.rename",

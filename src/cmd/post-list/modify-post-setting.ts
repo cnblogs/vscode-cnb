@@ -6,7 +6,7 @@ import { PostFileMapManager } from '@/service/post/post-file-map'
 import { revealPostListItem } from '@/service/post/post-list-view'
 import { PostCfgPanel } from '@/service/post/post-cfg-panel'
 import fs from 'fs'
-import { LocalDraft } from '@/service/local-draft'
+import { LocalPost } from '@/service/local-post'
 import { saveFilePendingChanges } from '@/infra/save-file-pending-changes'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
@@ -48,7 +48,7 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
         beforeUpdate: async post => {
             if (localFilePath && fs.existsSync(localFilePath)) {
                 await saveFilePendingChanges(localFilePath)
-                post.postBody = await new LocalDraft(localFilePath).readAllText()
+                post.postBody = await new LocalPost(localFilePath).readAllText()
             }
             return true
         },
