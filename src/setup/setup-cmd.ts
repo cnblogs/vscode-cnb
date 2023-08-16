@@ -30,7 +30,7 @@ import { postPull } from '@/cmd/post-list/post-pull'
 import { postPullAll } from '@/cmd/post-list/post-pull-all'
 import { delPostToLocalFileMap } from '@/cmd/post-list/del-post-to-local-file-map'
 import { CopyPostLinkCmdHandler } from '@/cmd/post-list/copy-link'
-import { createLocalDraft } from '@/cmd/post-list/create-local-draft'
+import { createLocal } from '@/cmd/post-list/create-local'
 import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
 import { renamePost } from '@/cmd/post-list/rename-post'
 import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
@@ -66,7 +66,7 @@ export function setupExtCmd() {
         regCmd(withAppName('.post.search'), PostListView.Search.search),
         regCmd(withAppName('.post.rename'), renamePost),
         regCmd(withAppName('.post.modify-setting'), modifyPostSetting),
-        regCmd(withAppName('.post.create-local-draft'), createLocalDraft),
+        regCmd(withAppName('.post.create-local'), createLocal),
         regCmd(withAppName('.post.upload'), uploadPost),
         regCmd(withAppName('.post.upload-file'), uploadPostFile),
         regCmd(withAppName('.post.upload-no-confirm'), uploadPostNoConfirm),

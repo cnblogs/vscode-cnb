@@ -10,7 +10,6 @@ use reqwest::header::CONTENT_TYPE;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-#[allow(non_camel_case_types)]
 #[serde_with::skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Default)]
 struct Body {

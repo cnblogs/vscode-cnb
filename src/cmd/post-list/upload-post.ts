@@ -1,6 +1,5 @@
 import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
 import { Post } from '@/model/post'
-import { LocalDraft } from '@/service/local-draft'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
@@ -16,8 +15,9 @@ import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { PostListView } from '@/cmd/post-list/post-list-view'
 import { extractImg } from '@/cmd/extract-img/extract-img'
+import { LocalPost } from '@/service/local-post'
 
-async function parseFileUri(fileUri: Uri | undefined) {
+async function parseFileUri(fileUri?: Uri) {
     if (fileUri !== undefined && fileUri.scheme !== 'file') return undefined
     if (fileUri !== undefined) return fileUri
 
@@ -33,9 +33,9 @@ async function parseFileUri(fileUri: Uri | undefined) {
     return undefined
 }
 
-async function saveLocalDraft(localDraft: LocalDraft) {
+async function saveLocalPost(localPost: LocalPost) {
     // check format
-    if (!['.md', '.mkd'].some(x => localDraft.fileExt === x)) {
+    if (!['.md', '.mkd'].some(x => localPost.fileExt === x)) {
         void Alert.warn('格式错误, 只支持 Markdown 文件')
         return
     }
@@ -44,34 +44,34 @@ async function saveLocalDraft(localDraft: LocalDraft) {
 
     const { post } = editDto
 
-    post.title = localDraft.fileNameWithoutExt
+    post.title = localPost.fileNameWithoutExt
     post.isMarkdown = true
     post.categoryIds ??= []
     void PostCfgPanel.open({
         panelTitle: '',
-        localFileUri: localDraft.filePathUri,
+        localFileUri: localPost.filePathUri,
         breadcrumbs: ['新建博文', '博文设置', post.title],
         post,
         successCallback: async savedPost => {
             await PostListView.refresh()
-            await openPostFile(localDraft)
+            await openPostFile(localPost)
 
-            await PostFileMapManager.updateOrCreate(savedPost.id, localDraft.filePath)
-            await openPostFile(localDraft)
+            await PostFileMapManager.updateOrCreate(savedPost.id, localPost.filePath)
+            await openPostFile(localPost)
             postDataProvider.fireTreeDataChangedEvent(undefined)
             void Alert.info('博文已创建')
         },
         beforeUpdate: async (postToSave, panel) => {
-            await saveFilePendingChanges(localDraft.filePath)
+            await saveFilePendingChanges(localPost.filePath)
             // 本地文件已经被删除了
-            if (!localDraft.exist && panel) {
+            if (!localPost.exist && panel) {
                 void Alert.warn('本地文件已删除, 无法新建博文')
                 return false
             }
             if (MarkdownCfg.getAutoExtractImgSrc())
-                await extractImg(localDraft.filePathUri, MarkdownCfg.getAutoExtractImgSrc()).catch(console.warn)
+                await extractImg(localPost.filePathUri, MarkdownCfg.getAutoExtractImgSrc()).catch(console.warn)
 
-            postToSave.postBody = await localDraft.readAllText()
+            postToSave.postBody = await localPost.readAllText()
             return true
         },
     })
@@ -86,7 +86,7 @@ function isEmptyBody(body: string) {
     return false
 }
 
-export async function uploadPost(input: Post | PostTreeItem | PostEditDto | undefined) {
+export async function uploadPost(input?: Post | PostTreeItem | PostEditDto) {
     if (input === undefined) return
     if (input instanceof PostTreeItem) input = input.post
 
@@ -151,10 +151,10 @@ export async function uploadPost(input: Post | PostTreeItem | PostEditDto | unde
                 progress.report({ increment: 100 })
                 void Alert.info('上传成功')
                 await PostListView.refresh()
-            } catch (err) {
+            } catch (e) {
                 progress.report({ increment: 100 })
-                void Alert.err(`上传失败\n${err instanceof Error ? err.message : JSON.stringify(err)}`)
-                console.error(err)
+                console.log(e)
+                void Alert.err(`上传失败: ${<string>e}`)
             }
 
             return isSaved
@@ -162,12 +162,13 @@ export async function uploadPost(input: Post | PostTreeItem | PostEditDto | unde
     )
 }
 
-export async function uploadPostFile(fileUri: Uri | undefined) {
+export async function uploadPostFile(fileUri?: Uri) {
     const parsedFileUri = await parseFileUri(fileUri)
     if (parsedFileUri === undefined) return
 
     const { fsPath: filePath } = parsedFileUri
     const postId = PostFileMapManager.getPostId(filePath)
+    console.log(postId)
 
     if (postId !== undefined && postId >= 0) {
         const dto = await PostService.getPostEditDto(postId)
@@ -178,14 +179,14 @@ export async function uploadPostFile(fileUri: Uri | undefined) {
     const fileContent = Buffer.from(await workspace.fs.readFile(parsedFileUri)).toString()
     if (isEmptyBody(fileContent)) return
 
-    const options = ['新建博文', '关联已有博文']
     const selected = await Alert.info(
         '本地文件尚未关联到博客园博文',
         {
             modal: true,
             detail: `您可以选择新建一篇博文或将本地文件关联到一篇博客园博文(您可以根据标题搜索您在博客园博文)`,
         } as MessageOptions,
-        ...options
+        '新建博文',
+        '关联已有博文'
     )
     if (selected === '关联已有博文') {
         const selectedPost = await searchPostByTitle({
@@ -201,11 +202,11 @@ export async function uploadPostFile(fileUri: Uri | undefined) {
 
         await uploadPost(postEditDto.post)
     } else if (selected === '新建博文') {
-        await saveLocalDraft(new LocalDraft(filePath))
+        await saveLocalPost(new LocalPost(filePath))
     }
 }
 
-export async function uploadPostNoConfirm(input: Post | PostTreeItem | PostEditDto | undefined) {
+export async function uploadPostNoConfirm(input?: Post | PostTreeItem | PostEditDto) {
     if (input === undefined) return
     if (input instanceof PostTreeItem) input = input.post
 
@@ -268,7 +269,7 @@ export async function uploadPostNoConfirm(input: Post | PostTreeItem | PostEditD
     )
 }
 
-export async function uploadPostFileNoConfirm(fileUri: Uri | undefined) {
+export async function uploadPostFileNoConfirm(fileUri?: Uri) {
     const parsedFileUri = await parseFileUri(fileUri)
     if (parsedFileUri === undefined) return
 
@@ -284,14 +285,14 @@ export async function uploadPostFileNoConfirm(fileUri: Uri | undefined) {
     const fileContent = Buffer.from(await workspace.fs.readFile(parsedFileUri)).toString()
     if (isEmptyBody(fileContent)) return
 
-    const options = ['新建博文', '关联已有博文']
     const selected = await Alert.info(
         '本地文件尚未关联到博客园博文',
         {
             modal: true,
             detail: `您可以选择新建一篇博文或将本地文件关联到一篇博客园博文(您可以根据标题搜索您在博客园博文)`,
-        } as MessageOptions,
-        ...options
+        },
+        '新建博文',
+        '关联已有博文'
     )
     if (selected === '关联已有博文') {
         const selectedPost = await searchPostByTitle({
@@ -307,6 +308,6 @@ export async function uploadPostFileNoConfirm(fileUri: Uri | undefined) {
 
         await uploadPostNoConfirm(postEditDto.post)
     } else if (selected === '新建博文') {
-        await saveLocalDraft(new LocalDraft(filePath))
+        await saveLocalPost(new LocalPost(filePath))
     }
 }

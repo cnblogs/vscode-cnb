@@ -17,8 +17,6 @@ import { PostReq } from '@/wasm'
 import { LocalState } from '@/ctx/local-state'
 import { AppConst } from '@/ctx/app-const'
 
-let newPostTemplate: PostEditDto | undefined
-
 async function getAuthedPostReq() {
     const token = await AuthManager.acquireToken()
     // TODO: need better solution
@@ -144,13 +142,22 @@ export namespace PostService {
         await LocalState.setState('postListState', finalState)
     }
 
+    // TODO: need caahe
     export async function fetchPostEditTemplate() {
-        newPostTemplate ??= await getPostEditDto(-1)
-        if (newPostTemplate === undefined) return undefined
+        const req = await getAuthedPostReq()
+        try {
+            const resp = await req.getTemplate()
 
-        return <PostEditDto>{
-            post: Object.assign(new Post(), newPostTemplate.post),
-            config: Object.assign({}, newPostTemplate.config),
+            // TODO: need better impl
+            const template = <{ blogPost?: Post; myConfig?: MyConfig }>JSON.parse(resp)
+
+            return <PostEditDto>{
+                post: Object.assign(new Post(), template.blogPost),
+                config: template.myConfig,
+            }
+        } catch (e) {
+            void Alert.err(`获取模板失败: ${<string>e}`)
+            throw e
         }
     }
 }
