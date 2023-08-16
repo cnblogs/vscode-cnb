@@ -1,4 +1,4 @@
-use crate::cnb::user::{UserReq, API_BASE_URL};
+use crate::cnb::user::UserReq;
 use crate::http::body_or_err;
 use crate::infra::http::setup_auth;
 use crate::infra::result::{HomoResult, ResultExt};

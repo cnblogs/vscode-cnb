@@ -6,10 +6,11 @@ import { openPostFile } from './open-post-file'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 export async function createLocalDraft() {
+    const dir = WorkspaceCfg.getWorkspaceUri().fsPath.replace(homedir(), '~')
     let title = await window.showInputBox({
         placeHolder: '请输入标题',
-        prompt: `文件将会保存到 ${WorkspaceCfg.getWorkspaceUri().fsPath.replace(homedir(), '~')} 目录下`,
-        title: '新建本地草稿',
+        prompt: `文件将会保存到 ${dir}`,
+        title: '新建博文',
         validateInput: input => {
             if (!input) return '标题不能为空'
 

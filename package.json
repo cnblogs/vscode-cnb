@@ -164,7 +164,7 @@
             },
             {
                 "command": "vscode-cnb.post.pull-all",
-                "title": "下载全部随笔",
+                "title": "下载全部",
                 "icon": "$(cloud-download)",
                 "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.pageCount > 0",
                 "category": "Cnblogs Post List"
@@ -178,7 +178,7 @@
             },
             {
                 "command": "vscode-cnb.post.create-local-draft",
-                "title": "新建本地草稿",
+                "title": "新建博文",
                 "icon": "$(new-file)",
                 "category": "Cnblogs Local Draft"
             },
@@ -322,21 +322,21 @@
             },
             {
                 "command": "vscode-cnb.post.search",
-                "title": "搜索博文",
+                "title": "搜索",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-post-list-search)",
                 "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing"
             },
             {
                 "command": "vscode-cnb.post.list-view.search.clear",
-                "title": "清除随笔搜索结果",
+                "title": "清除搜索结果",
                 "category": "Cnblogs",
                 "icon": "$(clear-all)",
                 "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing"
             },
             {
                 "command": "vscode-cnb.post.list-view.search.refresh",
-                "title": "刷新随笔搜索结果",
+                "title": "刷新搜索结果",
                 "category": "Cnblogs",
                 "icon": "$(refresh)",
                 "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view-refreshing"
