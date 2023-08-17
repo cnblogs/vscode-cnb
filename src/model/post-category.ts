@@ -11,7 +11,7 @@ export class PostCategory {
     visibleChildCount = 0
     parent?: PostCategory | null
 
-    flattenParents({ includeSelf = true }: { includeSelf?: boolean } = {}): PostCategory[] {
+    flattenParents(includeSelf: boolean): PostCategory[] {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         let i: PostCategory | null | undefined = this
         const result: PostCategory[] = []

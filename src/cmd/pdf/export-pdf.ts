@@ -91,7 +91,7 @@ const writePdfToFile = (dir: Uri, post: Post, buffer: Buffer) =>
 
 const retrieveChromiumPath = async (): Promise<string | undefined> => {
     let path: string | undefined = ChromiumPathProvider.lookupExecutableFromMacApp(ChromiumCfg.getChromiumPath())
-    if (path && fs.existsSync(path)) return path
+    if (path !== undefined && fs.existsSync(path)) return path
 
     const platform = os.platform()
     const { defaultChromiumPath } = ChromiumPathProvider

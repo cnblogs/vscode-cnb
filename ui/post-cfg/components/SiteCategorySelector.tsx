@@ -119,7 +119,7 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
         )
     }
 
-    private onCheckboxChange(categoryId: number, checked?: boolean) {
+    private onCheckboxChange(categoryId: number, checked = false) {
         this.setState({ categoryIds: checked ? [categoryId] : [] })
         this.props.onChange?.apply(this, [categoryId])
     }

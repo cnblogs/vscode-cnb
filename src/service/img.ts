@@ -40,10 +40,9 @@ export namespace ImgService {
      * @param name The name that expected applied to the downloaded image
      * @returns The {@link Readable} stream
      */
-    export async function download(url: string, name?: string): Promise<Readable> {
+    export async function download(url: string, name = 'image'): Promise<Readable> {
         const resp = await httpClient.get(url, { responseType: 'buffer' })
         const contentType = resp.headers['content-type'] ?? 'image/png'
-        name = !name ? 'image' : name
 
         const readable = Readable.from(resp.body)
 

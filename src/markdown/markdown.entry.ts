@@ -6,7 +6,7 @@ HighlightersFactory.configCodeHighlightOptions({ enableCodeLineNumber: false })
 
 function highlightLines(this: void) {
     const bgDefinitionStyleId = 'highlightedLineBackground'
-    if (!document.querySelector(`#${bgDefinitionStyleId}`)) {
+    if (document.querySelector(`#${bgDefinitionStyleId}`) === null) {
         const style = document.createElement('style')
         style.id = bgDefinitionStyleId
         style.innerHTML = `:root { --highlighted-line-bg: var(--vscode-diffEditor-insertedTextBackground) }`

@@ -40,7 +40,6 @@ async function saveLocalPost(localPost: LocalPost) {
         return
     }
     const editDto = await PostService.getTemplate()
-    if (!editDto) return
 
     const { post } = editDto
 

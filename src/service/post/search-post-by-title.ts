@@ -43,7 +43,7 @@ export function searchPostByTitle(postTitle: string, quickPickTitle: string) {
     let selected: PostPickItem | undefined = undefined
     quickPick.onDidChangeSelection(() => {
         selected = quickPick.selectedItems[0]
-        if (selected) quickPick.hide()
+        if (selected !== undefined) quickPick.hide()
     })
 
     const fut = new Promise<Post | undefined>(resolve => {

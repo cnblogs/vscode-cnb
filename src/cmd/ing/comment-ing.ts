@@ -15,7 +15,7 @@ export class CommentIngCmdHandler implements CmdHandler {
 
     async handle(): Promise<void> {
         const maxIngContentLength = 50
-        const baseTitle = this._parentCommentId || 0 > 0 ? `回复@${this._atUser?.displayName}` : '评论闪存'
+        const baseTitle = this._parentCommentId !== undefined ? `回复@${this._atUser?.displayName}` : '评论闪存'
         const input = await window.showInputBox({
             title: `${baseTitle}: ${this._ingContent.substring(0, maxIngContentLength)}${
                 this._ingContent.length > maxIngContentLength ? '...' : ''
@@ -23,9 +23,9 @@ export class CommentIngCmdHandler implements CmdHandler {
             prompt: this._atUser ? `@${this._atUser.displayName}` : '',
             ignoreFocusOut: true,
         })
-        this._content = input || ''
+        this._content = input ?? ''
         const { id: atUserId, displayName: atUserAlias } = this._atUser ?? {}
-        const atContent = atUserAlias ? `@${atUserAlias} ` : ''
+        const atContent = atUserAlias !== undefined ? `@${atUserAlias} ` : ''
 
         if (this._content) {
             return window.withProgress({ location: ProgressLocation.Notification, title: '正在请求...' }, async p => {

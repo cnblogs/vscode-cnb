@@ -146,7 +146,7 @@ export class PostCategoryMetadata extends PostMetadata {
                     new PostCategoryMetadata(
                         parent,
                         category
-                            .flattenParents()
+                            .flattenParents(true)
                             .map(({ title }) => title)
                             .join('/'),
                         category.categoryId

@@ -45,15 +45,11 @@ async function provide(downloadedExport: DownloadedBlogExport, { id: postId, tit
         })()
     )
 
-    const document = await workspace
-        .openTextDocument(Uri.parse(`${schemaWithId}:(只读) ${title}.${isMarkdown ? 'md' : 'html'}?postId=${postId}`))
-        .then(x => x, console.warn)
-    if (document) {
-        await window.showTextDocument(document).then(undefined, console.warn)
-        await languages
-            .setTextDocumentLanguage(document, isMarkdown ? 'markdown' : 'html')
-            .then(undefined, console.warn)
-    }
+    const uri = Uri.parse(`${schemaWithId}:(只读) ${title}.${isMarkdown ? 'md' : 'html'}?postId=${postId}`)
+    const document = await workspace.openTextDocument(uri)
+
+    await window.showTextDocument(document)
+    await languages.setTextDocumentLanguage(document, isMarkdown ? 'markdown' : 'html')
 
     disposable.dispose()
 }

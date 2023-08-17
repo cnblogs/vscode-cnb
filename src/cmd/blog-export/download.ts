@@ -37,8 +37,8 @@ export async function downloadBlogExport(input: unknown) {
     const { optionalInstance: blogExportProvider } = BlogExportProvider
     await setIsDownloading(true)
 
-    const onError = (msg?: string | null) => {
-        if (msg) void Alert.warn(msg)
+    const onError = (msg: string) => {
+        void Alert.warn(msg)
         if (!isFileExist) fs.rmSync(zipFilePath)
         blogExportProvider?.refreshItem(treeItem)
         setIsDownloading(false).then(undefined, console.warn)

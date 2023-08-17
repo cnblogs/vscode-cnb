@@ -14,12 +14,15 @@ async function confirm(postList: Post[]): Promise<boolean> {
     return answer === '确定'
 }
 
-export async function delPostToLocalFileMap(post: Post | PostTreeItem) {
+export async function delPostToLocalFileMap(post?: Post | PostTreeItem) {
     post = post instanceof PostTreeItem ? post.post : post
     const view = extTreeViews.postList
+
     let selectedPost = view.selection
         .map(x => (x instanceof Post ? x : x instanceof PostTreeItem ? x.post : null))
         .filter((x): x is Post => x != null)
+
+    if (post === undefined) return
     if (!selectedPost.includes(post)) {
         await revealPostListItem(post)
         selectedPost = post ? [post] : []

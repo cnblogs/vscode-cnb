@@ -74,7 +74,7 @@ export class App extends Component<AppProps, AppState> {
 
     private renderBreadcrumbs() {
         const breadcrumbs = this.state.breadcrumbs
-        if (!breadcrumbs || breadcrumbs.length <= 0) return <></>
+        if (breadcrumbs === undefined || breadcrumbs.length <= 0) return <></>
 
         const items = breadcrumbs.map(breadcrumb => ({ text: breadcrumb, key: breadcrumb }) as IBreadcrumbItem)
         return <Breadcrumb styles={{ item: { fontSize: 12 } }} items={items}></Breadcrumb>

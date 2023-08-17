@@ -18,7 +18,7 @@ export namespace InvalidPostTitleStore {
     export function store(map: InvalidPostFileNameMap): Thenable<void> {
         const [postId, invalidName] = map
         const key = buildStorageKey(postId)
-        if (invalidName) return LocalState.setState(key, invalidName)
+        if (invalidName === undefined || invalidName == null) return LocalState.setState(key, invalidName)
         else return LocalState.setState(key, undefined)
     }
 

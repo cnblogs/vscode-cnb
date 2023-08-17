@@ -20,7 +20,7 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
     if (input instanceof Uri && input.scheme === 'file') {
         postId = PostFileMapManager.getPostId(input.fsPath)
         filePath = input.fsPath
-        if (!postId) {
+        if (postId === undefined) {
             const options = ['现在去关联']
             const selected = await Alert.info(
                 '本地文件尚未关联到博文',
@@ -49,8 +49,7 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
 
     if (!filePath || !postId || !(postId >= 0)) return
 
-    const post = (await PostService.getPostEditDto(postId))?.post
-    if (!post) return
+    const { post } = await PostService.getPostEditDto(postId)
 
     let categories = await PostCategoryService.getAll()
     categories = categories.filter(x => post.categoryIds?.includes(x.categoryId))

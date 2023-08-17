@@ -12,7 +12,7 @@ let isDeleting = false
 
 async function confirmDelete(selectedPost: Post[]) {
     const result = { confirmed: false, deleteLocalFileAtSameTime: false }
-    if (!selectedPost || selectedPost.length <= 0) return result
+    if (selectedPost.length <= 0) return result
 
     const items = ['确定(保留本地文件)', '确定(同时删除本地文件)']
     const clicked = await Alert.warn(
