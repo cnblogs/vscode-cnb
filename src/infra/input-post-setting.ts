@@ -193,7 +193,7 @@ export const inputPostSetting = (
             canSelectMany: false,
             shouldResume: () => Promise.resolve(false),
         })
-        if (picked) configuredPost.isPublished = picked === items[0]
+        if (picked !== undefined) configuredPost.isPublished = picked === items[0]
 
         return calculateNextStep()
     }

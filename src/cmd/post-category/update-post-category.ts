@@ -21,7 +21,6 @@ class UpdatePostCategoryTreeViewCmdHandler extends BasePostCategoryTreeViewCmdHa
         if (addDto === undefined) return
 
         const updateDto = Object.assign(new PostCategory(), category, addDto)
-        if (!updateDto) return
 
         await window.withProgress(
             {

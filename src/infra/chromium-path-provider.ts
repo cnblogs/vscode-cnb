@@ -14,7 +14,9 @@ export namespace ChromiumPathProvider {
     export type ChromiumProviderFunc = () => Promise<string | undefined>
     const selectFromLocalTitle = '选择本地Chromium'
     export const lookupExecutableFromMacApp = (path?: string) => {
-        if (path?.endsWith('.app')) {
+        if (path === undefined) return
+
+        if (path.endsWith('.app')) {
             path = `${path}/Contents/MacOS`
             if (!fs.existsSync(path)) return undefined
 
@@ -23,7 +25,6 @@ export namespace ChromiumPathProvider {
                 if (fs.statSync(path).mode & fs.constants.S_IXUSR) return path
             }
         }
-
         return path
     }
     export const selectFromLocal: ChromiumProviderFunc = async (): Promise<string | undefined> => {
@@ -74,7 +75,7 @@ export namespace ChromiumPathProvider {
                 }
             }
         )
-        if (chromiumPath) void Alert.info(`Chromium 已下载至${chromiumPath}`)
+        if (chromiumPath === undefined) void Alert.info(`Chromium 已下载至${chromiumPath}`)
 
         return chromiumPath
     }

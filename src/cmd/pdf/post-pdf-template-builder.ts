@@ -15,7 +15,7 @@ export namespace PostPdfTemplateBuilder {
         const { isMarkdown, id: postId } = post
 
         const localFilePath = PostFileMapManager.getFilePath(postId)
-        postBody = localFilePath ? fs.readFileSync(localFilePath).toString('utf-8') : postBody
+        postBody = localFilePath !== undefined ? fs.readFileSync(localFilePath).toString('utf-8') : postBody
 
         const html = isMarkdown
             ? markdownItFactory({

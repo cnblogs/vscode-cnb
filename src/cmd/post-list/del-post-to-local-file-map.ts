@@ -25,7 +25,7 @@ export async function delPostToLocalFileMap(post?: Post | PostTreeItem) {
     if (post === undefined) return
     if (!selectedPost.includes(post)) {
         await revealPostListItem(post)
-        selectedPost = post ? [post] : []
+        selectedPost = [post]
     }
     if (selectedPost.length <= 0) return
 

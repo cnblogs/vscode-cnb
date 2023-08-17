@@ -20,9 +20,9 @@ export async function createLocal() {
     if (title === undefined) return
 
     const { fsPath: workspacePath } = WorkspaceCfg.getWorkspaceUri()
-    if (!['.md', '.html'].some(ext => title !== undefined && title.endsWith(ext))) {
+    if (!['.md', '.html'].some(ext => title !== undefined && title.endsWith(ext)))
         title = `${title}${title.endsWith('.') ? '' : '.'}md`
-    }
+
     const filePath = path.join(workspacePath, title)
 
     try {

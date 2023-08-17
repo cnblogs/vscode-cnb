@@ -28,7 +28,7 @@ export async function revealPostListItem(
 }
 
 export function getListState() {
-    return <PostListState>LocalState.getState('postListState')
+    return <PostListState | undefined>LocalState.getState('postListState')
 }
 
 export async function updatePostListState(

@@ -113,7 +113,7 @@ export namespace PostListView {
                 if (isNaN(n) || !n) return '请输入正确格式的页码'
 
                 const state = getListState()
-                if (!state) return '博文列表尚未加载'
+                if (state === undefined) return '博文列表尚未加载'
 
                 if (isPageIndexInRange(n, state)) return undefined
 

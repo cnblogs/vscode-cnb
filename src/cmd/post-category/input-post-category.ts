@@ -13,11 +13,10 @@ const defaultSteps: PostCategoryInputStep[] = ['title', 'description', 'visible'
 export type PostCategoryInputStep = keyof PostCategoryAddDto
 
 export const inputPostCategory = ({
-    title,
+    title = '编辑分类',
     category,
     steps = defaultSteps,
 }: Partial<InputOption>): Promise<PostCategoryAddDto | undefined> => {
-    title = title ? title : '编辑分类'
     const result: PostCategoryAddDto = {
         title: '',
         visible: false,
