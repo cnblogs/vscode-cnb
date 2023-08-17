@@ -65,7 +65,7 @@ export async function renamePost(arg: Post | PostTreeItem) {
                 editingPost.title = input
                 let hasUpdated = false
                 try {
-                    await PostService.updatePost(editingPost)
+                    await PostService.update(editingPost)
                     post.title = input
                     postDataProvider.fireTreeDataChangedEvent(post)
                     hasUpdated = true

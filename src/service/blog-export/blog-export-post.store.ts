@@ -69,34 +69,33 @@ export class ExportPostStore implements Disposable {
         )
     }
 
-    list() {
-        return this._table
-            .findAll({
-                where: {
-                    postType: {
-                        [Op.eq]: 'BlogPost',
-                    },
+    async list() {
+        const all = await this._table.findAll({
+            where: {
+                postType: {
+                    [Op.eq]: 'BlogPost',
                 },
-                order: [['id', 'desc']],
-                limit: 1000,
-                attributes: {
-                    exclude: ['body'],
-                },
-            })
-            .then(data => data.map(x => x.dataValues))
+            },
+            order: [['id', 'desc']],
+            limit: 1000,
+            attributes: {
+                exclude: ['body'],
+            },
+        })
+
+        return all.map(x => x.dataValues)
     }
 
-    getBody(id: number) {
-        return this._table
-            .findOne({
-                where: {
-                    id: {
-                        [Op.eq]: id,
-                    },
+    async getBody(id: number) {
+        const one = await this._table.findOne({
+            where: {
+                id: {
+                    [Op.eq]: id,
                 },
-                attributes: ['body'],
-            })
-            .then(x => x?.dataValues.body ?? '')
+            },
+            attributes: ['body'],
+        })
+        return one?.dataValues.body ?? ''
     }
 
     dispose() {

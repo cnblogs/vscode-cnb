@@ -31,10 +31,10 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
                 ...options
             )
             if (selected === options[0]) {
-                const selectedPost = await searchPostByTitle({
-                    postTitle: path.basename(filePath, path.extname(filePath)),
-                    quickPickTitle: '搜索要关联的博文',
-                })
+                const selectedPost = await searchPostByTitle(
+                    path.basename(filePath, path.extname(filePath)),
+                    '搜索要关联的博文'
+                )
                 if (selectedPost) {
                     await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
                     void Alert.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`)

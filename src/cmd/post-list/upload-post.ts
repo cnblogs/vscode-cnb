@@ -39,7 +39,7 @@ async function saveLocalPost(localPost: LocalPost) {
         void Alert.warn('格式错误, 只支持 Markdown 文件')
         return
     }
-    const editDto = await PostService.fetchPostEditTemplate()
+    const editDto = await PostService.getTemplate()
     if (!editDto) return
 
     const { post } = editDto
@@ -143,7 +143,7 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto) {
             let isSaved = false
 
             try {
-                const { id: postId } = await PostService.updatePost(thePost)
+                const { id: postId } = await PostService.update(thePost)
                 await openPostInVscode(postId)
                 thePost.id = postId
 
@@ -189,10 +189,10 @@ export async function uploadPostFile(fileUri?: Uri) {
         '关联已有博文'
     )
     if (selected === '关联已有博文') {
-        const selectedPost = await searchPostByTitle({
-            postTitle: path.basename(filePath, path.extname(filePath)),
-            quickPickTitle: '搜索要关联的博文',
-        })
+        const selectedPost = await searchPostByTitle(
+            path.basename(filePath, path.extname(filePath)),
+            '搜索要关联的博文'
+        )
         if (selectedPost === undefined) return
 
         await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
@@ -251,7 +251,7 @@ export async function uploadPostNoConfirm(input?: Post | PostTreeItem | PostEdit
             let isSaved = false
 
             try {
-                const { id: postId } = await PostService.updatePost(thePost)
+                const { id: postId } = await PostService.update(thePost)
                 await openPostInVscode(postId)
                 thePost.id = postId
 
@@ -295,10 +295,10 @@ export async function uploadPostFileNoConfirm(fileUri?: Uri) {
         '关联已有博文'
     )
     if (selected === '关联已有博文') {
-        const selectedPost = await searchPostByTitle({
-            postTitle: path.basename(filePath, path.extname(filePath)),
-            quickPickTitle: '搜索要关联的博文',
-        })
+        const selectedPost = await searchPostByTitle(
+            path.basename(filePath, path.extname(filePath)),
+            '搜索要关联的博文'
+        )
         if (selectedPost === undefined) return
 
         await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)

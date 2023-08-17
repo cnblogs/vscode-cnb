@@ -66,7 +66,7 @@ export async function delSelectedPost(arg: unknown) {
             increment: 0,
         })
         try {
-            await PostService.delPost(...selectedPost.map(p => p.id))
+            await PostService.del(...selectedPost.map(p => p.id))
             if (isToDeleteLocalFile) {
                 selectedPost
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')

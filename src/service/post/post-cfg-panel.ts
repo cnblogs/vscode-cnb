@@ -181,7 +181,7 @@ export namespace PostCfgPanel {
                                 return
                             }
                         }
-                        const postSavedModel = await PostService.updatePost(postToUpdate)
+                        const postSavedModel = await PostService.update(postToUpdate)
                         panel.dispose()
                         successCallback(Object.assign({}, postToUpdate, postSavedModel))
                     } catch (err) {

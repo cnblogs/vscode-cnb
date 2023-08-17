@@ -7,6 +7,7 @@ import { PostListState } from '@/model/post-list-state'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { execCmd } from '@/infra/cmd'
 import { PageList } from '@/model/page'
+import { getListState, updatePostListState } from '@/service/post/post-list-view'
 
 let refreshTask: Promise<boolean> | null = null
 let isRefreshing = false
@@ -27,7 +28,7 @@ async function setPostListContext(pageCount: number, hasPrev: boolean, hasNext: 
 async function goPage(f: (currentIndex: number) => number) {
     if (isRefreshing) return
 
-    const state = PostService.getPostListState()
+    const state = getListState()
     if (state === undefined) {
         void Alert.warn('操作失败: 状态错误')
         return
@@ -39,7 +40,7 @@ async function goPage(f: (currentIndex: number) => number) {
         return
     }
 
-    await PostService.updatePostListState(index, state.pageCap, state.pageItemCount, state.pageCount)
+    await updatePostListState(index, state.pageCap, state.pageItemCount, state.pageCount)
     await PostListView.refresh()
 }
 
@@ -48,7 +49,7 @@ function isPageIndexInRange(pageIndex: number, state: PostListState) {
 }
 
 function updatePostListViewTitle() {
-    const state = PostService.getPostListState()
+    const state = getListState()
     if (state === undefined) return
 
     const views = [extTreeViews.postList, extTreeViews.anotherPostList]
@@ -76,14 +77,14 @@ export namespace PostListView {
         const fut = async () => {
             await setRefreshing(true)
             const page = await postDataProvider.loadPost()
-            const postCount = await PostService.getPostCount()
+            const postCount = await PostService.getCount()
             const pageCount = calcPageCount(page.cap, postCount)
             const pageIndex = page.index
             const hasPrev = PageList.hasPrev(pageIndex)
             const hasNext = PageList.hasNext(pageIndex, pageCount)
 
             await setPostListContext(pageCount, hasPrev, hasNext)
-            await PostService.updatePostListState(pageIndex, page.cap, page.items.length, pageCount)
+            await updatePostListState(pageIndex, page.cap, page.items.length, pageCount)
             updatePostListViewTitle()
             await postDataProvider.refreshSearch()
             await setRefreshing(false)
@@ -111,7 +112,7 @@ export namespace PostListView {
                 const n = Number.parseInt(i)
                 if (isNaN(n) || !n) return '请输入正确格式的页码'
 
-                const state = PostService.getPostListState()
+                const state = getListState()
                 if (!state) return '博文列表尚未加载'
 
                 if (isPageIndexInRange(n, state)) return undefined
