@@ -25,7 +25,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
         super(props)
         const { featureImageUrl, summary } = props
 
-        this.state = { isCollapse: !featureImageUrl && !summary, disabled: false }
+        this.state = { isCollapse: featureImageUrl === undefined && summary === undefined, disabled: false }
         window.addEventListener('message', this.observerMessage)
     }
 
@@ -45,7 +45,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
                             styles={{ root: { height: 'auto' } }}
                         />
                     </ActionButton>
-                    {!isCollapse && featureImageUrl ? (
+                    {!isCollapse && featureImageUrl !== undefined ? (
                         <ActionButton
                             onClick={() => void this.props.onFeatureImageChange?.apply(this, [''])}
                             styles={{ root: { height: 'auto', paddingLeft: 0 } }}

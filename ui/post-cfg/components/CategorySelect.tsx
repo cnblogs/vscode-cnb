@@ -38,7 +38,7 @@ class CategorySelect extends Component<CategoriesSelectorProps, CategoriesSelect
         )
     }
 
-    private onCheckboxChanged(categoryId: number, isChecked?: boolean) {
+    private onCheckboxChanged(categoryId: number, isChecked = false) {
         const { categoryIds } = this.state
 
         const position = categoryIds.findIndex(eq(categoryId))

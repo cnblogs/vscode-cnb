@@ -35,7 +35,7 @@ export default class NestCategorySelect extends React.Component<
     }
 
     render() {
-        if (this.props.parent && !this.state.children) {
+        if (this.props.parent !== null && this.props.parent !== undefined && !this.state.children) {
             PersonalCategoryStore.getByParent(this.props.parent)
                 .then(v => this.setState({ children: v }))
                 .catch(console.warn)
@@ -45,7 +45,7 @@ export default class NestCategorySelect extends React.Component<
         const categories = this.isRoot ? PersonalCategoryStore.get() : this.state.children ?? []
         return (
             <Stack tokens={{ childrenGap: 10 }}>
-                {(this.state.showAll ? categories : take(categories, this.state.limit)).map(c => (
+                {(this.state.showAll === true ? categories : take(categories, this.state.limit)).map(c => (
                     <div style={{ paddingLeft: `calc(10px * ${this.props.level ?? 0})` }}>
                         <Stack tokens={{ childrenGap: 10 }}>
                             <Stack horizontal>
@@ -96,15 +96,15 @@ export default class NestCategorySelect extends React.Component<
                 {this.isRoot ? (
                     <div>
                         <Link
-                            onClick={() => this.setState({ showAll: !this.state.showAll })}
+                            onClick={() => this.setState({ showAll: this.state.showAll !== true })}
                             style={{ height: 'auto', padding: 0, fontSize: '14px' }}
                         >
                             <Stack horizontal tokens={{ childrenGap: 0 }} verticalAlign="center">
                                 <Icon
-                                    iconName={this.state.showAll ? 'DoubleChevronUp12' : 'DoubleChevronDown12'}
+                                    iconName={this.state.showAll === true ? 'DoubleChevronUp12' : 'DoubleChevronDown12'}
                                     style={{ margin: 0, fontSize: '12px' }}
                                 />
-                                <span>&nbsp;{this.state.showAll ? '收起' : '展开'}</span>
+                                <span>&nbsp;{this.state.showAll === true ? '收起' : '展开'}</span>
                             </Stack>
                         </Link>
                     </div>

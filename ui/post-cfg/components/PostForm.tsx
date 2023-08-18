@@ -121,7 +121,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                         inSiteHome={this.state.inSiteHome}
                     />
                     <SiteCategorySelector
-                        categoryIds={this.state.siteCategoryId ? [this.state.siteCategoryId] : []}
+                        categoryIds={this.state.siteCategoryId !== undefined ? [this.state.siteCategoryId] : []}
                         onChange={categoryId => this.setState({ siteCategoryId: categoryId })}
                     />
                     <PostEntryNameInput

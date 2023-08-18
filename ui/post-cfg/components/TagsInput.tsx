@@ -44,7 +44,7 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
     }
 
     render() {
-        return this.state ? (
+        return (
             <Stack tokens={{ childrenGap: 8 }}>
                 <Label>Tag标签</Label>
                 <Stack>
@@ -106,8 +106,6 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
                     />
                 </Stack>
             </Stack>
-        ) : (
-            <></>
         )
     }
 

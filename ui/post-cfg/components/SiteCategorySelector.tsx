@@ -42,7 +42,7 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
         const group = siteCategories.map(parent => {
             const { children, id: parentId } = parent
             const { categoryExpandState } = this.state
-            const isParentExpanded = !!categoryExpandState[parentId]
+            const isParentExpanded = categoryExpandState[parentId] === true
             const groupItems = children.map(child => (
                 <Checkbox
                     key={child.id.toString()}
@@ -69,7 +69,7 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
                             ></ActionButton>
                         </ActionButton>
                     </Stack>
-                    {this.state.categoryExpandState[parentId] ? (
+                    {this.state.categoryExpandState[parentId] === true ? (
                         <Stack horizontal wrap tokens={{ childrenGap: 12, padding: '0 0 4px 16px' }}>
                             {groupItems}
                         </Stack>
