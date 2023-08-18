@@ -2,7 +2,7 @@ import type puppeteer from 'puppeteer-core'
 import fs from 'fs'
 import path from 'path'
 import os from 'os'
-import { MessageOptions, Progress, ProgressLocation, Uri, window, workspace } from 'vscode'
+import { Progress, ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { PostService } from '@/service/post/post'
@@ -169,7 +169,7 @@ const reportErrors = (errors: string[] | undefined) => {
         void Alert.err('导出 PDF 时遇到错误', {
             modal: true,
             detail: errors.join('\n'),
-        } as MessageOptions)
+        })
     }
 }
 

@@ -21,7 +21,7 @@ export namespace IngService {
     export async function pub(content: string, isPrivate: boolean) {
         try {
             const req = await getAuthedIngReq()
-            await req.pub(content, isPrivate)
+            await req.publish(content, isPrivate)
             return true
         } catch (e) {
             void Alert.err(`闪存发布失败: ${<string>e}`)

@@ -1,4 +1,4 @@
-import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
+import { ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostFileMap, PostFileMapManager } from '@/service/post/post-file-map'
@@ -20,7 +20,7 @@ async function confirmDelete(selectedPost: Post[]) {
         {
             detail: `确认后将会删除 ${selectedPost.map(x => x.title).join(', ')} 这${selectedPost.length}篇博文吗?`,
             modal: true,
-        } as MessageOptions,
+        },
         ...items
     )
     switch (clicked) {

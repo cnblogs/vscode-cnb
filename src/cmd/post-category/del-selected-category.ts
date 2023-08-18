@@ -1,4 +1,4 @@
-import { MessageOptions, ProgressLocation, window } from 'vscode'
+import { ProgressLocation, window } from 'vscode'
 import { PostCategory } from '@/model/post-category'
 import { PostCategoryService } from '@/service/post/post-category'
 import { PostCategoriesListTreeItem } from '@/tree-view/model/category-list-tree-item'
@@ -54,7 +54,7 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
                                     }`
                             )
                             .join('\n'),
-                    } as MessageOptions)
+                    })
                 }
                 if (errs.length < selectedCategories.length) refreshPostCategoryList()
             }
@@ -70,7 +70,7 @@ export class DeletePostCategoriesHandler extends BaseMultiSelectablePostCategory
             {
                 detail: info,
                 modal: true,
-            } as MessageOptions,
+            },
             ...options
         )
 

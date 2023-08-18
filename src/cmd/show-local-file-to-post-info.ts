@@ -1,5 +1,5 @@
 import path from 'path'
-import { MessageOptions, Uri } from 'vscode'
+import { Uri } from 'vscode'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostCategoryService } from '@/service/post/post-category'
@@ -27,7 +27,7 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
                 {
                     modal: true,
                     detail: filePath,
-                } as MessageOptions,
+                },
                 ...options
             )
             if (selected === options[0]) {
@@ -67,7 +67,7 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
             )}\n博文发布状态: ${post.isPublished ? '已发布' : '未发布'}\n博文访问权限: ${
                 post.accessPermissionDesc
             }\n${categoryDesc}${tagsDesc}`.replace(/\n$/, ''),
-        } as MessageOptions,
+        },
         ...options
     )
     if (selected === options[0]) {

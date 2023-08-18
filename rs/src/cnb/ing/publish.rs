@@ -11,8 +11,8 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_class = IngReq)]
 impl IngReq {
-    #[wasm_bindgen(js_name = pub)]
-    pub async fn export_pub(&self, content: &str, is_private: bool) -> Result<(), String> {
+    #[wasm_bindgen(js_name = publish)]
+    pub async fn export_publish(&self, content: &str, is_private: bool) -> Result<(), String> {
         panic_hook!();
         let url = openapi!("/statuses");
 

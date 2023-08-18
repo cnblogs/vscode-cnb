@@ -1,7 +1,7 @@
 mod comment;
 mod get_comment;
 mod get_list;
-mod r#pub;
+mod publish;
 
 use crate::panic_hook;
 use alloc::string::{String, ToString};
@@ -28,7 +28,7 @@ impl IngReq {
 }
 
 #[wasm_bindgen(js_name = ingStarIconToText)]
-pub fn ing_star_icon_to_text(icon: &str) -> String {
+pub fn ing_star_tag_to_text(icon: &str) -> String {
     lazy_static! {
         static ref REGEX: Regex = Regex::new(r#"<img.*alt="\[(.*?)]".*>"#).unwrap();
     }

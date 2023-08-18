@@ -1,6 +1,6 @@
 import { escapeRegExp } from 'lodash-es'
 import path from 'path'
-import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
+import { ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/model/post'
 import { PostService } from '@/service/post/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
@@ -75,7 +75,7 @@ export async function renamePost(arg?: Post | PostTreeItem) {
                     void Alert.err('更新博文失败', {
                         modal: true,
                         detail: err instanceof Error ? err.message : '服务器返回异常',
-                    } as MessageOptions)
+                    })
                 } finally {
                     progress.report({ increment: 100 })
                 }

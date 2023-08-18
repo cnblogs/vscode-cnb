@@ -1,4 +1,4 @@
-import { Uri, workspace, window, ProgressLocation, MessageOptions } from 'vscode'
+import { Uri, workspace, window, ProgressLocation } from 'vscode'
 import { Post } from '@/model/post'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
@@ -183,7 +183,7 @@ export async function uploadPostFile(fileUri?: Uri) {
         {
             modal: true,
             detail: `您可以选择新建一篇博文或将本地文件关联到一篇博客园博文(您可以根据标题搜索您在博客园博文)`,
-        } as MessageOptions,
+        },
         '新建博文',
         '关联已有博文'
     )
