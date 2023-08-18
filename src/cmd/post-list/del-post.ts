@@ -41,8 +41,8 @@ export async function delSelectedPost(arg: unknown) {
     else if (arg instanceof PostTreeItem) post = arg.post
     else return
 
-    const selectedPost: Post[] = post ? [post] : []
-    extTreeViews.visiblePostList()?.selection.map(item => {
+    const selectedPost = [post]
+    extTreeViews.visiblePostList()?.selection.forEach(item => {
         const post = item instanceof PostTreeItem ? item.post : item
         if (post instanceof Post && !selectedPost.includes(post)) selectedPost.push(post)
     })

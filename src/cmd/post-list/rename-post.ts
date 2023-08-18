@@ -34,9 +34,12 @@ async function renameLinkedFile(post: Post): Promise<void> {
     }
 }
 
-export async function renamePost(arg: Post | PostTreeItem) {
-    const post = arg instanceof PostTreeItem ? arg.post : arg
-    if (!post) return
+export async function renamePost(arg?: Post | PostTreeItem) {
+    if (arg === undefined) return
+
+    let post: Post
+    if (arg instanceof PostTreeItem) post = arg.post
+    else post = arg // arg: Post
 
     await revealPostListItem(post)
 
@@ -57,7 +60,6 @@ export async function renamePost(arg: Post | PostTreeItem) {
             async progress => {
                 progress.report({ increment: 10 })
                 const editDto = await PostService.getPostEditDto(post.id)
-                if (!editDto) return false
 
                 progress.report({ increment: 60 })
 

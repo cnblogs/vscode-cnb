@@ -63,11 +63,11 @@ async function saveLocalPost(localPost: LocalPost) {
         beforeUpdate: async (postToSave, panel) => {
             await saveFilePendingChanges(localPost.filePath)
             // 本地文件已经被删除了
-            if (!localPost.exist && panel) {
+            if (!localPost.exist) {
                 void Alert.warn('本地文件已删除, 无法新建博文')
                 return false
             }
-            if (MarkdownCfg.getAutoExtractImgSrc())
+            if (MarkdownCfg.getAutoExtractImgSrc() !== undefined)
                 await extractImg(localPost.filePathUri, MarkdownCfg.getAutoExtractImgSrc()).catch(console.warn)
 
             postToSave.postBody = await localPost.readAllText()
@@ -101,9 +101,9 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto) {
     if (post === undefined) return
 
     const localFilePath = PostFileMapManager.getFilePath(post.id)
-    if (!localFilePath) return Alert.warn('本地无该博文的编辑记录')
+    if (localFilePath === undefined) return Alert.warn('本地无该博文的编辑记录')
 
-    if (MarkdownCfg.getAutoExtractImgSrc())
+    if (MarkdownCfg.getAutoExtractImgSrc() !== undefined)
         await extractImg(Uri.file(localFilePath), MarkdownCfg.getAutoExtractImgSrc()).catch(console.warn)
 
     await saveFilePendingChanges(localFilePath)
@@ -221,9 +221,9 @@ export async function uploadPostNoConfirm(input?: Post | PostTreeItem | PostEdit
     if (post === undefined) return
 
     const localFilePath = PostFileMapManager.getFilePath(post.id)
-    if (!localFilePath) return Alert.warn('本地无该博文的编辑记录')
+    if (localFilePath === undefined) return Alert.warn('本地无该博文的编辑记录')
 
-    if (MarkdownCfg.getAutoExtractImgSrc())
+    if (MarkdownCfg.getAutoExtractImgSrc() !== undefined)
         await extractImg(Uri.file(localFilePath), MarkdownCfg.getAutoExtractImgSrc()).catch(console.warn)
 
     await saveFilePendingChanges(localFilePath)

@@ -104,10 +104,10 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
         path = defaultChromiumPath.win.find(x => fs.existsSync(x)) ?? ''
     }
 
-    if (!path) {
+    if (path === undefined) {
         const { Options: options } = ChromiumPathProvider
         const input = await Alert.warn(
-            '未找到Chromium可执行文件',
+            '未找到 Chromium',
             {
                 modal: true,
             },
@@ -143,14 +143,12 @@ function handlePostInput(post: Post | PostTreeItem) {
 }
 
 async function handleUriInput(uri: Uri) {
-    const postList: Post[] = []
     const { fsPath } = uri
     const postId = PostFileMapManager.getPostId(fsPath)
-    const { post: inputPost } = (await PostService.getPostEditDto(postId && postId > 0 ? postId : -1)) ?? {}
+    if (postId === undefined) return []
+    const { post: inputPost } = await PostService.getPostEditDto(postId)
 
-    if (!inputPost) {
-        return []
-    } else if (inputPost.id <= 0) {
+    if (inputPost.id <= 0) {
         Object.assign(inputPost, {
             id: -1,
             title: path.basename(fsPath, path.extname(fsPath)),
@@ -158,9 +156,7 @@ async function handleUriInput(uri: Uri) {
         } as Post)
     }
 
-    postList.push(inputPost)
-
-    return postList
+    return [inputPost]
 }
 
 const mapToPostEditDto = async (postList: Post[]) =>
