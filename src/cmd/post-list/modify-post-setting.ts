@@ -39,7 +39,7 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
         breadcrumbs: ['更新博文设置', editDto.post.title],
         post: postEditDto,
         localFileUri: localFilePath !== undefined ? Uri.file(localFilePath) : undefined,
-        successCallback: ({ id }) => {
+        afterSuccess: ({ id }) => {
             void Alert.info('博文已更新')
             postDataProvider.fireTreeDataChangedEvent(id)
             postCategoryDataProvider.onPostUpdated({ refreshPost: false, postIds: [id] })

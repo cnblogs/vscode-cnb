@@ -2,35 +2,29 @@ import { homedir } from 'os'
 import path from 'path'
 import { Uri, window, workspace } from 'vscode'
 import { osOpenActiveFile } from '@/cmd/open/os-open-active-file'
-import { openPostFile } from './open-post-file'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
+import { saveLocalPost } from '@/cmd/post-list/upload-post'
+import { openPostFile } from '@/cmd/post-list/open-post-file'
+import { LocalPost } from '@/service/local-post'
+import { existsSync } from 'fs'
 
-export async function createLocal() {
-    const dir = WorkspaceCfg.getWorkspaceUri().fsPath.replace(homedir(), '~')
-    let title = await window.showInputBox({
+export async function createPost() {
+    const workspacePath = WorkspaceCfg.getWorkspaceUri().fsPath
+    const dir = workspacePath.replace(homedir(), '~')
+    const title = await window.showInputBox({
         placeHolder: '请输入标题',
-        prompt: `文件将会保存到 ${dir}`,
+        prompt: `文件将会保存至 ${dir}`,
         title: '新建博文',
         validateInput: input => {
-            if (!input) return '标题不能为空'
-
-            return undefined
+            if (input === '') return '标题不能为空'
+            return
         },
     })
     if (title === undefined) return
 
-    const { fsPath: workspacePath } = WorkspaceCfg.getWorkspaceUri()
-    if (!['.md', '.html'].some(ext => title !== undefined && title.endsWith(ext)))
-        title = `${title}${title.endsWith('.') ? '' : '.'}md`
+    const filePath = path.join(workspacePath, `${title}.md`)
 
-    const filePath = path.join(workspacePath, title)
-
-    try {
-        await workspace.fs.stat(Uri.file(filePath))
-    } catch (e) {
-        // 文件不存在
-        await workspace.fs.writeFile(Uri.file(filePath), Buffer.from(''))
-    }
+    if (!existsSync(filePath)) await workspace.fs.writeFile(Uri.file(filePath), Buffer.from('# Hello World\n'))
 
     await openPostFile(filePath)
     await osOpenActiveFile()
@@ -50,4 +44,6 @@ export async function createLocal() {
             void focusEditor().finally(() => resolve())
         }, 50)
     })
+
+    await saveLocalPost(new LocalPost(filePath))
 }

@@ -16,6 +16,7 @@ import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { PostListView } from '@/cmd/post-list/post-list-view'
 import { extractImg } from '@/cmd/extract-img/extract-img'
 import { LocalPost } from '@/service/local-post'
+import { existsSync } from 'fs'
 
 async function parseFileUri(fileUri?: Uri) {
     if (fileUri !== undefined && fileUri.scheme !== 'file') return undefined
@@ -33,44 +34,45 @@ async function parseFileUri(fileUri?: Uri) {
     return undefined
 }
 
-async function saveLocalPost(localPost: LocalPost) {
+export async function saveLocalPost(localPost: LocalPost) {
     // check format
     if (!['.md', '.mkd'].some(x => localPost.fileExt === x)) {
         void Alert.warn('格式错误, 只支持 Markdown 文件')
         return
     }
-    const editDto = await PostService.getTemplate()
-
-    const { post } = editDto
+    const { post } = await PostService.getTemplate()
 
     post.title = localPost.fileNameWithoutExt
     post.isMarkdown = true
-    post.categoryIds ??= []
+    post.categoryIds = []
     void PostCfgPanel.open({
-        panelTitle: '',
+        panelTitle: post.title,
         localFileUri: localPost.filePathUri,
         breadcrumbs: ['新建博文', '博文设置', post.title],
         post,
-        successCallback: async savedPost => {
+        afterSuccess: async savedPost => {
             await PostListView.refresh()
             await openPostFile(localPost)
 
             await PostFileMapManager.updateOrCreate(savedPost.id, localPost.filePath)
             await openPostFile(localPost)
-            postDataProvider.fireTreeDataChangedEvent(undefined)
+            postDataProvider.fireTreeDataChangedEvent()
             void Alert.info('博文已创建')
         },
         beforeUpdate: async postToSave => {
             await saveFilePendingChanges(localPost.filePath)
-            // 本地文件已经被删除了
-            if (!localPost.exist) {
+
+            if (!existsSync(localPost.filePath)) {
                 void Alert.warn('本地文件已删除, 无法新建博文')
                 return false
             }
-            if (MarkdownCfg.getAutoExtractImgSrc() !== undefined)
-                await extractImg(localPost.filePathUri, MarkdownCfg.getAutoExtractImgSrc()).catch(console.warn)
+            const body = await localPost.readAllText()
+            if (isEmptyBody(body)) return false
 
-            postToSave.postBody = await localPost.readAllText()
+            if (MarkdownCfg.getAutoExtractImgSrc() !== undefined)
+                await extractImg(localPost.filePathUri, MarkdownCfg.getAutoExtractImgSrc())
+
+            postToSave.postBody = body
             return true
         },
     })

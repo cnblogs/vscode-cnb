@@ -46,7 +46,7 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
     render() {
         return (
             <Stack tokens={{ childrenGap: 8 }}>
-                <Label>Tag标签</Label>
+                <Label>标签</Label>
                 <Stack>
                     <TagPicker
                         removeButtonAriaLabel="Remove"

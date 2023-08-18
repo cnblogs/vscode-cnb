@@ -20,7 +20,6 @@ import PostEntryNameInput from './PostEntryNameInput'
 import PostTitleInput from 'post-cfg/components/PostTitleInput'
 import NestCategorySelect from './NestCategorySelect'
 import { Post } from '@/model/post'
-import { Alert } from '../../../src/infra/alert'
 
 export type IPostFormProps = {
     post?: Post
@@ -149,11 +148,15 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
 
     private onConfirm() {
         this.context.set({ disabled: true, status: 'submitting' })
-        getVsCodeApiSingleton().postMessage({
-            command: Webview.Cmd.Ext.uploadPost,
-            post: Object.assign({}, this.props.post, this.state),
-        } as WebviewMsg.UploadPostMsg)
-        this.context.set({ disabled: false, status: '' })
+        try {
+            getVsCodeApiSingleton().postMessage({
+                command: Webview.Cmd.Ext.uploadPost,
+                post: Object.assign({}, this.props.post, this.state),
+            } as WebviewMsg.UploadPostMsg)
+        } catch (e) {
+            /* do nothing */
+        }
+        this.context.set({ disabled: false, status: 'loading' })
     }
 
     private onCancel() {

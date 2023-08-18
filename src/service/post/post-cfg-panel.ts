@@ -21,20 +21,19 @@ type PostCfgPanelOpenOption = {
     panelTitle?: string
     localFileUri?: Uri
     breadcrumbs?: string[]
-    successCallback: (post: Post) => any
+    afterSuccess: (post: Post) => any
     beforeUpdate?: (postToUpdate: Post, panel: vscode.WebviewPanel) => Promise<boolean>
 }
 
 export namespace PostCfgPanel {
-    const resourceRootUri = () => globalCtx.assetsUri
-
     const setHtml = async (webview: vscode.Webview): Promise<void> => {
         webview.html = await parseWebviewHtml('post-cfg', webview)
     }
 
     export const buildPanelId = (postId: number, postTitle: string): string => `${postId}-${postTitle}`
     export const findPanelById = (panelId: string) => panels.get(panelId)
-    export const open = async (option: PostCfgPanelOpenOption) => {
+
+    export async function open(option: PostCfgPanelOpenOption) {
         const { post, breadcrumbs, localFileUri } = option
         const panelTitle = option.panelTitle !== undefined ? option.panelTitle : `博文设置 - ${post.title}`
         await openPostFile(post, {
@@ -49,12 +48,13 @@ export namespace PostCfgPanel {
         const { webview } = panel
 
         disposables.push(
-            webview.onDidReceiveMessage(async ({ command }: WebviewMsg.Msg) => {
+            panel.webview.onDidReceiveMessage(async ({ command }: WebviewMsg.Msg) => {
+                console.log(command)
                 if (command !== Webview.Cmd.Ext.refreshPost) return
 
                 await webview.postMessage({
                     command: Webview.Cmd.Ui.setFluentIconBaseUrl,
-                    baseUrl: webview.asWebviewUri(Uri.joinPath(resourceRootUri(), 'fonts')).toString() + '/',
+                    baseUrl: webview.asWebviewUri(Uri.joinPath(globalCtx.assetsUri, 'fonts')).toString() + '/',
                 } as WebviewMsg.SetFluentIconBaseUrlMsg)
                 await webview.postMessage({
                     command: Webview.Cmd.Ui.editPostCfg,
@@ -82,7 +82,7 @@ export namespace PostCfgPanel {
         if (panelId === undefined) return
 
         const panel = findPanelById(panelId)
-        if (!panel) return
+        if (panel === undefined) return
 
         try {
             const { breadcrumbs } = options
@@ -166,35 +166,22 @@ export namespace PostCfgPanel {
         if (panel === undefined) return
 
         const { webview } = panel
-        const { beforeUpdate, successCallback } = options
+        const { beforeUpdate, afterSuccess } = options
         return webview.onDidReceiveMessage(async message => {
-            const { command } = (message ?? {}) as WebviewMsg.Msg
+            const { command } = message as WebviewMsg.Msg
             switch (command) {
-                case Webview.Cmd.Ext.uploadPost:
-                    try {
-                        const { post: postToUpdate } = message as WebviewMsg.UploadPostMsg
-                        if (beforeUpdate) {
-                            if (!(await beforeUpdate(postToUpdate, panel))) {
-                                panel.dispose()
-                                return
-                            }
-                        }
-                        const postSavedModel = await PostService.update(postToUpdate)
-                        panel.dispose()
-                        successCallback(Object.assign({}, postToUpdate, postSavedModel))
-                    } catch (err) {
-                        if (isErrorResponse(err)) {
-                            await webview.postMessage({
-                                command: Webview.Cmd.Ui.showErrorResponse,
-                                errorResponse: err,
-                            } as WebviewMsg.ShowErrRespMsg)
-                        } else {
-                            throw err
-                        }
-                    }
+                case Webview.Cmd.Ext.uploadPost: {
+                    const { post } = message as WebviewMsg.UploadPostMsg
+
+                    if (beforeUpdate !== undefined && !(await beforeUpdate(post, panel))) return
+
+                    const postSavedModel = await PostService.update(post)
+                    panel.dispose()
+                    afterSuccess(Object.assign({}, post, postSavedModel))
                     break
+                }
                 case Webview.Cmd.Ext.disposePanel:
-                    panel?.dispose()
+                    panel.dispose()
                     break
                 case Webview.Cmd.Ext.uploadImg:
                     await onUploadImageCmd(panel, <WebviewMsg.UploadImgMsg>message)

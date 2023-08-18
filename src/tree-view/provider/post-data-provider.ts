@@ -66,7 +66,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
                 items: result.map(it => Object.assign(new Post(), it)),
             }
 
-            this.fireTreeDataChangedEvent(undefined)
+            this.fireTreeDataChangedEvent()
 
             return this.page
         } catch (e) {
@@ -75,7 +75,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
         }
     }
 
-    fireTreeDataChangedEvent(item: PostListTreeItem | undefined): void
+    fireTreeDataChangedEvent(item?: PostListTreeItem): void
     fireTreeDataChangedEvent(id: number): void
     fireTreeDataChangedEvent(item: PostListTreeItem | number | undefined): void {
         if (typeof item !== 'number') this._onDidChangeTreeData.fire(item)
@@ -100,12 +100,12 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
         const zzkResult = data.zzkResult
 
         this._searchResultEntry = new PostSearchResultEntry(key, postList, matchedPostCount, zzkResult)
-        this.fireTreeDataChangedEvent(undefined)
+        this.fireTreeDataChangedEvent()
     }
 
     clearSearch() {
         this._searchResultEntry = null
-        this.fireTreeDataChangedEvent(undefined)
+        this.fireTreeDataChangedEvent()
     }
 
     async refreshSearch(): Promise<void> {

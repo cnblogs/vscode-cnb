@@ -21,10 +21,6 @@ export class LocalPost {
         return Uri.file(this.filePath)
     }
 
-    get exist() {
-        return fs.existsSync(this.filePath)
-    }
-
     async readAllText() {
         const arr = await workspace.fs.readFile(this.filePathUri)
         const buf = Buffer.from(arr)

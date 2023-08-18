@@ -8,7 +8,7 @@ export class Post {
     blogId = -1
     blogTeamIds: number[] = []
     canChangeCreatedTime = false
-    categoryIds: number[] | null = []
+    categoryIds: number[] = []
     changeCreatedTime = false
     changePostType = false
 
