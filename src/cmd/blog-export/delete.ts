@@ -68,8 +68,6 @@ async function deleteExportRecordItem(item: BlogExportRecordTreeItem) {
 }
 
 async function removeDownloadedBlogExport(downloaded: DownloadedBlogExport, { shouldDeleteLocal = false }) {
-    await DownloadedExportStore.remove(downloaded, { shouldRemoveExportRecordMap: shouldDeleteLocal }).catch(
-        console.warn
-    )
-    if (shouldDeleteLocal) await promisify(fs.rm)(downloaded.filePath).catch(console.warn)
+    await DownloadedExportStore.remove(downloaded, { shouldRemoveExportRecordMap: shouldDeleteLocal })
+    if (shouldDeleteLocal) await promisify(fs.rm)(downloaded.filePath)
 }

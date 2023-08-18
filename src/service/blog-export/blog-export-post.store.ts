@@ -99,6 +99,6 @@ export class ExportPostStore implements Disposable {
     }
 
     dispose() {
-        this._sequelize?.close().catch(console.warn)
+        void this._sequelize?.close()
     }
 }

@@ -36,9 +36,7 @@ export default class NestCategorySelect extends React.Component<
 
     render() {
         if (this.props.parent !== null && this.props.parent !== undefined && !this.state.children) {
-            PersonalCategoryStore.getByParent(this.props.parent)
-                .then(v => this.setState({ children: v }))
-                .catch(console.warn)
+            void PersonalCategoryStore.getByParent(this.props.parent).then(v => this.setState({ children: v }))
             return <Spinner />
         }
 

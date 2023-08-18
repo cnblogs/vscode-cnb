@@ -6,8 +6,9 @@ import { findImgLink } from '@/cmd/extract-img/find-img-link'
 import { convertImgInfo } from '@/cmd/extract-img/convert-img-info'
 import { dirname } from 'path'
 
-export async function extractImg(arg: unknown, inputImgSrc?: ImgSrc) {
-    if (!(arg instanceof Uri && arg.scheme === 'file')) return
+export async function extractImg(arg?: Uri, inputImgSrc?: ImgSrc) {
+    if (arg === undefined) return
+    if (arg.scheme !== 'file') return
 
     const editor = window.visibleTextEditors.find(x => x.document.fileName === arg.fsPath)
     const textDocument = editor?.document ?? workspace.textDocuments.find(x => x.fileName === arg.fsPath)

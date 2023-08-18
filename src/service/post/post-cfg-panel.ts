@@ -47,6 +47,10 @@ export namespace PostCfgPanel {
         panel = await createPanel(panelTitle, post)
         const { webview } = panel
 
+        let fileName: string
+        if (localFileUri !== undefined) fileName = path.basename(localFileUri.fsPath, path.extname(localFileUri.fsPath))
+        else fileName = ''
+
         disposables.push(
             panel.webview.onDidReceiveMessage(async ({ command }: WebviewMsg.Msg) => {
                 console.log(command)
@@ -64,9 +68,7 @@ export namespace PostCfgPanel {
                     siteCategories: cloneDeep(await PostCategoryService.getSitePresetList()),
                     tags: cloneDeep(await PostTagService.fetchTags()),
                     breadcrumbs,
-                    fileName: localFileUri
-                        ? path.basename(localFileUri.fsPath, path.extname(localFileUri?.fsPath))
-                        : '',
+                    fileName,
                 } as WebviewMsg.EditPostCfgMsg)
             }),
             observeWebviewMessages(panel, option),
@@ -147,7 +149,7 @@ export namespace PostCfgPanel {
         }
     }
 
-    const observeActiveColorSchemaChange = (panel: vscode.WebviewPanel | undefined): vscode.Disposable | undefined => {
+    const observeActiveColorSchemaChange = (panel?: vscode.WebviewPanel): vscode.Disposable | undefined => {
         if (panel === undefined) return
 
         const { webview } = panel
@@ -169,35 +171,29 @@ export namespace PostCfgPanel {
         const { beforeUpdate, afterSuccess } = options
         return webview.onDidReceiveMessage(async message => {
             const { command } = message as WebviewMsg.Msg
-            switch (command) {
-                case Webview.Cmd.Ext.uploadPost: {
-                    const { post } = message as WebviewMsg.UploadPostMsg
 
-                    if (beforeUpdate !== undefined && !(await beforeUpdate(post, panel))) return
+            if (command === Webview.Cmd.Ext.uploadPost) {
+                const { post } = message as WebviewMsg.UploadPostMsg
 
-                    const postSavedModel = await PostService.update(post)
-                    panel.dispose()
-                    afterSuccess(Object.assign({}, post, postSavedModel))
-                    break
-                }
-                case Webview.Cmd.Ext.disposePanel:
-                    panel.dispose()
-                    break
-                case Webview.Cmd.Ext.uploadImg:
-                    await onUploadImageCmd(panel, <WebviewMsg.UploadImgMsg>message)
-                    break
-                case Webview.Cmd.Ext.getChildCategories:
-                    {
-                        const { payload } = message as WebviewCommonCmd<Webview.Cmd.GetChildCategoriesPayload>
-                        await webview.postMessage({
-                            command: Webview.Cmd.Ui.updateChildCategories,
-                            payload: {
-                                value: await PostCategoryService.getAllUnder(payload.parentId).catch(() => []),
-                                parentId: payload.parentId,
-                            },
-                        } as WebviewCommonCmd<Webview.Cmd.UpdateChildCategoriesPayload>)
-                    }
-                    break
+                if (beforeUpdate !== undefined && !(await beforeUpdate(post, panel))) return
+
+                const postSavedModel = await PostService.update(post)
+                panel.dispose()
+                afterSuccess(Object.assign({}, post, postSavedModel))
+                return
+            } else if (command === Webview.Cmd.Ext.disposePanel) {
+                panel.dispose()
+            } else if (command === Webview.Cmd.Ext.uploadImg) {
+                await onUploadImageCmd(panel, <WebviewMsg.UploadImgMsg>message)
+            } else if (command === Webview.Cmd.Ext.getChildCategories) {
+                const { payload } = message as WebviewCommonCmd<Webview.Cmd.GetChildCategoriesPayload>
+                await webview.postMessage({
+                    command: Webview.Cmd.Ui.updateChildCategories,
+                    payload: {
+                        value: await PostCategoryService.getAllUnder(payload.parentId).catch(() => []),
+                        parentId: payload.parentId,
+                    },
+                })
             }
         })
     }

@@ -11,6 +11,7 @@ import path from 'path'
 import { promisify } from 'util'
 import { execCmd } from '@/infra/cmd'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
+import AdmZip from 'adm-zip'
 
 function parseInput(input: unknown): BlogExportRecordTreeItem | null | undefined {
     return input instanceof BlogExportRecordTreeItem ? input : null
@@ -70,26 +71,19 @@ export async function downloadBlogExport(input: unknown) {
                             treeItem.reportDownloadingProgress({ percentage: 100, message: '解压中' })
                             blogExportProvider?.refreshItem(treeItem)
 
-                            import('adm-zip')
-                                // eslint-disable-next-line @typescript-eslint/naming-convention
-                                .then(({ default: AdmZip }) => {
+                            void (async () => {
+                                try {
                                     const entry = new AdmZip(zipFilePath)
-                                    return promisify(entry.extractAllToAsync.bind(entry))(
-                                        targetDir,
-                                        true,
-                                        undefined
-                                    ).then(() => promisify(fs.rm)(zipFilePath))
-                                })
-                                .then(() => {
-                                    DownloadedExportStore.add(nonZipFilePath, exportId)
-                                        .then(() => treeItem.reportDownloadingProgress(null))
-                                        .then(() => blogExportProvider?.refreshItem(treeItem))
-                                        .then(() => blogExportProvider?.refreshDownloadedExports())
-                                        .catch(console.warn)
-                                }, console.warn)
-                                .finally(() => {
+                                    await promisify(entry.extractAllToAsync.bind(entry))(targetDir, true, undefined)
+                                    await promisify(fs.rm)(zipFilePath)
+                                    await DownloadedExportStore.add(nonZipFilePath, exportId)
+                                    treeItem.reportDownloadingProgress(null)
+                                    blogExportProvider?.refreshItem(treeItem)
+                                    await blogExportProvider?.refreshDownloadedExports()
+                                } finally {
                                     setIsDownloading(false).then(undefined, console.warn)
-                                })
+                                }
+                            })()
                         })
                 )
             } else {

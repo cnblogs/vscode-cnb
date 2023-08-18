@@ -3,7 +3,7 @@ import { BaseEntryTreeItem } from '@/tree-view/model/base-entry-tree-item'
 import { BaseTreeItemSource } from '@/tree-view/model/base-tree-item-source'
 import { BlogExportRecordMetadata } from './record-metadata'
 import { parseStatusIcon } from './parser'
-import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from 'vscode'
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
@@ -58,14 +58,14 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
     }
 
     private pollingStatus() {
-        const timeoutId = setTimeout(() => {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        const timeoutId = setTimeout(async () => {
             clearTimeout(timeoutId)
-            BlogExportApi.getById(this.record.id)
-                .then(record => {
-                    this.record = record
-                })
-                .catch(console.warn)
-                .finally(() => this._treeDataProvider.refreshItem(this))
+            try {
+                this.record = await BlogExportApi.getById(this.record.id)
+            } finally {
+                this._treeDataProvider.refreshItem(this)
+            }
         }, 1500)
     }
 
@@ -79,7 +79,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
         const formattedFileSize = filesize(fileBytes)
         const dateTimeFormat = 'yyyy MM-dd HH:mm'
         const localExport = await DownloadedExportStore.findById(id)
-        const items = [
+        return [
             new BlogExportRecordMetadata(
                 this,
                 id,
@@ -145,8 +145,6 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                   ]
                 : []),
         ]
-
-        return items
     }
 
     private formatDownloadProgress(filesize: typeof import('filesize').filesize): string {

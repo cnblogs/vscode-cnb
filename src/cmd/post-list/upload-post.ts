@@ -47,7 +47,7 @@ export async function saveLocalPost(localPost: LocalPost) {
     post.categoryIds = []
     void PostCfgPanel.open({
         panelTitle: post.title,
-        localFileUri: localPost.filePathUri,
+        localFileUri: Uri.file(localPost.filePath),
         breadcrumbs: ['新建博文', '博文设置', post.title],
         post,
         afterSuccess: async savedPost => {
@@ -69,8 +69,8 @@ export async function saveLocalPost(localPost: LocalPost) {
             const body = await localPost.readAllText()
             if (isEmptyBody(body)) return false
 
-            if (MarkdownCfg.getAutoExtractImgSrc() !== undefined)
-                await extractImg(localPost.filePathUri, MarkdownCfg.getAutoExtractImgSrc())
+            const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
+            if (autoExtractImgSrc !== undefined) await extractImg(Uri.file(localPost.filePath), autoExtractImgSrc)
 
             postToSave.postBody = body
             return true
@@ -105,8 +105,8 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto) {
     const localFilePath = PostFileMapManager.getFilePath(post.id)
     if (localFilePath === undefined) return Alert.warn('本地无该博文的编辑记录')
 
-    if (MarkdownCfg.getAutoExtractImgSrc() !== undefined)
-        await extractImg(Uri.file(localFilePath), MarkdownCfg.getAutoExtractImgSrc()).catch(console.warn)
+    const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
+    if (autoExtractImgSrc !== undefined) await extractImg(Uri.file(localFilePath), autoExtractImgSrc)
 
     await saveFilePendingChanges(localFilePath)
     post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()
@@ -225,8 +225,8 @@ export async function uploadPostNoConfirm(input?: Post | PostTreeItem | PostEdit
     const localFilePath = PostFileMapManager.getFilePath(post.id)
     if (localFilePath === undefined) return Alert.warn('本地无该博文的编辑记录')
 
-    if (MarkdownCfg.getAutoExtractImgSrc() !== undefined)
-        await extractImg(Uri.file(localFilePath), MarkdownCfg.getAutoExtractImgSrc()).catch(console.warn)
+    const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
+    if (autoExtractImgSrc !== undefined) await extractImg(Uri.file(localFilePath), autoExtractImgSrc)
 
     await saveFilePendingChanges(localFilePath)
     post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()

@@ -22,7 +22,7 @@ authProvider.onDidChangeSessions(async ({ added }) => {
     postDataProvider.fireTreeDataChangedEvent()
     postCategoryDataProvider.fireTreeDataChangedEvent()
 
-    BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
+    await BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true })
 })
 
 export namespace AuthManager {
