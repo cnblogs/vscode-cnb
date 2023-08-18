@@ -61,11 +61,15 @@ export abstract class PostMetadata extends BaseTreeItemSource {
         post: Post | PostTreeItem
         exclude?: RootPostMetadataType[]
     }): Promise<PostMetadata[]> {
-        let parsedPost = post instanceof PostTreeItem ? post.post : post
-        const postEditDto = await PostService.getPostEditDto(parsedPost.id)
-        parsedPost = postEditDto?.post || parsedPost
+        let parsedPost
+        if (post instanceof PostTreeItem) parsedPost = post.post
+        else parsedPost = post // post: Post
+
+        const dto = await PostService.getPostEditDto(parsedPost.id)
+        parsedPost = dto.post
+
         return Promise.all(
-            rootMetadataMap(parsedPost, postEditDto)
+            rootMetadataMap(parsedPost, dto)
                 .filter(([type]) => !exclude.includes(type))
                 .map(([, factory]) => factory())
                 .map(x => (x instanceof Promise ? x : Promise.resolve(x)))

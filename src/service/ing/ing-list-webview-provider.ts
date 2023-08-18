@@ -175,7 +175,8 @@ class IngWebviewMessageObserver {
                 const { ingType, pageIndex } = payload
                 return this._provider.refreshingList({
                     ingType:
-                        ingType && Object.values(IngType).includes(ingType as IngType)
+                        // TODO: need type
+                        (ingType as boolean) && Object.values(IngType).includes(ingType as IngType)
                             ? (ingType as IngType)
                             : undefined,
                     pageIndex: isNumber(pageIndex) ? pageIndex : undefined,

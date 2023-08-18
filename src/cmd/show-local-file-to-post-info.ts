@@ -47,14 +47,14 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
         postId = input
     }
 
-    if (!filePath || !postId || !(postId >= 0)) return
+    if (filePath === undefined || postId === undefined || postId < 0) return
 
     const { post } = await PostService.getPostEditDto(postId)
 
     let categories = await PostCategoryService.getAll()
     categories = categories.filter(x => post.categoryIds?.includes(x.categoryId))
     const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : ''
-    const tagsDesc = post.tags?.length ?? 0 > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : ''
+    const tagsDesc = (post.tags?.length ?? 0) > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : ''
     const options = ['在线查看博文', '取消关联']
     const postUrl = post.url.startsWith('//') ? `https:${post.url}` : post.url
     const selected = await Alert.info(

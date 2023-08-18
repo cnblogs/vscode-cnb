@@ -60,7 +60,7 @@ async function saveLocalPost(localPost: LocalPost) {
             postDataProvider.fireTreeDataChangedEvent(undefined)
             void Alert.info('博文已创建')
         },
-        beforeUpdate: async (postToSave, panel) => {
+        beforeUpdate: async postToSave => {
             await saveFilePendingChanges(localPost.filePath)
             // 本地文件已经被删除了
             if (!localPost.exist) {

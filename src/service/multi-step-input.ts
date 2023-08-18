@@ -102,7 +102,9 @@ export class MultiStepInput {
                     input.onDidHide(() => {
                         ;(async () => {
                             reject(
-                                shouldResume && (await shouldResume()) ? InputFlowAction.resume : InputFlowAction.cancel
+                                shouldResume !== undefined && (await shouldResume())
+                                    ? InputFlowAction.resume
+                                    : InputFlowAction.cancel
                             )
                         })().catch(reject)
                     }),
@@ -148,7 +150,7 @@ export class MultiStepInput {
         input.placeholder = placeHolder
         input.password = password ?? false
         input.totalSteps = totalSteps
-        input.value = value || ''
+        input.value = value ?? ''
         input.prompt = prompt
         input.ignoreFocusOut = ignoreFocusOut ?? false
         input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])]
@@ -166,7 +168,7 @@ export class MultiStepInput {
                         const value = input.value
                         input.enabled = false
                         input.busy = true
-                        if (!(await validateInput(value))) resolve(value)
+                        if ((await validateInput(value)) === undefined) resolve(value)
 
                         input.enabled = true
                         input.busy = false
@@ -180,7 +182,9 @@ export class MultiStepInput {
                     input.onDidHide(() => {
                         ;(async () => {
                             reject(
-                                shouldResume && (await shouldResume()) ? InputFlowAction.resume : InputFlowAction.cancel
+                                shouldResume !== undefined && (await shouldResume())
+                                    ? InputFlowAction.resume
+                                    : InputFlowAction.cancel
                             )
                         })().catch(reject)
                     })

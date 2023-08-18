@@ -112,7 +112,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                 undefined,
                 new ThemeIcon('vscode-cnb-date')
             ),
-            ...(dateExported
+            ...(dateExported !== null && dateExported !== undefined
                 ? [
                       new BlogExportRecordMetadata(
                           this,

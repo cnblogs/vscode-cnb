@@ -28,7 +28,9 @@ export async function revealPostListItem(
 }
 
 export function getListState() {
-    return <PostListState | undefined>LocalState.getState('postListState')
+    const state = <PostListState | undefined>LocalState.getState('postListState')
+    if (state === undefined) throw Error('State is undefined')
+    return state
 }
 
 export async function updatePostListState(

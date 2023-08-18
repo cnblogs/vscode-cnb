@@ -36,7 +36,7 @@ export namespace PostCfgPanel {
     export const findPanelById = (panelId: string) => panels.get(panelId)
     export const open = async (option: PostCfgPanelOpenOption) => {
         const { post, breadcrumbs, localFileUri } = option
-        const panelTitle = option.panelTitle ? option.panelTitle : `博文设置 - ${post.title}`
+        const panelTitle = option.panelTitle !== undefined ? option.panelTitle : `博文设置 - ${post.title}`
         await openPostFile(post, {
             viewColumn: vscode.ViewColumn.One,
         })
@@ -79,7 +79,7 @@ export namespace PostCfgPanel {
         panelId: string | undefined,
         options: PostCfgPanelOpenOption
     ): vscode.WebviewPanel | undefined => {
-        if (!panelId) return
+        if (panelId === undefined) return
 
         const panel = findPanelById(panelId)
         if (!panel) return
@@ -172,8 +172,6 @@ export namespace PostCfgPanel {
             switch (command) {
                 case Webview.Cmd.Ext.uploadPost:
                     try {
-                        if (!panel) return
-
                         const { post: postToUpdate } = message as WebviewMsg.UploadPostMsg
                         if (beforeUpdate) {
                             if (!(await beforeUpdate(postToUpdate, panel))) {

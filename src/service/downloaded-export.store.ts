@@ -43,7 +43,9 @@ export namespace DownloadedExportStore {
 
             if (prunedItems.length > 0) {
                 const futList = [updateList(items)].concat(
-                    prunedItems.map(p => (p.id ? updateExport(p.id, undefined) : Promise.resolve()))
+                    prunedItems.map(p =>
+                        p.id !== null && p.id !== undefined ? updateExport(p.id, undefined) : Promise.resolve()
+                    )
                 )
                 await Promise.all(futList)
             }
