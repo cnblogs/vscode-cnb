@@ -13,7 +13,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     }
 
     getChildren(element?: TreeItem): ProviderResult<TreeItem[]> {
-        if (!AuthManager.isAuthed() || element === undefined) return []
+        if (!AuthManager.isAuthed() || element !== undefined) return []
 
         const userName = AuthManager.getUserInfo()?.DisplayName
         return [
