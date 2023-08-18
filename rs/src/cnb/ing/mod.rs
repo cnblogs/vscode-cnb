@@ -5,6 +5,8 @@ mod r#pub;
 
 use crate::panic_hook;
 use alloc::string::{String, ToString};
+use lazy_static::lazy_static;
+use regex::Regex;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = IngReq)]
@@ -23,4 +25,14 @@ impl IngReq {
             is_pat_token,
         }
     }
+}
+
+#[wasm_bindgen(js_name = ingStarIconToText)]
+pub fn ing_star_icon_to_text(icon: &str) -> String {
+    lazy_static! {
+        static ref REGEX: Regex = Regex::new(r#"<img.*alt="\[(.*?)]".*>"#).unwrap();
+    }
+    let caps = REGEX.captures(icon).unwrap();
+    let star_text = caps.get(1).unwrap().as_str();
+    star_text.to_string()
 }
