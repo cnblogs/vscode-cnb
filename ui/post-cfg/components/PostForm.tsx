@@ -20,6 +20,7 @@ import PostEntryNameInput from './PostEntryNameInput'
 import PostTitleInput from 'post-cfg/components/PostTitleInput'
 import NestCategorySelect from './NestCategorySelect'
 import { Post } from '@/model/post'
+import { Alert } from '../../../src/infra/alert'
 
 export type IPostFormProps = {
     post?: Post
@@ -56,7 +57,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                         }}
                     ></PostTitleInput>
                     <Stack tokens={{ childrenGap: 8 }}>
-                        <Label>个人分类</Label>
+                        <Label>分类</Label>
                         <Stack>
                             {this.props.useNestCategoriesSelect ? (
                                 <NestCategorySelect
@@ -71,7 +72,9 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                             )}
                         </Stack>
                     </Stack>
+                    {/*
                     <TagsInput selectedTagNames={this.state.tags} onChange={tags => this.setState({ tags })} />
+                    */}
                     <TagsInput selectedTagNames={this.state.tags} onChange={tags => this.setState({ tags })} />
                     <AccessPermissionSelector
                         accessPermission={this.state.accessPermission}
@@ -150,6 +153,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
             command: Webview.Cmd.Ext.uploadPost,
             post: Object.assign({}, this.props.post, this.state),
         } as WebviewMsg.UploadPostMsg)
+        this.context.set({ disabled: false, status: '' })
     }
 
     private onCancel() {
