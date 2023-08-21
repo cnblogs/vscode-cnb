@@ -17,7 +17,8 @@ export class PostCategory {
         const result: PostCategory[] = []
         while (i != null) {
             if (i !== this || includeSelf) result.unshift(i)
-            if (i.parent && !(i.parent instanceof PostCategory)) i.parent = Object.assign(new PostCategory(), i.parent)
+            if (i.parent !== null && i.parent !== undefined && !(i.parent instanceof PostCategory))
+                i.parent = Object.assign(new PostCategory(), i.parent)
             i = i.parent
         }
 
