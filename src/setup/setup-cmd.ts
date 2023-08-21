@@ -1,5 +1,5 @@
 import { globalCtx } from '@/ctx/global-ctx'
-import { uploadPostFile, uploadPost, uploadPostNoConfirm, uploadPostFileNoConfirm } from '@/cmd/post-list/upload-post'
+import { uploadPostFile, uploadPost } from '@/cmd/post-list/upload-post'
 import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { osOpenLocalPostFile } from '@/cmd/open/os-open-local-post-file'
 import { showLocalFileToPostInfo } from '@/cmd/show-local-file-to-post-info'
@@ -69,8 +69,10 @@ export function setupExtCmd() {
         regCmd(withAppName('.post.create'), createPost),
         regCmd(withAppName('.post.upload'), uploadPost),
         regCmd(withAppName('.post.upload-file'), uploadPostFile),
-        regCmd(withAppName('.post.upload-no-confirm'), uploadPostNoConfirm),
-        regCmd(withAppName('.post.upload-file-no-confirm'), uploadPostFileNoConfirm),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        regCmd(withAppName('.post.upload-no-confirm'), arg => uploadPost(arg, false)),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        regCmd(withAppName('.post.upload-file-no-confirm'), arg => uploadPostFile(arg, false)),
         regCmd(withAppName('.post.pull'), postPull),
         regCmd(withAppName('.post.pull-all'), postPullAll),
         regCmd(withAppName('.post.open-in-blog-admin'), openPostInBlogAdmin),
