@@ -22,7 +22,8 @@ export namespace ChromiumPathProvider {
 
             for (const item of fs.readdirSync(path)) {
                 path = `${path}/${item}`
-                if (fs.statSync(path).mode & fs.constants.S_IXUSR) return path
+                const flag = fs.statSync(path).mode & fs.constants.S_IXUSR
+                if (flag > 0) return path
             }
         }
         return path

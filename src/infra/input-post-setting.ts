@@ -91,7 +91,7 @@ export const inputPostSetting = (
             totalSteps: state.totalSteps,
             placeholder: '<必选>请选择博文访问权限',
             activeItems: <AccessPermissionPickItem[]>(
-                [items.find(x => x.id === configuredPost.accessPermission)].filter(x => !!x)
+                [items.find(x => x.id === configuredPost.accessPermission)].filter(x => x !== undefined)
             ),
             buttons: [],
             canSelectMany: false,
@@ -207,7 +207,12 @@ export const inputPostSetting = (
     ]
 
     const nextStep = calculateNextStep()
-    return nextStep
-        ? MultiStepInput.run(nextStep).then(() => (state.step - 1 === state.totalSteps ? configuredPost : undefined))
-        : Promise.resolve(undefined)
+
+    if (nextStep === undefined) {
+        return Promise.resolve(undefined)
+    } else {
+        return MultiStepInput.run(nextStep).then(() =>
+            state.step - 1 === state.totalSteps ? configuredPost : undefined
+        )
+    }
 }
