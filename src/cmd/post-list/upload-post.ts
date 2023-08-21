@@ -154,7 +154,6 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto, conf
                 await PostListView.refresh()
             } catch (e) {
                 progress.report({ increment: 100 })
-                console.log(e)
                 void Alert.err(`上传失败: ${<string>e}`)
             }
 
@@ -169,7 +168,6 @@ export async function uploadPostFile(fileUri?: Uri, confirm = true) {
 
     const { fsPath: filePath } = parsedFileUri
     const postId = PostFileMapManager.getPostId(filePath)
-    console.log(postId)
 
     if (postId !== undefined && postId >= 0) {
         const dto = await PostService.getPostEditDto(postId)

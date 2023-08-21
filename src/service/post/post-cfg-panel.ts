@@ -54,7 +54,6 @@ export namespace PostCfgPanel {
 
         disposables.push(
             panel.webview.onDidReceiveMessage(async ({ command }: WebviewMsg.Msg) => {
-                console.log(command)
                 if (command !== Webview.Cmd.Ext.refreshPost) return
 
                 await webview.postMessage({
@@ -171,9 +170,13 @@ export namespace PostCfgPanel {
 
                 if (beforeUpdate !== undefined && !(await beforeUpdate(post, panel))) return
 
-                const postSavedModel = await PostService.update(post)
-                panel.dispose()
-                afterSuccess(Object.assign({}, post, postSavedModel))
+                try {
+                    const postSavedModel = await PostService.update(post)
+                    panel.dispose()
+                    afterSuccess(Object.assign({}, post, postSavedModel))
+                } catch (e) {
+                    void Alert.err(`操作失败: ${<string>e}`)
+                }
                 return
             } else if (command === Webview.Cmd.Ext.disposePanel) {
                 panel.dispose()

@@ -34,7 +34,6 @@ export namespace PersonalCategoryStore {
                     }: {
                         data: WebviewCommonCmd<Webview.Cmd.UpdateChildCategoriesPayload>
                     }) => {
-                        console.log('onUpdate', message)
                         if (message.payload.parentId === parent) {
                             clearTimeout(timeoutId)
 

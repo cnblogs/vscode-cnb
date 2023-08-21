@@ -32,7 +32,7 @@ type State = PostCfg
 export class PostForm extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
-        this.state = Object.assign({}, props.post)
+        this.state = props.post
     }
 
     render() {
@@ -120,8 +120,8 @@ export class PostForm extends Component<Props, State> {
                         onChange={(_, __, stateObj) => this.setState(stateObj)}
                     />
                     <Stack horizontal tokens={{ childrenGap: 8 }}>
-                        <PrimaryButton text="确定" onClick={() => this.onConfirm()} allowDisabledFocus />
-                        <DefaultButton text="取消" onClick={() => this.onCancel()} />
+                        <PrimaryButton text="确定" onClick={() => this.confirm()} allowDisabledFocus />
+                        <DefaultButton text="取消" onClick={() => this.cancel()} />
                         {status === 'submitting' ? <Spinner label="正在提交" labelPosition="right" /> : <></>}
                     </Stack>
                 </Stack>
@@ -129,14 +129,14 @@ export class PostForm extends Component<Props, State> {
         )
     }
 
-    private onConfirm() {
+    private confirm() {
         getVsCodeApiSingleton().postMessage({
             command: Webview.Cmd.Ext.uploadPost,
             post: Object.assign({}, this.props.post, this.state),
         } as WebviewMsg.UploadPostMsg)
     }
 
-    private onCancel() {
+    private cancel() {
         getVsCodeApiSingleton().postMessage({ command: Webview.Cmd.Ext.disposePanel } as WebviewMsg.Msg)
     }
 }
