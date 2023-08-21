@@ -22,7 +22,7 @@ export function searchPostByTitle(postTitle: string, quickPickTitle: string) {
     quickPick.placeholder = '输入标题以搜索博文'
 
     const handleValueChange = async () => {
-        if (!quickPick.value) return
+        if (quickPick.value === '') return
 
         const value = quickPick.value
         quickPick.busy = true

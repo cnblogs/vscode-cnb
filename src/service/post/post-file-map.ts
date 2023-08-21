@@ -2,7 +2,7 @@ import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tre
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { LocalState } from '@/ctx/local-state'
 
-const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && !!map[1]
+const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && map[1] !== ''
 
 export type PostFileMap = [postId: number, filePath: string]
 
@@ -36,12 +36,12 @@ export namespace PostFileMapManager {
 
     export async function updateOrCreate(postId: number, filePath: string, { emitEvent = true } = {}) {
         const validFileExt = ['.md', '.html']
-        if (filePath && !validFileExt.some(x => filePath.endsWith(x)))
+        if (filePath !== '' && !validFileExt.some(x => filePath.endsWith(x)))
             throw Error('Invalid filepath, file must have type markdown or html')
 
         const maps = getMaps()
-        const exist = maps.find(p => p[0] === postId)
-        if (exist) exist[1] = filePath
+        const map = maps.find(p => p[0] === postId)
+        if (map !== undefined) map[1] = filePath
         else maps.push([postId, filePath])
 
         await LocalState.setState(storageKey, maps.filter(validatePostFileMap))
@@ -58,7 +58,7 @@ export namespace PostFileMapManager {
 
     export function findByFilePath(path: string) {
         const maps = getMaps().filter(validatePostFileMap)
-        return maps.find(x => x[0] && x[1] === path)
+        return maps.find(x => x[0] !== 0 && x[1] === path)
     }
 
     export function getFilePath(postId: number) {

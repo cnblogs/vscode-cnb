@@ -7,7 +7,7 @@ let cachedTags: PostTag[] | null = null
 
 export namespace PostTagService {
     export async function fetchTags(forceRefresh = false): Promise<PostTag[]> {
-        if (cachedTags && !forceRefresh) return cachedTags
+        if (cachedTags !== null && !forceRefresh) return cachedTags
 
         const url = `${AppConst.ApiBase.BLOG_BACKEND}/tags/list`
         const resp = await AuthedReq.get(url, consHeader())

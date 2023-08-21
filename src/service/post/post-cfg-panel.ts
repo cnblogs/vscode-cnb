@@ -42,7 +42,7 @@ export namespace PostCfgPanel {
         })
         const panelId = buildPanelId(post.id, post.title)
         let panel = tryRevealPanel(panelId, option)
-        if (panel) return
+        if (panel !== undefined) return
 
         const disposables: (vscode.Disposable | undefined)[] = []
         panel = await createPanel(panelTitle, post)

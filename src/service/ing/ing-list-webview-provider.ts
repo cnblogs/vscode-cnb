@@ -29,7 +29,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     private _ingType = IngType.all
 
     get observer(): IngWebviewMessageObserver {
-        if (!this._view) throw Error('Cannot access the observer until the webviewView initialized!')
+        if (this._view === null) throw Error('Cannot access observer')
         this._observer ??= new IngWebviewMessageObserver(this)
         return this._observer
     }
@@ -48,7 +48,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async resolveWebviewView(webviewView: WebviewView, context: WebviewViewResolveContext, token: CancellationToken) {
-        if (this._view && this._view === webviewView) return
+        if (this._view !== null && this._view === webviewView) return
 
         this._view = webviewView
 
@@ -116,7 +116,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     }
 
     async updateComments(ingIds: number[]) {
-        if (!this._view || !this._view.visible) return
+        if (this._view === null || !this._view.visible) return
         const comments = await IngService.getCommentList(...ingIds)
         await this._view.webview.postMessage({
             command: Webview.Cmd.Ing.Ui.setAppState,
@@ -152,10 +152,10 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     }
 
     private setTitle() {
-        if (!this._view) return
+        if (this._view === null) return
         const ingTypeSuffix = IngTypesMetadata.find(([x]) => x === this.ingType)?.[1].displayName ?? ''
         const pageIndexSuffix = this.pageIndex > 1 ? `(第${this.pageIndex}页)` : ''
-        this._view.title = `闪存 ${ingTypeSuffix ? ' - ' + ingTypeSuffix : ''}${pageIndexSuffix}`
+        this._view.title = `闪存 ${ingTypeSuffix !== '' ? ' - ' + ingTypeSuffix : ''}${pageIndexSuffix}`
     }
 }
 

@@ -32,9 +32,9 @@ export async function createPost() {
     if (workspace.getConfiguration('explorer').get<boolean>('autoReveal') === false) await osOpenActiveFile()
 
     const focusEditor = async () => {
-        const { activeTextEditor } = window
-        if (activeTextEditor)
-            await window.showTextDocument(activeTextEditor.document, { preview: false, preserveFocus: false })
+        const editor = window.activeTextEditor
+        if (editor !== undefined)
+            await window.showTextDocument(editor.document, { preview: false, preserveFocus: false })
     }
     await focusEditor()
     // 确保能 focus 到编辑器(不这么做, 有时会聚焦到 explorer 处)

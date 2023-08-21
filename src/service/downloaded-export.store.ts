@@ -69,7 +69,7 @@ export namespace DownloadedExportStore {
 
         let item = LocalState.getState(key) as DownloadedBlogExport | undefined
 
-        if (prune && item) {
+        if (prune && item !== undefined) {
             const isExist = await promisify(exists)(item.filePath)
             if (!isExist) {
                 item = undefined
