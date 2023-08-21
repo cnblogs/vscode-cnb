@@ -110,7 +110,7 @@ export namespace PostCfgPanel {
         return panel
     }
 
-    const onUploadImageCmd = async (panel: WebviewPanel, message: WebviewMsg.UploadImgMsg) => {
+    const doUploadImg = async (panel: WebviewPanel, message: WebviewMsg.UploadImgMsg) => {
         const { webview } = panel
 
         const selected = await Alert.info(
@@ -178,7 +178,7 @@ export namespace PostCfgPanel {
             } else if (command === Webview.Cmd.Ext.disposePanel) {
                 panel.dispose()
             } else if (command === Webview.Cmd.Ext.uploadImg) {
-                await onUploadImageCmd(panel, <WebviewMsg.UploadImgMsg>message)
+                await doUploadImg(panel, <WebviewMsg.UploadImgMsg>message)
             } else if (command === Webview.Cmd.Ext.getChildCategories) {
                 const { payload } = message as WebviewCommonCmd<Webview.Cmd.GetChildCategoriesPayload>
                 await webview.postMessage({

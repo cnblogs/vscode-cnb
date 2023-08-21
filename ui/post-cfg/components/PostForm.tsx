@@ -11,7 +11,6 @@ import { CommonOptions } from './CommonOptions'
 import { AccessPermissionSelector } from './AccessPermissionSelector'
 import { PasswordInput } from './PasswordInput'
 import { getVsCodeApiSingleton } from '../../share/vscode-api'
-import { ErrorResponse } from './ErrorResponse'
 import { Webview } from '@/model/webview-cmd'
 import { WebviewMsg } from '@/model/webview-msg'
 import { InputSummary } from './InputSummary'
@@ -127,7 +126,6 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                         entryName={this.state.entryName}
                         onChange={value => this.setState({ entryName: value })}
                     />
-                    <ErrorResponse />
                     <Stack horizontal tokens={{ childrenGap: 8 }}>
                         <PrimaryButton
                             text="确定"

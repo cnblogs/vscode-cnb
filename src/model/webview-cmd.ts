@@ -3,7 +3,6 @@ import { PostCategory } from '@/model/post-category'
 export namespace Webview.Cmd {
     export enum Ui {
         editPostCfg = 'editPostCfg',
-        showErrorResponse = 'showErrorResponse',
         updateBreadcrumbs = 'updateBreadcrumbs',
         updateImageUploadStatus = 'updateImageUploadStatus',
         setFluentIconBaseUrl = 'setFluentIconBaseUrl',
