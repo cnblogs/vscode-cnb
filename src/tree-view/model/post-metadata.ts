@@ -136,8 +136,7 @@ export class PostCategoryMetadata extends PostMetadata {
     }
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCategoryMetadata[]> {
-        editDto = editDto ? editDto : await PostService.getPostEditDto(parent.id)
-        if (editDto == null) return []
+        if (editDto === undefined) editDto = await PostService.getPostEditDto(parent.id)
 
         const categoryIds = editDto.post.categoryIds ?? []
         const futList = categoryIds.map(PostCategoryService.getOne)
@@ -176,12 +175,10 @@ export class PostTagMetadata extends PostMetadata {
     }
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostMetadata[]> {
-        editDto = editDto ? editDto : await PostService.getPostEditDto(parent.id)
-        if (editDto == null) return []
+        if (editDto === undefined) await PostService.getPostEditDto(parent.id)
+        if (editDto === undefined) return []
 
-        const {
-            post: { tags },
-        } = editDto
+        const tags = editDto.post.tags
         return (tags ?? [])?.map(tag => new PostTagMetadata(parent, tag))
     }
 

@@ -27,7 +27,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
     }
 
     getChildren(parent?: PostListTreeItem): ProviderResult<PostListTreeItem[]> {
-        if (!parent) {
+        if (parent === undefined) {
             const items: PostListTreeItem[] = this._searchResultEntry == null ? [] : [this._searchResultEntry]
 
             if (this.page == null) {
@@ -109,10 +109,8 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
     }
 
     async refreshSearch(): Promise<void> {
-        const { _searchResultEntry } = this
-
-        if (_searchResultEntry) {
-            const { searchKey } = _searchResultEntry
+        if (this._searchResultEntry !== null) {
+            const searchKey = this._searchResultEntry.searchKey
             this._searchResultEntry = null
             await this.search({ key: searchKey })
         }

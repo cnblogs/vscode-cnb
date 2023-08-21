@@ -63,9 +63,10 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     }
 
     async refreshDownloadedExports({ force = true } = {}) {
-        if (this._downloadedExportEntry) {
+        const entry = this._downloadedExportEntry
+        if (entry !== null && entry !== undefined) {
             const hasCacheRefreshed = force
-                ? await this._downloadedExportEntry.refresh().then(
+                ? await entry.refresh().then(
                       () => true,
                       () => false
                   )

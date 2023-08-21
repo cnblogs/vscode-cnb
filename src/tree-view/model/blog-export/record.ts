@@ -54,7 +54,9 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
     getChildrenAsync: () => Promise<BlogExportTreeItem[]> = () => Promise.resolve(this.parseChildren())
 
     reportDownloadingProgress(progress?: Partial<typeof this._downloadingProgress> | null) {
-        this._downloadingProgress = progress ? Object.assign({}, this._downloadingProgress ?? {}, progress ?? {}) : null
+        if (progress !== null && progress !== undefined)
+            this._downloadingProgress = Object.assign({}, this._downloadingProgress ?? {}, progress ?? {})
+        else this._downloadingProgress = null
     }
 
     private pollingStatus() {
@@ -123,7 +125,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                       ),
                   ]
                 : []),
-            ...(localExport && !_downloadingProgress
+            ...(localExport !== undefined && (_downloadingProgress === null || _downloadingProgress === undefined)
                 ? [
                       new DownloadedExportTreeItem(this, localExport, {
                           label: `本地文件: ${localExport.filePath.replace(
@@ -133,7 +135,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                       }),
                   ]
                 : []),
-            ...(_downloadingProgress
+            ...(_downloadingProgress !== undefined && _downloadingProgress !== null
                 ? [
                       new BlogExportRecordMetadata(
                           this,
