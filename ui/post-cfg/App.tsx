@@ -42,7 +42,7 @@ export class App extends Component<AppProps, AppState> {
                         <PostForm
                             post={this.state.post}
                             onTitleChange={title =>
-                                this.state.breadcrumbs && this.state.breadcrumbs.length > 1
+                                this.state.breadcrumbs !== undefined && this.state.breadcrumbs.length > 1
                                     ? this.setState({
                                           breadcrumbs: this.state.breadcrumbs
                                               .slice(0, this.state.breadcrumbs.length - 1)

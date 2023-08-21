@@ -70,7 +70,7 @@ export class IngItem extends Component<IngItemProps, IngItemState> {
                         comments={[
                             // eslint-disable-next-line @typescript-eslint/naming-convention
                             <div dangerouslySetInnerHTML={{ __html: content }}></div>,
-                            icons ? (
+                            icons !== '' ? (
                                 <span /* eslint-disable-next-line @typescript-eslint/naming-convention */
                                     dangerouslySetInnerHTML={{ __html: icons }}
                                     className="ml-[5px] inline-flex items-center scale-[85] ing-content__icons"
@@ -137,7 +137,11 @@ export class IngItem extends Component<IngItemProps, IngItemState> {
                         }}
                     />
                 </div>
-                {comments ? <div className="pl-[40px] text-[12px]">{comments.map(this.renderComment)}</div> : <></>}
+                {comments !== undefined ? (
+                    <div className="pl-[40px] text-[12px]">{comments.map(this.renderComment)}</div>
+                ) : (
+                    <></>
+                )}
             </div>
         )
     }

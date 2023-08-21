@@ -40,7 +40,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
     }
 
     render() {
-        if (!this.props.post) return <></>
+        if (this.props.post === undefined) return <></>
 
         const { disabled: isDisabled, status } = this.context
         return (

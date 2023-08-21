@@ -86,7 +86,7 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
                     <Stack.Item align="stretch">{this.renderFeatureImage()}</Stack.Item>
                 </Stack>
 
-                {this.state.errors ? (
+                {this.state.errors !== undefined ? (
                     <MessageBar
                         onDismiss={() => {
                             this.setState({ errors: undefined })

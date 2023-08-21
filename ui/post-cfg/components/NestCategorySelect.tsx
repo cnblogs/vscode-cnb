@@ -35,7 +35,7 @@ export default class NestCategorySelect extends React.Component<
     }
 
     render() {
-        if (this.props.parent !== null && this.props.parent !== undefined && !this.state.children) {
+        if (this.props.parent !== null && this.props.parent !== undefined && this.state.children === undefined) {
             void PersonalCategoryStore.getByParent(this.props.parent).then(v => this.setState({ children: v }))
             return <Spinner />
         }
@@ -125,7 +125,10 @@ export default class NestCategorySelect extends React.Component<
             expandedSet.add(category.categoryId)
         }
 
-        this.setState({ expanded: expandedSet && expandedSet.size > 0 ? new Set(expandedSet) : null })
+        this.setState({
+            expanded:
+                expandedSet !== undefined && expandedSet !== null && expandedSet.size > 0 ? new Set(expandedSet) : null,
+        })
         expandedSet?.clear()
     }
 

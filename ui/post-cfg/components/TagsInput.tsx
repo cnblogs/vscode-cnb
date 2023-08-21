@@ -119,8 +119,8 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
         const filteredTags = tags
             .filter(
                 tag =>
-                    (!filterText || tag.name.indexOf(filterText) >= 0) &&
-                    (!selectedTags || selectedTags.findIndex(st => st.name === tag.name) < 0)
+                    (filterText === '' || tag.name.indexOf(filterText) >= 0) &&
+                    (selectedTags === undefined || selectedTags.findIndex(st => st.name === tag.name) < 0)
             )
             .map(x => ({ name: x.name, key: x.id }) as ITag)
         if (filteredTags.length <= 0 || tags.findIndex(t => t.name.toLowerCase() === filterText.toLowerCase()) < 0)

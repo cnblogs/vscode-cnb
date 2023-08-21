@@ -22,7 +22,7 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
         const siteCategories = SiteCategoryStore.get()
         const categoryExpandState: { selectedParentCategoryId?: boolean } = {}
         let selectedParentCategoryId = -1
-        if (props.categoryIds && props.categoryIds.length > 0) {
+        if (props.categoryIds !== undefined && props.categoryIds.length > 0) {
             selectedParentCategoryId =
                 siteCategories.find(x => x.children.find(child => child.id === props.categoryIds?.[0]))?.id ?? -1
         }

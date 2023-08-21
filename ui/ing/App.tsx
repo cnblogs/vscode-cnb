@@ -53,16 +53,17 @@ export class App extends Component<unknown, IngAppState> {
                 this.setState({
                     ingList: ingList?.map(Ing.parse) ?? this.state.ingList,
                     isRefreshing: isRefreshing ?? this.state.isRefreshing,
-                    comments: comments
-                        ? Object.assign(
-                              {},
-                              this.state.comments ?? {},
-                              cloneWith(comments, v => {
-                                  for (const key in v) v[key] = v[key].map(IngComment.parse)
-                                  return v
-                              })
-                          )
-                        : this.state.comments,
+                    comments:
+                        comments !== undefined
+                            ? Object.assign(
+                                  {},
+                                  this.state.comments ?? {},
+                                  cloneWith(comments, v => {
+                                      for (const key in v) v[key] = v[key].map(IngComment.parse)
+                                      return v
+                                  })
+                              )
+                            : this.state.comments,
                 })
                 return
             }
