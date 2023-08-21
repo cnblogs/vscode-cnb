@@ -14,7 +14,6 @@ import { getVsCodeApiSingleton } from '../../share/vscode-api'
 import { Webview } from '@/model/webview-cmd'
 import { WebviewMsg } from '@/model/webview-msg'
 import { InputSummary } from './InputSummary'
-import { IPostFormContext, PostFormContext } from './PostFormContext'
 import PostEntryNameInput from './PostEntryNameInput'
 import PostTitleInput from 'post-cfg/components/PostTitleInput'
 import NestCategorySelect from './NestCategorySelect'
@@ -31,9 +30,6 @@ type Props = {
 type State = PostCfg
 
 export class PostForm extends Component<Props, State> {
-    static contextType?: React.Context<IPostFormContext> = PostFormContext
-    declare context: React.ContextType<typeof PostFormContext>
-
     constructor(props: Props) {
         super(props)
         this.state = Object.assign({}, props.post ?? new Post())
@@ -42,7 +38,6 @@ export class PostForm extends Component<Props, State> {
     render() {
         if (this.props.post === undefined) return <></>
 
-        const { disabled: isDisabled, status } = this.context
         return (
             <form>
                 <Stack tokens={{ childrenGap: 16 }}>
@@ -127,13 +122,8 @@ export class PostForm extends Component<Props, State> {
                         onChange={value => this.setState({ entryName: value })}
                     />
                     <Stack horizontal tokens={{ childrenGap: 8 }}>
-                        <PrimaryButton
-                            text="确定"
-                            disabled={isDisabled}
-                            onClick={() => this.onConfirm()}
-                            allowDisabledFocus
-                        />
-                        <DefaultButton disabled={isDisabled} text="取消" onClick={() => this.onCancel()} />
+                        <PrimaryButton text="确定" onClick={() => this.onConfirm()} allowDisabledFocus />
+                        <DefaultButton text="取消" onClick={() => this.onCancel()} />
                         {status === 'submitting' ? <Spinner label="正在提交" labelPosition="right" /> : <></>}
                     </Stack>
                 </Stack>
@@ -142,7 +132,6 @@ export class PostForm extends Component<Props, State> {
     }
 
     private onConfirm() {
-        this.context.set({ disabled: true, status: 'submitting' })
         try {
             getVsCodeApiSingleton().postMessage({
                 command: Webview.Cmd.Ext.uploadPost,
@@ -151,7 +140,6 @@ export class PostForm extends Component<Props, State> {
         } catch (e) {
             /* do nothing */
         }
-        this.context.set({ disabled: false, status: 'loading' })
     }
 
     private onCancel() {

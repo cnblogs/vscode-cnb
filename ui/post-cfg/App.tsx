@@ -8,7 +8,6 @@ import { SiteCategoryStore } from './service/site-category-store'
 import { TagStore } from './service/tag-store'
 import { WebviewMsg } from '@/model/webview-msg'
 import { Webview } from '@/model/webview-cmd'
-import { PostFormContextProvider } from './components/PostFormContextProvider'
 import { ActiveThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
@@ -38,22 +37,20 @@ export class App extends Component<Props, State> {
             <>
                 {this.renderBreadcrumbs()}
                 <Stack tokens={{ padding: '8px 10px 16px 10px' }}>
-                    <PostFormContextProvider>
-                        <PostForm
-                            post={this.state.post}
-                            onTitleChange={title =>
-                                this.state.breadcrumbs !== undefined && this.state.breadcrumbs.length > 1
-                                    ? this.setState({
-                                          breadcrumbs: this.state.breadcrumbs
-                                              .slice(0, this.state.breadcrumbs.length - 1)
-                                              .concat(title),
-                                      })
-                                    : undefined
-                            }
-                            fileName={fileName}
-                            useNestCategoriesSelect={this.state.useNestCategoriesSelect}
-                        />
-                    </PostFormContextProvider>
+                    <PostForm
+                        post={this.state.post}
+                        onTitleChange={title =>
+                            this.state.breadcrumbs !== undefined && this.state.breadcrumbs.length > 1
+                                ? this.setState({
+                                      breadcrumbs: this.state.breadcrumbs
+                                          .slice(0, this.state.breadcrumbs.length - 1)
+                                          .concat(title),
+                                  })
+                                : undefined
+                        }
+                        fileName={fileName}
+                        useNestCategoriesSelect={this.state.useNestCategoriesSelect}
+                    />
                 </Stack>
             </>
         )
