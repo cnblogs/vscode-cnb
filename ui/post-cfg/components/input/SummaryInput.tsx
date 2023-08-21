@@ -6,16 +6,16 @@ import React, { Component } from 'react'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 
 type Props = {
-    summary?: string
+    summary: string
     featureImgUrl: string
-    onChange?: (summary: string) => void
-    onFeatureImageChange?: (imageUrl: string) => void
+    onChange: (summary: string) => void
+    onFeatureImageChange: (imageUrl: string) => void
 }
 
 type State = {
     isCollapse: boolean
     disabled: boolean
-    errors?: string[]
+    errors: string[]
 }
 
 export class SummaryInput extends Component<Props, State> {
@@ -25,7 +25,11 @@ export class SummaryInput extends Component<Props, State> {
         super(props)
         const { featureImgUrl, summary } = props
 
-        this.state = { isCollapse: featureImgUrl === '' && summary === undefined, disabled: false }
+        this.state = {
+            isCollapse: featureImgUrl === '' && summary === '',
+            disabled: false,
+            errors: [],
+        }
         window.addEventListener('message', this.observerMessage)
     }
 
@@ -86,10 +90,10 @@ export class SummaryInput extends Component<Props, State> {
                     <Stack.Item align="stretch">{this.renderFeatureImage()}</Stack.Item>
                 </Stack>
 
-                {this.state.errors !== undefined ? (
+                {this.state.errors.length > 0 ? (
                     <MessageBar
                         onDismiss={() => {
-                            this.setState({ errors: undefined })
+                            this.setState({ errors: [] })
                         }}
                         messageBarType={MessageBarType.error}
                     >

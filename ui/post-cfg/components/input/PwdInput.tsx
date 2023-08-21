@@ -2,15 +2,13 @@ import { Label, Stack, TextField } from '@fluentui/react'
 import React, { Component } from 'react'
 
 type Props = {
-    password?: string
-    onChange?: (password: string) => void
+    password: string
+    onChange: (password: string) => void
 }
 
 export class PwdInput extends Component<Props> {
     constructor(props: Props) {
         super(props)
-
-        this.state = {}
     }
 
     render() {
@@ -19,7 +17,7 @@ export class PwdInput extends Component<Props> {
                 <Label>访问密码</Label>
                 <TextField
                     type="password"
-                    onChange={(_, v) => void this.props.onChange?.apply(this, [v])}
+                    onChange={(_, v) => void this.props.onChange(v ?? '')}
                     value={this.props.password}
                     canRevealPassword
                 ></TextField>

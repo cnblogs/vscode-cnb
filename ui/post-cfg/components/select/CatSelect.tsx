@@ -6,7 +6,7 @@ import { PersonalCategoryStore } from '../../service/personal-category-store'
 
 type Props = {
     categoryIds: number[] | undefined
-    onChange?: (categoryIds: number[]) => void
+    onChange: (categoryIds: number[]) => void
 }
 
 type State = {
@@ -17,7 +17,10 @@ type State = {
 class CatSelect extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
-        this.state = { categories: PersonalCategoryStore.get(), categoryIds: props.categoryIds ?? [] }
+        this.state = {
+            categories: PersonalCategoryStore.get(),
+            categoryIds: props.categoryIds ?? [],
+        }
     }
 
     render() {

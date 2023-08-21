@@ -6,14 +6,12 @@ type Option = { [key: string]: { label: string; checked: boolean } }
 
 type Props<TOption extends Option = Option> = {
     options: TOption
-    onChange?: (optionKey: keyof TOption, checked: boolean, stateObj: { [p in typeof optionKey]: boolean }) => void
+    onChange: (optionKey: keyof TOption, checked: boolean, stateObj: { [p in typeof optionKey]: boolean }) => void
 }
 
 export class OptionCheckBox<TOption extends Option = Option> extends Component<Props<TOption>> {
     constructor(props: Props<TOption>) {
         super(props)
-
-        this.state = {}
     }
 
     render() {

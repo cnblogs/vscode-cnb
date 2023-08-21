@@ -3,8 +3,8 @@ import * as React from 'react'
 import { Component } from 'react'
 
 type Props = {
-    entryName?: string
-    onChange?: (value: string) => void
+    entryName: string
+    onChange: (value: string) => void
 }
 
 type State = {
@@ -17,9 +17,7 @@ export default class UrlSlugInput extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
 
-        this.state = {
-            isCollapsed: true,
-        }
+        this.state = { isCollapsed: true }
     }
 
     render() {

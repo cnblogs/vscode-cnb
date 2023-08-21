@@ -21,9 +21,9 @@ type PostCfgPanelOpenOption = {
     post: Post
     panelTitle?: string
     localFileUri?: Uri
-    breadcrumbs?: string[]
+    breadcrumbs: string[]
     afterSuccess: (post: Post) => any
-    beforeUpdate?: (postToUpdate: Post, panel: WebviewPanel) => Promise<boolean>
+    beforeUpdate: (postToUpdate: Post, panel: WebviewPanel) => Promise<boolean>
 }
 
 export namespace PostCfgPanel {
@@ -168,7 +168,7 @@ export namespace PostCfgPanel {
             if (command === Webview.Cmd.Ext.uploadPost) {
                 const { post } = message as WebviewMsg.UploadPostMsg
 
-                if (beforeUpdate !== undefined && !(await beforeUpdate(post, panel))) return
+                if (!(await beforeUpdate(post, panel))) return
 
                 try {
                     const postSavedModel = await PostService.update(post)
