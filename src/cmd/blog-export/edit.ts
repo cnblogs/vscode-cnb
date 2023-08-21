@@ -13,7 +13,7 @@ function parseInput(input: unknown): ExportPostTreeItem | null | undefined {
 
 export async function editExportPost(input: unknown): Promise<void> {
     const target = parseInput(input)
-    if (!target) return void Alert.warn('不支持的参数输入')
+    if (target === undefined || target === null) return void Alert.warn('不支持的参数输入')
 
     const {
         post: { title, isMarkdown, id: postId },

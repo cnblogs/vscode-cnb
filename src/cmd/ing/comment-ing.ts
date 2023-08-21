@@ -20,14 +20,14 @@ export class CommentIngCmdHandler implements CmdHandler {
             title: `${baseTitle}: ${this._ingContent.substring(0, maxIngContentLength)}${
                 this._ingContent.length > maxIngContentLength ? '...' : ''
             }`,
-            prompt: this._atUser ? `@${this._atUser.displayName}` : '',
+            prompt: this._atUser !== undefined ? `@${this._atUser.displayName}` : '',
             ignoreFocusOut: true,
         })
         this._content = input ?? ''
         const { id: atUserId, displayName: atUserAlias } = this._atUser ?? {}
         const atContent = atUserAlias !== undefined ? `@${atUserAlias} ` : ''
 
-        if (this._content) {
+        if (this._content !== '') {
             return window.withProgress({ location: ProgressLocation.Notification, title: '正在请求...' }, async p => {
                 p.report({ increment: 30 })
                 const isSuccess = await IngService.comment(

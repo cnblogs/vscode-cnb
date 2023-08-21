@@ -12,10 +12,13 @@ import { MarkdownCfg } from '@/ctx/cfg/markdown'
 
 export async function postPull(input: Post | PostTreeItem | Uri | undefined | null) {
     const ctxList: CmdCtx[] = []
-    let uri: Uri | undefined
     input = input instanceof PostTreeItem ? input.post : input
-    if (parsePostInput(input) && input.id > 0) await handlePostInput(input, ctxList)
-    else if ((uri = parseUriInput(input))) handleUriInput(uri, ctxList)
+    if (parsePostInput(input) && input.id > 0) {
+        await handlePostInput(input, ctxList)
+    } else {
+        const uri = parseUriInput(input)
+        if (uri !== undefined) handleUriInput(uri, ctxList)
+    }
 
     const fileName = resolveFileNames(ctxList)
 

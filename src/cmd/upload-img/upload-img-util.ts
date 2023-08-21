@@ -29,10 +29,8 @@ export async function showUploadSuccessModel(imgLink: string) {
 
 export async function insertImgLinkToActiveEditor(imgLink: string): Promise<boolean> {
     const activeEditor = window.activeTextEditor
-    if (activeEditor) {
-        await activeEditor.insertSnippet(new SnippetString(fmtImgLink(imgLink, 'markdown')))
-        return true
-    }
+    if (activeEditor === undefined) return false
 
-    return false
+    await activeEditor.insertSnippet(new SnippetString(fmtImgLink(imgLink, 'markdown')))
+    return true
 }

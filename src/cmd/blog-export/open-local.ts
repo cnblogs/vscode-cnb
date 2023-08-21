@@ -61,6 +61,6 @@ export async function openLocalExport(opts: Partial<typeof defaultOptions> = def
     )
     await DownloadedExportStore.add(dbFilePath, exportRecord?.id)
 
-    if (exportRecord) await treeProvider?.refreshRecords({ force: false })
+    if (exportRecord !== undefined) await treeProvider?.refreshRecords({ force: false })
     else await treeProvider?.refreshDownloadedExports()
 }

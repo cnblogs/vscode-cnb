@@ -114,7 +114,7 @@ const retrieveChromiumPath = async (): Promise<string | undefined> => {
             ...options.map(x => x[0])
         )
         const op = options.find(x => x[0] === input)
-        path = op ? await op[1]() : undefined
+        path = op !== undefined ? await op[1]() : undefined
     }
 
     if (path !== undefined && path !== ChromiumCfg.getChromiumPath()) await ChromiumCfg.setChromiumPath(path)
@@ -164,15 +164,6 @@ const mapToPostEditDto = async (postList: Post[]) =>
         .filter((x): x is PostEditDto => x != null)
         .map(x => x?.post)
 
-const reportErrors = (errors: string[] | undefined) => {
-    if (errors && errors.length > 0) {
-        void Alert.err('导出 PDF 时遇到错误', {
-            modal: true,
-            detail: errors.join('\n'),
-        })
-    }
-}
-
 export async function exportPostToPdf(input?: Post | PostTreeItem | Uri): Promise<void> {
     if (!(input instanceof Post) && !(input instanceof PostTreeItem) && !(input instanceof Uri)) return
 
@@ -182,41 +173,37 @@ export async function exportPostToPdf(input?: Post | PostTreeItem | Uri): Promis
     const blogApp = AuthManager.getUserInfo()?.BlogApp
     if (blogApp === undefined) return void Alert.warn('无法获取博客地址, 请检查登录状态')
 
-    reportErrors(
-        await window.withProgress<string[] | undefined>(
-            {
-                location: ProgressLocation.Notification,
-            },
-            async progress => {
-                const errors: string[] = []
-                progress.report({ message: '导出 PDF - 处理博文数据' })
-                let selectedPost = await (input instanceof Post || input instanceof PostTreeItem
-                    ? handlePostInput(input)
-                    : handleUriInput(input))
-                if (selectedPost.length <= 0) return
+    await window.withProgress<string[] | undefined>(
+        {
+            location: ProgressLocation.Notification,
+        },
+        async progress => {
+            progress.report({ message: '导出 PDF - 处理博文数据' })
+            let selectedPost = await (input instanceof Post || input instanceof PostTreeItem
+                ? handlePostInput(input)
+                : handleUriInput(input))
+            if (selectedPost.length <= 0) return
 
-                selectedPost = input instanceof Post ? await mapToPostEditDto(selectedPost) : selectedPost
-                progress.report({ message: '选择输出文件夹' })
-                const dir = await inputTargetFolder()
-                if (!dir || !chromiumPath) return
+            selectedPost = input instanceof Post ? await mapToPostEditDto(selectedPost) : selectedPost
+            progress.report({ message: '选择输出文件夹' })
+            const dir = await inputTargetFolder()
+            if (dir === undefined || chromiumPath === undefined) return
 
-                progress.report({ message: '启动 Chromium' })
-                const { browser, page } = (await launchBrowser(chromiumPath)) ?? {}
-                if (!browser || !page) return ['启动 Chromium 失败']
+            progress.report({ message: '启动 Chromium' })
+            const { browser, page } = (await launchBrowser(chromiumPath)) ?? {}
+            if (browser === undefined || page === undefined) return ['启动 Chromium 失败']
 
-                let idx = 0
-                const { length: total } = selectedPost
-                for (const post of selectedPost) {
-                    try {
-                        await exportOne(idx++, total, post, page, dir, progress, blogApp)
-                    } catch (err) {
-                        errors.push(`导出"${post.title}失败", ${JSON.stringify(err)}`)
-                    }
+            let idx = 0
+            const { length: total } = selectedPost
+            for (const post of selectedPost) {
+                try {
+                    await exportOne(idx++, total, post, page, dir, progress, blogApp)
+                } catch (e) {
+                    void Alert.err(`导出 ${post.title} 失败: ${<string>e}`)
                 }
-                await page.close()
-                await browser.close()
-                return errors
             }
-        )
+            await page.close()
+            await browser.close()
+        }
     )
 }

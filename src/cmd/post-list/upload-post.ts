@@ -199,7 +199,7 @@ export async function uploadPostFile(fileUri?: Uri) {
         await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
         const postEditDto = await PostService.getPostEditDto(selectedPost.id)
         if (postEditDto === undefined) return
-        if (!fileContent) await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
+        if (fileContent === '') await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
 
         await uploadPost(postEditDto.post)
     } else if (selected === '新建博文') {
@@ -305,7 +305,7 @@ export async function uploadPostFileNoConfirm(fileUri?: Uri) {
         await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
         const postEditDto = await PostService.getPostEditDto(selectedPost.id)
         if (postEditDto === undefined) return
-        if (!fileContent) await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
+        if (fileContent === '') await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
 
         await uploadPostNoConfirm(postEditDto.post)
     } else if (selected === '新建博文') {

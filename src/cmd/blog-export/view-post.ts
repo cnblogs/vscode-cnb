@@ -29,7 +29,7 @@ async function provide(downloadedExport: DownloadedBlogExport, { id: postId, tit
 
         return false
     })
-    if (matchedEditor) {
+    if (matchedEditor !== undefined) {
         await window.showTextDocument(matchedEditor.document, { preview: false, preserveFocus: true })
         return
     }

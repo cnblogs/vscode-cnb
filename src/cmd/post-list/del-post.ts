@@ -70,7 +70,7 @@ export async function delSelectedPost(arg: unknown) {
             if (isToDeleteLocalFile) {
                 selectedPost
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')
-                    .filter(x => !!x)
+                    .filter(x => x !== '')
                     .forEach(path => {
                         workspace.fs.delete(Uri.file(path)).then(undefined, e => console.error(e))
                     })

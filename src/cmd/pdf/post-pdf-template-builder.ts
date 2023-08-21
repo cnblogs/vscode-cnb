@@ -28,10 +28,10 @@ export namespace PostPdfTemplateBuilder {
 
         const buildTagHtml = (): Promise<string> => {
             let html =
-                post.tags && post.tags.length > 0
+                post.tags !== undefined && post.tags.length > 0
                     ? post.tags.map(t => `<a href="https://www.cnblogs.com/${blogApp}/tag/${t}/">${t}</a>`).join(', ')
                     : ''
-            html = html ? `<div id="EntryTag">标签: ${html}</div>` : ''
+            html = html !== '' ? `<div id="EntryTag">标签: ${html}</div>` : ''
             return Promise.resolve(html)
         }
 
@@ -50,7 +50,7 @@ export namespace PostPdfTemplateBuilder {
                           )
                           .join(', ')
                     : ''
-            html = html ? `<div id="BlogPostCategory">分类: ${html}</div>` : ''
+            html = html !== '' ? `<div id="BlogPostCategory">分类: ${html}</div>` : ''
             return html
         }
 

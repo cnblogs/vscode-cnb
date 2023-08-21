@@ -45,7 +45,7 @@ export async function renamePost(arg?: Post | PostTreeItem) {
 
     const input = await window.showInputBox({
         title: '请输入新的博文标题',
-        validateInput: v => (v ? undefined : '请输入一个标题'),
+        validateInput: v => (v === '' ? '请输入一个标题' : undefined),
         value: post.title,
     })
 

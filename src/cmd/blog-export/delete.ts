@@ -62,7 +62,7 @@ async function deleteExportRecordItem(item: BlogExportRecordTreeItem) {
             void Alert.err(`删除博客备份失败: ${<string>e}`)
             return false
         })
-    if (hasDeleted) if (downloaded) await removeDownloadedBlogExport(downloaded, { shouldDeleteLocal })
+    if (hasDeleted) if (downloaded !== undefined) await removeDownloadedBlogExport(downloaded, { shouldDeleteLocal })
 
     await BlogExportProvider.optionalInstance?.refreshRecords()
 }

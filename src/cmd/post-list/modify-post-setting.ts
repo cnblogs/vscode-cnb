@@ -28,7 +28,7 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
 
     if (!(postId >= 0)) return
 
-    if (post) await revealPostListItem(post)
+    if (post !== undefined) await revealPostListItem(post)
 
     const editDto = await PostService.getPostEditDto(postId)
 

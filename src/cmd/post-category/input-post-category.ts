@@ -40,7 +40,7 @@ export const inputPostCategory = ({
             step: state.step++,
             totalSteps: state.totalSteps,
             placeHolder: '<必填>请输入分类标题',
-            validateInput: value => Promise.resolve(value ? undefined : '请输入分类标题'),
+            validateInput: value => Promise.resolve(value === '' ? '请输入分类标题' : undefined),
             shouldResume: () => Promise.resolve(false),
         })
         result.title = categoryTitle ?? ''
@@ -96,7 +96,7 @@ export const inputPostCategory = ({
     ]
 
     return Promise.resolve(calculateNextStep())
-        .then(nextStep => (nextStep ? MultiStepInput.run(nextStep) : Promise.reject()))
+        .then(nextStep => (nextStep !== undefined ? MultiStepInput.run(nextStep) : Promise.reject()))
         .catch()
         .then(() => (state.step - 1 === state.totalSteps ? result : undefined))
 }

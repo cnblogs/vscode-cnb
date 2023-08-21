@@ -35,7 +35,7 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
                     path.basename(filePath, path.extname(filePath)),
                     '搜索要关联的博文'
                 )
-                if (selectedPost) {
+                if (selectedPost !== undefined) {
                     await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
                     void Alert.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`)
                 }

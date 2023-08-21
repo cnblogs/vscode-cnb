@@ -110,7 +110,7 @@ export namespace PostListView {
             placeHolder: '请输入页码',
             validateInput: i => {
                 const n = Number.parseInt(i)
-                if (isNaN(n) || !n) return '请输入正确格式的页码'
+                if (isNaN(n) || n === 0) return '请输入正确格式的页码'
 
                 const state = getListState()
                 if (state === undefined) return '博文列表尚未加载'
