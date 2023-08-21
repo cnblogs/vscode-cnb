@@ -4,8 +4,8 @@ import React from 'react'
 import { SiteCategoryStore } from '../service/site-category-store'
 
 export type ISiteCategoriesSelectorProps = {
-    categoryIds?: number[]
-    onChange?: (siteCategoryId: number) => void
+    categoryIds: number[]
+    onChange: (siteCategoryId: number) => void
 }
 
 export type ISiteCategoriesSelectorState = {
@@ -22,7 +22,7 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
         const siteCategories = SiteCategoryStore.get()
         const categoryExpandState: { selectedParentCategoryId?: boolean } = {}
         let selectedParentCategoryId = -1
-        if (props.categoryIds !== undefined && props.categoryIds.length > 0) {
+        if (props.categoryIds.length > 0) {
             selectedParentCategoryId =
                 siteCategories.find(x => x.children.find(child => child.id === props.categoryIds?.[0]))?.id ?? -1
         }
@@ -31,7 +31,7 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
         this.state = {
             siteCategories: siteCategories,
             isCollapsed: true,
-            categoryIds: props.categoryIds ?? [],
+            categoryIds: props.categoryIds,
             categoryExpandState,
         }
     }
@@ -121,6 +121,6 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
 
     private onCheckboxChange(categoryId: number, checked = false) {
         this.setState({ categoryIds: checked ? [categoryId] : [] })
-        this.props.onChange?.apply(this, [categoryId])
+        this.props.onChange(categoryId)
     }
 }

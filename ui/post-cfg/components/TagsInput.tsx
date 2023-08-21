@@ -14,32 +14,31 @@ import React from 'react'
 import { TagStore } from '../service/tag-store'
 import { PostTags, PostTag } from '@/model/post-tag'
 
-export type ITagsInputProps = {
-    selectedTagNames?: string[]
-    onChange?: (tagNames: string[]) => void
+type Props = {
+    selectedTagNames: string[]
+    onChange: (tagNames: string[]) => void
 }
 
-export type ITagsInputState = {
+type State = {
     tags: PostTags
     selectedTags: ITag[]
 }
 
-export interface INewTag extends ITag {
-    readonly isNew: boolean
-}
-
-export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState> {
-    constructor(props: ITagsInputProps) {
+export class TagsInput extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props)
 
         const tags = TagStore.get()
+
+        const selectedTags = this.props.selectedTagNames
+            .map(name => tags.find(x => x.name === name))
+            .filter(tag => tag !== undefined)
+            .map(tag => tag as PostTag)
+            .map(tag => ({ name: tag.name, key: tag.id }))
+
         this.state = {
             tags,
-            selectedTags:
-                this.props.selectedTagNames
-                    ?.map(name => tags.find(x => x.name === name))
-                    .filter(t => t)
-                    .map(this.toITag) ?? [],
+            selectedTags,
         }
     }
 
@@ -52,13 +51,15 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
                         removeButtonAriaLabel="Remove"
                         selectionAriaLabel="Selected tags"
                         itemLimit={10}
-                        onResolveSuggestions={(text, selectedItems) => this.filterSuggestedTags(text, selectedItems)}
+                        onResolveSuggestions={(text, selectedItems) =>
+                            filterSuggestedTags(this.state, text, selectedItems ?? [])
+                        }
                         pickerSuggestionsProps={{
                             suggestionsHeaderText: '选择标签',
                             loadingText: '加载中',
                         }}
                         onRenderSuggestionsItem={tag => {
-                            const isNewTag = (tag as INewTag).isNew
+                            const isNewTag = (tag as NewTag).isNew ?? false
                             const tagEl = (
                                 <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
                                     <Icon iconName="Tag" />
@@ -94,13 +95,13 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
                         onChange={tags => {
                             tags ??= []
                             tags = tags.filter(x => x)
-                            this.props.onChange?.apply(this, [tags.map(t => t.name)])
+                            this.props.onChange(tags.map(t => t.name))
                             this.setState({ selectedTags: tags })
                         }}
-                        onEmptyResolveSuggestions={items => this.filterSuggestedTags('', items)}
+                        onEmptyResolveSuggestions={items => filterSuggestedTags(this.state, '', items ?? [])}
                         inputProps={{ placeholder: '点击选择标签' }}
                         onValidateInput={input =>
-                            input?.length <= 50 ? ValidationState.valid : ValidationState.invalid
+                            input.length <= 50 ? ValidationState.valid : ValidationState.invalid
                         }
                         onInputChange={value => (value.length <= 50 ? value : value.substring(0, 49))}
                     />
@@ -108,24 +109,27 @@ export class TagsInput extends React.Component<ITagsInputProps, ITagsInputState>
             </Stack>
         )
     }
+}
 
-    private toITag(this: void, tag: PostTag): ITag {
-        return { name: tag.name, key: tag.id }
-    }
+type NewTag = {
+    name: string
+    key: string | number
+    isNew?: boolean
+}
 
-    private filterSuggestedTags(filterText: string, selectedTags?: ITag[]): ITag[] {
-        filterText = filterText?.trim() ?? ''
-        const { tags } = this.state
-        const filteredTags = tags
-            .filter(
-                tag =>
-                    (filterText === '' || tag.name.indexOf(filterText) >= 0) &&
-                    (selectedTags === undefined || selectedTags.findIndex(st => st.name === tag.name) < 0)
-            )
-            .map(x => ({ name: x.name, key: x.id }) as ITag)
-        if (filteredTags.length <= 0 || tags.findIndex(t => t.name.toLowerCase() === filterText.toLowerCase()) < 0)
-            filteredTags.push({ name: filterText, key: filterText, isNew: true } as INewTag)
+function filterSuggestedTags(state: State, filterText: string, selectedTags: ITag[]) {
+    filterText = filterText.trim()
 
-        return filteredTags
-    }
+    const filteredTags = state.tags
+        .filter(
+            tag =>
+                (filterText === '' || tag.name.indexOf(filterText) >= 0) &&
+                selectedTags.findIndex(st => st.name === tag.name) < 0
+        )
+        .map(x => ({ name: x.name, key: x.id }) as ITag)
+
+    if (filteredTags.length <= 0 || state.tags.findIndex(t => t.name.toLowerCase() === filterText.toLowerCase()) < 0)
+        filteredTags.push({ name: filterText, key: filterText, isNew: true } as NewTag)
+
+    return filteredTags
 }

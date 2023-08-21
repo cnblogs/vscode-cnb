@@ -54,7 +54,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                             this.props.onTitleChange?.(v ?? '')
                         }}
                     ></PostTitleInput>
-                    <TagsInput selectedTagNames={this.state.tags} onChange={tags => this.setState({ tags })} />
+                    <TagsInput selectedTagNames={this.state.tags ?? []} onChange={tags => this.setState({ tags })} />
                     <Stack tokens={{ childrenGap: 8 }}>
                         <Label>分类</Label>
                         <Stack>
