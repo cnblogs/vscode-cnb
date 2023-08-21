@@ -81,7 +81,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                         options={{
                             isPublished: { label: '发布', checked: this.state.isPublished },
                             displayOnHomePage: {
-                                label: '显示在我的博客首页',
+                                label: '博客主页显示',
                                 checked: this.state.displayOnHomePage,
                             },
                             isAllowComments: {
