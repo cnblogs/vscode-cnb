@@ -1,20 +1,21 @@
 import { cloneDeep } from 'lodash-es'
-import vscode, { Uri } from 'vscode'
+import vscode, { WebviewPanel, Uri } from 'vscode'
 import { Post } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PostCategoryService } from './post-category'
 import { PostTagService } from './post-tag'
 import { PostService } from './post'
-import { isErrorResponse } from '@/model/error-response'
 import { WebviewMsg } from '@/model/webview-msg'
 import { WebviewCommonCmd, Webview } from '@/model/webview-cmd'
-import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { ImgUploadStatusId } from '@/model/img-upload-status'
 import { openPostFile } from '@/cmd/post-list/open-post-file'
 import { parseWebviewHtml } from '@/service/parse-webview-html'
 import path from 'path'
+import { Alert } from '@/infra/alert'
+import { uploadFsImage } from '@/cmd/upload-img/upload-fs-img'
+import { uploadClipboardImg } from '@/cmd/upload-img/upload-clipboard-img'
 
-const panels: Map<string, vscode.WebviewPanel> = new Map()
+const panels: Map<string, WebviewPanel> = new Map()
 
 type PostCfgPanelOpenOption = {
     post: Post
@@ -22,7 +23,7 @@ type PostCfgPanelOpenOption = {
     localFileUri?: Uri
     breadcrumbs?: string[]
     afterSuccess: (post: Post) => any
-    beforeUpdate?: (postToUpdate: Post, panel: vscode.WebviewPanel) => Promise<boolean>
+    beforeUpdate?: (postToUpdate: Post, panel: WebviewPanel) => Promise<boolean>
 }
 
 export namespace PostCfgPanel {
@@ -77,12 +78,7 @@ export namespace PostCfgPanel {
         )
     }
 
-    const tryRevealPanel = (
-        panelId: string | undefined,
-        options: PostCfgPanelOpenOption
-    ): vscode.WebviewPanel | undefined => {
-        if (panelId === undefined) return
-
+    const tryRevealPanel = (panelId: string, options: PostCfgPanelOpenOption): WebviewPanel | undefined => {
         const panel = findPanelById(panelId)
         if (panel === undefined) return
 
@@ -101,7 +97,7 @@ export namespace PostCfgPanel {
         return panel
     }
 
-    const createPanel = async (panelTitle: string, post: Post): Promise<vscode.WebviewPanel> => {
+    const createPanel = async (panelTitle: string, post: Post): Promise<WebviewPanel> => {
         const panelId = buildPanelId(post.id, post.title)
         const panel = vscode.window.createWebviewPanel(panelId, panelTitle, vscode.ViewColumn.Two, {
             enableScripts: true,
@@ -114,19 +110,28 @@ export namespace PostCfgPanel {
         return panel
     }
 
-    const onUploadImageCmd = async (panel: vscode.WebviewPanel | undefined, message: WebviewMsg.UploadImgMsg) => {
-        if (panel === undefined) return
-
+    const onUploadImageCmd = async (panel: WebviewPanel, message: WebviewMsg.UploadImgMsg) => {
         const { webview } = panel
-        await webview.postMessage({
-            command: Webview.Cmd.Ui.updateImageUploadStatus,
-            status: {
-                id: ImgUploadStatusId.uploading,
+
+        const selected = await Alert.info(
+            '上传图片到博客园',
+            {
+                modal: true,
+                detail: '选择图片来源',
             },
-            imageId: message.imageId,
-        } as WebviewMsg.UpdateImgUpdateStatusMsg)
+            '本地图片',
+            '剪贴板图片'
+        )
+        if (selected === undefined) return
+
         try {
-            const imageUrl = await uploadImg()
+            let imageUrl: string | undefined
+
+            if (selected === '本地图片') imageUrl = await uploadFsImage()
+            else if (selected === '剪贴板图片') imageUrl = await uploadClipboardImg()
+
+            if (imageUrl === undefined) return
+
             await webview.postMessage({
                 command: Webview.Cmd.Ui.updateImageUploadStatus,
                 status: {
@@ -135,23 +140,12 @@ export namespace PostCfgPanel {
                 },
                 imageId: message.imageId,
             } as WebviewMsg.UpdateImgUpdateStatusMsg)
-        } catch (err) {
-            if (isErrorResponse(err)) {
-                await webview.postMessage({
-                    command: Webview.Cmd.Ui.updateImageUploadStatus,
-                    status: {
-                        id: ImgUploadStatusId.failed,
-                        errors: err.errors,
-                    },
-                    imageId: message.imageId,
-                } as WebviewMsg.UpdateImgUpdateStatusMsg)
-            }
+        } catch (e) {
+            void Alert.err(`操作失败: {<string> e}`)
         }
     }
 
-    const observeActiveColorSchemaChange = (panel?: vscode.WebviewPanel): vscode.Disposable | undefined => {
-        if (panel === undefined) return
-
+    const observeActiveColorSchemaChange = (panel: WebviewPanel) => {
         const { webview } = panel
         return vscode.window.onDidChangeActiveColorTheme(async theme => {
             await webview.postMessage({
@@ -162,7 +156,7 @@ export namespace PostCfgPanel {
     }
 
     const observeWebviewMessages = (
-        panel: vscode.WebviewPanel | undefined,
+        panel: WebviewPanel | undefined,
         options: PostCfgPanelOpenOption
     ): vscode.Disposable | undefined => {
         if (panel === undefined) return
@@ -199,7 +193,7 @@ export namespace PostCfgPanel {
     }
 
     const observerPanelDisposeEvent = (
-        panel: vscode.WebviewPanel | undefined,
+        panel: WebviewPanel | undefined,
         disposables: (vscode.Disposable | undefined)[]
     ): vscode.Disposable | undefined => {
         if (panel === undefined) return

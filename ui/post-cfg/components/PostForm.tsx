@@ -102,7 +102,7 @@ export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
                     />
                     <InputSummary
                         summary={this.state.description}
-                        featureImageUrl={this.state.featuredImage}
+                        featureImgUrl={this.state.featuredImage ?? ''}
                         onChange={summary => this.setState({ description: summary })}
                         onFeatureImageChange={imageUrl => this.setState({ featuredImage: imageUrl })}
                     />
