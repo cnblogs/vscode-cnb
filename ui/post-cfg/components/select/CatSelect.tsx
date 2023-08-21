@@ -1,8 +1,8 @@
 import { Checkbox, Stack } from '@fluentui/react'
 import { Component } from 'react'
-import { PersonalCategoryStore } from '../service/personal-category-store'
 import { PostCategory } from '@/model/post-category'
-import { eq } from '../../../src/infra/fp/ord'
+import { eq } from '../../../../src/infra/fp/ord'
+import { PersonalCategoryStore } from '../../service/personal-category-store'
 
 type Props = {
     categoryIds: number[] | undefined
@@ -14,7 +14,7 @@ type State = {
     categoryIds: number[]
 }
 
-class CategorySelect extends Component<Props, State> {
+class CatSelect extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
         this.state = { categories: PersonalCategoryStore.get(), categoryIds: props.categoryIds ?? [] }
@@ -51,4 +51,4 @@ class CategorySelect extends Component<Props, State> {
     }
 }
 
-export { CategorySelect }
+export { CatSelect }

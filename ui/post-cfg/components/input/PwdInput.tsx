@@ -6,7 +6,7 @@ type Props = {
     onChange?: (password: string) => void
 }
 
-export class PasswordInput extends Component<Props> {
+export class PwdInput extends Component<Props> {
     constructor(props: Props) {
         super(props)
 

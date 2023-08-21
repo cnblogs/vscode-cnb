@@ -18,7 +18,7 @@ type State = {
     errors?: string[]
 }
 
-export class InputSummary extends Component<Props, State> {
+export class SummaryInput extends Component<Props, State> {
     private uploadingImageId = ''
 
     constructor(props: Props) {

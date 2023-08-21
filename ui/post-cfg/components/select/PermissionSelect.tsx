@@ -27,7 +27,7 @@ const options: IChoiceGroupOption[] = [
     },
 ]
 
-export class AccessPermissionSelector extends Component<Props, State> {
+export class PermissionSelect extends Component<Props, State> {
     constructor(props: Props) {
         props.accessPermission ??= AccessPermission.undeclared
         super(props)

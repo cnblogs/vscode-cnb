@@ -11,8 +11,8 @@ import {
     Text,
 } from '@fluentui/react'
 import React, { Component } from 'react'
-import { TagStore } from '../service/tag-store'
 import { PostTags, PostTag } from '@/model/post-tag'
+import { TagStore } from '../../service/tag-store'
 
 type Props = {
     selectedTagNames: string[]
@@ -24,7 +24,7 @@ type State = {
     selectedTags: ITag[]
 }
 
-export class TagsInput extends Component<Props, State> {
+export class TagInput extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
 

@@ -12,8 +12,6 @@ import { ActiveThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 
-type Props = Record<string, never>
-
 type State = {
     post?: Post
     theme?: Theme | PartialTheme
@@ -22,8 +20,8 @@ type State = {
     useNestCategoriesSelect: boolean
 }
 
-export class App extends Component<Props, State> {
-    constructor(props: Props) {
+export class App extends Component<unknown, State> {
+    constructor(props: unknown) {
         super(props)
         this.state = { theme: ActiveThemeProvider.activeTheme(), fileName: '', useNestCategoriesSelect: false }
         this.observerMessages()
@@ -31,41 +29,42 @@ export class App extends Component<Props, State> {
     }
 
     render() {
-        const { post, fileName } = this.state
-        const isReady = post != null
-        const content = (
-            <>
-                {this.renderBreadcrumbs()}
-                <Stack tokens={{ padding: '8px 10px 16px 10px' }}>
-                    <PostForm
-                        post={this.state.post}
-                        onTitleChange={title =>
-                            this.state.breadcrumbs !== undefined && this.state.breadcrumbs.length > 1
-                                ? this.setState({
-                                      breadcrumbs: this.state.breadcrumbs
-                                          .slice(0, this.state.breadcrumbs.length - 1)
-                                          .concat(title),
-                                  })
-                                : undefined
-                        }
-                        fileName={fileName}
-                        useNestCategoriesSelect={this.state.useNestCategoriesSelect}
-                    />
+        let content
+        if (this.state.post === undefined) {
+            content = (
+                <Stack styles={{ root: { minHeight: '70vh' } }} verticalAlign="center">
+                    <Spinner label="加载中..." labelPosition="bottom" />
                 </Stack>
-            </>
-        )
+            )
+        } else {
+            const { fileName } = this.state
+            content = (
+                <>
+                    {this.renderBreadcrumbs()}
+                    <Stack tokens={{ padding: '8px 10px 16px 10px' }}>
+                        <PostForm
+                            post={this.state.post}
+                            onTitleChange={title =>
+                                this.state.breadcrumbs !== undefined && this.state.breadcrumbs.length > 1
+                                    ? this.setState({
+                                          breadcrumbs: this.state.breadcrumbs
+                                              .slice(0, this.state.breadcrumbs.length - 1)
+                                              .concat(title),
+                                      })
+                                    : undefined
+                            }
+                            fileName={fileName}
+                            useNestCategoriesSelect={this.state.useNestCategoriesSelect}
+                        />
+                    </Stack>
+                </>
+            )
+        }
+
         return (
             <React.StrictMode>
-                <ThemeProvider theme={this.state.theme}>{isReady ? content : this.renderSpinner()}</ThemeProvider>
+                <ThemeProvider theme={this.state.theme}>{content}</ThemeProvider>
             </React.StrictMode>
-        )
-    }
-
-    private renderSpinner() {
-        return (
-            <Stack styles={{ root: { minHeight: '70vh' } }} verticalAlign="center">
-                <Spinner label="别着急, 数据加载中~" labelPosition="bottom" />
-            </Stack>
         )
     }
 

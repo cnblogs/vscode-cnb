@@ -1,7 +1,7 @@
 import { ActionButton, Checkbox, Label, Stack } from '@fluentui/react'
 import { SiteCategory } from '@/model/site-category'
 import React, { Component } from 'react'
-import { SiteCategoryStore } from '../service/site-category-store'
+import { SiteCategoryStore } from '../../service/site-category-store'
 
 type Props = {
     categoryIds: number[]
@@ -15,7 +15,7 @@ type State = {
     categoryExpandState: { [key: number]: boolean | undefined }
 }
 
-export class SiteCategorySelector extends Component<Props, State> {
+export class SiteCatSelect extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
 

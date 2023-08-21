@@ -11,7 +11,7 @@ type State = {
     value: Props['value']
 }
 
-export default class PostTitleInput extends Component<Props, State> {
+export default class TitleInput extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
         this.state = {

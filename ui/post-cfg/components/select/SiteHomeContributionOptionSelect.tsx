@@ -12,7 +12,7 @@ export interface Props {
 
 type State = { isCollapse: boolean }
 
-export class SiteHomeContributionOptionsSelector extends Component<Props, State> {
+export class SiteHomeContributionOptionSelect extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
         this.state = { isCollapse: true }

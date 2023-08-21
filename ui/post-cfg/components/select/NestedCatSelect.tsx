@@ -1,8 +1,9 @@
-import { ActionButton, Checkbox, Icon, Link, Spinner, Stack } from '@fluentui/react'
+import { ActionButton, Icon, Link, Spinner, Stack } from '@fluentui/react'
 import { PostCategory } from '@/model/post-category'
 import { take } from 'lodash-es'
 import { PersonalCategoryStore } from 'post-cfg/service/personal-category-store'
 import React, { Component } from 'react'
+import { CatCheckbox } from '../CatCheckbox'
 
 type Props = {
     selected?: number[]
@@ -14,15 +15,16 @@ type Props = {
 type State = {
     expanded?: Set<number> | null
     children?: PostCategory[]
-    showAll?: boolean
+    showAll: boolean
     limit: number
 }
 
-export default class NestCategorySelect extends Component<Props, State> {
+export default class NestedCatSelect extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
 
         this.state = {
+            showAll: false,
             limit: 10,
         }
     }
@@ -40,11 +42,11 @@ export default class NestCategorySelect extends Component<Props, State> {
         const categories = this.isRoot ? PersonalCategoryStore.get() : this.state.children ?? []
         return (
             <Stack tokens={{ childrenGap: 10 }}>
-                {(this.state.showAll === true ? categories : take(categories, this.state.limit)).map(c => (
+                {(this.state.showAll ? categories : take(categories, this.state.limit)).map(c => (
                     <div style={{ paddingLeft: `calc(10px * ${this.props.level ?? 0})` }}>
                         <Stack tokens={{ childrenGap: 10 }}>
                             <Stack horizontal>
-                                <CategoryCheckbox
+                                <CatCheckbox
                                     isChecked={this.props.selected?.includes(c.categoryId) ?? false}
                                     category={c}
                                     onChange={isChecked => {
@@ -55,7 +57,7 @@ export default class NestCategorySelect extends Component<Props, State> {
                                                 : selected.filter(x => x !== c.categoryId)
                                         )
                                     }}
-                                ></CategoryCheckbox>
+                                ></CatCheckbox>
                                 {/* Button used toggle expand/collapse status */}
                                 {c.childCount > 0 ? (
                                     <ActionButton
@@ -75,12 +77,12 @@ export default class NestCategorySelect extends Component<Props, State> {
                             </Stack>
 
                             {this.checkIsExpanded(c) ? (
-                                <NestCategorySelect
+                                <NestedCatSelect
                                     parent={c.categoryId}
                                     level={(this.props.level ?? 0) + 1}
                                     selected={this.props.selected}
                                     onSelect={this.props.onSelect}
-                                ></NestCategorySelect>
+                                ></NestedCatSelect>
                             ) : (
                                 <></>
                             )}
@@ -132,21 +134,4 @@ export default class NestCategorySelect extends Component<Props, State> {
     private checkIsExpanded(category: PostCategory): boolean {
         return this.state.expanded?.has(category.categoryId) ?? false
     }
-}
-
-type ICategoryItemProps = {
-    category: PostCategory
-    onChange: (isChecked: boolean) => void
-    isChecked: boolean
-}
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export function CategoryCheckbox({ category, onChange, isChecked }: ICategoryItemProps) {
-    return (
-        <Checkbox
-            label={category.title}
-            checked={isChecked}
-            onChange={(_, isChecked) => onChange(isChecked ?? false)}
-        ></Checkbox>
-    )
 }

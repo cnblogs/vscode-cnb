@@ -9,7 +9,7 @@ type Props<TOption extends Option = Option> = {
     onChange?: (optionKey: keyof TOption, checked: boolean, stateObj: { [p in typeof optionKey]: boolean }) => void
 }
 
-export class CommonOptions<TOption extends Option = Option> extends Component<Props<TOption>> {
+export class OptionCheckBox<TOption extends Option = Option> extends Component<Props<TOption>> {
     constructor(props: Props<TOption>) {
         super(props)
 

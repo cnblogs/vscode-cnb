@@ -11,7 +11,7 @@ type State = {
     isCollapsed: boolean
 }
 
-export default class PostEntryNameInput extends Component<Props, State> {
+export default class UrlSlugInput extends Component<Props, State> {
     textFieldComp?: ITextField | null
 
     constructor(props: Props) {
