@@ -4,18 +4,18 @@ import { PersonalCategoryStore } from '../service/personal-category-store'
 import { PostCategory } from '@/model/post-category'
 import { eq } from '../../../src/infra/fp/ord'
 
-interface CategoriesSelectorProps {
+type Props = {
     categoryIds: number[] | undefined
     onChange?: (categoryIds: number[]) => void
 }
 
-interface CategoriesSelectorState {
+type State = {
     categories: PostCategory[]
     categoryIds: number[]
 }
 
-class CategorySelect extends Component<CategoriesSelectorProps, CategoriesSelectorState> {
-    constructor(props: CategoriesSelectorProps) {
+class CategorySelect extends Component<Props, State> {
+    constructor(props: Props) {
         super(props)
         this.state = { categories: PersonalCategoryStore.get(), categoryIds: props.categoryIds ?? [] }
     }

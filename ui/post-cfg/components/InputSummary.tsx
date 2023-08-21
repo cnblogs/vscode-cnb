@@ -2,26 +2,26 @@ import { ActionButton, Label, MessageBar, MessageBarType, Stack, TextField, Text
 import { ImgUploadStatusId } from '@/model/img-upload-status'
 import { Webview } from '@/model/webview-cmd'
 import { WebviewMsg } from '@/model/webview-msg'
-import React from 'react'
+import React, { Component } from 'react'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 
-export type IInputSummaryProps = {
+type Props = {
     summary?: string
     featureImgUrl: string
     onChange?: (summary: string) => void
     onFeatureImageChange?: (imageUrl: string) => void
 }
 
-export type IInputSummaryState = {
+type State = {
     isCollapse: boolean
     disabled: boolean
     errors?: string[]
 }
 
-export class InputSummary extends React.Component<IInputSummaryProps, IInputSummaryState> {
+export class InputSummary extends Component<Props, State> {
     private uploadingImageId = ''
 
-    constructor(props: IInputSummaryProps) {
+    constructor(props: Props) {
         super(props)
         const { featureImgUrl, summary } = props
 

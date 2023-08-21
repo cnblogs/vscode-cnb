@@ -1,22 +1,22 @@
 import { ActionButton, Checkbox, Label, Stack } from '@fluentui/react'
 import { SiteCategory } from '@/model/site-category'
-import React from 'react'
+import React, { Component } from 'react'
 import { SiteCategoryStore } from '../service/site-category-store'
 
-export type ISiteCategoriesSelectorProps = {
+type Props = {
     categoryIds: number[]
     onChange: (siteCategoryId: number) => void
 }
 
-export type ISiteCategoriesSelectorState = {
+type State = {
     siteCategories: SiteCategory[]
     isCollapsed: boolean
     categoryIds: number[]
     categoryExpandState: { [key: number]: boolean | undefined }
 }
 
-export class SiteCategorySelector extends React.Component<ISiteCategoriesSelectorProps, ISiteCategoriesSelectorState> {
-    constructor(props: ISiteCategoriesSelectorProps) {
+export class SiteCategorySelector extends Component<Props, State> {
+    constructor(props: Props) {
         super(props)
 
         const siteCategories = SiteCategoryStore.get()

@@ -2,27 +2,24 @@ import { ActionButton, Checkbox, Icon, Link, Spinner, Stack } from '@fluentui/re
 import { PostCategory } from '@/model/post-category'
 import { take } from 'lodash-es'
 import { PersonalCategoryStore } from 'post-cfg/service/personal-category-store'
-import React from 'react'
+import React, { Component } from 'react'
 
-export type INestCategoriesSelectProps = {
+type Props = {
     selected?: number[]
     parent?: number | null
     onSelect?: (value: number[]) => void
     level?: number
 }
 
-export type INestCategoriesSelectState = {
+type State = {
     expanded?: Set<number> | null
     children?: PostCategory[]
     showAll?: boolean
     limit: number
 }
 
-export default class NestCategorySelect extends React.Component<
-    INestCategoriesSelectProps,
-    INestCategoriesSelectState
-> {
-    constructor(props: INestCategoriesSelectProps) {
+export default class NestCategorySelect extends Component<Props, State> {
+    constructor(props: Props) {
         super(props)
 
         this.state = {
@@ -137,7 +134,7 @@ export default class NestCategorySelect extends React.Component<
     }
 }
 
-export type ICategoryItemProps = {
+type ICategoryItemProps = {
     category: PostCategory
     onChange: (isChecked: boolean) => void
     isChecked: boolean

@@ -1,13 +1,13 @@
 import { Label, Stack, TextField } from '@fluentui/react'
-import React from 'react'
+import React, { Component } from 'react'
 
-export type IPasswordInputProps = {
+type Props = {
     password?: string
     onChange?: (password: string) => void
 }
 
-export class PasswordInput extends React.Component<IPasswordInputProps> {
-    constructor(props: IPasswordInputProps) {
+export class PasswordInput extends Component<Props> {
+    constructor(props: Props) {
         super(props)
 
         this.state = {}

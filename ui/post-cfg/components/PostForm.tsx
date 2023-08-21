@@ -1,6 +1,6 @@
 import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button'
 import { Stack } from '@fluentui/react/lib/Stack'
-import React from 'react'
+import React, { Component } from 'react'
 import { CategorySelect } from './CategorySelect'
 import { SiteHomeContributionOptionsSelector } from './SiteHomeContributionOptionsSelector'
 import { PostCfg } from '@/model/post-cfg'
@@ -20,7 +20,7 @@ import PostTitleInput from 'post-cfg/components/PostTitleInput'
 import NestCategorySelect from './NestCategorySelect'
 import { Post } from '@/model/post'
 
-export type IPostFormProps = {
+type Props = {
     post?: Post
     fileName?: string
     useNestCategoriesSelect: boolean
@@ -28,13 +28,13 @@ export type IPostFormProps = {
     onTitleChange?: (title: string) => void
 }
 
-export interface IPostFormState extends PostCfg {}
+type State = PostCfg
 
-export class PostForm extends React.Component<IPostFormProps, IPostFormState> {
+export class PostForm extends Component<Props, State> {
     static contextType?: React.Context<IPostFormContext> = PostFormContext
     declare context: React.ContextType<typeof PostFormContext>
 
-    constructor(props: IPostFormProps) {
+    constructor(props: Props) {
         super(props)
         this.state = Object.assign({}, props.post ?? new Post())
     }

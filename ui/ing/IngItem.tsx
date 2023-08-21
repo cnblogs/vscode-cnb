@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Ing, IngComment, IngSendFromType } from '@/model/ing'
-import { IngItemState } from '@/model/ing-view'
 import { take } from 'lodash-es'
 import { ActivityItem, IPersonaProps, Link, Text } from '@fluentui/react'
 import { format, formatDistanceStrict } from 'date-fns'
@@ -8,12 +7,16 @@ import { zhCN } from 'date-fns/locale'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 import { IngWebviewHostCmd, Webview } from '@/model/webview-cmd'
 
-interface IngItemProps {
+type Props = {
     ing: Ing
     comments?: IngComment[]
 }
 
-export class IngItem extends Component<IngItemProps, IngItemState> {
+export type State = {
+    comments?: Ing[]
+}
+
+export class IngItem extends Component<Props, State> {
     readonly icons = {
         vscodeLogo: (
             <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
@@ -44,7 +47,7 @@ export class IngItem extends Component<IngItemProps, IngItemState> {
         ),
     } as const
 
-    constructor(props: IngItemProps) {
+    constructor(props: Props) {
         super(props)
         this.state = {}
     }

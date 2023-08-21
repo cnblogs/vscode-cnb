@@ -1,13 +1,13 @@
 import { ChoiceGroup, IChoiceGroupOption, Label, Stack } from '@fluentui/react'
 import { AccessPermission, formatAccessPermission } from '@/model/post'
-import React from 'react'
+import React, { Component } from 'react'
 
-export type IAccessPermissionSelectorProps = {
+type Props = {
     accessPermission?: AccessPermission
     onChange?: (accessPermission: AccessPermission) => void
 }
 
-export interface IAccessPermissionSelectorState extends Record<string, never> {}
+type State = Record<string, never>
 
 const options: IChoiceGroupOption[] = [
     {
@@ -27,11 +27,8 @@ const options: IChoiceGroupOption[] = [
     },
 ]
 
-export class AccessPermissionSelector extends React.Component<
-    IAccessPermissionSelectorProps,
-    IAccessPermissionSelectorState
-> {
-    constructor(props: IAccessPermissionSelectorProps) {
+export class AccessPermissionSelector extends Component<Props, State> {
+    constructor(props: Props) {
         props.accessPermission ??= AccessPermission.undeclared
         super(props)
 

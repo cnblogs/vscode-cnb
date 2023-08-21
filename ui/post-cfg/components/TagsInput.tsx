@@ -10,7 +10,7 @@ import {
     ValidationState,
     Text,
 } from '@fluentui/react'
-import React from 'react'
+import React, { Component } from 'react'
 import { TagStore } from '../service/tag-store'
 import { PostTags, PostTag } from '@/model/post-tag'
 
@@ -24,7 +24,7 @@ type State = {
     selectedTags: ITag[]
 }
 
-export class TagsInput extends React.Component<Props, State> {
+export class TagsInput extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
 

@@ -1,18 +1,18 @@
 import { ActionButton, Label, Stack, Text, TextField } from '@fluentui/react'
-import React from 'react'
+import React, { Component } from 'react'
 
-export type IPostTitleInputProps = {
+type Props = {
     value: string
     fileName: string
     onChange: (value: string | null | undefined) => unknown
 }
 
-export type IPostTitleInputState = {
-    value: IPostTitleInputProps['value']
+type State = {
+    value: Props['value']
 }
 
-export default class PostTitleInput extends React.Component<IPostTitleInputProps, IPostTitleInputState> {
-    constructor(props: IPostTitleInputProps) {
+export default class PostTitleInput extends Component<Props, State> {
+    constructor(props: Props) {
         super(props)
         this.state = {
             value: props.value,

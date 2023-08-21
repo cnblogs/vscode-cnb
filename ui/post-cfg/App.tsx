@@ -13,7 +13,9 @@ import { ActiveThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 
-interface AppState {
+type Props = Record<string, never>
+
+type State = {
     post?: Post
     theme?: Theme | PartialTheme
     breadcrumbs?: string[]
@@ -21,10 +23,8 @@ interface AppState {
     useNestCategoriesSelect: boolean
 }
 
-export interface AppProps extends Record<string, never> {}
-
-export class App extends Component<AppProps, AppState> {
-    constructor(props: AppProps) {
+export class App extends Component<Props, State> {
+    constructor(props: Props) {
         super(props)
         this.state = { theme: ActiveThemeProvider.activeTheme(), fileName: '', useNestCategoriesSelect: false }
         this.observerMessages()
