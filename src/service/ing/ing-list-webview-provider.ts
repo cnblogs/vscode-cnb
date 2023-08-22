@@ -9,9 +9,8 @@ import {
     window,
 } from 'vscode'
 import { parseWebviewHtml } from '@/service/parse-webview-html'
-import { IngWebviewHostCmd, IngWebviewUiCmd, Webview } from '@/model/webview-cmd'
+import { IngWebviewHostCmd, Webview } from '@/model/webview-cmd'
 import { IngService } from '@/service/ing/ing'
-import { IngAppState } from '@/model/ing-view'
 import { IngType, IngTypesMetadata } from '@/model/ing'
 import { isNumber } from 'lodash-es'
 import { CommentIngCmdHandler } from '@/cmd/ing/comment-ing'
@@ -82,7 +81,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                 .postMessage({
                     payload: { isRefreshing: true },
                     command: Webview.Cmd.Ing.Ui.setAppState,
-                } as IngWebviewUiCmd<Partial<IngAppState>>)
+                })
                 .then(undefined, () => undefined)
             const rawIngList = await IngService.getList({
                 type: ingType,
@@ -103,7 +102,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                         isRefreshing: false,
                         comments,
                     },
-                } as IngWebviewUiCmd<Omit<IngAppState, ''>>)
+                })
                 .then(undefined, () => undefined)
         } else {
             this._view.show()
@@ -123,7 +122,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
             payload: {
                 comments,
             },
-        } as IngWebviewUiCmd<Omit<IngAppState, ''>>)
+        })
     }
 
     private provideHtml(webview: CodeWebview) {
