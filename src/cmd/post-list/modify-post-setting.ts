@@ -30,13 +30,11 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
 
     if (post !== undefined) await revealPostListItem(post)
 
-    const editDto = await PostService.getPostEditDto(postId)
-
-    const postEditDto = editDto.post
+    const postEditDto = (await PostService.getPostEditDto(postId)).post
     const localFilePath = PostFileMapManager.getFilePath(postId)
     await PostCfgPanel.open({
-        panelTitle: '',
-        breadcrumbs: ['更新博文设置', editDto.post.title],
+        panelTitle: postEditDto.title,
+        breadcrumbs: ['更新博文设置', postEditDto.title],
         post: postEditDto,
         localFileUri: localFilePath !== undefined ? Uri.file(localFilePath) : undefined,
         afterSuccess: ({ id }) => {
