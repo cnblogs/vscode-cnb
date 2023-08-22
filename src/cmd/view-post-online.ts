@@ -7,7 +7,7 @@ import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 
 export async function viewPostOnline(input?: Post | PostTreeItem | Uri) {
     let post: Post | undefined = input instanceof Post ? input : input instanceof PostTreeItem ? input.post : undefined
-    if (!input) input = window.activeTextEditor?.document.uri
+    if (input === undefined) input = window.activeTextEditor?.document.uri
 
     if (input instanceof Uri) {
         const postId = PostFileMapManager.getPostId(input.fsPath)

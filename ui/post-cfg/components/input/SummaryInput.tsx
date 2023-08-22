@@ -2,36 +2,40 @@ import { ActionButton, Label, MessageBar, MessageBarType, Stack, TextField, Text
 import { ImgUploadStatusId } from '@/model/img-upload-status'
 import { Webview } from '@/model/webview-cmd'
 import { WebviewMsg } from '@/model/webview-msg'
-import React from 'react'
+import React, { Component } from 'react'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 
-export type IInputSummaryProps = {
-    summary?: string
-    featureImageUrl?: string
-    onChange?: (summary: string) => void
-    onFeatureImageChange?: (imageUrl: string) => void
+type Props = {
+    summary: string
+    featureImgUrl: string
+    onChange: (summary: string) => void
+    onFeatureImageChange: (imageUrl: string) => void
 }
 
-export type IInputSummaryState = {
+type State = {
     isCollapse: boolean
     disabled: boolean
-    errors?: string[]
+    errors: string[]
 }
 
-export class InputSummary extends React.Component<IInputSummaryProps, IInputSummaryState> {
+export class SummaryInput extends Component<Props, State> {
     private uploadingImageId = ''
 
-    constructor(props: IInputSummaryProps) {
+    constructor(props: Props) {
         super(props)
-        const { featureImageUrl, summary } = props
+        const { featureImgUrl, summary } = props
 
-        this.state = { isCollapse: !featureImageUrl && !summary, disabled: false }
+        this.state = {
+            isCollapse: featureImgUrl === '' && summary === '',
+            disabled: false,
+            errors: [],
+        }
         window.addEventListener('message', this.observerMessage)
     }
 
     render() {
         const isCollapse = this.state.isCollapse
-        const featureImageUrl = this.props.featureImageUrl
+        const featureImgUrl = this.props.featureImgUrl
         return (
             <Stack tokens={{ childrenGap: 16 }}>
                 <Stack horizontal horizontalAlign="space-between">
@@ -39,13 +43,13 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
                         onClick={() => this.setState({ isCollapse: !isCollapse })}
                         styles={{ root: { height: 'auto', paddingLeft: 0 } }}
                     >
-                        <Label styles={{ root: { paddingBottom: 0, paddingTop: 0 } }}>摘要和题图</Label>
+                        <Label styles={{ root: { paddingBottom: 0, paddingTop: 0 } }}>摘要与题图</Label>
                         <ActionButton
                             iconProps={{ iconName: isCollapse ? 'CirclePlus' : 'SkypeCircleMinus' }}
                             styles={{ root: { height: 'auto' } }}
                         />
                     </ActionButton>
-                    {!isCollapse && featureImageUrl ? (
+                    {!isCollapse && featureImgUrl !== '' ? (
                         <ActionButton
                             onClick={() => void this.props.onFeatureImageChange?.apply(this, [''])}
                             styles={{ root: { height: 'auto', paddingLeft: 0 } }}
@@ -86,10 +90,10 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
                     <Stack.Item align="stretch">{this.renderFeatureImage()}</Stack.Item>
                 </Stack>
 
-                {this.state.errors ? (
+                {this.state.errors.length > 0 ? (
                     <MessageBar
                         onDismiss={() => {
-                            this.setState({ errors: undefined })
+                            this.setState({ errors: [] })
                         }}
                         messageBarType={MessageBarType.error}
                     >
@@ -104,43 +108,49 @@ export class InputSummary extends React.Component<IInputSummaryProps, IInputSumm
 
     private observerMessage = (ev: MessageEvent<any>) => {
         const data = ev.data as WebviewMsg.Msg
-        if (data.command === Webview.Cmd.Ui.updateImageUploadStatus) {
-            const { imageId, status } = data as WebviewMsg.UpdateImgUpdateStatusMsg
-            if (imageId === this.uploadingImageId) {
-                this.setState({ disabled: status.id === ImgUploadStatusId.uploading })
-                if (status.id === ImgUploadStatusId.uploaded)
-                    this.props.onFeatureImageChange?.apply(this, [status.imageUrl ?? ''])
-            }
+        if (data.command !== Webview.Cmd.Ui.updateImageUploadStatus) return
+
+        const msg = data as WebviewMsg.UpdateImgUpdateStatusMsg
+        const { imageId, status } = msg
+        if (imageId === this.uploadingImageId) {
+            this.setState({ disabled: status.id === ImgUploadStatusId.uploading })
+            if (status.id === ImgUploadStatusId.uploaded && this.props.onFeatureImageChange !== undefined)
+                this.props.onFeatureImageChange(status.imageUrl ?? '')
         }
     }
 
     private uploadFeatureImage() {
         this.uploadingImageId = `${Date.now()}`
-        getVsCodeApiSingleton().postMessage({
+
+        const msg = {
             command: Webview.Cmd.Ext.uploadImg,
             imageId: this.uploadingImageId,
-        } as WebviewMsg.UploadImgMsg)
+        } as WebviewMsg.UploadImgMsg
+
+        getVsCodeApiSingleton().postMessage(msg)
     }
 
     private renderFeatureImage() {
-        const { featureImageUrl } = this.props
-        if (featureImageUrl === undefined) {
+        const featureImgUrl = this.props.featureImgUrl
+
+        if (featureImgUrl !== '') {
             return (
-                <ActionButton
-                    onClick={() => this.uploadFeatureImage()}
-                    width={135}
-                    styles={{ root: { height: 70 } }}
-                    iconProps={{ iconName: 'Add' }}
-                    disabled={this.state.disabled}
-                >
-                    上传图片
-                </ActionButton>
+                <span>
+                    <img style={{ width: 135, height: 70 }} src={featureImgUrl} alt="题图" />
+                </span>
             )
         }
+
         return (
-            <span>
-                <img style={{ width: 135, height: 70 }} src={featureImageUrl} alt="题图" />
-            </span>
+            <ActionButton
+                onClick={() => this.uploadFeatureImage()}
+                width={135}
+                styles={{ root: { height: 70 } }}
+                iconProps={{ iconName: 'Add' }}
+                disabled={this.state.disabled}
+            >
+                上传图片
+            </ActionButton>
         )
     }
 }

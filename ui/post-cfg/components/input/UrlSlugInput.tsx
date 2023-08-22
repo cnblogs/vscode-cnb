@@ -1,24 +1,23 @@
 import { ActionButton, ITextField, Label, Stack, TextField } from '@fluentui/react'
 import * as React from 'react'
+import { Component } from 'react'
 
-export type IPostEntryNameInputProps = {
-    entryName?: string
-    onChange?: (value: string) => void
+type Props = {
+    entryName: string
+    onChange: (value: string) => void
 }
 
-export type IPostEntryNameInputState = {
+type State = {
     isCollapsed: boolean
 }
 
-export default class PostEntryNameInput extends React.Component<IPostEntryNameInputProps, IPostEntryNameInputState> {
+export default class UrlSlugInput extends Component<Props, State> {
     textFieldComp?: ITextField | null
 
-    constructor(props: IPostEntryNameInputProps) {
+    constructor(props: Props) {
         super(props)
 
-        this.state = {
-            isCollapsed: true,
-        }
+        this.state = { isCollapsed: true }
     }
 
     render() {

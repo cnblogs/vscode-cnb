@@ -1,9 +1,7 @@
 import { PostEditDto } from '@/model/post-edit-dto'
 import { PostUpdatedResp } from '@/model/post-updated-response'
-import { ZzkSearchResult } from '@/model/zzk-search-result'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { rmYfm } from '@/infra/filter/rm-yfm'
-import { PostListState } from '@/model/post-list-state'
 import { Alert } from '@/infra/alert'
 import { consUrlPara } from '@/infra/http/infra/url-para'
 import { consHeader } from '@/infra/http/infra/header'
@@ -14,8 +12,8 @@ import { PostListRespItem } from '@/model/post-list-resp-item'
 import { MyConfig } from '@/model/my-config'
 import { AuthManager } from '@/auth/auth-manager'
 import { PostReq } from '@/wasm'
-import { LocalState } from '@/ctx/local-state'
 import { AppConst } from '@/ctx/app-const'
+import { PostListModel } from '@/service/post/post-list-view'
 
 async function getAuthedPostReq() {
     const token = await AuthManager.acquireToken()
@@ -25,8 +23,7 @@ async function getAuthedPostReq() {
 }
 
 export namespace PostService {
-    export const getPostListState = () => <PostListState>LocalState.getState('postListState')
-
+    // TODO: need refactor
     export async function fetchPostList({ search = '', pageIndex = 1, pageSize = 30, categoryId = <'' | number>'' }) {
         const para = consUrlPara(
             ['t', '1'],
@@ -52,7 +49,7 @@ export namespace PostService {
         }
     }
 
-    export async function getPostList(pageIndex: number, pageCap: number) {
+    export async function getList(pageIndex: number, pageCap: number) {
         const req = await getAuthedPostReq()
         try {
             const resp = await req.getList(pageIndex, pageCap)
@@ -63,7 +60,7 @@ export namespace PostService {
         }
     }
 
-    export async function getPostCount() {
+    export async function getCount() {
         const req = await getAuthedPostReq()
         try {
             return await req.getCount()
@@ -74,10 +71,10 @@ export namespace PostService {
     }
 
     // TODO: need better impl
-    export async function* allPostIter() {
-        const postCount = await getPostCount()
+    export async function* iterAll() {
+        const postCount = await getCount()
         for (const i of Array(postCount).keys()) {
-            const list = await PostService.getPostList(i + 1, 1)
+            const list = await PostService.getList(i + 1, 1)
             const id = list[0].id
             const dto = await PostService.getPostEditDto(id)
             yield dto.post
@@ -103,7 +100,7 @@ export namespace PostService {
         }
     }
 
-    export async function delPost(...postIds: number[]) {
+    export async function del(...postIds: number[]) {
         const req = await getAuthedPostReq()
         try {
             if (postIds.length === 1) await req.delOne(postIds[0])
@@ -113,7 +110,7 @@ export namespace PostService {
         }
     }
 
-    export async function updatePost(post: Post) {
+    export async function update(post: Post) {
         if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
         const body = JSON.stringify(post)
         const req = await getAuthedPostReq()
@@ -122,28 +119,8 @@ export namespace PostService {
         return <PostUpdatedResp>JSON.parse(resp)
     }
 
-    export async function updatePostListState(
-        pageIndex: number,
-        pageCap: number,
-        pageItemCount: number,
-        pageCount: number
-    ) {
-        const hasPrev = PageList.hasPrev(pageIndex)
-        const hasNext = PageList.hasNext(pageIndex, pageCount)
-
-        const finalState = {
-            pageIndex,
-            pageCap,
-            pageItemCount,
-            pageCount,
-            hasPrev,
-            hasNext,
-        } as PostListState
-        await LocalState.setState('postListState', finalState)
-    }
-
     // TODO: need caahe
-    export async function fetchPostEditTemplate() {
+    export async function getTemplate() {
         const req = await getAuthedPostReq()
         try {
             const resp = await req.getTemplate()
@@ -160,15 +137,4 @@ export namespace PostService {
             throw e
         }
     }
-}
-
-interface PostListModel {
-    category: unknown // TODO: need type
-    categoryName: string
-    pageIndex: number
-    pageSize: number
-    postList: PostListRespItem[]
-    postsCount: number
-
-    zzkSearchResult: ZzkSearchResult | null
 }

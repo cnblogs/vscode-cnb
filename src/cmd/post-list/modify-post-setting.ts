@@ -28,25 +28,22 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
 
     if (!(postId >= 0)) return
 
-    if (post) await revealPostListItem(post)
+    if (post !== undefined) await revealPostListItem(post)
 
-    const editDto = await PostService.getPostEditDto(postId)
-    if (!editDto) return
-
-    const postEditDto = editDto.post
+    const postEditDto = (await PostService.getPostEditDto(postId)).post
     const localFilePath = PostFileMapManager.getFilePath(postId)
     await PostCfgPanel.open({
-        panelTitle: '',
-        breadcrumbs: ['更新博文设置', editDto.post.title],
+        panelTitle: postEditDto.title,
+        breadcrumbs: ['更新博文设置', postEditDto.title],
         post: postEditDto,
-        localFileUri: localFilePath ? Uri.file(localFilePath) : undefined,
-        successCallback: ({ id }) => {
+        localFileUri: localFilePath !== undefined ? Uri.file(localFilePath) : undefined,
+        afterSuccess: ({ id }) => {
             void Alert.info('博文已更新')
             postDataProvider.fireTreeDataChangedEvent(id)
             postCategoryDataProvider.onPostUpdated({ refreshPost: false, postIds: [id] })
         },
         beforeUpdate: async post => {
-            if (localFilePath && fs.existsSync(localFilePath)) {
+            if (localFilePath !== undefined && fs.existsSync(localFilePath)) {
                 await saveFilePendingChanges(localFilePath)
                 post.postBody = await new LocalPost(localFilePath).readAllText()
             }

@@ -63,9 +63,10 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
     }
 
     async refreshDownloadedExports({ force = true } = {}) {
-        if (this._downloadedExportEntry) {
+        const entry = this._downloadedExportEntry
+        if (entry !== null && entry !== undefined) {
             const hasCacheRefreshed = force
-                ? await this._downloadedExportEntry.refresh().then(
+                ? await entry.refresh().then(
                       () => true,
                       () => false
                   )
@@ -98,11 +99,13 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
          */
         clearCache = true,
     } = {}): Promise<boolean> {
+        // TODO: need refactor
         const hasCacheRefreshed = force
             ? await BlogExportRecordsStore?.refresh()
                   .then(() => true)
                   .catch(e => {
                       if (notifyOnError) void Alert.err(`刷新博客备份记录失败: ${<string>e}`)
+                      return false
                   })
             : clearCache
             ? await BlogExportRecordsStore.clearCache().then(

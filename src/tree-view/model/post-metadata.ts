@@ -61,11 +61,15 @@ export abstract class PostMetadata extends BaseTreeItemSource {
         post: Post | PostTreeItem
         exclude?: RootPostMetadataType[]
     }): Promise<PostMetadata[]> {
-        let parsedPost = post instanceof PostTreeItem ? post.post : post
-        const postEditDto = await PostService.getPostEditDto(parsedPost.id)
-        parsedPost = postEditDto?.post || parsedPost
+        let parsedPost
+        if (post instanceof PostTreeItem) parsedPost = post.post
+        else parsedPost = post // post: Post
+
+        const dto = await PostService.getPostEditDto(parsedPost.id)
+        parsedPost = dto.post
+
         return Promise.all(
-            rootMetadataMap(parsedPost, postEditDto)
+            rootMetadataMap(parsedPost, dto)
                 .filter(([type]) => !exclude.includes(type))
                 .map(([, factory]) => factory())
                 .map(x => (x instanceof Promise ? x : Promise.resolve(x)))
@@ -132,8 +136,7 @@ export class PostCategoryMetadata extends PostMetadata {
     }
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCategoryMetadata[]> {
-        editDto = editDto ? editDto : await PostService.getPostEditDto(parent.id)
-        if (editDto == null) return []
+        if (editDto === undefined) editDto = await PostService.getPostEditDto(parent.id)
 
         const categoryIds = editDto.post.categoryIds ?? []
         const futList = categoryIds.map(PostCategoryService.getOne)
@@ -146,7 +149,7 @@ export class PostCategoryMetadata extends PostMetadata {
                     new PostCategoryMetadata(
                         parent,
                         category
-                            .flattenParents()
+                            .flattenParents(true)
                             .map(({ title }) => title)
                             .join('/'),
                         category.categoryId
@@ -172,12 +175,10 @@ export class PostTagMetadata extends PostMetadata {
     }
 
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostMetadata[]> {
-        editDto = editDto ? editDto : await PostService.getPostEditDto(parent.id)
-        if (editDto == null) return []
+        if (editDto === undefined) await PostService.getPostEditDto(parent.id)
+        if (editDto === undefined) return []
 
-        const {
-            post: { tags },
-        } = editDto
+        const tags = editDto.post.tags
         return (tags ?? [])?.map(tag => new PostTagMetadata(parent, tag))
     }
 

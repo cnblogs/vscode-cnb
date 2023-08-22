@@ -1,4 +1,4 @@
-import { env, MessageOptions, SnippetString, window } from 'vscode'
+import { env, SnippetString, window } from 'vscode'
 import { fmtImgLink } from '@/infra/fmt-img-link'
 import { Alert } from '@/infra/alert'
 
@@ -14,7 +14,7 @@ export async function showUploadSuccessModel(imgLink: string) {
         {
             modal: true,
             detail: `图片链接: ${imgLink}`,
-        } as MessageOptions,
+        },
         ...options
     )
 
@@ -29,10 +29,8 @@ export async function showUploadSuccessModel(imgLink: string) {
 
 export async function insertImgLinkToActiveEditor(imgLink: string): Promise<boolean> {
     const activeEditor = window.activeTextEditor
-    if (activeEditor) {
-        await activeEditor.insertSnippet(new SnippetString(fmtImgLink(imgLink, 'markdown')))
-        return true
-    }
+    if (activeEditor === undefined) return false
 
-    return false
+    await activeEditor.insertSnippet(new SnippetString(fmtImgLink(imgLink, 'markdown')))
+    return true
 }

@@ -1,5 +1,5 @@
 import { globalCtx } from '@/ctx/global-ctx'
-import { uploadPostFile, uploadPost, uploadPostNoConfirm, uploadPostFileNoConfirm } from '@/cmd/post-list/upload-post'
+import { uploadPostFile, uploadPost } from '@/cmd/post-list/upload-post'
 import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { osOpenLocalPostFile } from '@/cmd/open/os-open-local-post-file'
 import { showLocalFileToPostInfo } from '@/cmd/show-local-file-to-post-info'
@@ -30,7 +30,6 @@ import { postPull } from '@/cmd/post-list/post-pull'
 import { postPullAll } from '@/cmd/post-list/post-pull-all'
 import { delPostToLocalFileMap } from '@/cmd/post-list/del-post-to-local-file-map'
 import { CopyPostLinkCmdHandler } from '@/cmd/post-list/copy-link'
-import { createLocal } from '@/cmd/post-list/create-local'
 import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
 import { renamePost } from '@/cmd/post-list/rename-post'
 import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
@@ -38,6 +37,7 @@ import { delSelectedPost } from '@/cmd/post-list/del-post'
 import { pubIngWithInput } from '@/cmd/ing/pub-ing-with-input'
 import { pubIngWithSelect } from '@/cmd/ing/pub-ing-with-select'
 import { extractImg } from '@/cmd/extract-img/extract-img'
+import { createPost } from '@/service/post/create'
 
 function withPrefix(prefix: string) {
     return (rest: string) => `${prefix}${rest}`
@@ -66,11 +66,13 @@ export function setupExtCmd() {
         regCmd(withAppName('.post.search'), PostListView.Search.search),
         regCmd(withAppName('.post.rename'), renamePost),
         regCmd(withAppName('.post.modify-setting'), modifyPostSetting),
-        regCmd(withAppName('.post.create-local'), createLocal),
+        regCmd(withAppName('.post.create'), createPost),
         regCmd(withAppName('.post.upload'), uploadPost),
         regCmd(withAppName('.post.upload-file'), uploadPostFile),
-        regCmd(withAppName('.post.upload-no-confirm'), uploadPostNoConfirm),
-        regCmd(withAppName('.post.upload-file-no-confirm'), uploadPostFileNoConfirm),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        regCmd(withAppName('.post.upload-no-confirm'), arg => uploadPost(arg, false)),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        regCmd(withAppName('.post.upload-file-no-confirm'), arg => uploadPostFile(arg, false)),
         regCmd(withAppName('.post.pull'), postPull),
         regCmd(withAppName('.post.pull-all'), postPullAll),
         regCmd(withAppName('.post.open-in-blog-admin'), openPostInBlogAdmin),

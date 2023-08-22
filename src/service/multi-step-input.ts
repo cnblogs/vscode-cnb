@@ -77,11 +77,11 @@ export class MultiStepInput {
         input.placeholder = placeholder
         input.items = items
         input.canSelectMany = canSelectMany
-        if (activeItems) {
+        if (activeItems !== undefined) {
             input.activeItems = activeItems
             input.selectedItems = activeItems
         }
-        input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])]
+        input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons ?? [])]
         input.ignoreFocusOut = ignoreFocusout ?? false
 
         try {
@@ -94,15 +94,17 @@ export class MultiStepInput {
                         else resolve(item)
                     }),
                     input.onDidChangeValue(() => {
-                        if (onValueChange) void onValueChange(input)
+                        if (onValueChange !== undefined) void onValueChange(input)
                     }),
                     input.onDidChangeSelection(() => {
-                        if (onSelectionChange) void onSelectionChange(input)
+                        if (onSelectionChange !== undefined) void onSelectionChange(input)
                     }),
                     input.onDidHide(() => {
                         ;(async () => {
                             reject(
-                                shouldResume && (await shouldResume()) ? InputFlowAction.resume : InputFlowAction.cancel
+                                shouldResume !== undefined && (await shouldResume())
+                                    ? InputFlowAction.resume
+                                    : InputFlowAction.cancel
                             )
                         })().catch(reject)
                     }),
@@ -110,7 +112,7 @@ export class MultiStepInput {
                         resolve(canSelectMany ? Array.from(input.selectedItems) : input.selectedItems[0])
                     })
                 )
-                if (this.current) this.current.dispose()
+                if (this.current !== undefined) this.current.dispose()
 
                 this.current = input
                 this.current.show()
@@ -148,10 +150,10 @@ export class MultiStepInput {
         input.placeholder = placeHolder
         input.password = password ?? false
         input.totalSteps = totalSteps
-        input.value = value || ''
+        input.value = value ?? ''
         input.prompt = prompt
         input.ignoreFocusOut = ignoreFocusOut ?? false
-        input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])]
+        input.buttons = [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons ?? [])]
         let validating = validateInput('')
 
         try {
@@ -166,7 +168,7 @@ export class MultiStepInput {
                         const value = input.value
                         input.enabled = false
                         input.busy = true
-                        if (!(await validateInput(value))) resolve(value)
+                        if ((await validateInput(value)) === undefined) resolve(value)
 
                         input.enabled = true
                         input.busy = false
@@ -180,12 +182,14 @@ export class MultiStepInput {
                     input.onDidHide(() => {
                         ;(async () => {
                             reject(
-                                shouldResume && (await shouldResume()) ? InputFlowAction.resume : InputFlowAction.cancel
+                                shouldResume !== undefined && (await shouldResume())
+                                    ? InputFlowAction.resume
+                                    : InputFlowAction.cancel
                             )
                         })().catch(reject)
                     })
                 )
-                if (this.current) this.current.dispose()
+                if (this.current !== undefined) this.current.dispose()
 
                 this.current = input
                 this.current.show()
@@ -197,9 +201,9 @@ export class MultiStepInput {
 
     private async stepThrough(start: InputStep) {
         let step: InputStep | void = start
-        while (step) {
+        while (step !== undefined) {
             this.steps.push(step)
-            if (this.current) {
+            if (this.current !== undefined) {
                 this.current.enabled = false
                 this.current.busy = true
             }
@@ -218,6 +222,6 @@ export class MultiStepInput {
                 }
             }
         }
-        if (this.current) this.current.dispose()
+        if (this.current !== undefined) this.current.dispose()
     }
 }

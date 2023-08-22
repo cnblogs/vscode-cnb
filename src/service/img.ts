@@ -6,16 +6,21 @@ import { lookup, extension } from 'mime-types'
 import { AppConst } from '@/ctx/app-const'
 
 export namespace ImgService {
-    export async function upload<
-        T extends Readable & {
+    export async function upload(
+        file: Readable & {
             name?: string
             fileName?: string
             filename?: string
             path?: string | Buffer
-        },
-    >(file: T) {
-        const { name, fileName, filename, path: _path } = file
-        const finalName = path.basename(isString(_path) ? _path : fileName || filename || name || 'image.png')
+        }
+    ) {
+        let finalName: string
+        if (isString(file.path)) finalName = file.path
+        else if (file.filename !== undefined) finalName = file.filename
+        else if (file.fileName !== undefined) finalName = file.fileName
+        else if (file.name !== undefined) finalName = file.name
+        else finalName = 'image.png'
+
         const ext = path.extname(finalName)
 
         let mimeType = lookup(ext)
@@ -40,10 +45,9 @@ export namespace ImgService {
      * @param name The name that expected applied to the downloaded image
      * @returns The {@link Readable} stream
      */
-    export async function download(url: string, name?: string): Promise<Readable> {
+    export async function download(url: string, name = 'image'): Promise<Readable> {
         const resp = await httpClient.get(url, { responseType: 'buffer' })
         const contentType = resp.headers['content-type'] ?? 'image/png'
-        name = !name ? 'image' : name
 
         const readable = Readable.from(resp.body)
 

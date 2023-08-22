@@ -8,7 +8,7 @@ export class Post {
     blogId = -1
     blogTeamIds: number[] = []
     canChangeCreatedTime = false
-    categoryIds: number[] | null = []
+    categoryIds: number[] = []
     changeCreatedTime = false
     changePostType = false
 
@@ -101,6 +101,6 @@ export function formatAccessPermission(value: AccessPermission) {
         case AccessPermission.authenticated:
             return '登录用户'
         default:
-            return '只有我'
+            return '仅自己'
     }
 }

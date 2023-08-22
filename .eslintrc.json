@@ -15,6 +15,15 @@
                 "endOfLine": "auto",
                 "semi": false
             }
+        ],
+        "@typescript-eslint/strict-boolean-expressions": [
+            "error",
+            {
+                "allowString": false,
+                "allowNumber": false,
+                "allowNullableObject": false,
+                "allowNullableBoolean": false
+            }
         ]
     },
     "ignorePatterns": [

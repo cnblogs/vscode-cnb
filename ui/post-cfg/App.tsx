@@ -8,41 +8,46 @@ import { SiteCategoryStore } from './service/site-category-store'
 import { TagStore } from './service/tag-store'
 import { WebviewMsg } from '@/model/webview-msg'
 import { Webview } from '@/model/webview-cmd'
-import { PostFormContextProvider } from './components/PostFormContextProvider'
 import { ActiveThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 
-interface AppState {
+type State = {
     post?: Post
     theme?: Theme | PartialTheme
     breadcrumbs?: string[]
     fileName: string
-    useNestCategoriesSelect: boolean
 }
 
-export interface AppProps extends Record<string, never> {}
-
-export class App extends Component<AppProps, AppState> {
-    constructor(props: AppProps) {
+export class App extends Component<unknown, State> {
+    constructor(props: unknown) {
         super(props)
-        this.state = { theme: ActiveThemeProvider.activeTheme(), fileName: '', useNestCategoriesSelect: false }
+        this.state = {
+            theme: ActiveThemeProvider.activeTheme(),
+            fileName: '',
+        }
         this.observerMessages()
         getVsCodeApiSingleton().postMessage({ command: Webview.Cmd.Ext.refreshPost })
     }
 
     render() {
-        const { post, fileName } = this.state
-        const isReady = post != null
-        const content = (
-            <>
-                {this.renderBreadcrumbs()}
-                <Stack tokens={{ padding: '8px 10px 16px 10px' }}>
-                    <PostFormContextProvider>
+        let content
+        if (this.state.post === undefined) {
+            content = (
+                <Stack styles={{ root: { minHeight: '70vh' } }} verticalAlign="center">
+                    <Spinner label="加载中..." labelPosition="bottom" />
+                </Stack>
+            )
+        } else {
+            const { fileName } = this.state
+            content = (
+                <>
+                    {this.renderBreadcrumbs()}
+                    <Stack tokens={{ padding: '8px 10px 16px 10px' }}>
                         <PostForm
                             post={this.state.post}
                             onTitleChange={title =>
-                                this.state.breadcrumbs && this.state.breadcrumbs.length > 1
+                                this.state.breadcrumbs !== undefined && this.state.breadcrumbs.length > 1
                                     ? this.setState({
                                           breadcrumbs: this.state.breadcrumbs
                                               .slice(0, this.state.breadcrumbs.length - 1)
@@ -51,30 +56,22 @@ export class App extends Component<AppProps, AppState> {
                                     : undefined
                             }
                             fileName={fileName}
-                            useNestCategoriesSelect={this.state.useNestCategoriesSelect}
                         />
-                    </PostFormContextProvider>
-                </Stack>
-            </>
-        )
+                    </Stack>
+                </>
+            )
+        }
+
         return (
             <React.StrictMode>
-                <ThemeProvider theme={this.state.theme}>{isReady ? content : this.renderSpinner()}</ThemeProvider>
+                <ThemeProvider theme={this.state.theme}>{content}</ThemeProvider>
             </React.StrictMode>
-        )
-    }
-
-    private renderSpinner() {
-        return (
-            <Stack styles={{ root: { minHeight: '70vh' } }} verticalAlign="center">
-                <Spinner label="别着急, 数据加载中~" labelPosition="bottom" />
-            </Stack>
         )
     }
 
     private renderBreadcrumbs() {
         const breadcrumbs = this.state.breadcrumbs
-        if (!breadcrumbs || breadcrumbs.length <= 0) return <></>
+        if (breadcrumbs === undefined || breadcrumbs.length <= 0) return <></>
 
         const items = breadcrumbs.map(breadcrumb => ({ text: breadcrumb, key: breadcrumb }) as IBreadcrumbItem)
         return <Breadcrumb styles={{ item: { fontSize: 12 } }} items={items}></Breadcrumb>
@@ -99,7 +96,6 @@ export class App extends Component<AppProps, AppState> {
                     post,
                     breadcrumbs,
                     fileName,
-                    useNestCategoriesSelect: personalCategories.some(c => c.childCount > 0),
                 })
             } else if (command === Webview.Cmd.Ui.updateBreadcrumbs) {
                 const { breadcrumbs } = message as WebviewMsg.UpdateBreadcrumbMsg

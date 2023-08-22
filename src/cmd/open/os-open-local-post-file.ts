@@ -3,7 +3,7 @@ import { execCmd } from '@/infra/cmd'
 import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 
-export function osOpenLocalPostFile(post: Post | undefined) {
+export function osOpenLocalPostFile(post?: Post) {
     if (post === undefined) return
 
     const postFilePath = PostFileMapManager.getFilePath(post.id)

@@ -42,11 +42,12 @@ export namespace DownloadedExportStore {
             })
 
             if (prunedItems.length > 0) {
-                await Promise.all(
-                    [updateList(items)].concat(
-                        prunedItems.map(p => (p.id ? updateExport(p.id, undefined) : Promise.resolve()))
+                const futList = [updateList(items)].concat(
+                    prunedItems.map(p =>
+                        p.id !== null && p.id !== undefined ? updateExport(p.id, undefined) : Promise.resolve()
                     )
                 )
+                await Promise.all(futList)
             }
         }
 
@@ -68,7 +69,7 @@ export namespace DownloadedExportStore {
 
         let item = LocalState.getState(key) as DownloadedBlogExport | undefined
 
-        if (prune && item) {
+        if (prune && item !== undefined) {
             const isExist = await promisify(exists)(item.filePath)
             if (!isExist) {
                 item = undefined

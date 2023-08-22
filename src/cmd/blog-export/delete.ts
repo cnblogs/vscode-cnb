@@ -21,17 +21,13 @@ export async function deleteBlogExport(input: unknown): Promise<void> {
 function confirm(
     itemName: string,
     hasLocalFile = true,
-    detail: string | undefined | null = '数据可能无法恢复, 请谨慎操作!'
+    detail: string
 ): Thenable<null | { shouldDeleteLocal: boolean } | undefined> {
     const options = [
         { title: '确定' + (hasLocalFile ? '(保留本地文件)' : ''), result: { shouldDeleteLocal: false } },
         ...(hasLocalFile ? [{ title: '确定(同时删除本地文件)', result: { shouldDeleteLocal: true } }] : []),
     ]
-    return Alert.info(
-        `确定要删除 ${itemName} 吗?`,
-        { modal: true, detail: detail ? detail : undefined },
-        ...options
-    ).then(
+    return Alert.info(`确定要删除 ${itemName} 吗?`, { modal: true, detail }, ...options).then(
         x => x?.result,
         () => undefined
     )
@@ -66,14 +62,12 @@ async function deleteExportRecordItem(item: BlogExportRecordTreeItem) {
             void Alert.err(`删除博客备份失败: ${<string>e}`)
             return false
         })
-    if (hasDeleted) if (downloaded) await removeDownloadedBlogExport(downloaded, { shouldDeleteLocal })
+    if (hasDeleted) if (downloaded !== undefined) await removeDownloadedBlogExport(downloaded, { shouldDeleteLocal })
 
     await BlogExportProvider.optionalInstance?.refreshRecords()
 }
 
 async function removeDownloadedBlogExport(downloaded: DownloadedBlogExport, { shouldDeleteLocal = false }) {
-    await DownloadedExportStore.remove(downloaded, { shouldRemoveExportRecordMap: shouldDeleteLocal }).catch(
-        console.warn
-    )
-    if (shouldDeleteLocal) await promisify(fs.rm)(downloaded.filePath).catch(console.warn)
+    await DownloadedExportStore.remove(downloaded, { shouldRemoveExportRecordMap: shouldDeleteLocal })
+    if (shouldDeleteLocal) await promisify(fs.rm)(downloaded.filePath)
 }

@@ -77,7 +77,7 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
 
     refresh() {
         this._roots = null
-        this.fireTreeDataChangedEvent(undefined)
+        this.fireTreeDataChangedEvent()
     }
 
     onPostUpdated({ refreshPost = false, postIds }: { postIds: number[]; refreshPost?: boolean }) {

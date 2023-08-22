@@ -92,7 +92,7 @@ export class ExtTreeViews implements Required<typeof _views> {
         name: TKey
     ): NonNullable<(typeof _views)[TKey]> {
         const value = _views[name]
-        if (!value) throw Error(`tree view ${name} not registered yet`)
+        if (value === undefined) throw Error(`tree view ${name} not registered yet`)
         return value
     }
 }

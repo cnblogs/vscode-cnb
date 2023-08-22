@@ -1,28 +1,28 @@
 import { ActionButton, Checkbox, Label, Stack } from '@fluentui/react'
 import { SiteCategory } from '@/model/site-category'
-import React from 'react'
-import { SiteCategoryStore } from '../service/site-category-store'
+import React, { Component } from 'react'
+import { SiteCategoryStore } from '../../service/site-category-store'
 
-export type ISiteCategoriesSelectorProps = {
-    categoryIds?: number[]
-    onChange?: (siteCategoryId: number) => void
+type Props = {
+    categoryIds: number[]
+    onChange: (siteCategoryId: number) => void
 }
 
-export type ISiteCategoriesSelectorState = {
+type State = {
     siteCategories: SiteCategory[]
     isCollapsed: boolean
     categoryIds: number[]
     categoryExpandState: { [key: number]: boolean | undefined }
 }
 
-export class SiteCategorySelector extends React.Component<ISiteCategoriesSelectorProps, ISiteCategoriesSelectorState> {
-    constructor(props: ISiteCategoriesSelectorProps) {
+export class SiteCatSelect extends Component<Props, State> {
+    constructor(props: Props) {
         super(props)
 
         const siteCategories = SiteCategoryStore.get()
         const categoryExpandState: { selectedParentCategoryId?: boolean } = {}
         let selectedParentCategoryId = -1
-        if (props.categoryIds && props.categoryIds.length > 0) {
+        if (props.categoryIds.length > 0) {
             selectedParentCategoryId =
                 siteCategories.find(x => x.children.find(child => child.id === props.categoryIds?.[0]))?.id ?? -1
         }
@@ -31,7 +31,7 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
         this.state = {
             siteCategories: siteCategories,
             isCollapsed: true,
-            categoryIds: props.categoryIds ?? [],
+            categoryIds: props.categoryIds,
             categoryExpandState,
         }
     }
@@ -42,7 +42,7 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
         const group = siteCategories.map(parent => {
             const { children, id: parentId } = parent
             const { categoryExpandState } = this.state
-            const isParentExpanded = !!categoryExpandState[parentId]
+            const isParentExpanded = categoryExpandState[parentId] === true
             const groupItems = children.map(child => (
                 <Checkbox
                     key={child.id.toString()}
@@ -69,7 +69,7 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
                             ></ActionButton>
                         </ActionButton>
                     </Stack>
-                    {this.state.categoryExpandState[parentId] ? (
+                    {this.state.categoryExpandState[parentId] === true ? (
                         <Stack horizontal wrap tokens={{ childrenGap: 12, padding: '0 0 4px 16px' }}>
                             {groupItems}
                         </Stack>
@@ -119,8 +119,8 @@ export class SiteCategorySelector extends React.Component<ISiteCategoriesSelecto
         )
     }
 
-    private onCheckboxChange(categoryId: number, checked?: boolean) {
+    private onCheckboxChange(categoryId: number, checked = false) {
         this.setState({ categoryIds: checked ? [categoryId] : [] })
-        this.props.onChange?.apply(this, [categoryId])
+        this.props.onChange(categoryId)
     }
 }

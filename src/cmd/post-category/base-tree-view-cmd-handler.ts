@@ -42,7 +42,7 @@ export abstract class BaseMultiSelectablePostCategoryTreeViewCmdHandler extends 
                 : this.input instanceof PostCategory
                 ? this.input
                 : null
-        if (inputCategory && !categories.find(x => x.categoryId === inputCategory.categoryId))
+        if (inputCategory !== null && categories.find(x => x.categoryId === inputCategory.categoryId) === undefined)
             categories.unshift(inputCategory)
 
         return categories

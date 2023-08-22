@@ -1,6 +1,6 @@
 import { escapeRegExp } from 'lodash-es'
 import path from 'path'
-import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
+import { ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Post } from '@/model/post'
 import { PostService } from '@/service/post/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
@@ -34,15 +34,18 @@ async function renameLinkedFile(post: Post): Promise<void> {
     }
 }
 
-export async function renamePost(arg: Post | PostTreeItem) {
-    const post = arg instanceof PostTreeItem ? arg.post : arg
-    if (!post) return
+export async function renamePost(arg?: Post | PostTreeItem) {
+    if (arg === undefined) return
+
+    let post: Post
+    if (arg instanceof PostTreeItem) post = arg.post
+    else post = arg // arg: Post
 
     await revealPostListItem(post)
 
     const input = await window.showInputBox({
         title: '请输入新的博文标题',
-        validateInput: v => (v ? undefined : '请输入一个标题'),
+        validateInput: v => (v === '' ? '请输入一个标题' : undefined),
         value: post.title,
     })
 
@@ -57,7 +60,6 @@ export async function renamePost(arg: Post | PostTreeItem) {
             async progress => {
                 progress.report({ increment: 10 })
                 const editDto = await PostService.getPostEditDto(post.id)
-                if (!editDto) return false
 
                 progress.report({ increment: 60 })
 
@@ -65,7 +67,7 @@ export async function renamePost(arg: Post | PostTreeItem) {
                 editingPost.title = input
                 let hasUpdated = false
                 try {
-                    await PostService.updatePost(editingPost)
+                    await PostService.update(editingPost)
                     post.title = input
                     postDataProvider.fireTreeDataChangedEvent(post)
                     hasUpdated = true
@@ -73,7 +75,7 @@ export async function renamePost(arg: Post | PostTreeItem) {
                     void Alert.err('更新博文失败', {
                         modal: true,
                         detail: err instanceof Error ? err.message : '服务器返回异常',
-                    } as MessageOptions)
+                    })
                 } finally {
                     progress.report({ increment: 100 })
                 }

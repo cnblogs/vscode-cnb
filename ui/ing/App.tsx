@@ -2,14 +2,21 @@ import React, { Component, ReactNode } from 'react'
 import { IngWebviewUiCmd, Webview } from '@/model/webview-cmd'
 import { IngList } from 'ing/IngList'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
-import { IngAppState } from '@/model/ing-view'
 import { Ing, IngComment } from '@/model/ing'
 import { ActiveThemeProvider } from 'share/active-theme-provider'
 import { ThemeProvider } from '@fluentui/react/lib/Theme'
 import { Spinner, Stack } from '@fluentui/react'
 import { cloneWith } from 'lodash-es'
+import { PartialTheme, Theme } from '@fluentui/react'
 
-export class App extends Component<unknown, IngAppState> {
+export type State = {
+    ingList?: Ing[]
+    theme: Theme | PartialTheme
+    isRefreshing: boolean
+    comments?: Record<number, IngComment[]>
+}
+
+export class App extends Component<unknown, State> {
     constructor(props: unknown) {
         super(props)
 
@@ -49,20 +56,21 @@ export class App extends Component<unknown, IngAppState> {
     private observeMessages() {
         window.addEventListener('message', ({ data: { command, payload } }: { data: IngWebviewUiCmd }) => {
             if (command === Webview.Cmd.Ing.Ui.setAppState) {
-                const { ingList, isRefreshing, comments } = payload as Partial<IngAppState>
+                const { ingList, isRefreshing, comments } = payload as Partial<State>
                 this.setState({
                     ingList: ingList?.map(Ing.parse) ?? this.state.ingList,
                     isRefreshing: isRefreshing ?? this.state.isRefreshing,
-                    comments: comments
-                        ? Object.assign(
-                              {},
-                              this.state.comments ?? {},
-                              cloneWith(comments, v => {
-                                  for (const key in v) v[key] = v[key].map(IngComment.parse)
-                                  return v
-                              })
-                          )
-                        : this.state.comments,
+                    comments:
+                        comments !== undefined
+                            ? Object.assign(
+                                  {},
+                                  this.state.comments ?? {},
+                                  cloneWith(comments, v => {
+                                      for (const key in v) v[key] = v[key].map(IngComment.parse)
+                                      return v
+                                  })
+                              )
+                            : this.state.comments,
                 })
                 return
             }

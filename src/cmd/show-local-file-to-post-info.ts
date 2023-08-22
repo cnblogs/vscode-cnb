@@ -1,5 +1,5 @@
 import path from 'path'
-import { MessageOptions, Uri } from 'vscode'
+import { Uri } from 'vscode'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostCategoryService } from '@/service/post/post-category'
@@ -20,22 +20,22 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
     if (input instanceof Uri && input.scheme === 'file') {
         postId = PostFileMapManager.getPostId(input.fsPath)
         filePath = input.fsPath
-        if (!postId) {
+        if (postId === undefined) {
             const options = ['现在去关联']
             const selected = await Alert.info(
                 '本地文件尚未关联到博文',
                 {
                     modal: true,
                     detail: filePath,
-                } as MessageOptions,
+                },
                 ...options
             )
             if (selected === options[0]) {
-                const selectedPost = await searchPostByTitle({
-                    postTitle: path.basename(filePath, path.extname(filePath)),
-                    quickPickTitle: '搜索要关联的博文',
-                })
-                if (selectedPost) {
+                const selectedPost = await searchPostByTitle(
+                    path.basename(filePath, path.extname(filePath)),
+                    '搜索要关联的博文'
+                )
+                if (selectedPost !== undefined) {
                     await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
                     void Alert.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`)
                 }
@@ -47,15 +47,14 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
         postId = input
     }
 
-    if (!filePath || !postId || !(postId >= 0)) return
+    if (filePath === undefined || postId === undefined || postId < 0) return
 
-    const post = (await PostService.getPostEditDto(postId))?.post
-    if (!post) return
+    const { post } = await PostService.getPostEditDto(postId)
 
     let categories = await PostCategoryService.getAll()
     categories = categories.filter(x => post.categoryIds?.includes(x.categoryId))
     const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : ''
-    const tagsDesc = post.tags?.length ?? 0 > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : ''
+    const tagsDesc = (post.tags?.length ?? 0) > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : ''
     const options = ['在线查看博文', '取消关联']
     const postUrl = post.url.startsWith('//') ? `https:${post.url}` : post.url
     const selected = await Alert.info(
@@ -68,7 +67,7 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
             )}\n博文发布状态: ${post.isPublished ? '已发布' : '未发布'}\n博文访问权限: ${
                 post.accessPermissionDesc
             }\n${categoryDesc}${tagsDesc}`.replace(/\n$/, ''),
-        } as MessageOptions,
+        },
         ...options
     )
     if (selected === options[0]) {

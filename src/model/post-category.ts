@@ -11,13 +11,14 @@ export class PostCategory {
     visibleChildCount = 0
     parent?: PostCategory | null
 
-    flattenParents({ includeSelf = true }: { includeSelf?: boolean } = {}): PostCategory[] {
+    flattenParents(includeSelf: boolean): PostCategory[] {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         let i: PostCategory | null | undefined = this
         const result: PostCategory[] = []
         while (i != null) {
             if (i !== this || includeSelf) result.unshift(i)
-            if (i.parent && !(i.parent instanceof PostCategory)) i.parent = Object.assign(new PostCategory(), i.parent)
+            if (i.parent !== null && i.parent !== undefined && !(i.parent instanceof PostCategory))
+                i.parent = Object.assign(new PostCategory(), i.parent)
             i = i.parent
         }
 

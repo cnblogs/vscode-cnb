@@ -1,25 +1,19 @@
-import React from 'react'
-import { SiteHomeContributionOptions as ISiteHomeContributionOptions } from '../model/site-home-contribution-options'
+import React, { Component } from 'react'
 import { Text } from '@fluentui/react/lib/Text'
 import { Stack } from '@fluentui/react/lib/Stack'
 import { ActionButton, Checkbox, Label } from '@fluentui/react'
 
-export interface ISiteHomeContributionOptionsSelectorProps extends ISiteHomeContributionOptions {
+export interface Props {
+    inSiteCandidate: boolean
+    inSiteHome: boolean
     onInSiteHomeChange: (value: boolean) => void
     onInSiteCandidateChange: (value: boolean) => void
 }
 
-export type ISiteHomeContributionOptionsSelector = {
-    isCollapse: boolean
-}
+type State = { isCollapse: boolean }
 
-export class SiteHomeContributionOptionsSelector extends React.Component<
-    ISiteHomeContributionOptionsSelectorProps,
-    ISiteHomeContributionOptionsSelector
-> {
-    onChange: ((options: ISiteHomeContributionOptions) => void) | null = null
-
-    constructor(props: ISiteHomeContributionOptionsSelectorProps) {
+export class SiteHomeContributionOptionSelect extends Component<Props, State> {
+    constructor(props: Props) {
         super(props)
         this.state = { isCollapse: true }
     }

@@ -15,7 +15,7 @@ export namespace BlogExportRecordsStore {
     }
 
     export async function clearCache(): Promise<void> {
-        if (cacheList) await cacheList.catch(() => false)
+        if (cacheList !== null) await cacheList.catch(() => false)
 
         cacheList = null
         cache = null

@@ -9,15 +9,14 @@ import {
     window,
 } from 'vscode'
 import { parseWebviewHtml } from '@/service/parse-webview-html'
-import { IngWebviewHostCmd, IngWebviewUiCmd, Webview } from '@/model/webview-cmd'
+import { IngWebviewHostCmd, Webview } from '@/model/webview-cmd'
 import { IngService } from '@/service/ing/ing'
-import { IngAppState } from '@/model/ing-view'
 import { IngType, IngTypesMetadata } from '@/model/ing'
 import { isNumber } from 'lodash-es'
 import { CommentIngCmdHandler } from '@/cmd/ing/comment-ing'
 import { execCmd } from '@/infra/cmd'
-import { ingStarToText } from '@/infra/convert/ing-star-to-text'
 import { UiCfg } from '@/ctx/cfg/ui'
+import { ingStarIconToText } from '@/wasm'
 
 export class IngListWebviewProvider implements WebviewViewProvider {
     readonly viewId = `${globalCtx.extName}.ing-list-webview`
@@ -29,7 +28,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     private _ingType = IngType.all
 
     get observer(): IngWebviewMessageObserver {
-        if (!this._view) throw Error('Cannot access the observer until the webviewView initialized!')
+        if (this._view === null) throw Error('Cannot access observer')
         this._observer ??= new IngWebviewMessageObserver(this)
         return this._observer
     }
@@ -48,7 +47,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async resolveWebviewView(webviewView: WebviewView, context: WebviewViewResolveContext, token: CancellationToken) {
-        if (this._view && this._view === webviewView) return
+        if (this._view !== null && this._view === webviewView) return
 
         this._view = webviewView
 
@@ -82,7 +81,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                 .postMessage({
                     payload: { isRefreshing: true },
                     command: Webview.Cmd.Ing.Ui.setAppState,
-                } as IngWebviewUiCmd<Partial<IngAppState>>)
+                })
                 .then(undefined, () => undefined)
             const rawIngList = await IngService.getList({
                 type: ingType,
@@ -91,7 +90,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
             })
             const ingList = rawIngList.map(ing => {
                 if (UiCfg.isDisableIngUserAvatar()) ing.userIconUrl = ''
-                if (UiCfg.isEnableTextIngStar()) ing.icons = ingStarToText(ing.icons)
+                if (UiCfg.isEnableTextIngStar()) ing.icons = `${ingStarIconToText(ing.icons)}⭐`
                 return ing
             })
             const comments = await IngService.getCommentList(...ingList.map(x => x.id))
@@ -103,7 +102,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                         isRefreshing: false,
                         comments,
                     },
-                } as IngWebviewUiCmd<Omit<IngAppState, ''>>)
+                })
                 .then(undefined, () => undefined)
         } else {
             this._view.show()
@@ -116,14 +115,14 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     }
 
     async updateComments(ingIds: number[]) {
-        if (!this._view || !this._view.visible) return
+        if (this._view === null || !this._view.visible) return
         const comments = await IngService.getCommentList(...ingIds)
         await this._view.webview.postMessage({
             command: Webview.Cmd.Ing.Ui.setAppState,
             payload: {
                 comments,
             },
-        } as IngWebviewUiCmd<Omit<IngAppState, ''>>)
+        })
     }
 
     private provideHtml(webview: CodeWebview) {
@@ -152,10 +151,10 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     }
 
     private setTitle() {
-        if (!this._view) return
+        if (this._view === null) return
         const ingTypeSuffix = IngTypesMetadata.find(([x]) => x === this.ingType)?.[1].displayName ?? ''
         const pageIndexSuffix = this.pageIndex > 1 ? `(第${this.pageIndex}页)` : ''
-        this._view.title = `闪存 ${ingTypeSuffix ? ' - ' + ingTypeSuffix : ''}${pageIndexSuffix}`
+        this._view.title = `闪存 ${ingTypeSuffix !== '' ? ' - ' + ingTypeSuffix : ''}${pageIndexSuffix}`
     }
 }
 
@@ -175,7 +174,8 @@ class IngWebviewMessageObserver {
                 const { ingType, pageIndex } = payload
                 return this._provider.refreshingList({
                     ingType:
-                        ingType && Object.values(IngType).includes(ingType as IngType)
+                        // TODO: need type
+                        (ingType as boolean) && Object.values(IngType).includes(ingType as IngType)
                             ? (ingType as IngType)
                             : undefined,
                     pageIndex: isNumber(pageIndex) ? pageIndex : undefined,

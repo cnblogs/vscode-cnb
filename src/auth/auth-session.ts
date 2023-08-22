@@ -15,6 +15,7 @@ export class AuthSession implements CodeAuthSession {
 
         const accessTokenPart2 = this.accessToken.split('.')[1]
         const buf = Buffer.from(accessTokenPart2, 'base64')
-        return (<{ exp: number }>JSON.parse(buf.toString())).exp
+        const exp = <number>JSON.parse(buf.toString()).exp
+        return exp * 1000 < Date.now()
     }
 }

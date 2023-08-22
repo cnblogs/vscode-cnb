@@ -1,5 +1,21 @@
 import { Post } from '@/model/post'
 import { extTreeViews } from '@/tree-view/tree-view-register'
+import { PageList } from '@/model/page'
+import { PostListState } from '@/model/post-list-state'
+import { LocalState } from '@/ctx/local-state'
+import { PostListRespItem } from '@/model/post-list-resp-item'
+import { ZzkSearchResult } from '@/model/zzk-search-result'
+
+export interface PostListModel {
+    category: unknown // TODO: need type
+    categoryName: string
+    pageIndex: number
+    pageSize: number
+    postList: PostListRespItem[]
+    postsCount: number
+
+    zzkSearchResult: ZzkSearchResult | null
+}
 
 export async function revealPostListItem(
     post: Post | undefined,
@@ -9,4 +25,30 @@ export async function revealPostListItem(
 
     const view = extTreeViews.visiblePostList()
     await view?.reveal(post, options)
+}
+
+export function getListState() {
+    const state = <PostListState | undefined>LocalState.getState('postListState')
+    if (state === undefined) throw Error('State is undefined')
+    return state
+}
+
+export async function updatePostListState(
+    pageIndex: number,
+    pageCap: number,
+    pageItemCount: number,
+    pageCount: number
+) {
+    const hasPrev = PageList.hasPrev(pageIndex)
+    const hasNext = PageList.hasNext(pageIndex, pageCount)
+
+    const finalState = <PostListState>{
+        pageIndex,
+        pageCap,
+        pageItemCount,
+        pageCount,
+        hasPrev,
+        hasNext,
+    }
+    await LocalState.setState('postListState', finalState)
 }

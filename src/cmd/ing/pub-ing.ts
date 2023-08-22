@@ -24,7 +24,7 @@ async function afterPub(ingIsPrivate: boolean) {
 
     const selected = await Alert.info('闪存已发布, 快去看看吧', ...options.map(v => ({ title: v[0], id: v[0] })))
 
-    if (selected) return options.find(x => x[0] === selected.id)?.[1]()
+    if (selected !== undefined) return options.find(x => x[0] === selected.id)?.[1]()
 }
 
 export function pubIng(content: string, isPrivate: boolean) {

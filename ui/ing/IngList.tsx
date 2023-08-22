@@ -3,13 +3,13 @@ import { Ing, IngComment } from '@/model/ing'
 import { IngItem } from 'ing/IngItem'
 import { Stack } from '@fluentui/react'
 
-interface IngListProps {
+type Props = {
     ingList: Ing[]
     comments: Record<number, IngComment[]>
 }
 
-export class IngList extends Component<IngListProps> {
-    constructor(props: IngListProps) {
+export class IngList extends Component<Props> {
+    constructor(props: Props) {
         super(props)
     }
 

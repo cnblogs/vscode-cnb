@@ -9,6 +9,7 @@ import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { PostListCfg } from '@/ctx/cfg/post-list'
 import { Page } from '@/model/page'
 import { PostListView } from '@/cmd/post-list/post-list-view'
+import { getListState } from '@/service/post/post-list-view'
 
 export type PostListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
 
@@ -26,7 +27,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
     }
 
     getChildren(parent?: PostListTreeItem): ProviderResult<PostListTreeItem[]> {
-        if (!parent) {
+        if (parent === undefined) {
             const items: PostListTreeItem[] = this._searchResultEntry == null ? [] : [this._searchResultEntry]
 
             if (this.page == null) {
@@ -53,11 +54,11 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
     }
 
     async loadPost() {
-        const { pageIndex } = PostService.getPostListState()
-        const pageCap = PostListCfg.getPostListPageSize()
+        const pageIndex = getListState().pageIndex
+        const pageCap = PostListCfg.getListPageSize()
 
         try {
-            const result = await PostService.getPostList(pageIndex, pageCap)
+            const result = await PostService.getList(pageIndex, pageCap)
             this.page = {
                 index: pageIndex,
                 cap: pageCap,
@@ -65,7 +66,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
                 items: result.map(it => Object.assign(new Post(), it)),
             }
 
-            this.fireTreeDataChangedEvent(undefined)
+            this.fireTreeDataChangedEvent()
 
             return this.page
         } catch (e) {
@@ -74,7 +75,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
         }
     }
 
-    fireTreeDataChangedEvent(item: PostListTreeItem | undefined): void
+    fireTreeDataChangedEvent(item?: PostListTreeItem): void
     fireTreeDataChangedEvent(id: number): void
     fireTreeDataChangedEvent(item: PostListTreeItem | number | undefined): void {
         if (typeof item !== 'number') this._onDidChangeTreeData.fire(item)
@@ -99,19 +100,17 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
         const zzkResult = data.zzkResult
 
         this._searchResultEntry = new PostSearchResultEntry(key, postList, matchedPostCount, zzkResult)
-        this.fireTreeDataChangedEvent(undefined)
+        this.fireTreeDataChangedEvent()
     }
 
     clearSearch() {
         this._searchResultEntry = null
-        this.fireTreeDataChangedEvent(undefined)
+        this.fireTreeDataChangedEvent()
     }
 
     async refreshSearch(): Promise<void> {
-        const { _searchResultEntry } = this
-
-        if (_searchResultEntry) {
-            const { searchKey } = _searchResultEntry
+        if (this._searchResultEntry !== null) {
+            const searchKey = this._searchResultEntry.searchKey
             this._searchResultEntry = null
             await this.search({ key: searchKey })
         }

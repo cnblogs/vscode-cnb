@@ -1,4 +1,4 @@
-import { MessageOptions, ProgressLocation, Uri, window, workspace } from 'vscode'
+import { ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostFileMap, PostFileMapManager } from '@/service/post/post-file-map'
@@ -12,7 +12,7 @@ let isDeleting = false
 
 async function confirmDelete(selectedPost: Post[]) {
     const result = { confirmed: false, deleteLocalFileAtSameTime: false }
-    if (!selectedPost || selectedPost.length <= 0) return result
+    if (selectedPost.length <= 0) return result
 
     const items = ['确定(保留本地文件)', '确定(同时删除本地文件)']
     const clicked = await Alert.warn(
@@ -20,7 +20,7 @@ async function confirmDelete(selectedPost: Post[]) {
         {
             detail: `确认后将会删除 ${selectedPost.map(x => x.title).join(', ')} 这${selectedPost.length}篇博文吗?`,
             modal: true,
-        } as MessageOptions,
+        },
         ...items
     )
     switch (clicked) {
@@ -41,8 +41,8 @@ export async function delSelectedPost(arg: unknown) {
     else if (arg instanceof PostTreeItem) post = arg.post
     else return
 
-    const selectedPost: Post[] = post ? [post] : []
-    extTreeViews.visiblePostList()?.selection.map(item => {
+    const selectedPost = [post]
+    extTreeViews.visiblePostList()?.selection.forEach(item => {
         const post = item instanceof PostTreeItem ? item.post : item
         if (post instanceof Post && !selectedPost.includes(post)) selectedPost.push(post)
     })
@@ -66,11 +66,11 @@ export async function delSelectedPost(arg: unknown) {
             increment: 0,
         })
         try {
-            await PostService.delPost(...selectedPost.map(p => p.id))
+            await PostService.del(...selectedPost.map(p => p.id))
             if (isToDeleteLocalFile) {
                 selectedPost
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')
-                    .filter(x => !!x)
+                    .filter(x => x !== '')
                     .forEach(path => {
                         workspace.fs.delete(Uri.file(path)).then(undefined, e => console.error(e))
                     })

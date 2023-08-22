@@ -44,13 +44,11 @@ export namespace Ing.ListView {
 
         quickPick.onDidChangeSelection(
             ([selectedItem]) => {
-                if (selectedItem) {
-                    quickPick.hide()
-                    return getIngListWebviewProvider().refreshingList({
-                        pageIndex: 1,
-                        ingType: selectedItem.ingType,
-                    })
-                }
+                quickPick.hide()
+                return getIngListWebviewProvider().refreshingList({
+                    pageIndex: 1,
+                    ingType: selectedItem.ingType,
+                })
             },
             undefined,
             disposables

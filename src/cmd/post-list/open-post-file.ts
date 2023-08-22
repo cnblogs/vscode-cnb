@@ -10,7 +10,7 @@ export async function openPostFile(post: LocalPost | Post | string, options?: Te
     else if (post instanceof Post) filePath = PostFileMapManager.getFilePath(post.id) ?? ''
     else filePath = post
 
-    if (!filePath) return
+    if (filePath === '') return
 
     await execCmd(
         'vscode.open',

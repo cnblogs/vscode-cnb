@@ -43,7 +43,7 @@ export async function postPullAll() {
     let postCount = 0
 
     await window.withProgress(opt, async p => {
-        for await (const post of PostService.allPostIter()) {
+        for await (const post of PostService.iterAll()) {
             byteCount += Buffer.byteLength(post.postBody, 'utf-8')
             postCount += 1
             if (postCount > MAX_POST_LIMIT || byteCount > MAX_BYTE_LIMIT) {

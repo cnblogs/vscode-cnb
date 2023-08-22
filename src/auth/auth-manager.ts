@@ -19,10 +19,10 @@ authProvider.onDidChangeSessions(async ({ added }) => {
     await AuthManager.updateAuthStatus()
 
     accountViewDataProvider.fireTreeDataChangedEvent()
-    postDataProvider.fireTreeDataChangedEvent(undefined)
+    postDataProvider.fireTreeDataChangedEvent()
     postCategoryDataProvider.fireTreeDataChangedEvent()
 
-    BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true }).catch(console.warn)
+    await BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true })
 })
 
 export namespace AuthManager {

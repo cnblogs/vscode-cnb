@@ -1,17 +1,9 @@
 export function fmtImgLink(link: string, format: 'html' | 'markdown' | 'raw') {
-    if (!link) return ''
+    if (link === '') return ''
 
-    let formatted = link
-    switch (format) {
-        case 'html':
-            formatted = `<img src="${link}" alt='image'>`
-            break
-        case 'markdown':
-            formatted = `![img](${link})`
-            break
-        case 'raw':
-        default:
-    }
+    if (format === 'html') return `<img src="${link}" alt="image">`
+    if (format === 'markdown') return `![img](${link})`
 
-    return formatted
+    // raw case
+    return link
 }

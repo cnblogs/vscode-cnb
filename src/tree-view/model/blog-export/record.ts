@@ -3,7 +3,7 @@ import { BaseEntryTreeItem } from '@/tree-view/model/base-entry-tree-item'
 import { BaseTreeItemSource } from '@/tree-view/model/base-tree-item-source'
 import { BlogExportRecordMetadata } from './record-metadata'
 import { parseStatusIcon } from './parser'
-import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from 'vscode'
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
@@ -54,18 +54,20 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
     getChildrenAsync: () => Promise<BlogExportTreeItem[]> = () => Promise.resolve(this.parseChildren())
 
     reportDownloadingProgress(progress?: Partial<typeof this._downloadingProgress> | null) {
-        this._downloadingProgress = progress ? Object.assign({}, this._downloadingProgress ?? {}, progress ?? {}) : null
+        if (progress !== null && progress !== undefined)
+            this._downloadingProgress = Object.assign({}, this._downloadingProgress ?? {}, progress ?? {})
+        else this._downloadingProgress = null
     }
 
     private pollingStatus() {
-        const timeoutId = setTimeout(() => {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        const timeoutId = setTimeout(async () => {
             clearTimeout(timeoutId)
-            BlogExportApi.getById(this.record.id)
-                .then(record => {
-                    this.record = record
-                })
-                .catch(console.warn)
-                .finally(() => this._treeDataProvider.refreshItem(this))
+            try {
+                this.record = await BlogExportApi.getById(this.record.id)
+            } finally {
+                this._treeDataProvider.refreshItem(this)
+            }
         }, 1500)
     }
 
@@ -79,7 +81,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
         const formattedFileSize = filesize(fileBytes)
         const dateTimeFormat = 'yyyy MM-dd HH:mm'
         const localExport = await DownloadedExportStore.findById(id)
-        const items = [
+        return [
             new BlogExportRecordMetadata(
                 this,
                 id,
@@ -112,7 +114,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                 undefined,
                 new ThemeIcon('vscode-cnb-date')
             ),
-            ...(dateExported
+            ...(dateExported !== null && dateExported !== undefined
                 ? [
                       new BlogExportRecordMetadata(
                           this,
@@ -123,7 +125,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                       ),
                   ]
                 : []),
-            ...(localExport && !_downloadingProgress
+            ...(localExport !== undefined && (_downloadingProgress === null || _downloadingProgress === undefined)
                 ? [
                       new DownloadedExportTreeItem(this, localExport, {
                           label: `本地文件: ${localExport.filePath.replace(
@@ -133,7 +135,7 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                       }),
                   ]
                 : []),
-            ...(_downloadingProgress
+            ...(_downloadingProgress !== undefined && _downloadingProgress !== null
                 ? [
                       new BlogExportRecordMetadata(
                           this,
@@ -145,8 +147,6 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
                   ]
                 : []),
         ]
-
-        return items
     }
 
     private formatDownloadProgress(filesize: typeof import('filesize').filesize): string {

@@ -38,7 +38,8 @@ export namespace BlogExportApi {
                 beforeRedirect: [
                     (opt, resp) => {
                         const location = resp.headers.location
-                        if (location && location.includes('account.cnblogs.com')) throw new Error('未授权')
+                        if (location === undefined) return
+                        if (location.includes('account.cnblogs.com')) throw new Error('未授权')
                     },
                 ],
             },

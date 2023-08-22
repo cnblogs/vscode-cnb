@@ -31,10 +31,10 @@ export type TreeItemSource = Post | PostCategory | TreeItem | BaseTreeItemSource
 type Converter<T> = (s: T) => TreeItem | Promise<TreeItem>
 
 const postConverter: Converter<Post> = obj => {
-    const descDatePublished = obj.datePublished ? `  \n发布于: ${format(obj.datePublished, 'yyyy-MM-dd HH:mm')}` : ''
+    const descDatePublished = `  \n发布于: ${format(obj.datePublished, 'yyyy-MM-dd HH:mm')}`
     const localPath = PostFileMapManager.getFilePath(obj.id)
-    const localPathForDesc = localPath?.replace(homedir(), '~') || '未关联本地文件'
-    const descLocalPath = localPath ? `  \n本地路径: ${localPathForDesc}` : ''
+    const localPathForDesc = localPath !== undefined ? localPath.replace(homedir(), '~') : '未关联本地文件'
+    const descLocalPath = localPath !== undefined ? `  \n本地路径: ${localPathForDesc}` : ''
     let url = obj.url
     url = url.startsWith('//') ? `https:${url}` : url
     return Object.assign<TreeItem, TreeItem>(new TreeItem(`${obj.title}`, TreeItemCollapsibleState.Collapsed), {
@@ -46,7 +46,7 @@ const postConverter: Converter<Post> = obj => {
         },
         contextValue: contextValues.post(obj),
         iconPath: new ThemeIcon(obj.isMarkdown ? 'markdown' : 'file-code'),
-        description: localPath ? localPathForDesc : '',
+        description: localPath !== undefined ? localPathForDesc : '',
         resourceUri: Uri.joinPath(WorkspaceCfg.getWorkspaceUri(), obj.title + (obj.isMarkdown ? '.md' : '.html')),
     })
 }

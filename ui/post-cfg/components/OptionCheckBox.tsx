@@ -1,27 +1,23 @@
-import { Checkbox, Label, Stack } from '@fluentui/react'
+import { Checkbox, Stack } from '@fluentui/react'
 import * as React from 'react'
+import { Component } from 'react'
 
 type Option = { [key: string]: { label: string; checked: boolean } }
 
-export type ICommonOptionsProps<TOption extends Option = Option> = {
+type Props<TOption extends Option = Option> = {
     options: TOption
-    onChange?: (optionKey: keyof TOption, checked: boolean, stateObj: { [p in typeof optionKey]: boolean }) => void
+    onChange: (optionKey: keyof TOption, checked: boolean, stateObj: { [p in typeof optionKey]: boolean }) => void
 }
 
-export class CommonOptions<TOption extends Option = Option> extends React.Component<ICommonOptionsProps<TOption>> {
-    constructor(props: ICommonOptionsProps<TOption>) {
+export class OptionCheckBox<TOption extends Option = Option> extends Component<Props<TOption>> {
+    constructor(props: Props<TOption>) {
         super(props)
-
-        this.state = {}
     }
 
     render() {
         return (
-            <Stack tokens={{ childrenGap: 8 }}>
-                <Label>选项</Label>
-                <Stack horizontal tokens={{ childrenGap: 16 }}>
-                    {this.renderOptions()}
-                </Stack>
+            <Stack horizontal tokens={{ childrenGap: 16 }}>
+                {this.renderOptions()}
             </Stack>
         )
     }
