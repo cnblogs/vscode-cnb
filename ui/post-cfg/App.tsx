@@ -23,7 +23,11 @@ type State = {
 export class App extends Component<unknown, State> {
     constructor(props: unknown) {
         super(props)
-        this.state = { theme: ActiveThemeProvider.activeTheme(), fileName: '', useNestCategoriesSelect: false }
+        this.state = {
+            theme: ActiveThemeProvider.activeTheme(),
+            fileName: '',
+            useNestCategoriesSelect: false,
+        }
         this.observerMessages()
         getVsCodeApiSingleton().postMessage({ command: Webview.Cmd.Ext.refreshPost })
     }

@@ -44,68 +44,58 @@ export class TagInput extends Component<Props, State> {
 
     render() {
         return (
-            <Stack tokens={{ childrenGap: 8 }}>
+            <Stack>
                 <Label>标签</Label>
-                <Stack>
-                    <TagPicker
-                        removeButtonAriaLabel="Remove"
-                        selectionAriaLabel="Selected tags"
-                        itemLimit={10}
-                        onResolveSuggestions={(text, selectedItems) =>
-                            filterSuggestedTags(this.state, text, selectedItems ?? [])
-                        }
-                        pickerSuggestionsProps={{
-                            suggestionsHeaderText: '选择标签',
-                            loadingText: '加载中',
-                        }}
-                        onRenderSuggestionsItem={tag => {
-                            const isNewTag = (tag as NewTag).isNew ?? false
-                            const tagEl = (
+                <TagPicker
+                    itemLimit={10}
+                    onResolveSuggestions={(text, selectedItems) =>
+                        filterSuggestedTags(this.state, text, selectedItems ?? [])
+                    }
+                    onRenderSuggestionsItem={tag => {
+                        const isNewTag = (tag as NewTag).isNew ?? false
+                        const tagEl = (
+                            <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
+                                <Icon iconName="Tag" />
+                                <Text>{tag.name}</Text>
+                            </Stack>
+                        )
+                        const el = isNewTag ? (
+                            <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
+                                <Text>新建标签:&nbsp;</Text>"{tagEl}"
+                            </Stack>
+                        ) : (
+                            tagEl
+                        )
+                        return (
+                            <ActionButton>
+                                <TagItemSuggestion>{el}</TagItemSuggestion>
+                            </ActionButton>
+                        )
+                    }}
+                    onRenderItem={props => {
+                        const { item: tag } = props
+                        return (
+                            <TagItem {...props}>
                                 <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
                                     <Icon iconName="Tag" />
                                     <Text>{tag.name}</Text>
                                 </Stack>
-                            )
-                            const el = isNewTag ? (
-                                <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
-                                    <Text>新建标签:&nbsp;</Text>"{tagEl}"
-                                </Stack>
-                            ) : (
-                                tagEl
-                            )
-                            return (
-                                <ActionButton>
-                                    <TagItemSuggestion>{el}</TagItemSuggestion>
-                                </ActionButton>
-                            )
-                        }}
-                        onRenderItem={props => {
-                            const { item: tag } = props
-                            return (
-                                <TagItem {...props}>
-                                    <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
-                                        <Icon iconName="Tag" />
-                                        <Text>{tag.name}</Text>
-                                    </Stack>
-                                </TagItem>
-                            )
-                        }}
-                        getTextFromItem={item => item.name ?? ''}
-                        selectedItems={this.state.selectedTags}
-                        onChange={tags => {
-                            tags ??= []
-                            tags = tags.filter(x => x)
+                            </TagItem>
+                        )
+                    }}
+                    getTextFromItem={item => item.name ?? ''}
+                    selectedItems={this.state.selectedTags}
+                    onChange={tags => {
+                        if (tags !== undefined) {
                             this.props.onChange(tags.map(t => t.name))
                             this.setState({ selectedTags: tags })
-                        }}
-                        onEmptyResolveSuggestions={items => filterSuggestedTags(this.state, '', items ?? [])}
-                        inputProps={{ placeholder: '点击选择标签' }}
-                        onValidateInput={input =>
-                            input.length <= 50 ? ValidationState.valid : ValidationState.invalid
                         }
-                        onInputChange={value => (value.length <= 50 ? value : value.substring(0, 49))}
-                    />
-                </Stack>
+                    }}
+                    onEmptyResolveSuggestions={items => filterSuggestedTags(this.state, '', items ?? [])}
+                    inputProps={{ placeholder: '点击选择' }}
+                    onValidateInput={input => (input.length <= 50 ? ValidationState.valid : ValidationState.invalid)}
+                    onInputChange={value => (value.length <= 50 ? value : value.substring(0, 49))}
+                />
             </Stack>
         )
     }

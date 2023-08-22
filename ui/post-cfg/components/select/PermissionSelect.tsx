@@ -1,51 +1,45 @@
-import { ChoiceGroup, Label, Stack } from '@fluentui/react'
-import { AccessPermission, formatAccessPermission } from '@/model/post'
+import { ChoiceGroup, IChoiceGroupOption, Label, Stack } from '@fluentui/react'
+import { AccessPermission } from '@/model/post'
 import React, { Component } from 'react'
 
 type Props = {
-    accessPermission?: AccessPermission
+    accessPermission: AccessPermission
     onChange: (ap: AccessPermission) => void
 }
 
-type State = Record<string, never>
-
-export class PermissionSelect extends Component<Props, State> {
+export class PermissionSelect extends Component<Props> {
     constructor(props: Props) {
-        props.accessPermission ??= AccessPermission.undeclared
         super(props)
-
-        this.state = {}
     }
 
     render() {
-        const opt = [
+        const opt: IChoiceGroupOption[] = [
             {
-                text: formatAccessPermission(AccessPermission.undeclared),
-                value: AccessPermission.undeclared,
+                text: '所有人',
                 key: AccessPermission.undeclared.toString(),
+                value: AccessPermission.undeclared,
             },
             {
-                text: formatAccessPermission(AccessPermission.authenticated),
-                value: AccessPermission.authenticated,
+                text: '登录用户',
                 key: AccessPermission.authenticated.toString(),
+                value: AccessPermission.authenticated,
             },
             {
-                text: formatAccessPermission(AccessPermission.owner),
-                value: AccessPermission.owner,
+                text: '仅自己',
                 key: AccessPermission.owner.toString(),
+                value: AccessPermission.owner,
             },
         ]
         return (
             <Stack>
-                <Label>谁能访问这篇博文</Label>
+                <Label>访问权限</Label>
                 <ChoiceGroup
                     options={opt}
-                    onChange={(_, option) =>
-                        this.props.onChange(
-                            (option?.value as AccessPermission | undefined) ?? AccessPermission.undeclared
-                        )
-                    }
+                    onChange={(_, option) => {
+                        if (option !== undefined) this.props.onChange(option.value as AccessPermission)
+                    }}
                     selectedKey={this.props.accessPermission?.toString()}
+                    styles={{ flexContainer: { display: 'flex', justifyContent: 'space-between' } }}
                 />
             </Stack>
         )

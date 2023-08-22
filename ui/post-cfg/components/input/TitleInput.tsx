@@ -14,9 +14,9 @@ export default class TitleInput extends Component<Props> {
 
     render() {
         return (
-            <Stack tokens={{ childrenGap: 8 }}>
+            <Stack>
+                <Label>标题</Label>
                 <Stack horizontal tokens={{ childrenGap: 8 }} wrap>
-                    <Label styles={{ root: { whiteSpace: 'nowrap' } }}>博文标题</Label>
                     {this.props.fileName !== '' && this.props.fileName !== this.props.value ? (
                         <ActionButton
                             onClick={() => {

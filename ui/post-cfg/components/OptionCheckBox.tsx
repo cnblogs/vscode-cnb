@@ -16,11 +16,8 @@ export class OptionCheckBox<TOption extends Option = Option> extends Component<P
 
     render() {
         return (
-            <Stack tokens={{ childrenGap: 8 }}>
-                <Label>选项</Label>
-                <Stack horizontal tokens={{ childrenGap: 16 }}>
-                    {this.renderOptions()}
-                </Stack>
+            <Stack horizontal tokens={{ childrenGap: 16 }}>
+                {this.renderOptions()}
             </Stack>
         )
     }

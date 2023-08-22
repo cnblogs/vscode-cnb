@@ -43,7 +43,7 @@ export class SummaryInput extends Component<Props, State> {
                         onClick={() => this.setState({ isCollapse: !isCollapse })}
                         styles={{ root: { height: 'auto', paddingLeft: 0 } }}
                     >
-                        <Label styles={{ root: { paddingBottom: 0, paddingTop: 0 } }}>摘要和题图</Label>
+                        <Label styles={{ root: { paddingBottom: 0, paddingTop: 0 } }}>摘要与题图</Label>
                         <ActionButton
                             iconProps={{ iconName: isCollapse ? 'CirclePlus' : 'SkypeCircleMinus' }}
                             styles={{ root: { height: 'auto' } }}

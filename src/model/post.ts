@@ -101,6 +101,6 @@ export function formatAccessPermission(value: AccessPermission) {
         case AccessPermission.authenticated:
             return '登录用户'
         default:
-            return '只有我'
+            return '仅自己'
     }
 }
