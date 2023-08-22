@@ -1,4 +1,4 @@
-import { Checkbox, Label, Stack } from '@fluentui/react'
+import { Checkbox, Stack } from '@fluentui/react'
 import * as React from 'react'
 import { Component } from 'react'
 
