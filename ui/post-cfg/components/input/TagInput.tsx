@@ -11,7 +11,7 @@ import {
     Text,
 } from '@fluentui/react'
 import React, { Component } from 'react'
-import { PostTags, PostTag } from '@/model/post-tag'
+import { PostTag } from '@/model/post-tag'
 import { TagStore } from '../../service/tag-store'
 
 type Props = {
@@ -20,7 +20,7 @@ type Props = {
 }
 
 type State = {
-    tags: PostTags
+    tags: PostTag[]
     selectedTags: ITag[]
 }
 

@@ -1,10 +1,10 @@
 import { Post } from './post'
 import { Webview } from './webview-cmd'
 import { ColorThemeKind } from 'vscode'
-import { PostTags } from './post-tag'
 import { ImgUploadStatus } from './img-upload-status'
 import { SiteCategory } from '@/model/site-category'
 import { PostCategory } from '@/model/post-category'
+import { PostTag } from '@/model/post-tag'
 
 export namespace WebviewMsg {
     export type Msg = {
@@ -16,7 +16,7 @@ export namespace WebviewMsg {
         activeTheme: ColorThemeKind
         personalCategories: PostCategory[]
         siteCategories: SiteCategory[]
-        tags: PostTags
+        tags: PostTag[]
         breadcrumbs?: string[]
         fileName: string
     }
