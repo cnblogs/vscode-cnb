@@ -20,7 +20,6 @@ import { PersonalCategoryStore } from '../service/personal-category-store'
 type Props = {
     post: Post
     fileName?: string
-    useNestCategoriesSelect: boolean
     onTitleChange: (title: string) => void
 }
 type State = Post

@@ -17,7 +17,6 @@ type State = {
     theme?: Theme | PartialTheme
     breadcrumbs?: string[]
     fileName: string
-    useNestCategoriesSelect: boolean
 }
 
 export class App extends Component<unknown, State> {
@@ -26,7 +25,6 @@ export class App extends Component<unknown, State> {
         this.state = {
             theme: ActiveThemeProvider.activeTheme(),
             fileName: '',
-            useNestCategoriesSelect: false,
         }
         this.observerMessages()
         getVsCodeApiSingleton().postMessage({ command: Webview.Cmd.Ext.refreshPost })
@@ -58,7 +56,6 @@ export class App extends Component<unknown, State> {
                                     : undefined
                             }
                             fileName={fileName}
-                            useNestCategoriesSelect={this.state.useNestCategoriesSelect}
                         />
                     </Stack>
                 </>
@@ -99,7 +96,6 @@ export class App extends Component<unknown, State> {
                     post,
                     breadcrumbs,
                     fileName,
-                    useNestCategoriesSelect: personalCategories.some(c => c.childCount > 0),
                 })
             } else if (command === Webview.Cmd.Ui.updateBreadcrumbs) {
                 const { breadcrumbs } = message as WebviewMsg.UpdateBreadcrumbMsg
