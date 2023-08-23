@@ -6,8 +6,6 @@ import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { extName } from '@/ctx/ext-const'
 
 export class ExportPostTreeItem extends BaseTreeItemSource {
-    readonly contextValue = 'cnblogs-export-post'
-
     constructor(
         public readonly parent: ExportPostEntryTreeItem,
         public readonly post: ExportPost
@@ -16,10 +14,7 @@ export class ExportPostTreeItem extends BaseTreeItemSource {
     }
 
     toTreeItem(): TreeItem | Promise<TreeItem> {
-        const {
-            post: { title, isMarkdown },
-            contextValue,
-        } = this
+        const { title, isMarkdown } = this.post
 
         return {
             label: title,
@@ -31,7 +26,7 @@ export class ExportPostTreeItem extends BaseTreeItemSource {
                 arguments: [this],
             },
             resourceUri: Uri.joinPath(WorkspaceCfg.getWorkspaceUri(), title + (isMarkdown ? '.md' : '.html')),
-            contextValue,
+            contextValue: 'cnblogs-export-post',
         }
     }
 }
