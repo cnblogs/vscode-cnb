@@ -12,11 +12,7 @@ const defaultSteps: PostCategoryInputStep[] = ['title', 'description', 'visible'
 
 export type PostCategoryInputStep = keyof PostCategoryAddDto
 
-export const inputPostCategory = ({
-    title = '编辑分类',
-    category,
-    steps = defaultSteps,
-}: Partial<InputOption>): Promise<PostCategoryAddDto | undefined> => {
+export async function inputPostCategory({ title = '编辑分类', category, steps = defaultSteps }: Partial<InputOption>) {
     const result: PostCategoryAddDto = {
         title: '',
         visible: false,
@@ -95,7 +91,7 @@ export const inputPostCategory = ({
         ['visible', inputCategoryVisible],
     ]
 
-    return Promise.resolve(calculateNextStep())
-        .then(nextStep => (nextStep !== undefined ? MultiStepInput.run(nextStep) : Promise.reject()))
-        .then(() => (state.step - 1 === state.totalSteps ? result : undefined))
+    const nextStep = calculateNextStep()
+    await (nextStep !== undefined ? MultiStepInput.run(nextStep) : Promise.reject())
+    return state.step - 1 === state.totalSteps ? result : undefined
 }

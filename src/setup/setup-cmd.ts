@@ -4,11 +4,9 @@ import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { osOpenLocalPostFile } from '@/cmd/open/os-open-local-post-file'
 import { showLocalFileToPostInfo } from '@/cmd/show-local-file-to-post-info'
 import { newPostCategory } from '@/cmd/post-category/new-post-category'
-import { refreshPostCategoryList } from '@/cmd/post-category/refresh-post-category-list'
-import { handleUpdatePostCategory } from '@/cmd/post-category/update-post-category'
+import { updatePostCatTreeView } from '@/cmd/post-category/update-post-category'
 import { openPostInBlogAdmin } from '@/cmd/open/open-post-in-blog-admin'
 import { viewPostOnline } from '@/cmd/view-post-online'
-import { handleDeletePostCategories } from '@/cmd/post-category/del-selected-category'
 import { regCmd } from '@/infra/cmd'
 import { exportPostToPdf } from '@/cmd/pdf/export-pdf'
 import { editExportPost } from '@/cmd/blog-export/edit'
@@ -29,7 +27,7 @@ import { PostListView } from '@/cmd/post-list/post-list-view'
 import { postPull } from '@/cmd/post-list/post-pull'
 import { postPullAll } from '@/cmd/post-list/post-pull-all'
 import { delPostToLocalFileMap } from '@/cmd/post-list/del-post-to-local-file-map'
-import { handleCopyPostLink } from '@/cmd/post-list/copy-link'
+import { copyPostLink } from '@/cmd/post-list/copy-link'
 import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
 import { renamePost } from '@/cmd/post-list/rename-post'
 import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
@@ -38,6 +36,8 @@ import { pubIngWithInput } from '@/cmd/ing/pub-ing-with-input'
 import { pubIngWithSelect } from '@/cmd/ing/pub-ing-with-select'
 import { extractImg } from '@/cmd/extract-img/extract-img'
 import { createPost } from '@/service/post/create'
+import { delSelectedCat } from '@/cmd/post-category/del-selected-cat'
+import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 
 function withPrefix(prefix: string) {
     return (rest: string) => `${prefix}${rest}`
@@ -79,7 +79,7 @@ export function setupExtCmd() {
         regCmd(withAppName('.post.del-local-map'), delPostToLocalFileMap),
         regCmd(withAppName('.post.view-in-browser'), viewPostOnline),
         regCmd(withAppName('.post.export-to-pdf'), exportPostToPdf),
-        regCmd(withAppName('.post.copy-link'), handleCopyPostLink),
+        regCmd(withAppName('.post.copy-link'), copyPostLink),
         regCmd(withAppName('.post.os-open-local-file'), osOpenLocalPostFile),
         regCmd(withAppName('.post.show-local-file-info'), showLocalFileToPostInfo),
         // img
@@ -95,9 +95,9 @@ export function setupExtCmd() {
         }),
         // post category
         regCmd(withAppName('.post-category.new'), newPostCategory),
-        regCmd(withAppName('.post-category.del-select'), handleDeletePostCategories),
-        regCmd(withAppName('.post-category.refresh'), refreshPostCategoryList),
-        regCmd(withAppName('.post-category.update'), handleUpdatePostCategory),
+        regCmd(withAppName('.post-category.del-select'), delSelectedCat),
+        regCmd(withAppName('.post-category.refresh'), () => postCategoryDataProvider.refresh()),
+        regCmd(withAppName('.post-category.update'), updatePostCatTreeView),
         // workspace
         regCmd(withAppName('.workspace.set'), Workspace.set),
         regCmd(withAppName('.workspace.os-open'), Workspace.osOpen),

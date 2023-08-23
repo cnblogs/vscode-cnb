@@ -27,7 +27,7 @@ const strategies: { [key in LinkFormat]: CopyStrategy } = {
     },
 }
 
-export async function handleCopyPostLink(input: Post | PostTreeItem | Uri) {
+export async function copyPostLink(input: Post | PostTreeItem | Uri) {
     let post
     if (input instanceof Post) {
         post = input

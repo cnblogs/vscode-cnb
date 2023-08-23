@@ -13,9 +13,9 @@ import { IngWebviewHostCmd, Webview } from '@/model/webview-cmd'
 import { IngService } from '@/service/ing/ing'
 import { IngType, IngTypesMetadata } from '@/model/ing'
 import { isNumber } from 'lodash-es'
-import { CommentIngCmdHandler } from '@/cmd/ing/comment-ing'
 import { UiCfg } from '@/ctx/cfg/ui'
 import { ingStarIconToText } from '@/wasm'
+import { handleCommentIng } from '@/cmd/ing/comment-ing'
 
 export class IngListWebviewProvider implements WebviewViewProvider {
     readonly viewId = `${globalCtx.extName}.ing-list-webview`
@@ -172,7 +172,7 @@ class IngWebviewMessageObserver {
             }
             case Webview.Cmd.Ing.Ext.comment: {
                 const { atUser, ingId, ingContent, parentCommentId } = payload as Webview.Cmd.Ing.CommentCmdPayload
-                return new CommentIngCmdHandler(ingId, ingContent, parentCommentId, atUser).handle()
+                return handleCommentIng(ingId, ingContent, parentCommentId, atUser)
             }
         }
     }

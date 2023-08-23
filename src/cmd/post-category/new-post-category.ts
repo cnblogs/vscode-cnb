@@ -2,7 +2,7 @@ import { ProgressLocation, window } from 'vscode'
 import { PostCategoryService } from '@/service/post/post-category'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { inputPostCategory } from './input-post-category'
-import { refreshPostCategoryList } from './refresh-post-category-list'
+import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 
 export const newPostCategory = async () => {
     const input = await inputPostCategory({
@@ -24,7 +24,7 @@ export const newPostCategory = async () => {
             increment: 70,
         })
 
-        refreshPostCategoryList()
+        postCategoryDataProvider.refresh()
 
         const allCategory = await PostCategoryService.getAll()
         const newCategory = allCategory.find(x => x.title === input.title)
