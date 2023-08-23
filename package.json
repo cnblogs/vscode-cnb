@@ -366,21 +366,21 @@
                 "title": "上一页",
                 "category": "Cnblogs",
                 "icon": "$(chevron-left)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ingList.pageIndex > 1"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ing-list.pageIndex > 1"
             },
             {
                 "command": "vscode-cnb.ing-list.next",
                 "title": "下一页",
                 "category": "Cnblogs",
                 "icon": "$(chevron-right)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ingList.pageIndex < 500"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ing-list.pageIndex < 500"
             },
             {
                 "command": "vscode-cnb.ing-list.first",
                 "title": "第一页",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-first-page)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ingList.pageIndex < 500"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ing-list.pageIndex < 500"
             },
             {
                 "command": "vscode-cnb.ing-list.switch-type",
@@ -876,7 +876,7 @@
                 },
                 {
                     "command": "vscode-cnb.ing-list.first",
-                    "when": "view == vscode-cnb.ing-list-webview && vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ingList.pageIndex > 2",
+                    "when": "view == vscode-cnb.ing-list-webview && vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ing-list.pageIndex > 2",
                     "group": "navigation@1"
                 },
                 {

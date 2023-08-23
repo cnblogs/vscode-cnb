@@ -131,7 +131,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     }
 
     private async setPageIndex(value: number) {
-        await setCtx('ingList.pageIndex', value > 0 ? value : undefined)
+        await setCtx('ing-list.pageIndex', value > 0 ? value : undefined)
         this._pageIndex = value
     }
 
