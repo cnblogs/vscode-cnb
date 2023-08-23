@@ -138,35 +138,35 @@
                 "command": "vscode-cnb.post.list-view.prev",
                 "title": "上一页",
                 "icon": "$(chevron-left)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.hasPrev",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing && vscode-cnb.post.list-view.hasPrev",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.list-view.seek",
                 "title": "跳页",
                 "icon": "$(vscode-cnb-icon-seek)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.pageCount > 0",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing && vscode-cnb.post.list-view.pageCount > 0",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.list-view.next",
                 "title": "下一页",
                 "icon": "$(chevron-right)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.hasNext",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing && vscode-cnb.post.list-view.hasNext",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.list-view.refresh",
                 "title": "刷新",
                 "icon": "$(refresh)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.pull-all",
                 "title": "下载全部",
                 "icon": "$(cloud-download)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing && vscode-cnb.post.list-view.pageCount > 0",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing && vscode-cnb.post.list-view.pageCount > 0",
                 "category": "Cnblogs Post List"
             },
             {
@@ -325,14 +325,14 @@
                 "title": "搜索",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-post-list-search)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing"
             },
             {
                 "command": "vscode-cnb.post.list-view.search.clear",
                 "title": "清除搜索结果",
                 "category": "Cnblogs",
                 "icon": "$(clear-all)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.refreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing"
             },
             {
                 "command": "vscode-cnb.post.list-view.search.refresh",

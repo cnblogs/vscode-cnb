@@ -12,7 +12,7 @@ let refreshTask: Promise<boolean> | null = null
 let isRefreshing = false
 
 async function setRefreshing(value = false) {
-    await setCtx('post.list-view.refreshing', value)
+    await setCtx('post.list-view.isRefreshing', value)
     isRefreshing = value
 }
 
