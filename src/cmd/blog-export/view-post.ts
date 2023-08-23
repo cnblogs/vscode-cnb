@@ -4,21 +4,15 @@ import { ExportPostTreeItem } from '@/tree-view/model/blog-export/post'
 import { URLSearchParams } from 'url'
 import { languages, TextDocumentContentProvider, Uri, window, workspace } from 'vscode'
 
-const schema = 'vscode-cnb.backup.post'
+export async function viewPostBlogExport(treeItem?: ExportPostTreeItem) {
+    if (!(treeItem instanceof ExportPostTreeItem)) return
+    if (treeItem.parent.downloadedExport == null) return
 
-function parseInput(input: unknown): ExportPostTreeItem | null | undefined {
-    return input instanceof ExportPostTreeItem ? input : null
-}
-
-export async function viewPostBlogExport(input: unknown) {
-    const parsedInput = parseInput(input)
-    if (parsedInput == null || parsedInput.parent.downloadedExport == null) return
-
-    await provide(parsedInput.parent.downloadedExport, parsedInput.post)
+    await provide(treeItem.parent.downloadedExport, treeItem.post)
 }
 
 async function provide(downloadedExport: DownloadedBlogExport, { id: postId, title, isMarkdown }: ExportPost) {
-    const schemaWithId = `${schema}-${postId}`
+    const schemaWithId = `vscode-cnb.backup.post-${postId}`
 
     const matchedEditor = window.visibleTextEditors.find(({ document }) => {
         if (document.uri.scheme === schemaWithId && !document.isClosed) {

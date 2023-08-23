@@ -13,11 +13,9 @@ export const setupCfgWatch = () =>
 
         if (ev.affectsConfiguration('workbench.iconTheme')) refreshPostCategoryList()
 
-        if (ev.affectsConfiguration('cnblogsClient.pageSize.postList'))
-            PostListView.refresh({ queue: true }).catch(() => undefined)
+        if (ev.affectsConfiguration('cnblogsClient.pageSize.postList')) void PostListView.refresh({ queue: true })
 
-        if (ev.affectsConfiguration('cnblogsClient.markdown'))
-            execCmd('markdown.preview.refresh').then(undefined, () => undefined)
+        if (ev.affectsConfiguration('cnblogsClient.markdown')) void execCmd('markdown.preview.refresh')
 
         if (ev.affectsConfiguration('cnblogsClient.ui')) setupUi(LocalState.getExtCfg())
     })

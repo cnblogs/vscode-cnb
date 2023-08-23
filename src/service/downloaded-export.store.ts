@@ -23,7 +23,7 @@ export namespace DownloadedExportStore {
         return Promise.all([
             id != null && id > 0 ? updateExport(id, { id, filePath }) : Promise.resolve(),
             updateList(take(list, 5000)),
-        ]).then(() => undefined)
+        ])
     }
 
     export async function list({ prune = true } = {}) {

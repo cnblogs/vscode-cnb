@@ -7,13 +7,8 @@ import sanitizeFileName from 'sanitize-filename'
 import { promisify } from 'util'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
-function parseInput(input: unknown): ExportPostTreeItem | null | undefined {
-    return input instanceof ExportPostTreeItem ? input : null
-}
-
-export async function editExportPost(input: unknown): Promise<void> {
-    const target = parseInput(input)
-    if (target === undefined || target === null) return void Alert.warn('不支持的参数输入')
+export async function editExportPost(treeItem?: ExportPostTreeItem) {
+    if (!(treeItem instanceof ExportPostTreeItem)) return void Alert.warn('不支持的参数输入')
 
     const {
         post: { title, isMarkdown, id: postId },
@@ -21,7 +16,7 @@ export async function editExportPost(input: unknown): Promise<void> {
             downloadedExport: { filePath: backupFilePath },
             downloadedExport,
         },
-    } = target
+    } = treeItem
 
     const fileName = sanitizeFileName(title)
     const extName = isMarkdown ? 'md' : 'html'

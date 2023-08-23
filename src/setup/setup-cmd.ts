@@ -29,7 +29,7 @@ import { PostListView } from '@/cmd/post-list/post-list-view'
 import { postPull } from '@/cmd/post-list/post-pull'
 import { postPullAll } from '@/cmd/post-list/post-pull-all'
 import { delPostToLocalFileMap } from '@/cmd/post-list/del-post-to-local-file-map'
-import { CopyPostLinkCmdHandler } from '@/cmd/post-list/copy-link'
+import { handleCopyPostLink } from '@/cmd/post-list/copy-link'
 import { modifyPostSetting } from '@/cmd/post-list/modify-post-setting'
 import { renamePost } from '@/cmd/post-list/rename-post'
 import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
@@ -79,7 +79,7 @@ export function setupExtCmd() {
         regCmd(withAppName('.post.del-local-map'), delPostToLocalFileMap),
         regCmd(withAppName('.post.view-in-browser'), viewPostOnline),
         regCmd(withAppName('.post.export-to-pdf'), exportPostToPdf),
-        regCmd(withAppName('.post.copy-link'), input => new CopyPostLinkCmdHandler(input).handle()),
+        regCmd(withAppName('.post.copy-link'), handleCopyPostLink),
         regCmd(withAppName('.post.os-open-local-file'), osOpenLocalPostFile),
         regCmd(withAppName('.post.show-local-file-info'), showLocalFileToPostInfo),
         // img

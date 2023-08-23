@@ -65,7 +65,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
         webviewView.onDidDispose(() => {
             disposables.forEach(d => void d.dispose())
             this._view = null
-            this.setIsRefreshing(false).catch(() => undefined)
+            void this.setIsRefreshing(false)
         }, disposables)
     }
 

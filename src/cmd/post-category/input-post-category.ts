@@ -97,6 +97,5 @@ export const inputPostCategory = ({
 
     return Promise.resolve(calculateNextStep())
         .then(nextStep => (nextStep !== undefined ? MultiStepInput.run(nextStep) : Promise.reject()))
-        .catch()
         .then(() => (state.step - 1 === state.totalSteps ? result : undefined))
 }
