@@ -90,7 +90,7 @@ export namespace PostListView {
         refreshTask = fut()
             .then(() => true)
             .catch(e => {
-                void Alert.err(`刷新博文列表失败: ${<string>e}`)
+                void Alert.err(`刷新随笔列表失败: ${<string>e}`)
                 return false
             })
             .finally(() => (refreshTask = null))
@@ -125,8 +125,8 @@ export namespace PostListView {
         export async function search() {
             const searchKey = await window.showInputBox({
                 ignoreFocusOut: true,
-                title: '搜索博文',
-                prompt: '输入关键词搜索博文',
+                title: '搜索随笔',
+                prompt: '输入关键词搜索随笔',
                 placeHolder: '在此输入关键词',
                 validateInput: value => (value.length <= 30 ? null : '最多输入30个字符'),
             })

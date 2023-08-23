@@ -157,14 +157,14 @@
             },
             {
                 "command": "vscode-cnb.post.list-view.refresh",
-                "title": "刷新",
+                "title": "刷新随笔列表",
                 "icon": "$(refresh)",
                 "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.pull-all",
-                "title": "下载全部",
+                "title": "下载全部随笔",
                 "icon": "$(cloud-download)",
                 "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading && vscode-cnb.post-list.pageCount > 0",
                 "category": "Cnblogs Post List"
@@ -269,7 +269,7 @@
             },
             {
                 "command": "vscode-cnb.post-category.refresh",
-                "title": "刷新",
+                "title": "刷新随笔分类",
                 "icon": "$(refresh)",
                 "category": "Cnblogs Post Categories Management",
                 "enablement": "!vscode-cnb.post-cat-list.isLoading"
@@ -322,7 +322,7 @@
             },
             {
                 "command": "vscode-cnb.post.search",
-                "title": "搜索",
+                "title": "el随笔",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-post-list-search)",
                 "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading"
@@ -403,7 +403,7 @@
             },
             {
                 "command": "vscode-cnb.backup.refresh-record",
-                "title": "刷新博客备份记录",
+                "title": "刷新备份记录",
                 "category": "Cnblogs",
                 "icon": "$(refresh)",
                 "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isLoading"

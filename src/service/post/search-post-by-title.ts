@@ -19,7 +19,7 @@ export function searchPostByTitle(postTitle: string, quickPickTitle: string) {
     const quickPick = window.createQuickPick<PostPickItem>()
     quickPick.title = quickPickTitle
     quickPick.value = postTitle ?? ''
-    quickPick.placeholder = '输入标题以搜索博文'
+    quickPick.placeholder = '输入标题以搜索随笔'
 
     const handleValueChange = async () => {
         if (quickPick.value === '') return
