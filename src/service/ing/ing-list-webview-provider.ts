@@ -88,7 +88,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
             })
             const ingList = rawIngList.map(ing => {
                 if (UiCfg.isDisableIngUserAvatar()) ing.userIconUrl = ''
-                if (UiCfg.isEnableTextIngStar()) ing.icons = `${ingStarIconToText(ing.icons)}⭐`
+                if (UiCfg.isEnableTextIngStar() && ing.icons !== '') ing.icons = `${ingStarIconToText(ing.icons)}⭐`
                 return ing
             })
             const comments = await IngService.getCommentList(...ingList.map(x => x.id))

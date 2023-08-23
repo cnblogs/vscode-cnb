@@ -30,7 +30,7 @@ impl IngReq {
 #[wasm_bindgen(js_name = ingStarIconToText)]
 pub fn ing_star_tag_to_text(icon: &str) -> String {
     lazy_static! {
-        static ref REGEX: Regex = Regex::new(r#"<img.*alt="\[(.*?)]".*>"#).unwrap();
+        static ref REGEX: Regex = Regex::new(r#"<img.*alt="\[(.*?)]"(\n|.)*>"#).unwrap();
     }
     let caps = REGEX.captures(icon).unwrap();
     let star_text = caps.get(1).unwrap().as_str();
