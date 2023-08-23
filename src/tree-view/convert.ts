@@ -3,11 +3,11 @@ import { homedir } from 'os'
 import { MarkdownString, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from 'vscode'
 import { Post } from '@/model/post'
 import { PostCategory } from '@/model/post-category'
-import { globalCtx } from '@/ctx/global-ctx'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { BaseTreeItemSource } from '@/tree-view/model/base-tree-item-source'
 import { IconThemeCfg } from '@/ctx/cfg/icon-theme'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
+import { extName } from '@/ctx/ext-const'
 
 const contextValues = {
     post({ id }: Post) {
@@ -40,7 +40,7 @@ const postConverter: Converter<Post> = obj => {
     return Object.assign<TreeItem, TreeItem>(new TreeItem(`${obj.title}`, TreeItemCollapsibleState.Collapsed), {
         tooltip: new MarkdownString(`[${url}](${url})` + descDatePublished + descLocalPath),
         command: {
-            command: `${globalCtx.extName}.post.edit`,
+            command: extName`.post.edit`,
             arguments: [obj.id],
             title: '编辑博文',
         },

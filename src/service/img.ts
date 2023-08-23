@@ -3,7 +3,7 @@ import { isString, merge, pick } from 'lodash-es'
 import httpClient from '@/infra/http-client'
 import path from 'path'
 import { lookup, extension } from 'mime-types'
-import { AppConst } from '@/ctx/app-const'
+import { ExtConst } from '@/ctx/ext-const'
 
 export namespace ImgService {
     export async function upload(
@@ -29,7 +29,7 @@ export namespace ImgService {
         const fd = new (await import('form-data')).default()
         fd.append('image', file, { filename: finalName, contentType: mimeType })
 
-        const url = `${AppConst.ApiBase.BLOG_BACKEND}/posts/body/images`
+        const url = `${ExtConst.ApiBase.BLOG_BACKEND}/posts/body/images`
 
         const resp = await httpClient.post(url, {
             body: fd,

@@ -3,9 +3,9 @@ import got from '@/infra/http-client'
 import { AuthedReq } from '@/infra/http/authed-req'
 import { consHeader } from '@/infra/http/infra/header'
 import { consUrlPara } from '@/infra/http/infra/url-para'
-import { AppConst } from '@/ctx/app-const'
+import { ExtConst } from '@/ctx/ext-const'
 
-const basePath = `${AppConst.ApiBase.BLOG_BACKEND}/blogExports`
+const basePath = `${ExtConst.ApiBase.BLOG_BACKEND}/blogExports`
 const downloadOrigin = 'https://export.cnblogs.com'
 
 export namespace BlogExportApi {

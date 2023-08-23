@@ -16,9 +16,10 @@ import { isNumber } from 'lodash-es'
 import { UiCfg } from '@/ctx/cfg/ui'
 import { ingStarIconToText } from '@/wasm'
 import { handleCommentIng } from '@/cmd/ing/comment-ing'
+import { extName } from '@/ctx/ext-const'
 
 export class IngListWebviewProvider implements WebviewViewProvider {
-    readonly viewId = `${globalCtx.extName}.ing-list-webview`
+    readonly viewId = extName`.ing-list-webview`
 
     private _view: WebviewView | null = null
     private _observer: IngWebviewMessageObserver | null = null
@@ -125,7 +126,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     }
 
     private async setIsRefreshing(value: boolean) {
-        await setCtx('ingList.isRefreshing', value ? true : undefined)
+        await setCtx('ingList.isRefreshing', value)
         this._isRefreshing = value
     }
 

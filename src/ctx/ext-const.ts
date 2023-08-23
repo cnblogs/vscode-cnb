@@ -3,7 +3,10 @@ declare const CNBLOGS_CLIENTSECRET: string
 
 export const isDevEnv = () => process.env.NODE_ENV === 'Development'
 
-export namespace AppConst {
+export namespace ExtConst {
+    export const EXT_NAME = 'vscode-cnb'
+    export const EXT_PUBLISHER = 'cnblogs'
+
     export const CLIENT_ID = CNBLOGS_CLIENTID
     export const CLIENT_SEC = CNBLOGS_CLIENTSECRET
 
@@ -14,4 +17,8 @@ export namespace AppConst {
     }
 
     export const OAUTH_SCOPES = ['openid', 'profile', 'CnBlogsApi', 'CnblogsAdminApi']
+}
+
+export function extName(tail: any) {
+    return `${ExtConst.EXT_NAME}${tail}`
 }

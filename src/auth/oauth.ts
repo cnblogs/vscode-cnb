@@ -3,10 +3,10 @@ import { TokenInfo } from '@/model/token-info'
 import { globalCtx } from '@/ctx/global-ctx'
 import { Alert } from '@/infra/alert'
 import { OauthReq } from '@/wasm'
-import { AppConst } from '@/ctx/app-const'
+import { ExtConst } from '@/ctx/ext-const'
 
 function getAuthedOauthReq() {
-    return new OauthReq(AppConst.CLIENT_ID, AppConst.CLIENT_SEC)
+    return new OauthReq(ExtConst.CLIENT_ID, ExtConst.CLIENT_SEC)
 }
 
 export namespace Oauth {

@@ -20,12 +20,12 @@ import { consUrlPara } from '@/infra/http/infra/url-para'
 import { RsRand } from '@/wasm'
 import { Alert } from '@/infra/alert'
 import { LocalState } from '@/ctx/local-state'
-import { AppConst } from '@/ctx/app-const'
+import { ExtConst } from '@/ctx/ext-const'
 
 async function browserSignIn(challengeCode: string, scopes: string[]) {
     const para = consUrlPara(
-        ['client_id', AppConst.CLIENT_ID],
-        ['client_secret', AppConst.CLIENT_SEC],
+        ['client_id', ExtConst.CLIENT_ID],
+        ['client_secret', ExtConst.CLIENT_SEC],
         ['response_type', 'code'],
         ['nonce', RsRand.string(32)],
         ['code_challenge', challengeCode],
@@ -34,7 +34,7 @@ async function browserSignIn(challengeCode: string, scopes: string[]) {
         ['redirect_uri', globalCtx.extUrl]
     )
 
-    const uri = Uri.parse(`${AppConst.ApiBase.OAUTH}/connect/authorize?${para}`)
+    const uri = Uri.parse(`${ExtConst.ApiBase.OAUTH}/connect/authorize?${para}`)
 
     try {
         await env.openExternal(uri)
@@ -48,7 +48,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     readonly providerName = '博客园Cnblogs'
 
     protected readonly sessionStorageKey = `${this.providerId}.sessions`
-    protected readonly allScopes = AppConst.OAUTH_SCOPES
+    protected readonly allScopes = ExtConst.OAUTH_SCOPES
 
     private _allSessions?: AuthSession[] | null
 
@@ -76,11 +76,6 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
     createSession(scopes: string[]): Thenable<AuthSession> {
         const parsedScopes = this.ensureScopes(scopes)
-        const options = {
-            title: `${globalCtx.displayName} - 登录`,
-            cancellable: true,
-            location: ProgressLocation.Notification,
-        }
 
         const cancelTokenSrc = new CancellationTokenSource()
 
@@ -94,6 +89,12 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             },
             30 * 60 * 1000
         ) // 30 min
+
+        const options = {
+            title: `博客园客户端 - 登录`,
+            cancellable: true,
+            location: ProgressLocation.Notification,
+        }
 
         return window.withProgress(options, async (progress, cancelToken) => {
             progress.report({ message: '等待用户在浏览器中进行授权...' })

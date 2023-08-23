@@ -12,7 +12,7 @@ import { PostListRespItem } from '@/model/post-list-resp-item'
 import { MyConfig } from '@/model/my-config'
 import { AuthManager } from '@/auth/auth-manager'
 import { PostReq } from '@/wasm'
-import { AppConst } from '@/ctx/app-const'
+import { ExtConst } from '@/ctx/ext-const'
 import { PostListModel } from '@/service/post/post-list-view'
 
 async function getAuthedPostReq() {
@@ -32,7 +32,7 @@ export namespace PostService {
             ['search', search],
             ['cid', categoryId.toString()]
         )
-        const url = `${AppConst.ApiBase.BLOG_BACKEND}/posts/list?${para}`
+        const url = `${ExtConst.ApiBase.BLOG_BACKEND}/posts/list?${para}`
         const resp = await AuthedReq.get(url, consHeader())
         const listModel = <PostListModel>JSON.parse(resp)
         const page = {
