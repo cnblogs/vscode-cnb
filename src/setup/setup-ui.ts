@@ -3,7 +3,7 @@ import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provid
 import { extTreeViews } from '@/tree-view/tree-view-register'
 
 export function setupUi(cfg: WorkspaceCfg) {
-    void getIngListWebviewProvider().refreshingList()
+    void getIngListWebviewProvider().reload()
     applyTreeViewTitleStyle(cfg)
 }
 

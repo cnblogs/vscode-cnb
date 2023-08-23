@@ -8,12 +8,12 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
         return this._onDidChangeTreeData.event
     }
 
-    getTreeItem(element: TreeItem): TreeItem | Thenable<TreeItem> {
-        return element
+    getTreeItem(el: TreeItem): TreeItem | Thenable<TreeItem> {
+        return el
     }
 
-    getChildren(element?: TreeItem): ProviderResult<TreeItem[]> {
-        if (!AuthManager.isAuthed() || element !== undefined) return []
+    getChildren(el?: TreeItem): ProviderResult<TreeItem[]> {
+        if (!AuthManager.isAuthed() || el !== undefined) return []
 
         const userName = AuthManager.getUserInfo()?.DisplayName
         return [

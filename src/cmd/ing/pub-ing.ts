@@ -6,7 +6,7 @@ import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provid
 import { ProgressLocation, Uri, window } from 'vscode'
 
 async function afterPub(ingIsPrivate: boolean) {
-    await getIngListWebviewProvider().refreshingList({
+    await getIngListWebviewProvider().reload({
         ingType: ingIsPrivate ? IngType.my : IngType.all,
         pageIndex: 1,
     })

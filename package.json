@@ -138,35 +138,35 @@
                 "command": "vscode-cnb.post.list-view.prev",
                 "title": "上一页",
                 "icon": "$(chevron-left)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing && vscode-cnb.post.list-view.hasPrev",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading && vscode-cnb.post-list.hasPrev",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.list-view.seek",
                 "title": "跳页",
                 "icon": "$(vscode-cnb-icon-seek)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing && vscode-cnb.post.list-view.pageCount > 0",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading && vscode-cnb.post-list.pageCount > 0",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.list-view.next",
                 "title": "下一页",
                 "icon": "$(chevron-right)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing && vscode-cnb.post.list-view.hasNext",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading && vscode-cnb.post-list.hasNext",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.list-view.refresh",
                 "title": "刷新",
                 "icon": "$(refresh)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading",
                 "category": "Cnblogs Post List"
             },
             {
                 "command": "vscode-cnb.post.pull-all",
                 "title": "下载全部",
                 "icon": "$(cloud-download)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing && vscode-cnb.post.list-view.pageCount > 0",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading && vscode-cnb.post-list.pageCount > 0",
                 "category": "Cnblogs Post List"
             },
             {
@@ -265,21 +265,21 @@
                 "title": "删除",
                 "icon": "$(trash)",
                 "category": "Cnblogs Post Categories Management",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.postCategoriesList.isRefreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-cat-list.isLoading"
             },
             {
                 "command": "vscode-cnb.post-category.refresh",
                 "title": "刷新",
                 "icon": "$(refresh)",
                 "category": "Cnblogs Post Categories Management",
-                "enablement": "!vscode-cnb.postCategoriesList.isRefreshing"
+                "enablement": "!vscode-cnb.post-cat-list.isLoading"
             },
             {
                 "command": "vscode-cnb.post-category.update",
                 "title": "编辑",
                 "icon": "$(edit)",
                 "category": "Cnblogs Post Categories Management",
-                "enablement": "!vscode-cnb.postCategoriesList.isRefreshing"
+                "enablement": "!vscode-cnb.post-cat-list.isLoading"
             },
             {
                 "command": "vscode-cnb.post.del-local-map",
@@ -325,27 +325,27 @@
                 "title": "搜索",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-post-list-search)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading"
             },
             {
                 "command": "vscode-cnb.post.list-view.search.clear",
                 "title": "清除搜索结果",
                 "category": "Cnblogs",
                 "icon": "$(clear-all)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isRefreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading"
             },
             {
                 "command": "vscode-cnb.post.list-view.search.refresh",
                 "title": "刷新搜索结果",
                 "category": "Cnblogs",
                 "icon": "$(refresh)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view-refreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post.list-view.isLoading"
             },
             {
                 "command": "vscode-cnb.ing.pub",
                 "title": "发闪存",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading",
                 "icon": "$(add)"
             },
             {
@@ -359,35 +359,35 @@
                 "title": "刷新闪存列表",
                 "category": "Cnblogs",
                 "icon": "$(refresh)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading"
             },
             {
                 "command": "vscode-cnb.ing-list.prev",
                 "title": "上一页",
                 "category": "Cnblogs",
                 "icon": "$(chevron-left)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex > 1"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ingList.pageIndex > 1"
             },
             {
                 "command": "vscode-cnb.ing-list.next",
                 "title": "下一页",
                 "category": "Cnblogs",
                 "icon": "$(chevron-right)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex < 500"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ingList.pageIndex < 500"
             },
             {
                 "command": "vscode-cnb.ing-list.first",
                 "title": "第一页",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-first-page)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex < 500"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ingList.pageIndex < 500"
             },
             {
                 "command": "vscode-cnb.ing-list.switch-type",
                 "title": "切换闪存类型",
                 "category": "Cnblogs",
                 "icon": "$(list-filter)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading"
             },
             {
                 "command": "vscode-cnb.ing-list.open-in-browser",
@@ -406,13 +406,13 @@
                 "title": "刷新博客备份记录",
                 "category": "Cnblogs",
                 "icon": "$(refresh)",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing"
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isLoading"
             },
             {
                 "command": "vscode-cnb.backup.open-local",
                 "title": "打开本地已下载博客备份文件",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isLoading",
                 "icon": "$(file-add)"
             },
             {
@@ -426,28 +426,28 @@
                 "command": "vscode-cnb.backup.create",
                 "title": "新建博客备份",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isLoading",
                 "icon": "$(add)"
             },
             {
                 "command": "vscode-cnb.backup.download",
                 "title": "下载备份",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing && !vscode-cnb.backup.isDownloading",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isLoading && !vscode-cnb.backup.isDownloading",
                 "icon": "$(cloud-download)"
             },
             {
                 "command": "vscode-cnb.backup.view-post",
                 "title": "查看备份博文",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isLoading",
                 "icon": "$(eye)"
             },
             {
                 "command": "vscode-cnb.backup.delete",
                 "title": "delete",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing && !vscode-cnb.backup.isDownloading",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isLoading && !vscode-cnb.backup.isDownloading",
                 "icon": "$(trash)"
             }
         ],
@@ -738,7 +738,7 @@
                         "type": "boolean",
                         "scope": "application",
                         "default": false,
-                        "markdownDescription": "禁用闪存用户头像"
+                        "markdownDescription": "不显示闪存用户头像"
                     },
                     "cnblogsClient.ui.treeViewTitleStyle": {
                         "order": 18,
@@ -876,7 +876,7 @@
                 },
                 {
                     "command": "vscode-cnb.ing-list.first",
-                    "when": "view == vscode-cnb.ing-list-webview && vscode-cnb.isAuthed && !vscode-cnb.ingList.isRefreshing && vscode-cnb.ingList.pageIndex > 2",
+                    "when": "view == vscode-cnb.ing-list-webview && vscode-cnb.isAuthed && !vscode-cnb.ing-list.isLoading && vscode-cnb.ingList.pageIndex > 2",
                     "group": "navigation@1"
                 },
                 {

@@ -40,7 +40,7 @@ import { delSelectedCat } from '@/cmd/post-category/del-selected-cat'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 import { extName } from '@/ctx/ext-const'
 
-export function setupExtCmd() {
+export function setupCmd() {
     const ctx = globalCtx.extCtx
 
     const tokens = [

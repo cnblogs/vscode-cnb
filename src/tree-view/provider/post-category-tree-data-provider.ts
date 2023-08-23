@@ -12,11 +12,11 @@ import { setCtx } from '@/ctx/global-ctx'
 
 export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {
     private _treeDataChanged = new EventEmitter<PostCategoriesListTreeItem | null | undefined>()
-    private _isRefreshing = false
+    private _isLoading = false
     private _roots: PostCategoryTreeItem[] | null = null
 
-    get isRefreshing() {
-        return this._isRefreshing
+    get isLoading() {
+        return this._isLoading
     }
 
     get roots() {
@@ -41,16 +41,16 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
     }
 
     async setIsRefreshing(value: boolean) {
-        await setCtx('postCategoriesList.isRefreshing', value)
-        this._isRefreshing = value
+        await setCtx('post-cat-list.isLoading', value)
+        this._isLoading = value
     }
 
-    getTreeItem(element: PostCategoriesListTreeItem): TreeItem | Thenable<TreeItem> {
-        return toTreeItem(element)
+    getTreeItem(el: PostCategoriesListTreeItem): TreeItem | Thenable<TreeItem> {
+        return toTreeItem(el)
     }
 
     getChildren(item?: PostCategoriesListTreeItem): ProviderResult<PostCategoriesListTreeItem[]> {
-        if (this.isRefreshing) return Promise.resolve([])
+        if (this.isLoading) return Promise.resolve([])
 
         if (item === undefined) {
             return PostCategoryService.getAll().then(list => list.map(c => new PostCategoryTreeItem(c)))

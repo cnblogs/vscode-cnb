@@ -34,7 +34,7 @@ export namespace Webview.Cmd {
         }
 
         export enum Ext {
-            refreshingList = 'refreshingList',
+            reload = 'reload',
             comment = 'comment',
         }
 

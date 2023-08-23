@@ -24,7 +24,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     private _view: WebviewView | null = null
     private _observer: IngWebviewMessageObserver | null = null
     private _pageIndex = 1
-    private _isRefreshing = false
+    private _isLoading = false
     private _ingType = IngType.all
 
     get observer(): IngWebviewMessageObserver {
@@ -37,8 +37,8 @@ export class IngListWebviewProvider implements WebviewViewProvider {
         return this._pageIndex
     }
 
-    get isRefreshing(): boolean {
-        return this._isRefreshing
+    get isLoading(): boolean {
+        return this._isLoading
     }
 
     get ingType(): IngType {
@@ -70,15 +70,15 @@ export class IngListWebviewProvider implements WebviewViewProvider {
         }, disposables)
     }
 
-    async refreshingList({ ingType = this.ingType, pageIndex = this.pageIndex } = {}) {
+    async reload({ ingType = this.ingType, pageIndex = this.pageIndex } = {}) {
         if (this._view == null) return
 
         if (this._view.visible) {
-            if (this.isRefreshing) return
+            if (this.isLoading) return
             await this.setIsRefreshing(true)
 
             await this._view.webview.postMessage({
-                payload: { isRefreshing: true },
+                payload: { isLoading: true },
                 command: Webview.Cmd.Ing.Ui.setAppState,
             })
             const rawIngList = await IngService.getList({
@@ -96,7 +96,7 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                 command: Webview.Cmd.Ing.Ui.setAppState,
                 payload: {
                     ingList,
-                    isRefreshing: false,
+                    isLoading: false,
                     comments,
                 },
             })
@@ -126,8 +126,8 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     }
 
     private async setIsRefreshing(value: boolean) {
-        await setCtx('ingList.isRefreshing', value)
-        this._isRefreshing = value
+        await setCtx('ing-list.isLoading', value)
+        this._isLoading = value
     }
 
     private async setPageIndex(value: number) {
@@ -160,9 +160,9 @@ class IngWebviewMessageObserver {
 
     observer = ({ command, payload }: IngWebviewHostCmd) => {
         switch (command) {
-            case Webview.Cmd.Ing.Ext.refreshingList: {
+            case Webview.Cmd.Ing.Ext.reload: {
                 const { ingType, pageIndex } = payload
-                return this._provider.refreshingList({
+                return this._provider.reload({
                     ingType:
                         // TODO: need type
                         (ingType as boolean) && Object.values(IngType).includes(ingType as IngType)

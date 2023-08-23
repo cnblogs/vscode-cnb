@@ -9,21 +9,21 @@ import { PageList } from '@/model/page'
 import { getListState, updatePostListState } from '@/service/post/post-list-view'
 
 let refreshTask: Promise<boolean> | null = null
-let isRefreshing = false
+let isLoading = false
 
 async function setRefreshing(value = false) {
-    await setCtx('post.list-view.isRefreshing', value)
-    isRefreshing = value
+    await setCtx('post-list.isLoading', value)
+    isLoading = value
 }
 
 async function setPostListContext(pageCount: number, hasPrev: boolean, hasNext: boolean) {
-    await setCtx('post.list-view.hasPrev', hasPrev)
-    await setCtx('post.list-view.hasNext', hasNext)
-    await setCtx('post.list-view.pageCount', pageCount)
+    await setCtx('post-list.hasPrev', hasPrev)
+    await setCtx('post-list.hasNext', hasNext)
+    await setCtx('post-list.pageCount', pageCount)
 }
 
 async function goPage(f: (currentIndex: number) => number) {
-    if (isRefreshing) return
+    if (isLoading) return
 
     const state = getListState()
     if (state === undefined) {
@@ -63,10 +63,10 @@ export namespace PostListView {
     import calcPageCount = PageList.calcPageCount
 
     export async function refresh({ queue = false } = {}): Promise<boolean> {
-        if (isRefreshing && !queue) {
+        if (isLoading && !queue) {
             await refreshTask
             return false
-        } else if (isRefreshing && refreshTask != null) {
+        } else if (isLoading && refreshTask != null) {
             await refreshTask
             return refresh()
         }

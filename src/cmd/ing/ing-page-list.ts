@@ -3,23 +3,23 @@ import { QuickPickItem, window } from 'vscode'
 import { IngType, IngTypesMetadata } from '@/model/ing'
 
 export namespace Ing.ListView {
-    export const refresh = () => getIngListWebviewProvider().refreshingList()
+    export const refresh = () => getIngListWebviewProvider().reload()
 
     export function goNext() {
         const provider = getIngListWebviewProvider()
         const { pageIndex } = provider
-        return provider.refreshingList({ pageIndex: pageIndex + 1 })
+        return provider.reload({ pageIndex: pageIndex + 1 })
     }
 
     export function goPrev() {
         const provider = getIngListWebviewProvider()
         const { pageIndex } = provider
-        if (pageIndex > 1) return provider.refreshingList({ pageIndex: pageIndex - 1 })
+        if (pageIndex > 1) return provider.reload({ pageIndex: pageIndex - 1 })
         return Promise.resolve()
     }
 
     export function goFirst(): Promise<void> {
-        return getIngListWebviewProvider().refreshingList({ pageIndex: 1 })
+        return getIngListWebviewProvider().reload({ pageIndex: 1 })
     }
 
     export function switchType() {
@@ -45,7 +45,7 @@ export namespace Ing.ListView {
         quickPick.onDidChangeSelection(
             ([selectedItem]) => {
                 quickPick.hide()
-                return getIngListWebviewProvider().refreshingList({
+                return getIngListWebviewProvider().reload({
                     pageIndex: 1,
                     ingType: selectedItem.ingType,
                 })
