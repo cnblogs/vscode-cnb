@@ -1,11 +1,10 @@
-import { globalCtx } from '@/ctx/global-ctx'
+import { setCtx } from '@/ctx/global-ctx'
 import { PostService } from '@/service/post/post'
 import { window } from 'vscode'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { Alert } from '@/infra/alert'
 import { PostListState } from '@/model/post-list-state'
 import { extTreeViews } from '@/tree-view/tree-view-register'
-import { execCmd } from '@/infra/cmd'
 import { PageList } from '@/model/page'
 import { getListState, updatePostListState } from '@/service/post/post-list-view'
 
@@ -13,16 +12,14 @@ let refreshTask: Promise<boolean> | null = null
 let isRefreshing = false
 
 async function setRefreshing(value = false) {
-    const extName = globalCtx.extName
-    await execCmd('setContext', `${extName}.post.list-view.refreshing`, value).then(undefined, () => false)
+    await setCtx('post.list-view.refreshing', value)
     isRefreshing = value
 }
 
 async function setPostListContext(pageCount: number, hasPrev: boolean, hasNext: boolean) {
-    const extName = globalCtx.extName
-    await execCmd('setContext', `${extName}.post.list-view.hasPrev`, hasPrev)
-    await execCmd('setContext', `${extName}.post.list-view.hasNext`, hasNext)
-    await execCmd('setContext', `${extName}.post.list-view.pageCount`, pageCount)
+    await setCtx('post.list-view.hasPrev', hasPrev)
+    await setCtx('post.list-view.hasNext', hasNext)
+    await setCtx('post.list-view.pageCount', pageCount)
 }
 
 async function goPage(f: (currentIndex: number) => number) {

@@ -1,6 +1,5 @@
 import { flattenDepth, take } from 'lodash-es'
 import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { globalCtx } from '@/ctx/global-ctx'
 import { PostCategoryService } from '@/service/post/post-category'
 import { PostService } from '@/service/post/post'
 import { toTreeItem } from '@/tree-view/convert'
@@ -9,7 +8,7 @@ import { PostCategoryTreeItem } from '@/tree-view/model/post-category-tree-item'
 import { PostEntryMetadata, PostMetadata, RootPostMetadataType } from '@/tree-view/model/post-metadata'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { Alert } from '@/infra/alert'
-import { execCmd } from '@/infra/cmd'
+import { setCtx } from '@/ctx/global-ctx'
 
 export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {
     private _treeDataChanged = new EventEmitter<PostCategoriesListTreeItem | null | undefined>()
@@ -42,7 +41,7 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
     }
 
     async setIsRefreshing(value: boolean) {
-        await execCmd('setContext', `${globalCtx.extName}.postCategoriesList.isRefreshing`, value)
+        await setCtx('postCategoriesList.isRefreshing', value)
         this._isRefreshing = value
     }
 

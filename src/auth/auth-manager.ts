@@ -1,4 +1,4 @@
-import { globalCtx } from '@/ctx/global-ctx'
+import { setCtx } from '@/ctx/global-ctx'
 import { window, authentication, AuthenticationGetSessionOptions as AuthGetSessionOpt } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
@@ -8,7 +8,6 @@ import { authProvider } from '@/auth/auth-provider'
 import { AuthSession } from '@/auth/auth-session'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
 import { Alert } from '@/infra/alert'
-import { execCmd } from '@/infra/cmd'
 
 let authSession: AuthSession | null = null
 
@@ -105,11 +104,11 @@ export namespace AuthManager {
         await AuthManager.ensureSession({ createIfNone: false })
         const isAuthed = AuthManager.isAuthed()
 
-        await execCmd('setContext', `${globalCtx.extName}.isAuthed`, isAuthed)
+        await setCtx('isAuthed', isAuthed)
 
         if (!isAuthed) return
 
-        await execCmd('setContext', `${globalCtx.extName}.user`, {
+        await setCtx('user', {
             name: AuthManager.getUserInfo()?.DisplayName,
             avatar: AuthManager.getUserInfo()?.Avatar,
         })

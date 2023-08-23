@@ -433,7 +433,7 @@
                 "command": "vscode-cnb.backup.download",
                 "title": "下载备份",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing && !vscode-cnb.backup.downloading",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing && !vscode-cnb.backup.isDownloading",
                 "icon": "$(cloud-download)"
             },
             {
@@ -447,7 +447,7 @@
                 "command": "vscode-cnb.backup.delete",
                 "title": "delete",
                 "category": "Cnblogs",
-                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing && !vscode-cnb.backup.downloading",
+                "enablement": "vscode-cnb.isAuthed && !vscode-cnb.backup.records.isRefreshing && !vscode-cnb.backup.isDownloading",
                 "icon": "$(trash)"
             }
         ],

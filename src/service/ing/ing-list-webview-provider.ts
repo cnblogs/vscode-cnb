@@ -1,4 +1,4 @@
-import { globalCtx } from '@/ctx/global-ctx'
+import { globalCtx, setCtx } from '@/ctx/global-ctx'
 import {
     CancellationToken,
     Disposable,
@@ -14,7 +14,6 @@ import { IngService } from '@/service/ing/ing'
 import { IngType, IngTypesMetadata } from '@/model/ing'
 import { isNumber } from 'lodash-es'
 import { CommentIngCmdHandler } from '@/cmd/ing/comment-ing'
-import { execCmd } from '@/infra/cmd'
 import { UiCfg } from '@/ctx/cfg/ui'
 import { ingStarIconToText } from '@/wasm'
 
@@ -77,12 +76,10 @@ export class IngListWebviewProvider implements WebviewViewProvider {
             if (this.isRefreshing) return
             await this.setIsRefreshing(true)
 
-            await this._view.webview
-                .postMessage({
-                    payload: { isRefreshing: true },
-                    command: Webview.Cmd.Ing.Ui.setAppState,
-                })
-                .then(undefined, () => undefined)
+            await this._view.webview.postMessage({
+                payload: { isRefreshing: true },
+                command: Webview.Cmd.Ing.Ui.setAppState,
+            })
             const rawIngList = await IngService.getList({
                 type: ingType,
                 pageIndex,
@@ -94,16 +91,14 @@ export class IngListWebviewProvider implements WebviewViewProvider {
                 return ing
             })
             const comments = await IngService.getCommentList(...ingList.map(x => x.id))
-            await this._view.webview
-                .postMessage({
-                    command: Webview.Cmd.Ing.Ui.setAppState,
-                    payload: {
-                        ingList,
-                        isRefreshing: false,
-                        comments,
-                    },
-                })
-                .then(undefined, () => undefined)
+            await this._view.webview.postMessage({
+                command: Webview.Cmd.Ing.Ui.setAppState,
+                payload: {
+                    ingList,
+                    isRefreshing: false,
+                    comments,
+                },
+            })
         } else {
             this._view.show()
         }
@@ -130,18 +125,12 @@ export class IngListWebviewProvider implements WebviewViewProvider {
     }
 
     private async setIsRefreshing(value: boolean) {
-        await execCmd('setContext', `${globalCtx.extName}.ingList.isRefreshing`, value ? true : undefined).then(
-            undefined,
-            () => undefined
-        )
+        await setCtx('ingList.isRefreshing', value ? true : undefined)
         this._isRefreshing = value
     }
 
     private async setPageIndex(value: number) {
-        await execCmd('setContext', `${globalCtx.extName}.ingList.pageIndex`, value > 0 ? value : undefined).then(
-            undefined,
-            () => undefined
-        )
+        await setCtx('ingList.pageIndex', value > 0 ? value : undefined)
         this._pageIndex = value
     }
 

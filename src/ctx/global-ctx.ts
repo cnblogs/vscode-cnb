@@ -1,5 +1,6 @@
 import { env, ExtensionContext, Uri } from 'vscode'
 import path from 'path'
+import { execCmd } from '@/infra/cmd'
 
 export class GlobalCtx {
     private _extensionContext: ExtensionContext | null = null
@@ -39,6 +40,10 @@ export class GlobalCtx {
     get extUrl() {
         return `${env.uriScheme}://${this.publisher}.${this.extName}`
     }
+}
+
+export async function setCtx(key: string, val: any) {
+    await execCmd('setContext', `${globalCtx.extName}.${key}`, val)
 }
 
 export const globalCtx = new GlobalCtx()
