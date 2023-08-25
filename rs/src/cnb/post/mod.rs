@@ -4,6 +4,7 @@ mod get_count;
 mod get_list;
 mod get_one;
 mod get_template;
+mod search;
 mod update;
 
 use crate::panic_hook;

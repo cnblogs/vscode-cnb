@@ -3,16 +3,12 @@ import { PostUpdatedResp } from '@/model/post-updated-response'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { rmYfm } from '@/infra/filter/rm-yfm'
 import { Alert } from '@/infra/alert'
-import { consUrlPara } from '@/infra/http/infra/url-para'
-import { consHeader } from '@/infra/http/infra/header'
-import { AuthedReq } from '@/infra/http/authed-req'
 import { Page, PageList } from '@/model/page'
 import { Post } from '@/model/post'
 import { PostListRespItem } from '@/model/post-list-resp-item'
 import { MyConfig } from '@/model/my-config'
 import { AuthManager } from '@/auth/auth-manager'
 import { PostReq } from '@/wasm'
-import { ExtConst } from '@/ctx/ext-const'
 import { PostListModel } from '@/service/post/post-list-view'
 
 async function getAuthedPostReq() {
@@ -23,29 +19,26 @@ async function getAuthedPostReq() {
 }
 
 export namespace PostService {
-    // TODO: need refactor
-    export async function fetchPostList({ search = '', pageIndex = 1, pageSize = 30, categoryId = <'' | number>'' }) {
-        const para = consUrlPara(
-            ['t', '1'],
-            ['p', pageIndex.toString()],
-            ['s', pageSize.toString()],
-            ['search', search],
-            ['cid', categoryId.toString()]
-        )
-        const url = `${ExtConst.ApiBase.BLOG_BACKEND}/posts/list?${para}`
-        const resp = await AuthedReq.get(url, consHeader())
-        const listModel = <PostListModel>JSON.parse(resp)
-        const page = {
-            index: listModel.pageIndex,
-            cap: listModel.pageSize,
-            items: listModel.postList.map(x => Object.assign(new Post(), x)),
-        } as Page<Post>
+    export async function search(pageIndex: number, pageCap: number, keyword?: string, catId?: number) {
+        const req = await getAuthedPostReq()
+        try {
+            const json = await req.search(pageIndex, pageCap, keyword, catId)
+            const listModel = <PostListModel>JSON.parse(json)
+            const page = {
+                index: listModel.pageIndex,
+                cap: listModel.pageSize,
+                items: listModel.postList.map(x => Object.assign(new Post(), x)),
+            } as Page<Post>
 
-        return {
-            page,
-            pageCount: PageList.calcPageCount(listModel.pageSize, listModel.postsCount),
-            matchedPostCount: listModel.postsCount,
-            zzkResult: listModel.zzkSearchResult,
+            return {
+                page,
+                pageCount: PageList.calcPageCount(listModel.pageSize, listModel.postsCount),
+                matchedPostCount: listModel.postsCount,
+                zzkResult: listModel.zzkSearchResult,
+            }
+        } catch (e) {
+            void Alert.err(`搜索失败: ${<string>e}`)
+            throw e
         }
     }
 

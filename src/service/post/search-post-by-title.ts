@@ -15,25 +15,23 @@ class PostPickItem implements QuickPickItem {
     }
 }
 
-export function searchPostByTitle(postTitle: string, quickPickTitle: string) {
+export function searchPostByTitle(title: string, quickPickTitle: string) {
     const quickPick = window.createQuickPick<PostPickItem>()
     quickPick.title = quickPickTitle
-    quickPick.value = postTitle ?? ''
+    quickPick.value = title ?? ''
     quickPick.placeholder = '输入标题以搜索随笔'
 
     const handleValueChange = async () => {
-        if (quickPick.value === '') return
+        if (quickPick.value.length === 0) return
 
-        const value = quickPick.value
+        const keyword = quickPick.value
         quickPick.busy = true
 
         try {
-            const data = await PostService.fetchPostList({ search: value })
+            const data = await PostService.search(1, 20, keyword)
             const postList = data.page.items
             const pickItems = postList.map(p => new PostPickItem(p))
-            if (value === quickPick.value) quickPick.items = pickItems
-        } catch (e) {
-            throw Error(`请求博文列表失败: ${<string>e}`)
+            if (keyword === quickPick.value) quickPick.items = pickItems
         } finally {
             quickPick.busy = false
         }

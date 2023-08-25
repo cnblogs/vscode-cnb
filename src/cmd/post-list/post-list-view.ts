@@ -132,7 +132,7 @@ export namespace PostListView {
             })
             if (searchKey === undefined) return
 
-            await postDataProvider.search({ key: searchKey })
+            await postDataProvider.search(searchKey)
         }
 
         export const clear = () => postDataProvider.clearSearch()

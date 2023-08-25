@@ -96,11 +96,9 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
     }
 
     private async getPost(parent: PostCategoryTreeItem): Promise<PostTreeItem[]> {
-        const {
-            category: { categoryId },
-        } = parent
+        const catId = parent.category.categoryId
 
-        const data = await PostService.fetchPostList({ categoryId, pageSize: 100 })
+        const data = await PostService.search(1, 100, undefined, catId)
         const postList = data.page.items
         const arr = postList.map(x =>
             Object.assign(new PostTreeItem<PostCategoryTreeItem>(x, true), {
