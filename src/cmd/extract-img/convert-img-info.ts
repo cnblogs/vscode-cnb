@@ -74,7 +74,8 @@ async function caseFsImg(baseDirPath: string, path: string) {
         readable = fs.createReadStream(path)
     } else {
         const absPath = join(baseDirPath, path)
-        readable = fs.createReadStream(absPath)
+        if (fs.existsSync(absPath)) readable = fs.createReadStream(absPath)
+        else throw Error('文件不存在')
     }
 
     const bytes = await readableToBytes(readable)

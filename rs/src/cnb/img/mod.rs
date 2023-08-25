@@ -36,14 +36,17 @@ pub struct ImgBytes {
 impl ImgBytes {
     #[wasm_bindgen(constructor)]
     pub fn new(bytes: Box<[u8]>, mime: String) -> ImgBytes {
+        panic_hook!();
         ImgBytes { bytes, mime }
     }
     #[wasm_bindgen(getter, js_name = bytes)]
     pub fn bytes(&self) -> Box<[u8]> {
+        panic_hook!();
         self.bytes.clone()
     }
     #[wasm_bindgen(getter, js_name = mime)]
     pub fn mime(&self) -> String {
+        panic_hook!();
         self.mime.clone()
     }
 }
