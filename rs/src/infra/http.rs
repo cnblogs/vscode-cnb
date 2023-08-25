@@ -1,7 +1,6 @@
 use alloc::format;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
-use reqwest::header::AUTHORIZATION;
 use reqwest::RequestBuilder;
 
 pub const APPLICATION_JSON: &str = "application/json";
@@ -26,7 +25,7 @@ macro_rules! basic {
 }
 
 pub fn setup_auth(builder: RequestBuilder, token: &str, is_pat_token: bool) -> RequestBuilder {
-    let builder = builder.header(AUTHORIZATION, bearer!(token));
+    let builder = builder.bearer_auth(token);
 
     if is_pat_token {
         builder.header(AUTHORIZATION_TYPE, PAT)
