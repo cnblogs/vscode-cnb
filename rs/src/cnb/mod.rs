@@ -1,4 +1,5 @@
 pub mod api_base;
+pub mod img;
 pub mod ing;
 pub mod oauth;
 pub mod post;

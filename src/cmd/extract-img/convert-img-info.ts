@@ -1,10 +1,24 @@
 import fs from 'fs'
-import { ImgService } from '@/service/img'
-import { Readable } from 'stream'
 import { tmpdir } from 'os'
 import { Alert } from '@/infra/alert'
 import { Progress } from 'vscode'
 import { join } from 'path'
+import { ImgReq, RsHttp } from '@/wasm'
+import { AuthManager } from '@/auth/auth-manager'
+import { readableToBytes } from '@/infra/convert/readableToBuffer'
+import { Blob, File, FormData } from 'formdata-node'
+import { ImgDlResult } from '@/wasm'
+
+global.FormData = FormData
+global.Blob = Blob
+global.File = File
+
+export async function getAuthedImgReq() {
+    const token = await AuthManager.acquireToken()
+    // TODO: need better solution
+    const isPatToken = token.length === 64
+    return new ImgReq(token, isPatToken)
+}
 
 export type ImgInfo = {
     byteOffset: number
@@ -42,10 +56,15 @@ export async function convertImgInfo(
         }
 
         try {
-            const stream = await resolveImgInfo(fileDir, src)
-            const newLink = await ImgService.upload(stream)
+            const req = await getAuthedImgReq()
+            const dlr = await getImgDlResult(fileDir, src)
+            console.log(dlr.bytes)
+            console.log(dlr.mime)
+            const newLink = await req.upload(dlr.bytes, dlr.mime)
+
             result.push([src, newLink])
         } catch (e) {
+            console.log(e)
             err.push(`提取失败(${src.data}): ${<string>e}`)
         }
     }
@@ -56,7 +75,7 @@ export async function convertImgInfo(
     return result
 }
 
-function resolveDataUrlImg(dataUrl: string) {
+async function caseDataUrlImg(dataUrl: string) {
     // reference for this impl:
     // https://stackoverflow.com/questions/6850276/how-to-convert-dataurl-to-file-object-in-javascript/7261048#7261048
 
@@ -71,26 +90,52 @@ function resolveDataUrlImg(dataUrl: string) {
     const path = `${tmpdir()}/` + fileName
     fs.writeFileSync(path, buf, 'utf8')
 
-    return fs.createReadStream(path)
+    const readable = fs.createReadStream(path)
+
+    const bytes = await readableToBytes(readable)
+    const mime = RsHttp.mimeInfer(path)
+    if (mime === undefined) throw Error('未知的 MIME 类型')
+
+    return new ImgDlResult(bytes, mime)
 }
 
-function resolveFsImg(fileDir: string, path: string) {
+async function caseFsImg(baseDirPath: string, path: string) {
     path = decodeURIComponent(path)
-    if (fs.existsSync(path)) return fs.createReadStream(path)
-    const absPath = join(fileDir, path)
-    return fs.createReadStream(absPath)
+
+    let readable
+    if (fs.existsSync(path)) {
+        readable = fs.createReadStream(path)
+    } else {
+        const absPath = join(baseDirPath, path)
+        readable = fs.createReadStream(absPath)
+    }
+
+    const bytes = await readableToBytes(readable)
+    const mime = RsHttp.mimeInfer(path)
+    if (mime === undefined) throw Error('未知的 MIME 类型')
+
+    return new ImgDlResult(bytes, mime)
 }
 
 // eslint-disable-next-line require-await
-async function resolveImgInfo(fileDir: string, info: ImgInfo): Promise<Readable> {
+async function getImgDlResult(baseDirPath: string, info: ImgInfo) {
     // for web img
-    if (info.src === ImgSrc.web) return ImgService.download(info.data)
+    if (info.src === ImgSrc.web) {
+        const url = info.data
+        return ImgReq.download(url)
+    }
 
     // for fs img
-    if (info.src === ImgSrc.fs) return resolveFsImg(fileDir, info.data)
+    if (info.src === ImgSrc.fs) {
+        const path = info.data
+        return caseFsImg(baseDirPath, path)
+    }
 
     // for data url img
-    if (info.src === ImgSrc.dataUrl) return resolveDataUrlImg(info.data)
+    if (info.src === ImgSrc.dataUrl) {
+        const dataUrl = info.data
+        return caseDataUrlImg(dataUrl)
+    }
 
-    throw Error('Unreachable code')
+    throw Error('Unreachable')
 }

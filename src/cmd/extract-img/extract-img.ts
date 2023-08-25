@@ -68,7 +68,6 @@ export async function extractImg(arg?: Uri, inputImgSrc?: ImgSrc) {
     const opt = { title: '提取图片', location: ProgressLocation.Notification }
     await window.withProgress(opt, async p => {
         const fileDir = dirname(textDocument.uri.fsPath)
-        console.log(fileDir)
         const extracted = await convertImgInfo(fileDir, imgInfoList, p)
         const extractedCount = extracted.length
         let text = textDocument.getText()
