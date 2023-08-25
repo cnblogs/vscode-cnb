@@ -1,13 +1,11 @@
 import fs from 'fs'
-import { tmpdir } from 'os'
 import { Alert } from '@/infra/alert'
 import { Progress } from 'vscode'
 import { join } from 'path'
-import { ImgReq, RsHttp } from '@/wasm'
+import { ImgBytes, ImgReq, RsHttp } from '@/wasm'
 import { AuthManager } from '@/auth/auth-manager'
 import { readableToBytes } from '@/infra/convert/readableToBuffer'
 import { Blob, File, FormData } from 'formdata-node'
-import { ImgDlResult } from '@/wasm'
 
 global.FormData = FormData
 global.Blob = Blob
@@ -42,7 +40,6 @@ export async function convertImgInfo(
     }>
 ) {
     const result: [src: ImgInfo, newLink: string][] = []
-    const err = []
 
     for (const src of infoList) {
         progress.report({
@@ -57,46 +54,16 @@ export async function convertImgInfo(
 
         try {
             const req = await getAuthedImgReq()
-            const dlr = await getImgDlResult(fileDir, src)
-            console.log(dlr.bytes)
-            console.log(dlr.mime)
-            const newLink = await req.upload(dlr.bytes, dlr.mime)
+            const ib = await getImgBytes(fileDir, src)
+            const newLink = await req.upload(ib.bytes, ib.mime)
 
             result.push([src, newLink])
         } catch (e) {
-            console.log(e)
-            err.push(`提取失败(${src.data}): ${<string>e}`)
+            void Alert.err(`提取失败(${src.data}): ${<string>e}`)
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    err.forEach(Alert.err)
-
     return result
-}
-
-async function caseDataUrlImg(dataUrl: string) {
-    // reference for this impl:
-    // https://stackoverflow.com/questions/6850276/how-to-convert-dataurl-to-file-object-in-javascript/7261048#7261048
-
-    const regex = /data:image\/(.*?);.*?,([a-zA-Z0-9+/]*=?=?)/g
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const mg = Array.from(dataUrl.matchAll(regex))
-    const buf = Buffer.from(mg[0][2], 'base64')
-
-    const ext = mg[0][1]
-    const fileName = `${Date.now()}.${ext}`
-    const path = `${tmpdir()}/` + fileName
-    fs.writeFileSync(path, buf, 'utf8')
-
-    const readable = fs.createReadStream(path)
-
-    const bytes = await readableToBytes(readable)
-    const mime = RsHttp.mimeInfer(path)
-    if (mime === undefined) throw Error('未知的 MIME 类型')
-
-    return new ImgDlResult(bytes, mime)
 }
 
 async function caseFsImg(baseDirPath: string, path: string) {
@@ -114,11 +81,10 @@ async function caseFsImg(baseDirPath: string, path: string) {
     const mime = RsHttp.mimeInfer(path)
     if (mime === undefined) throw Error('未知的 MIME 类型')
 
-    return new ImgDlResult(bytes, mime)
+    return new ImgBytes(bytes, mime)
 }
 
-// eslint-disable-next-line require-await
-async function getImgDlResult(baseDirPath: string, info: ImgInfo) {
+async function getImgBytes(baseDirPath: string, info: ImgInfo) {
     // for web img
     if (info.src === ImgSrc.web) {
         const url = info.data
@@ -128,13 +94,14 @@ async function getImgDlResult(baseDirPath: string, info: ImgInfo) {
     // for fs img
     if (info.src === ImgSrc.fs) {
         const path = info.data
-        return caseFsImg(baseDirPath, path)
+        // eslint-disable-next-line
+        return await caseFsImg(baseDirPath, path)
     }
 
     // for data url img
     if (info.src === ImgSrc.dataUrl) {
         const dataUrl = info.data
-        return caseDataUrlImg(dataUrl)
+        return ImgBytes.fromDataUrl(dataUrl)
     }
 
     throw Error('Unreachable')

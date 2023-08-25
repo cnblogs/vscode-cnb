@@ -1,4 +1,4 @@
-use crate::cnb::img::ImgReq;
+use crate::cnb::img::{ImgBytes, ImgReq};
 use crate::infra::result::{IntoResult, ResultExt};
 use crate::panic_hook;
 use alloc::boxed::Box;
@@ -8,40 +8,17 @@ use anyhow::{anyhow, bail};
 use core::ops::Not;
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
-#[derive(Debug, PartialEq)]
-pub struct ImgDlResult {
-    bytes: Box<[u8]>,
-    mime: String,
-}
-
-#[wasm_bindgen]
-impl ImgDlResult {
-    #[wasm_bindgen(constructor)]
-    pub fn new(bytes: Box<[u8]>, mime: String) -> ImgDlResult {
-        ImgDlResult { bytes, mime }
-    }
-    #[wasm_bindgen(getter, js_name = bytes)]
-    pub fn bytes(&self) -> Box<[u8]> {
-        self.bytes.clone()
-    }
-    #[wasm_bindgen(getter, js_name = mime)]
-    pub fn mime(&self) -> String {
-        self.mime.clone()
-    }
-}
-
 #[wasm_bindgen(js_class = ImgReq)]
 impl ImgReq {
     #[wasm_bindgen(js_name = download)]
-    pub async fn export_download(url: &str) -> Result<ImgDlResult, String> {
+    pub async fn export_download(url: &str) -> Result<ImgBytes, String> {
         panic_hook!();
         let result = download(url).await;
         result.err_to_string()
     }
 }
 
-async fn download(url: &str) -> Result<ImgDlResult> {
+async fn download(url: &str) -> Result<ImgBytes> {
     let client = reqwest::Client::new();
     let req = client.get(url);
 
@@ -66,5 +43,5 @@ async fn download(url: &str) -> Result<ImgDlResult> {
 
     let bytes: Box<[u8]> = resp.bytes().await?.to_vec().into_boxed_slice();
 
-    ImgDlResult::new(bytes, mime).into_ok()
+    ImgBytes::new(bytes, mime).into_ok()
 }

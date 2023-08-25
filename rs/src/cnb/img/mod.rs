@@ -1,7 +1,9 @@
 mod download;
+mod from_data_url;
 mod upload;
 
 use crate::panic_hook;
+use alloc::boxed::Box;
 use alloc::string::{String, ToString};
 use wasm_bindgen::prelude::*;
 
@@ -20,5 +22,28 @@ impl ImgReq {
             token: token.to_string(),
             is_pat_token,
         }
+    }
+}
+
+#[wasm_bindgen(js_name = ImgBytes)]
+#[derive(Debug, PartialEq)]
+pub struct ImgBytes {
+    bytes: Box<[u8]>,
+    mime: String,
+}
+
+#[wasm_bindgen(js_class = ImgBytes)]
+impl ImgBytes {
+    #[wasm_bindgen(constructor)]
+    pub fn new(bytes: Box<[u8]>, mime: String) -> ImgBytes {
+        ImgBytes { bytes, mime }
+    }
+    #[wasm_bindgen(getter, js_name = bytes)]
+    pub fn bytes(&self) -> Box<[u8]> {
+        self.bytes.clone()
+    }
+    #[wasm_bindgen(getter, js_name = mime)]
+    pub fn mime(&self) -> String {
+        self.mime.clone()
     }
 }
