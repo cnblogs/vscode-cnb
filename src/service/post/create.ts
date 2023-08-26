@@ -6,7 +6,7 @@ import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { saveLocalPost } from '@/cmd/post-list/upload-post'
 import { openPostFile } from '@/cmd/post-list/open-post-file'
 import { LocalPost } from '@/service/local-post'
-import { existsSync } from 'fs'
+import fs from 'fs'
 
 export async function createPost() {
     const workspacePath = WorkspaceCfg.getWorkspaceUri().fsPath
@@ -24,7 +24,7 @@ export async function createPost() {
 
     const filePath = path.join(workspacePath, `${title}.md`)
 
-    if (!existsSync(filePath)) await workspace.fs.writeFile(Uri.file(filePath), Buffer.from('# Hello World\n'))
+    if (!fs.existsSync(filePath)) await workspace.fs.writeFile(Uri.file(filePath), Buffer.from('# Hello World\n'))
 
     await openPostFile(filePath)
     await osOpenActiveFile()

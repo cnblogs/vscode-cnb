@@ -16,7 +16,7 @@ import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { PostListView } from '@/cmd/post-list/post-list-view'
 import { extractImg } from '@/cmd/extract-img/extract-img'
 import { LocalPost } from '@/service/local-post'
-import { existsSync } from 'fs'
+import fs from 'fs'
 
 async function parseFileUri(fileUri?: Uri) {
     if (fileUri !== undefined && fileUri.scheme !== 'file') return undefined
@@ -62,7 +62,7 @@ export async function saveLocalPost(localPost: LocalPost) {
         beforeUpdate: async postToSave => {
             await saveFilePendingChanges(localPost.filePath)
 
-            if (!existsSync(localPost.filePath)) {
+            if (!fs.existsSync(localPost.filePath)) {
                 void Alert.warn('本地文件已删除, 无法新建博文')
                 return false
             }

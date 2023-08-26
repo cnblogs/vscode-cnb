@@ -24,7 +24,7 @@ export async function downloadBlogExport(treeItem?: BlogExportRecordTreeItem) {
     const nonZipFilePath = path.join(targetDir, treeItem.record.fileName)
     const zipFilePath = nonZipFilePath + '.zip'
     const downloadStream = BlogExportApi.download(blogId, exportId)
-    const isFileExist = await promisify(fs.exists)(zipFilePath)
+    const isFileExist = fs.existsSync(zipFilePath)
 
     await extTreeViews.blogExport.reveal(treeItem, { expand: true })
 

@@ -31,7 +31,4 @@ export type PostCatAddDto = {
     visible: boolean
     description: string
 }
-export type PostCatUpdateDto = Pick<
-    PostCat,
-    'categoryId' | 'description' | 'count' | 'title' | 'order' | 'visible'
->
+export type PostCatUpdateDto = Pick<PostCat, 'categoryId' | 'description' | 'count' | 'title' | 'order' | 'visible'>

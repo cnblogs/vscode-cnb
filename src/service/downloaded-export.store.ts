@@ -1,7 +1,6 @@
 import { DownloadedBlogExport } from '@/model/blog-export'
-import { exists, existsSync } from 'fs'
+import fs from 'fs'
 import { take } from 'lodash-es'
-import { promisify } from 'util'
 import { LocalState } from '@/ctx/local-state'
 
 const listKey = 'downloadExports'
@@ -32,7 +31,7 @@ export namespace DownloadedExportStore {
         if (prune) {
             const prunedItems: DownloadedBlogExport[] = []
             items = items.filter(x => {
-                const isExist = existsSync(x.filePath)
+                const isExist = fs.existsSync(x.filePath)
                 if (!isExist) {
                     prunedItems.push(x)
                     return false
@@ -70,7 +69,7 @@ export namespace DownloadedExportStore {
         let item = LocalState.getState(key) as DownloadedBlogExport | undefined
 
         if (prune && item !== undefined) {
-            const isExist = await promisify(exists)(item.filePath)
+            const isExist = fs.existsSync(item.filePath)
             if (!isExist) {
                 item = undefined
                 await updateExport(id, undefined)

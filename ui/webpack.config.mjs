@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/naming-convention */
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import { rmSync, readdirSync, cpSync, existsSync } from 'fs'
+import { rmSync, readdirSync, cpSync } from 'fs'
 import tailwindConfig from './tailwind.config.js'
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'

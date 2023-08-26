@@ -2,13 +2,13 @@ import { Uri, window, workspace } from 'vscode'
 import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { buildLocalPostFileUri } from '@/cmd/post-list/open-post-in-vscode'
-import { existsSync } from 'fs'
 import { PostService } from '@/service/post/post'
 import { Alert } from '@/infra/alert'
 import path from 'path'
 import { revealPostListItem } from '@/service/post/post-list-view'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
+import fs from 'fs'
 
 export async function postPull(input: Post | PostTreeItem | Uri | undefined | null) {
     const ctxList: CmdCtx[] = []
@@ -52,7 +52,7 @@ const parsePostInput = (input: InputType): input is Post => input instanceof Pos
 async function handlePostInput(post: Post, contexts: CmdCtx[]) {
     const path = PostFileMapManager.getFilePath(post.id)
     // 本地没有博文或关联到的文件不存在
-    if (path === undefined || !existsSync(path)) {
+    if (path === undefined || !fs.existsSync(path)) {
         const uri = await buildLocalPostFileUri(post, false)
         await workspace.fs.writeFile(uri, Buffer.from(post.postBody))
         await PostFileMapManager.updateOrCreate(post.id, uri.path)

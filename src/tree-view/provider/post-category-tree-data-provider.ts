@@ -27,9 +27,7 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCategoriesL
         return (
             flattenDepth(
                 this._roots?.map(
-                    x =>
-                        x.children?.filter((c): c is PostTreeItem<PostCatTreeItem> => c instanceof PostTreeItem) ??
-                        []
+                    x => x.children?.filter((c): c is PostTreeItem<PostCatTreeItem> => c instanceof PostTreeItem) ?? []
                 ),
                 1
             ) ?? []
