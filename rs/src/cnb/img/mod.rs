@@ -25,11 +25,11 @@ impl ImgReq {
     }
 }
 
-#[wasm_bindgen(js_name = ImgBytes)]
+#[wasm_bindgen(js_name = ImgBytes, getter_with_clone)]
 #[derive(Debug, PartialEq)]
 pub struct ImgBytes {
-    bytes: Box<[u8]>,
-    mime: String,
+    pub bytes: Box<[u8]>,
+    pub mime: String,
 }
 
 #[wasm_bindgen(js_class = ImgBytes)]
@@ -38,15 +38,5 @@ impl ImgBytes {
     pub fn new(bytes: Box<[u8]>, mime: String) -> ImgBytes {
         panic_hook!();
         ImgBytes { bytes, mime }
-    }
-    #[wasm_bindgen(getter, js_name = bytes)]
-    pub fn bytes(&self) -> Box<[u8]> {
-        panic_hook!();
-        self.bytes.clone()
-    }
-    #[wasm_bindgen(getter, js_name = mime)]
-    pub fn mime(&self) -> String {
-        panic_hook!();
-        self.mime.clone()
     }
 }

@@ -1,5 +1,5 @@
 import { AuthenticationSessionAccountInformation as ASAI } from 'vscode'
-import { UserReq } from '@/wasm'
+import { UserInfo, UserReq } from '@/wasm'
 import { Alert } from '@/infra/alert'
 
 function getAuthedUserReq(token: string) {
@@ -8,28 +8,13 @@ function getAuthedUserReq(token: string) {
     return new UserReq(token, isPatToken)
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
-export type UserInfo = {
-    UserId: string
-    SpaceUserID: number
-    BlogId: number
-    DisplayName: string
-    Face: string
-    Avatar: string
-    Seniority: string
-    BlogApp: string
-    FollowingCount: number
-    FollowerCount: number
-    IsVip: boolean
-}
-
 export class AccountInfo implements ASAI {
     readonly id: string
     readonly label: string
 
     constructor(public readonly userInfo: UserInfo) {
-        this.id = `${userInfo.SpaceUserID}-cnblogs`
-        this.label = userInfo.DisplayName
+        this.id = `${userInfo.space_user_id}-cnblogs`
+        this.label = userInfo.display_name
     }
 }
 
@@ -38,8 +23,7 @@ export namespace AccountInfo {
         const req = getAuthedUserReq(token)
 
         try {
-            const resp = await req.getInfo()
-            const userInfo = <UserInfo>JSON.parse(resp)
+            const userInfo = await req.getInfo()
 
             return new AccountInfo(userInfo)
         } catch (e) {

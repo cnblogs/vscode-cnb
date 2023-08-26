@@ -176,7 +176,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
         const session = new AuthSession(
             accountInfo,
-            `${this.providerId}-${accountInfo.userInfo.SpaceUserID}`,
+            `${this.providerId}-${accountInfo.userInfo.space_user_id}`,
             accessToken,
             this.ensureScopes(null)
         )

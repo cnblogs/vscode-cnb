@@ -26,7 +26,7 @@ const MAX_POST_LIMIT = 1000
 const MAX_BYTE_LIMIT = MAX_POST_LIMIT * 10000
 
 export async function postPullAll() {
-    const isVip = AuthManager.getUserInfo()?.IsVip ?? false
+    const isVip = AuthManager.getUserInfo()?.is_vip ?? false
     if (!isVip) {
         void Alert.info('下载随笔: 您是普通用户, 此功能目前仅面向 [VIP](https://cnblogs.vip/) 用户开放')
         return

@@ -45,7 +45,7 @@ export namespace AuthManager {
             session = null
         }
 
-        if (session != null && session.account.userInfo.SpaceUserID < 0) {
+        if (session != null && session.account.userInfo.space_user_id < 0) {
             authSession = null
             await authProvider.removeSession(session.id)
         } else {
@@ -109,8 +109,8 @@ export namespace AuthManager {
         if (!isAuthed) return
 
         await setCtx('user', {
-            name: AuthManager.getUserInfo()?.DisplayName,
-            avatar: AuthManager.getUserInfo()?.Avatar,
+            name: AuthManager.getUserInfo()?.display_name,
+            avatar: AuthManager.getUserInfo()?.avatar,
         })
     }
 }

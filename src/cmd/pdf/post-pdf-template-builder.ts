@@ -66,7 +66,7 @@ export namespace PostPdfTemplateBuilder {
             blogId,
         } = setting
 
-        const userId = AuthManager.getUserInfo()?.UserId
+        const userId = AuthManager.getUserInfo()?.user_id
 
         return `<html lang="en">
         <head>
