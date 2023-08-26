@@ -1,10 +1,10 @@
 import { PostCat, PostCatAddDto } from '@/model/post-category'
 import { window } from 'vscode'
 
-async function setupTitle(parentTitle: string, cat?: PostCat) {
+async function setupTitle(parentTitle: string, oldVal: string) {
     const title = await window.showInputBox({
         title: `分类标题 - ${parentTitle}(1/3)`,
-        value: cat?.title ?? '',
+        value: oldVal,
         placeHolder: '<必须>请输入分类标题',
         validateInput: input => {
             if (input === '') return '请输入分类标题'
@@ -27,9 +27,10 @@ async function setupVisible(parentTitle: string) {
     return isVisible === '可见'
 }
 
-async function setupDescription(parentTitle: string) {
+async function setupDescription(parentTitle: string, oldVal: string) {
     const description = await window.showInputBox({
         title: `分类描述 - ${parentTitle}(3/3)`,
+        value: oldVal,
         placeHolder: '<可选>请输入分类描述',
     })
 
@@ -40,9 +41,9 @@ async function setupDescription(parentTitle: string) {
 
 export async function inputPostCat(parentTitle: string, cat?: PostCat) {
     try {
-        const title = await setupTitle(parentTitle, cat)
+        const title = await setupTitle(parentTitle, cat?.title ?? '')
         const isVisible = await setupVisible(title)
-        const description = await setupDescription(title)
+        const description = await setupDescription(title, cat?.description ?? '')
         return <PostCatAddDto>{
             title,
             visible: isVisible,
