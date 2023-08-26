@@ -1,4 +1,4 @@
-use crate::cnb::post_category::PostCategoryReq;
+use crate::cnb::post_cat::PostCatReq;
 use crate::http::body_or_err;
 use crate::infra::http::setup_auth;
 use crate::infra::result::{HomoResult, ResultExt};
@@ -8,8 +8,8 @@ use alloc::string::String;
 use anyhow::Result;
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen(js_class = PostCategoryReq)]
-impl PostCategoryReq {
+#[wasm_bindgen(js_class = PostCatReq)]
+impl PostCatReq {
     #[wasm_bindgen(js_name = getOne)]
     pub async fn export_get_one(&self, category_id: usize) -> HomoResult<String> {
         panic_hook!();

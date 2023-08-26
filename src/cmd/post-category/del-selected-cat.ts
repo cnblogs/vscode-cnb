@@ -1,21 +1,21 @@
 import { ProgressLocation, window } from 'vscode'
-import { PostCategoryService } from '@/service/post/post-category'
+import { PostCatService } from '@/service/post/post-category'
 import { Alert } from '@/infra/alert'
-import { PostCategory } from '@/model/post-category'
+import { PostCat } from '@/model/post-category'
 import { extTreeViews } from '@/tree-view/tree-view-register'
-import { PostCategoryTreeItem } from '@/tree-view/model/post-category-tree-item'
+import { PostCatTreeItem } from '@/tree-view/model/post-category-tree-item'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 
-export async function delSelectedCat(input?: PostCategoryTreeItem | PostCategory) {
+export async function delSelectedCat(input?: PostCatTreeItem | PostCat) {
     const view = extTreeViews.postCategoriesList
     const categories =
         view.selection
-            .map(x => (x instanceof PostCategoryTreeItem ? x.category : x instanceof PostCategory ? x : null))
-            .filter((x): x is PostCategory => x != null) ?? []
+            .map(x => (x instanceof PostCatTreeItem ? x.category : x instanceof PostCat ? x : null))
+            .filter((x): x is PostCat => x != null) ?? []
 
-    let inputCat: PostCategory | null = null
-    if (input instanceof PostCategoryTreeItem) inputCat = input.category
-    else if (input instanceof PostCategory) inputCat = input
+    let inputCat: PostCat | null = null
+    if (input instanceof PostCatTreeItem) inputCat = input.category
+    else if (input instanceof PostCat) inputCat = input
 
     if (inputCat === null) return
     if (categories.find(cat => cat.categoryId === inputCat?.categoryId) === undefined) categories.unshift(inputCat)
@@ -48,7 +48,7 @@ export async function delSelectedCat(input?: PostCategoryTreeItem | PostCategory
                 try {
                     const increment = Math.round(10 + idx / selections.length / 90)
                     p.report({ increment, message: `正在删除: 📂${category.title}` })
-                    await PostCategoryService.del(category.categoryId)
+                    await PostCatService.del(category.categoryId)
                     idx++
                 } catch (e) {
                     void Alert.err(`删除失败: ${<string>e}`)

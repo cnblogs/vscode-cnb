@@ -1,13 +1,11 @@
 import { ProgressLocation, window } from 'vscode'
-import { PostCategoryService } from '@/service/post/post-category'
+import { PostCatService } from '@/service/post/post-category'
 import { extTreeViews } from '@/tree-view/tree-view-register'
-import { inputPostCategory } from './input-post-category'
+import { inputPostCat } from './input-post-cat'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 
-export const newPostCategory = async () => {
-    const input = await inputPostCategory({
-        title: '新建分类',
-    })
+export async function newPostCat() {
+    const input = await inputPostCat('新建分类')
     if (input === undefined) return
 
     const opt = {
@@ -19,14 +17,14 @@ export const newPostCategory = async () => {
         p.report({
             increment: 30,
         })
-        await PostCategoryService.create(input)
+        await PostCatService.create(input)
         p.report({
             increment: 70,
         })
 
         postCategoryDataProvider.refresh()
 
-        const allCategory = await PostCategoryService.getAll()
+        const allCategory = await PostCatService.getAll()
         const newCategory = allCategory.find(x => x.title === input.title)
         if (newCategory !== undefined) await extTreeViews.postCategoriesList.reveal(newCategory)
 

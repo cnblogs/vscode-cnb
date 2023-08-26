@@ -34,6 +34,6 @@ body:
   - type: textarea
     id: proposed-solution
     attributes:
-      label: "[选填]建议的解决方案"
+      label: "[可选]建议的解决方案"
     validations:
       required: false

@@ -2,8 +2,8 @@ import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import fs from 'fs'
 import { BlogSettingService } from '@/service/blog-setting'
-import { PostCategoryService } from '@/service/post/post-category'
-import { PostCategory } from '@/model/post-category'
+import { PostCatService } from '@/service/post/post-category'
+import { PostCat } from '@/model/post-category'
 import { markdownItFactory } from '@cnblogs/markdown-it-presets'
 import { AuthManager } from '@/auth/auth-manager'
 
@@ -36,11 +36,11 @@ export namespace PostPdfTemplateBuilder {
         }
 
         const buildCategoryHtml = async (): Promise<string> => {
-            const categories = await PostCategoryService.getAll()
+            const categories = await PostCatService.getAll()
             const postCategories =
                 post.categoryIds
                     ?.map(categoryId => categories.find(x => x.categoryId === categoryId))
-                    .filter((x): x is PostCategory => x != null) ?? []
+                    .filter((x): x is PostCat => x != null) ?? []
             let html =
                 postCategories.length > 0
                     ? postCategories
@@ -50,7 +50,7 @@ export namespace PostPdfTemplateBuilder {
                           )
                           .join(', ')
                     : ''
-            html = html !== '' ? `<div id="BlogPostCategory">分类: ${html}</div>` : ''
+            html = html !== '' ? `<div id="BlogPostCat">分类: ${html}</div>` : ''
             return html
         }
 

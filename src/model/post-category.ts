@@ -1,4 +1,4 @@
-export class PostCategory {
+export class PostCat {
     parentId?: number | null
     categoryId = -1
     title = ''
@@ -9,16 +9,16 @@ export class PostCategory {
     order?: number
     childCount = 0
     visibleChildCount = 0
-    parent?: PostCategory | null
+    parent?: PostCat | null
 
-    flattenParents(includeSelf: boolean): PostCategory[] {
+    flattenParents(includeSelf: boolean): PostCat[] {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
-        let i: PostCategory | null | undefined = this
-        const result: PostCategory[] = []
+        let i: PostCat | null | undefined = this
+        const result: PostCat[] = []
         while (i != null) {
             if (i !== this || includeSelf) result.unshift(i)
-            if (i.parent !== null && i.parent !== undefined && !(i.parent instanceof PostCategory))
-                i.parent = Object.assign(new PostCategory(), i.parent)
+            if (i.parent !== null && i.parent !== undefined && !(i.parent instanceof PostCat))
+                i.parent = Object.assign(new PostCat(), i.parent)
             i = i.parent
         }
 
@@ -26,8 +26,12 @@ export class PostCategory {
     }
 }
 
-export type PostCategoryAddDto = Pick<PostCategory, 'title' | 'visible' | 'description'>
-export type PostCategoryUpdateDto = Pick<
-    PostCategory,
+export type PostCatAddDto = {
+    title: string
+    visible: boolean
+    description: string
+}
+export type PostCatUpdateDto = Pick<
+    PostCat,
     'categoryId' | 'description' | 'count' | 'title' | 'order' | 'visible'
 >

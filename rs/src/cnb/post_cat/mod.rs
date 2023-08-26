@@ -9,18 +9,18 @@ use crate::panic_hook;
 use alloc::string::String;
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen(js_name = PostCategoryReq)]
-pub struct PostCategoryReq {
+#[wasm_bindgen(js_name = PostCatReq)]
+pub struct PostCatReq {
     token: String,
     is_pat_token: bool,
 }
 
-#[wasm_bindgen(js_class = PostCategoryReq)]
-impl PostCategoryReq {
+#[wasm_bindgen(js_class = PostCatReq)]
+impl PostCatReq {
     #[wasm_bindgen(constructor)]
-    pub fn new(token: String, is_pat_token: bool) -> PostCategoryReq {
+    pub fn new(token: String, is_pat_token: bool) -> PostCatReq {
         panic_hook!();
-        PostCategoryReq {
+        PostCatReq {
             token,
             is_pat_token,
         }

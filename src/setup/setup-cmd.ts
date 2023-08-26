@@ -3,8 +3,8 @@ import { uploadPostFile, uploadPost } from '@/cmd/post-list/upload-post'
 import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { osOpenLocalPostFile } from '@/cmd/open/os-open-local-post-file'
 import { showLocalFileToPostInfo } from '@/cmd/show-local-file-to-post-info'
-import { newPostCategory } from '@/cmd/post-category/new-post-category'
-import { updatePostCatTreeView } from '@/cmd/post-category/update-post-category'
+import { newPostCat } from '@/cmd/post-category/new-post-cat'
+import { updatePostCatTreeView } from '@/cmd/post-category/update-post-cat-treeview'
 import { openPostInBlogAdmin } from '@/cmd/open/open-post-in-blog-admin'
 import { viewPostOnline } from '@/cmd/view-post-online'
 import { regCmd } from '@/infra/cmd'
@@ -90,7 +90,7 @@ export function setupCmd() {
             if (link !== undefined) await insertImgLinkToActiveEditor(link)
         }),
         // post category
-        regCmd(extName`.post-category.new`, newPostCategory),
+        regCmd(extName`.post-category.new`, newPostCat),
         regCmd(extName`.post-category.del-select`, delSelectedCat),
         regCmd(extName`.post-category.refresh`, () => postCategoryDataProvider.refresh()),
         regCmd(extName`.post-category.update`, updatePostCatTreeView),

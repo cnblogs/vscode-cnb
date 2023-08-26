@@ -1,4 +1,4 @@
-use crate::cnb::post_category::PostCategoryReq;
+use crate::cnb::post_cat::PostCatReq;
 use crate::http::body_or_err;
 use crate::infra::http::setup_auth;
 use crate::infra::result::{HomoResult, ResultExt};
@@ -8,12 +8,12 @@ use alloc::string::String;
 use anyhow::Result;
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen(js_class = PostCategoryReq)]
-impl PostCategoryReq {
-    #[wasm_bindgen(js_name = getSitePresetList)]
-    pub async fn export_get_site_preset_list(&self) -> HomoResult<String> {
+#[wasm_bindgen(js_class = PostCatReq)]
+impl PostCatReq {
+    #[wasm_bindgen(js_name = getAll)]
+    pub async fn export_get_all(&self) -> HomoResult<String> {
         panic_hook!();
-        let url = blog_backend!("/category/site");
+        let url = blog_backend!("/v2/blog-category-types/1/categories");
 
         let client = reqwest::Client::new().get(url);
 
@@ -24,6 +24,6 @@ impl PostCategoryReq {
             body_or_err(resp).await?
         };
 
-        result.err_to_string()
+        result.homo_string()
     }
 }

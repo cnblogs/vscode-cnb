@@ -2,7 +2,7 @@ import { Post } from './post'
 import { Webview } from './webview-cmd'
 import { ColorThemeKind } from 'vscode'
 import { ImgUploadStatus } from './img-upload-status'
-import { PostCategory } from '@/model/post-category'
+import { PostCat } from '@/model/post-category'
 import { PostTag } from '@/model/post-tag'
 import { SiteCategory } from '@/model/site-category'
 
@@ -14,7 +14,7 @@ export namespace WebviewMsg {
     export interface EditPostCfgMsg extends Msg {
         post: Post
         activeTheme: ColorThemeKind
-        userCats: PostCategory[]
+        userCats: PostCat[]
         siteCats: SiteCategory[]
         tags: PostTag[]
         breadcrumbs?: string[]

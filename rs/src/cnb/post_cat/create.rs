@@ -1,4 +1,4 @@
-use crate::cnb::post_category::PostCategoryReq;
+use crate::cnb::post_cat::PostCatReq;
 use crate::http::unit_or_err;
 use crate::infra::http::{setup_auth, APPLICATION_JSON};
 use crate::infra::result::ResultExt;
@@ -9,8 +9,8 @@ use anyhow::Result;
 use reqwest::header::CONTENT_TYPE;
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen(js_class = PostCategoryReq)]
-impl PostCategoryReq {
+#[wasm_bindgen(js_class = PostCatReq)]
+impl PostCatReq {
     #[wasm_bindgen(js_name = create)]
     pub async fn export_create(&self, category_dto_json: String) -> Result<(), String> {
         panic_hook!();

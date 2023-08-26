@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash-es'
 import vscode, { WebviewPanel, Uri } from 'vscode'
 import { Post } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
-import { PostCategoryService } from './post-category'
+import { PostCatService } from './post-category'
 import { PostTagService } from './post-tag'
 import { PostService } from './post'
 import { WebviewMsg } from '@/model/webview-msg'
@@ -64,8 +64,8 @@ export namespace PostCfgPanel {
                     command: Webview.Cmd.Ui.editPostCfg,
                     post: cloneDeep(post),
                     activeTheme: vscode.window.activeColorTheme.kind,
-                    userCats: cloneDeep(await PostCategoryService.getAll()),
-                    siteCats: cloneDeep(await PostCategoryService.getSitePresetList()),
+                    userCats: cloneDeep(await PostCatService.getAll()),
+                    siteCats: cloneDeep(await PostCatService.getSitePresetList()),
                     tags: cloneDeep(await PostTagService.fetchTags()),
                     breadcrumbs,
                     fileName,
@@ -187,7 +187,7 @@ export namespace PostCfgPanel {
                 await webview.postMessage({
                     command: Webview.Cmd.Ui.updateChildCategories,
                     payload: {
-                        value: await PostCategoryService.getAllUnder(payload.parentId).catch(() => []),
+                        value: await PostCatService.getAllUnder(payload.parentId).catch(() => []),
                         parentId: payload.parentId,
                     },
                 })

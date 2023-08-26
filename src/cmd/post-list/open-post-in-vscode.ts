@@ -6,14 +6,14 @@ import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { openPostFile } from './open-post-file'
-import { PostCategoryService } from '@/service/post/post-category'
+import { PostCatService } from '@/service/post/post-category'
 import sanitizeFileName from 'sanitize-filename'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
-import { PostCategoryCfg } from '@/ctx/cfg/post-category'
+import { PostCatCfg } from '@/ctx/cfg/post-category'
 
 export async function buildLocalPostFileUri(post: Post, includePostId = false): Promise<Uri> {
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
-    const shouldCreateLocalPostFileWithCategory = PostCategoryCfg.isCreateLocalPostFileWithCategory()
+    const shouldCreateLocalPostFileWithCategory = PostCatCfg.isCreateLocalPostFileWithCategory()
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`
     const postIdSegment = includePostId ? `.${post.id}` : ''
     const postTitle = sanitizeFileName(post.title)
@@ -21,7 +21,7 @@ export async function buildLocalPostFileUri(post: Post, includePostId = false): 
     if (!shouldCreateLocalPostFileWithCategory) return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`)
 
     const firstCategoryId = post.categoryIds?.[0] ?? null
-    let i = firstCategoryId !== null ? await PostCategoryService.getOne(firstCategoryId) : null
+    let i = firstCategoryId !== null ? await PostCatService.getOne(firstCategoryId) : null
     let categoryTitle = ''
     while (i != null) {
         categoryTitle = path.join(

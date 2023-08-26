@@ -1,7 +1,7 @@
 import { LocalState } from '@/ctx/local-state'
 import { ConfigurationTarget } from 'vscode'
 
-export namespace PostCategoryCfg {
+export namespace PostCatCfg {
     export function isCreateLocalPostFileWithCategory(): boolean {
         return LocalState.getExtCfg().get('createLocalPostFileWithCategory') ?? false
     }

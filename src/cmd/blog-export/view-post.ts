@@ -1,5 +1,3 @@
-import { DownloadedBlogExport } from '@/model/blog-export'
-import { ExportPost } from '@/model/blog-export/export-post'
 import { ExportPostTreeItem } from '@/tree-view/model/blog-export/post'
 import { URLSearchParams } from 'url'
 import { languages, TextDocumentContentProvider, Uri, window, workspace } from 'vscode'
@@ -8,10 +6,11 @@ export async function viewPostBlogExport(treeItem?: ExportPostTreeItem) {
     if (!(treeItem instanceof ExportPostTreeItem)) return
     if (treeItem.parent.downloadedExport == null) return
 
-    await provide(treeItem.parent.downloadedExport, treeItem.post)
-}
+    const downloadedExport = treeItem.parent.downloadedExport
+    const postId = treeItem.post.id
+    const postTitle = treeItem.post.title
+    const isMkdPost = treeItem.post.isMarkdown
 
-async function provide(downloadedExport: DownloadedBlogExport, { id: postId, title, isMarkdown }: ExportPost) {
     const schemaWithId = `vscode-cnb.backup.post-${postId}`
 
     const matchedEditor = window.visibleTextEditors.find(({ document }) => {
@@ -39,11 +38,11 @@ async function provide(downloadedExport: DownloadedBlogExport, { id: postId, tit
         })()
     )
 
-    const uri = Uri.parse(`${schemaWithId}:(只读) ${title}.${isMarkdown ? 'md' : 'html'}?postId=${postId}`)
+    const uri = Uri.parse(`${schemaWithId}:(只读) ${postTitle}.${isMkdPost ? 'md' : 'html'}?postId=${postId}`)
     const document = await workspace.openTextDocument(uri)
 
     await window.showTextDocument(document)
-    await languages.setTextDocumentLanguage(document, isMarkdown ? 'markdown' : 'html')
+    await languages.setTextDocumentLanguage(document, isMkdPost ? 'markdown' : 'html')
 
     disposable.dispose()
 }

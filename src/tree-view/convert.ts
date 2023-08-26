@@ -2,7 +2,7 @@ import format from 'date-fns/format'
 import { homedir } from 'os'
 import { MarkdownString, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from 'vscode'
 import { Post } from '@/model/post'
-import { PostCategory } from '@/model/post-category'
+import { PostCat } from '@/model/post-category'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { BaseTreeItemSource } from '@/tree-view/model/base-tree-item-source'
 import { IconThemeCfg } from '@/ctx/cfg/icon-theme'
@@ -26,7 +26,7 @@ const categoryIcon = () => {
     return new ThemeIcon(iconId)
 }
 
-export type TreeItemSource = Post | PostCategory | TreeItem | BaseTreeItemSource
+export type TreeItemSource = Post | PostCat | TreeItem | BaseTreeItemSource
 
 type Converter<T> = (s: T) => TreeItem | Promise<TreeItem>
 
@@ -51,7 +51,7 @@ const postConverter: Converter<Post> = obj => {
     })
 }
 
-const categoryConverter: Converter<PostCategory> = ({ title, count }) =>
+const categoryConverter: Converter<PostCat> = ({ title, count }) =>
     Object.assign<TreeItem, TreeItem>(new TreeItem(`${title}(${count})`), {
         collapsibleState: count > 0 ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None,
         iconPath: categoryIcon(),
@@ -63,6 +63,6 @@ const baseTreeItemSourceConverter: Converter<BaseTreeItemSource> = obj => obj.to
 export const toTreeItem = <T extends TreeItemSource>(obj: T) => {
     if (obj instanceof TreeItem) return obj
     else if (obj instanceof BaseTreeItemSource) return baseTreeItemSourceConverter(obj)
-    else if (obj instanceof PostCategory) return categoryConverter(obj)
+    else if (obj instanceof PostCat) return categoryConverter(obj)
     else return postConverter(obj)
 }

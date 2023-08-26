@@ -1,19 +1,19 @@
 import { WebviewCommonCmd, Webview } from '@/model/webview-cmd'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
-import { PostCategory } from '@/model/post-category'
+import { PostCat } from '@/model/post-category'
 
-let children: Map<number, PostCategory[]>
-let pendingChildrenQuery: Map<number, Promise<PostCategory[]>> | undefined | null
-let items: PostCategory[] = []
+let children: Map<number, PostCat[]>
+let pendingChildrenQuery: Map<number, Promise<PostCat[]>> | undefined | null
+let items: PostCat[] = []
 
 export namespace UserCatStore {
     export const get = () => items
 
-    export function set(value: PostCategory[]) {
+    export function set(value: PostCat[]) {
         items = value
     }
 
-    export const getByParent = async (parent: number): Promise<PostCategory[]> => {
+    export const getByParent = async (parent: number): Promise<PostCat[]> => {
         children ??= new Map()
         let result = children.get(parent)
         const vscode = getVsCodeApiSingleton()
@@ -21,7 +21,7 @@ export namespace UserCatStore {
         if (result === undefined) {
             let promise = pendingChildrenQuery?.get(parent)
             if (promise == null) {
-                promise = new Promise<PostCategory[]>(resolve => {
+                promise = new Promise<PostCat[]>(resolve => {
                     const timeoutId = setTimeout(() => {
                         clearTimeout(timeoutId)
                         window.removeEventListener('message', onUpdate)

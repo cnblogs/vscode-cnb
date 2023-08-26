@@ -1,9 +1,9 @@
 import { ComboBox } from '@fluentui/react'
 import { Component } from 'react'
-import { PostCategory } from '@/model/post-category'
+import { PostCat } from '@/model/post-category'
 
 type Props = {
-    allCats: PostCategory[]
+    allCats: PostCat[]
     selectedCatIds: number[]
     onChange: (categoryIds: number[]) => void
 }
