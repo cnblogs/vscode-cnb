@@ -1,6 +1,6 @@
 import { WebviewCommonCmd, Webview } from '@/model/webview-cmd'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
-import { PostCat } from '@/model/post-category'
+import { PostCat } from '@/model/post-cat'
 
 let children: Map<number, PostCat[]>
 let pendingChildrenQuery: Map<number, Promise<PostCat[]>> | undefined | null

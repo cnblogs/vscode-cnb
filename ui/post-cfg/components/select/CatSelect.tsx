@@ -1,6 +1,6 @@
 import { ComboBox } from '@fluentui/react'
 import { Component } from 'react'
-import { PostCat } from '@/model/post-category'
+import { PostCat } from '@/model/post-cat'
 
 type Props = {
     allCats: PostCat[]

@@ -2,9 +2,9 @@ import { Post } from './post'
 import { Webview } from './webview-cmd'
 import { ColorThemeKind } from 'vscode'
 import { ImgUploadStatus } from './img-upload-status'
-import { PostCat } from '@/model/post-category'
+import { PostCat } from '@/model/post-cat'
 import { PostTag } from '@/model/post-tag'
-import { SiteCategory } from '@/model/site-category'
+import { SiteCat } from '@/model/site-category'
 
 export namespace WebviewMsg {
     export type Msg = {
@@ -15,7 +15,7 @@ export namespace WebviewMsg {
         post: Post
         activeTheme: ColorThemeKind
         userCats: PostCat[]
-        siteCats: SiteCategory[]
+        siteCats: SiteCat[]
         tags: PostTag[]
         breadcrumbs?: string[]
         fileName: string

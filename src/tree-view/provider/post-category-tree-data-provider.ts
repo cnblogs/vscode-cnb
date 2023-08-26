@@ -1,17 +1,17 @@
 import { flattenDepth, take } from 'lodash-es'
 import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { PostCatService } from '@/service/post/post-category'
+import { PostCatService } from '@/service/post/post-cat'
 import { PostService } from '@/service/post/post'
 import { toTreeItem } from '@/tree-view/convert'
-import { PostCategoriesListTreeItem } from '@/tree-view/model/category-list-tree-item'
+import { PostCatListTreeItem } from '@/tree-view/model/category-list-tree-item'
 import { PostCatTreeItem } from '@/tree-view/model/post-category-tree-item'
 import { PostEntryMetadata, PostMetadata, RootPostMetadataType } from '@/tree-view/model/post-metadata'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { Alert } from '@/infra/alert'
 import { setCtx } from '@/ctx/global-ctx'
 
-export class PostCatTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {
-    private _treeDataChanged = new EventEmitter<PostCategoriesListTreeItem | null | undefined>()
+export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTreeItem> {
+    private _treeDataChanged = new EventEmitter<PostCatListTreeItem | null | undefined>()
     private _isLoading = false
     private _roots: PostCatTreeItem[] | null = null
 
@@ -43,11 +43,11 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCategoriesL
         this._isLoading = value
     }
 
-    getTreeItem(el: PostCategoriesListTreeItem): TreeItem | Thenable<TreeItem> {
+    getTreeItem(el: PostCatListTreeItem): TreeItem | Thenable<TreeItem> {
         return toTreeItem(el)
     }
 
-    getChildren(item?: PostCategoriesListTreeItem): ProviderResult<PostCategoriesListTreeItem[]> {
+    getChildren(item?: PostCatListTreeItem): ProviderResult<PostCatListTreeItem[]> {
         if (this.isLoading) return Promise.resolve([])
 
         if (item === undefined) {
@@ -66,9 +66,9 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCategoriesL
         return Promise.resolve([])
     }
 
-    getParent = (el: any) => el.parent as PostCategoriesListTreeItem | null | undefined
+    getParent = (el: any) => el.parent as PostCatListTreeItem | null | undefined
 
-    fireTreeDataChangedEvent(item?: PostCategoriesListTreeItem) {
+    fireTreeDataChangedEvent(item?: PostCatListTreeItem) {
         this._treeDataChanged.fire(item)
     }
 

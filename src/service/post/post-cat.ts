@@ -1,11 +1,11 @@
-import { PostCat, PostCatAddDto } from '@/model/post-category'
+import { PostCat, PostCatAddDto } from '@/model/post-cat'
 import { Alert } from '@/infra/alert'
-import { SiteCategory } from '@/model/site-category'
+import { SiteCat } from '@/model/site-category'
 import { AuthManager } from '@/auth/auth-manager'
 import { PostCatReq } from '@/wasm'
 
 // TODO: need better cache impl
-let siteCategoryCache: SiteCategory[] | null = null
+let siteCategoryCache: SiteCat[] | null = null
 
 async function getAuthedPostCatReq() {
     const token = await AuthManager.acquireToken()
@@ -86,7 +86,7 @@ export namespace PostCatService {
 
         try {
             const resp = await req.getSitePresetList()
-            siteCategoryCache = <SiteCategory[]>JSON.parse(resp)
+            siteCategoryCache = <SiteCat[]>JSON.parse(resp)
         } catch (e) {
             void Alert.err(`获取随笔分类失败: ${<string>e}`)
         }

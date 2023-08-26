@@ -6,12 +6,12 @@ import zhCN from 'date-fns/locale/zh-CN'
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
 import { AccessPermission, Post, formatAccessPermission } from '@/model/post'
 import { PostEditDto } from '@/model/post-edit-dto'
-import { PostCatService } from '@/service/post/post-category'
+import { PostCatService } from '@/service/post/post-cat'
 import { PostService } from '@/service/post/post'
 import { BaseEntryTreeItem } from './base-entry-tree-item'
 import { BaseTreeItemSource } from './base-tree-item-source'
 import { PostTreeItem } from './post-tree-item'
-import { PostCat } from '@/model/post-category'
+import { PostCat } from '@/model/post-cat'
 
 export enum RootPostMetadataType {
     categoryEntry = 'categoryEntry',

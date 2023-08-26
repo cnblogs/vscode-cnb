@@ -10,11 +10,11 @@ import { Webview } from '@/model/webview-cmd'
 import { ActiveThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
-import { SiteCategory } from '@/model/site-category'
+import { SiteCat } from '@/model/site-category'
 
 type State = {
     post?: Post
-    siteCats?: SiteCategory[]
+    siteCats?: SiteCat[]
     theme?: Theme | PartialTheme
     breadcrumbs?: string[]
     fileName: string

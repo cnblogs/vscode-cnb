@@ -6,10 +6,10 @@ import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { openPostFile } from './open-post-file'
-import { PostCatService } from '@/service/post/post-category'
+import { PostCatService } from '@/service/post/post-cat'
 import sanitizeFileName from 'sanitize-filename'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
-import { PostCatCfg } from '@/ctx/cfg/post-category'
+import { PostCatCfg } from '@/ctx/cfg/post-cat'
 
 export async function buildLocalPostFileUri(post: Post, includePostId = false): Promise<Uri> {
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()

@@ -2,7 +2,7 @@ import { globalCtx } from '@/ctx/global-ctx'
 import { TreeView, TreeItem } from 'vscode'
 import { PostListTreeItem, postDataProvider } from './provider/post-data-provider'
 import { postCategoryDataProvider } from './provider/post-category-tree-data-provider'
-import { PostCategoriesListTreeItem } from './model/category-list-tree-item'
+import { PostCatListTreeItem } from './model/category-list-tree-item'
 import { IDisposable } from '@fluentui/react'
 import { BlogExportTreeItem } from '@/tree-view/model/blog-export'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
@@ -13,7 +13,7 @@ import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-
 const _views: {
     postList?: TreeView<PostListTreeItem>
     anotherPostList?: TreeView<PostListTreeItem>
-    postCategoriesList?: TreeView<PostCategoriesListTreeItem>
+    postCategoriesList?: TreeView<PostCatListTreeItem>
     blogExport?: TreeView<BlogExportTreeItem>
     account?: TreeView<TreeItem>
     navi?: TreeView<TreeItem>
@@ -35,7 +35,7 @@ export function setupExtTreeView() {
         treeDataProvider: postDataProvider,
         canSelectMany: true,
     })
-    _views.postCategoriesList = regTreeView<PostCategoriesListTreeItem>('cnblogs-post-category-list', {
+    _views.postCategoriesList = regTreeView<PostCatListTreeItem>('cnblogs-post-category-list', {
         treeDataProvider: postCategoryDataProvider,
         canSelectMany: true,
     })

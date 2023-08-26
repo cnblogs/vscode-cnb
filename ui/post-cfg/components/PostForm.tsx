@@ -16,13 +16,13 @@ import UrlSlugInput from './input/UrlSlugInput'
 import { PermissionSelect } from './select/PermissionSelect'
 import { SiteCatSelect } from './select/SiteCatSelect'
 import { UserCatStore } from '../service/user-cat-store'
-import { SiteCategory } from '@/model/site-category'
+import { SiteCat } from '@/model/site-category'
 
 type Props = {
     post: Post
     fileName?: string
     onTitleChange: (title: string) => void
-    siteCats: SiteCategory[]
+    siteCats: SiteCat[]
 }
 type State = Post
 

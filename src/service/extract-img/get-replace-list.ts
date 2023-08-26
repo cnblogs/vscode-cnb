@@ -1,12 +1,12 @@
 import fs from 'fs'
 import { Alert } from '@/infra/alert'
-import { Progress } from 'vscode'
 import { join } from 'path'
 import { ImgBytes, ImgReq, RsHttp } from '@/wasm'
 import { AuthManager } from '@/auth/auth-manager'
 import { readableToBytes } from '@/infra/convert/readableToBuffer'
 import { Blob, File, FormData } from 'formdata-node'
 
+// TODO: need refactor
 global.FormData = FormData
 global.Blob = Blob
 global.File = File
@@ -31,20 +31,12 @@ export const enum ImgSrc {
     any,
 }
 
-export async function convertImgInfo(
-    fileDir: string,
-    infoList: ImgInfo[],
-    progress: Progress<{
-        message?: string
-        increment?: number
-    }>
-) {
+export async function getReplaceList(fileDir: string, infoList: ImgInfo[], beforeEach: (oldData: string) => void) {
     const result: [src: ImgInfo, newLink: string][] = []
 
     for (const src of infoList) {
-        progress.report({
-            message: `正在提取: ${src.data}`,
-        })
+        beforeEach(src.data)
+
         // reuse resolved link
         const resolvedLink = result.find(it => it[0].data === src.data)?.[1]
         if (resolvedLink !== undefined) {

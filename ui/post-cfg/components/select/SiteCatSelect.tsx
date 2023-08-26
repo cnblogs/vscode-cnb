@@ -1,10 +1,10 @@
 import { ActionButton, Checkbox, Label, Stack } from '@fluentui/react'
-import { SiteCategory } from '@/model/site-category'
+import { SiteCat } from '@/model/site-category'
 import React, { Component } from 'react'
 
 type Props = {
     catIds: number[]
-    siteCats: SiteCategory[]
+    siteCats: SiteCat[]
     onChange: (siteCategoryId: number) => void
 }
 

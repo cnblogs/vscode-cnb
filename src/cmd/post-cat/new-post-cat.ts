@@ -1,5 +1,5 @@
 import { ProgressLocation, window } from 'vscode'
-import { PostCatService } from '@/service/post/post-category'
+import { PostCatService } from '@/service/post/post-cat'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { inputPostCat } from './input-post-cat'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'

@@ -1,4 +1,4 @@
-import { PostCat, PostCatAddDto } from '@/model/post-category'
+import { PostCat, PostCatAddDto } from '@/model/post-cat'
 import { window } from 'vscode'
 
 async function setupTitle(parentTitle: string, oldVal: string) {

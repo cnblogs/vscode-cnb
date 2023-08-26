@@ -1,4 +1,4 @@
-import { PostCat } from '@/model/post-category'
+import { PostCat } from '@/model/post-cat'
 
 export namespace Webview.Cmd {
     export enum Ui {

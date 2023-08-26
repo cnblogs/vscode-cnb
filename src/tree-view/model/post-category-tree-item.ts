@@ -1,4 +1,4 @@
-import { PostCat } from '@/model/post-category'
+import { PostCat } from '@/model/post-cat'
 import { toTreeItem } from '@/tree-view/convert'
 import { BaseTreeItemSource } from './base-tree-item-source'
 import { PostTreeItem } from './post-tree-item'
