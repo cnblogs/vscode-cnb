@@ -4,12 +4,6 @@ import { join } from 'path'
 import { ImgBytes, ImgReq, RsHttp } from '@/wasm'
 import { AuthManager } from '@/auth/auth-manager'
 import { readableToBytes } from '@/infra/convert/readableToBuffer'
-import { Blob, File, FormData } from 'formdata-node'
-
-// TODO: need refactor
-global.FormData = FormData
-global.Blob = Blob
-global.File = File
 
 export async function getAuthedImgReq() {
     const token = await AuthManager.acquireToken()

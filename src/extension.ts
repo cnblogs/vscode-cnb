@@ -1,3 +1,4 @@
+import '@/setup/global-binding'
 import { setupExtTreeView } from '@/tree-view/tree-view-register'
 import { setupCmd } from '@/setup/setup-cmd'
 import { globalCtx } from '@/ctx/global-ctx'
