@@ -6,7 +6,6 @@ import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { openPostFile } from './open-post-file'
-import { PostTitleSanitizer } from '@/service/post/post-title-sanitizer'
 import { PostCategoryService } from '@/service/post/post-category'
 import sanitizeFileName from 'sanitize-filename'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
@@ -17,7 +16,7 @@ export async function buildLocalPostFileUri(post: Post, includePostId = false): 
     const shouldCreateLocalPostFileWithCategory = PostCategoryCfg.isCreateLocalPostFileWithCategory()
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`
     const postIdSegment = includePostId ? `.${post.id}` : ''
-    const { text: postTitle } = await PostTitleSanitizer.sanitize(post)
+    const postTitle = sanitizeFileName(post.title)
 
     if (!shouldCreateLocalPostFileWithCategory) return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`)
 
