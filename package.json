@@ -322,7 +322,7 @@
             },
             {
                 "command": "vscode-cnb.post.search",
-                "title": "el随笔",
+                "title": "搜索随笔",
                 "category": "Cnblogs",
                 "icon": "$(vscode-cnb-post-list-search)",
                 "enablement": "vscode-cnb.isAuthed && !vscode-cnb.post-list.isLoading"
@@ -541,24 +541,31 @@
                             "自动提取全部图片"
                         ],
                         "editPresentation": "singlelineText",
-                        "markdownDescription": "提取图片, 配置上传到博客园时要自动提取上传到博客园的图片"
+                        "markdownDescription": "上传到博客园时自动提取图片"
+                    },
+                    "cnblogsClient.markdown.applyAutoExtractImageToLocal": {
+                        "order": 8,
+                        "default": true,
+                        "scope": "application",
+                        "type": "boolean",
+                        "markdownDescription": "自动提取图片后应用到本地文件"
                     },
                     "cnblogsClient.markdown.enableEnhancement": {
-                        "order": 8,
+                        "order": 9,
                         "markdownDescription": "启用博客园 Markdown 语法扩展",
                         "default": true,
                         "type": "boolean",
                         "scope": "application"
                     },
                     "cnblogsClient.markdown.enableFenceQuote": {
-                        "order": 9,
+                        "order": 10,
                         "type": "boolean",
                         "scope": "application",
                         "default": true,
                         "markdownDescription": "博客园 Markdown 语法扩展: 三箭头(`<<<`)栅栏引用\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n<<<\n一段引用文字\n\n一段引用文字\n<<<\n\n```"
                     },
                     "cnblogsClient.markdown.enableHighlightCodeLines": {
-                        "order": 10,
+                        "order": 11,
                         "type": "boolean",
                         "scope": "application",
                         "default": true,
@@ -566,7 +573,7 @@
                         "markdownDescription": "博客园 Markdown 语法扩展: 代码块指定行高亮\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n```typescript {1, 3-4}\nconst a = 1\nconst b = 2\nconst c = a + b\nconst d = c\nconst e = 0\n```\n\n```"
                     },
                     "cnblogsClient.markdown.showConfirmMsgWhenUploadPost": {
-                        "order": 11,
+                        "order": 12,
                         "type": "boolean",
                         "scope": "application",
                         "default": true,
@@ -574,7 +581,7 @@
                         "markdownDescription": "在上传博文时显示确认消息"
                     },
                     "cnblogsClient.markdown.showConfirmMsgWhenPullPost": {
-                        "order": 12,
+                        "order": 13,
                         "type": "boolean",
                         "scope": "application",
                         "default": true,
@@ -582,7 +589,7 @@
                         "markdownDescription": "在拉取博文时显示确认消息"
                     },
                     "cnblogsClient.markdown.ignoreYfmWhenUploadPost": {
-                        "order": 13,
+                        "order": 14,
                         "type": "boolean",
                         "scope": "application",
                         "default": false,
@@ -590,7 +597,7 @@
                         "markdownDescription": "上传博文时忽略 YAML front matter"
                     },
                     "cnblogsClient.menus.context.explorer": {
-                        "order": 13,
+                        "order": 15,
                         "markdownDescription": "要在资源管理器右键菜单中显示的命令",
                         "type": "object",
                         "additionalProperties": false,
@@ -649,7 +656,7 @@
                         }
                     },
                     "cnblogsClient.menus.context.editor": {
-                        "order": 14,
+                        "order": 16,
                         "markdownDescription": "要在编辑器右键菜单中显示的命令",
                         "type": "object",
                         "scope": "application",
@@ -727,21 +734,21 @@
                         }
                     },
                     "cnblogsClient.ui.textIngStar": {
-                        "order": 15,
+                        "order": 17,
                         "type": "boolean",
                         "scope": "application",
                         "default": false,
                         "markdownDescription": "闪存星文本化"
                     },
                     "cnblogsClient.ui.disableIngUserAvatar": {
-                        "order": 17,
+                        "order": 18,
                         "type": "boolean",
                         "scope": "application",
                         "default": false,
                         "markdownDescription": "不显示闪存用户头像"
                     },
                     "cnblogsClient.ui.treeViewTitleStyle": {
-                        "order": 18,
+                        "order": 19,
                         "scope": "application",
                         "default": "normal",
                         "markdownDescription": "侧栏标题风格",

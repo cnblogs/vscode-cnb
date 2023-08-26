@@ -1,6 +1,6 @@
 import { LocalState } from '@/ctx/local-state'
 import getExtCfg = LocalState.getExtCfg
-import { ImgSrc } from '@/cmd/extract-img/convert-img-info'
+import { ImgSrc } from '@/service/extract-img/get-replace-list'
 
 export namespace MarkdownCfg {
     const cfgGet = <T>(key: string) => getExtCfg().get<T>(`markdown.${key}`)
@@ -38,5 +38,9 @@ export namespace MarkdownCfg {
         if (cfg === 'dataUrl') return ImgSrc.dataUrl
         if (cfg === 'web') return ImgSrc.web
         if (cfg === 'any') return ImgSrc.any
+    }
+
+    export function getApplyAutoExtractImgToLocal(): boolean {
+        return cfgGet('applyAutoExtractImageToLocal') ?? true
     }
 }

@@ -3,8 +3,8 @@ import { uploadPostFile, uploadPost } from '@/cmd/post-list/upload-post'
 import { uploadImg } from '@/cmd/upload-img/upload-img'
 import { osOpenLocalPostFile } from '@/cmd/open/os-open-local-post-file'
 import { showLocalFileToPostInfo } from '@/cmd/show-local-file-to-post-info'
-import { newPostCat } from '@/cmd/post-category/new-post-cat'
-import { updatePostCatTreeView } from '@/cmd/post-category/update-post-cat-treeview'
+import { newPostCat } from '@/cmd/post-cat/new-post-cat'
+import { updatePostCatTreeView } from '@/cmd/post-cat/update-post-cat-treeview'
 import { openPostInBlogAdmin } from '@/cmd/open/open-post-in-blog-admin'
 import { viewPostOnline } from '@/cmd/view-post-online'
 import { regCmd } from '@/infra/cmd'
@@ -34,9 +34,9 @@ import { openPostInVscode } from '@/cmd/post-list/open-post-in-vscode'
 import { delSelectedPost } from '@/cmd/post-list/del-post'
 import { pubIngWithInput } from '@/cmd/ing/pub-ing-with-input'
 import { pubIngWithSelect } from '@/cmd/ing/pub-ing-with-select'
-import { extractImg } from '@/cmd/extract-img/extract-img'
+import { extractImgCmd } from '@/cmd/extract-img'
 import { createPost } from '@/service/post/create'
-import { delSelectedCat } from '@/cmd/post-category/del-selected-cat'
+import { delSelectedCat } from '@/cmd/post-cat/del-selected-cat'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 import { extName } from '@/ctx/ext-const'
 
@@ -79,7 +79,7 @@ export function setupCmd() {
         regCmd(extName`.post.os-open-local-file`, osOpenLocalPostFile),
         regCmd(extName`.post.show-local-file-info`, showLocalFileToPostInfo),
         // img
-        regCmd(extName`.img.extract`, extractImg),
+        regCmd(extName`.img.extract`, extractImgCmd),
         regCmd(extName`.img.upload`, uploadImg),
         regCmd(extName`.img.upload-fs`, async () => {
             const link = await uploadFsImage()

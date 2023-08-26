@@ -1,4 +1,4 @@
-import { ImgInfo, ImgSrc } from '@/cmd/extract-img/convert-img-info'
+import { ImgInfo, ImgSrc } from '@/service/extract-img/get-replace-list'
 import { r } from '@/infra/convert/string-literal'
 import { RsMatch, RsRegex } from '@/wasm'
 

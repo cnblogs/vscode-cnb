@@ -1,7 +1,7 @@
 import { readableToBytes } from '@/infra/convert/readableToBuffer'
 import fs from 'fs'
-import { getAuthedImgReq } from '@/cmd/extract-img/convert-img-info'
 import { RsHttp } from '@/wasm'
+import { getAuthedImgReq } from '@/service/extract-img/get-replace-list'
 
 export async function uploadImgFromPath(path: string) {
     const readable = fs.createReadStream(path)

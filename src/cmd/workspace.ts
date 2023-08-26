@@ -1,9 +1,21 @@
 import { execCmd } from '@/infra/cmd'
 import { Alert } from '@/infra/alert'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
-import { window } from 'vscode'
+import { TextDocument, WorkspaceEdit, window, Range } from 'vscode'
 
 export namespace Workspace {
+    export function resetTextDoc(doc: TextDocument, text: string) {
+        const firstLine = doc.lineAt(0)
+        const lastLine = doc.lineAt(doc.lineCount - 1)
+        const range = new Range(firstLine.range.start, lastLine.range.end)
+        const we = new WorkspaceEdit()
+        we.replace(doc.uri, range, text, {
+            label: '',
+            needsConfirmation: false,
+        })
+        return we
+    }
+
     export async function codeOpen() {
         const uri = WorkspaceCfg.getWorkspaceUri()
         const options = ['在当前窗口中打开', '在新窗口中打开']
