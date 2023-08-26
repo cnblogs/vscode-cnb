@@ -15,12 +15,14 @@ import { SiteHomeContributionOptionSelect } from './select/SiteHomeContributionO
 import UrlSlugInput from './input/UrlSlugInput'
 import { PermissionSelect } from './select/PermissionSelect'
 import { SiteCatSelect } from './select/SiteCatSelect'
-import { PersonalCategoryStore } from '../service/personal-category-store'
+import { UserCatStore } from '../service/user-cat-store'
+import { SiteCategory } from '@/model/site-category'
 
 type Props = {
     post: Post
     fileName?: string
     onTitleChange: (title: string) => void
+    siteCats: SiteCategory[]
 }
 type State = Post
 
@@ -46,7 +48,7 @@ export class PostForm extends Component<Props, State> {
                 ></TitleInput>
                 <TagInput selectedTagNames={state.tags ?? []} onChange={tags => this.setState({ tags })} />
                 <CatSelect
-                    allCats={PersonalCategoryStore.get()}
+                    allCats={UserCatStore.get()}
                     selectedCatIds={state.categoryIds}
                     onChange={categoryIds => this.setState({ categoryIds })}
                 />
@@ -77,7 +79,8 @@ export class PostForm extends Component<Props, State> {
                     inSiteHome={state.inSiteHome}
                 />
                 <SiteCatSelect
-                    categoryIds={state.siteCategoryId !== undefined ? [state.siteCategoryId] : []}
+                    catIds={state.siteCategoryId !== undefined ? [state.siteCategoryId] : []}
+                    siteCats={props.siteCats}
                     onChange={categoryId => this.setState({ siteCategoryId: categoryId })}
                 />
                 <UrlSlugInput entryName={state.entryName} onChange={value => this.setState({ entryName: value })} />

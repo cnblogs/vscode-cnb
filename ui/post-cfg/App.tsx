@@ -3,17 +3,18 @@ import { ThemeProvider } from '@fluentui/react/lib/Theme'
 import { Breadcrumb, IBreadcrumbItem, initializeIcons, PartialTheme, Spinner, Stack, Theme } from '@fluentui/react'
 import { PostForm } from './components/PostForm'
 import { Post } from '@/model/post'
-import { PersonalCategoryStore } from './service/personal-category-store'
-import { SiteCategoryStore } from './service/site-category-store'
+import { UserCatStore } from './service/user-cat-store'
 import { TagStore } from './service/tag-store'
 import { WebviewMsg } from '@/model/webview-msg'
 import { Webview } from '@/model/webview-cmd'
 import { ActiveThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
+import { SiteCategory } from '@/model/site-category'
 
 type State = {
     post?: Post
+    siteCats?: SiteCategory[]
     theme?: Theme | PartialTheme
     breadcrumbs?: string[]
     fileName: string
@@ -56,6 +57,7 @@ export class App extends Component<unknown, State> {
                                     : undefined
                             }
                             fileName={fileName}
+                            siteCats={this.state.siteCats ?? []}
                         />
                     </Stack>
                 </>
@@ -80,30 +82,30 @@ export class App extends Component<unknown, State> {
     private observerMessages() {
         window.addEventListener('message', ev => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const command = ev.data.command
+            const cmd = ev.data.command
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const message = ev.data
 
-            if (command === Webview.Cmd.Ui.editPostCfg) {
-                const { post, activeTheme, personalCategories, siteCategories, tags, breadcrumbs, fileName } =
+            if (cmd === Webview.Cmd.Ui.editPostCfg) {
+                const { post, activeTheme, userCats, tags, siteCats, breadcrumbs, fileName } =
                     message as WebviewMsg.EditPostCfgMsg
-                PersonalCategoryStore.set(personalCategories)
-                SiteCategoryStore.set(siteCategories)
+                UserCatStore.set(userCats)
                 TagStore.set(tags)
 
                 this.setState({
                     theme: (activeTheme as number) === 2 ? darkTheme : lightTheme,
                     post,
+                    siteCats,
                     breadcrumbs,
                     fileName,
                 })
-            } else if (command === Webview.Cmd.Ui.updateBreadcrumbs) {
+            } else if (cmd === Webview.Cmd.Ui.updateBreadcrumbs) {
                 const { breadcrumbs } = message as WebviewMsg.UpdateBreadcrumbMsg
                 this.setState({ breadcrumbs })
-            } else if (command === Webview.Cmd.Ui.setFluentIconBaseUrl) {
+            } else if (cmd === Webview.Cmd.Ui.setFluentIconBaseUrl) {
                 const { baseUrl } = message as WebviewMsg.SetFluentIconBaseUrlMsg
                 initializeIcons(baseUrl)
-            } else if (command === Webview.Cmd.Ui.updateTheme) {
+            } else if (cmd === Webview.Cmd.Ui.updateTheme) {
                 this.setState({ theme: ActiveThemeProvider.activeTheme() })
             }
         })

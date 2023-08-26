@@ -6,7 +6,7 @@ let children: Map<number, PostCategory[]>
 let pendingChildrenQuery: Map<number, Promise<PostCategory[]>> | undefined | null
 let items: PostCategory[] = []
 
-export namespace PersonalCategoryStore {
+export namespace UserCatStore {
     export const get = () => items
 
     export function set(value: PostCategory[]) {
@@ -25,7 +25,7 @@ export namespace PersonalCategoryStore {
                     const timeoutId = setTimeout(() => {
                         clearTimeout(timeoutId)
                         window.removeEventListener('message', onUpdate)
-                        console.warn(`timeout: PersonalCategoryStore.getByParent: parent: ${parent}`)
+                        console.warn(`timeout: UserCatStore.getByParent: parent: ${parent}`)
                         resolve([])
                     }, 30 * 1000)
 
