@@ -1,11 +1,12 @@
 use crate::cnb::oauth::OauthReq;
 use crate::http::body_or_err;
-use crate::infra::http::{cons_query_string, APPLICATION_X3WFU};
+use crate::infra::http::cons_query_string;
 use crate::infra::result::{HomoResult, ResultExt};
 use crate::{oauth, panic_hook};
-use alloc::string::String;
+use alloc::string::{String, ToString};
 use alloc::{format, vec};
 use anyhow::Result;
+use mime::APPLICATION_WWW_FORM_URLENCODED;
 use reqwest::header::CONTENT_TYPE;
 use wasm_bindgen::prelude::*;
 
@@ -33,7 +34,7 @@ impl OauthReq {
         ];
 
         let req = client
-            .header(CONTENT_TYPE, APPLICATION_X3WFU)
+            .header(CONTENT_TYPE, APPLICATION_WWW_FORM_URLENCODED.to_string())
             .body(cons_query_string(queries));
 
         let result: Result<String> = try {

@@ -1,11 +1,12 @@
 use crate::cnb::post_cat::PostCatReq;
 use crate::http::unit_or_err;
-use crate::infra::http::{setup_auth, APPLICATION_JSON};
+use crate::infra::http::setup_auth;
 use crate::infra::result::ResultExt;
 use crate::{blog_backend, panic_hook};
 use alloc::format;
-use alloc::string::String;
+use alloc::string::{String, ToString};
 use anyhow::Result;
+use mime::APPLICATION_JSON;
 use reqwest::header::CONTENT_TYPE;
 use wasm_bindgen::prelude::*;
 
@@ -20,7 +21,7 @@ impl PostCatReq {
         let client = reqwest::Client::new().post(url);
 
         let req = setup_auth(client, &self.token, self.is_pat_token)
-            .header(CONTENT_TYPE, APPLICATION_JSON)
+            .header(CONTENT_TYPE, APPLICATION_JSON.to_string())
             .body(category_dto_json);
 
         let result: Result<()> = try {

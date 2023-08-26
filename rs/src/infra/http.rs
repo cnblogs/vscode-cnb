@@ -3,8 +3,6 @@ use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use reqwest::RequestBuilder;
 
-pub const APPLICATION_JSON: &str = "application/json";
-pub const APPLICATION_X3WFU: &str = "application/x-www-form-urlencoded";
 pub const AUTHORIZATION_TYPE: &str = "Authorization-Type";
 pub const PAT: &str = "pat";
 
