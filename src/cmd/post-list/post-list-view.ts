@@ -79,7 +79,7 @@ export namespace PostListView {
             const page = await postDataProvider.loadPosts()
             const postCount = await PostService.getCount()
             const pageCount = calcPageCount(page.cap, postCount)
-            const pageIndex = page.index ?? 1
+            const pageIndex = page.index
             const hasPrev = PageList.hasPrev(pageIndex)
             const hasNext = PageList.hasNext(pageIndex, pageCount)
 
