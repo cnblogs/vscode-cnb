@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import { TokenInfo } from '@/model/token-info'
 import { globalCtx } from '@/ctx/global-ctx'
 import { Alert } from '@/infra/alert'
 import { OauthReq } from '@/wasm'
@@ -10,25 +8,22 @@ function getAuthedOauthReq() {
 }
 
 export namespace Oauth {
-    export async function getToken(verifyCode: string, authCode: string) {
+    export function getToken(verifyCode: string, authCode: string) {
         const req = getAuthedOauthReq()
         try {
-            const resp = await req.getToken(authCode, verifyCode, globalCtx.extUrl)
-            return TokenInfo.fromResp(resp)
+            return req.getToken(authCode, verifyCode, globalCtx.extUrl)
         } catch (e) {
             void Alert.err(`获取 Token 失败: ${<string>e}`)
             throw e
         }
     }
 
-    export async function revokeToken(token: string) {
+    export function revokeToken(token: string) {
         const req = getAuthedOauthReq()
         try {
-            await req.revokeToken(token)
-            return true
+            return req.revokeToken(token)
         } catch (e) {
             void Alert.err(`撤销 Token 失败: ${<string>e}`)
-            return false
         }
     }
 }

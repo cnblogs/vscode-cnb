@@ -1,11 +1,11 @@
 import { AuthenticationSessionAccountInformation as ASAI } from 'vscode'
-import { UserInfo, UserReq } from '@/wasm'
+import { Token, UserInfo, UserReq } from '@/wasm'
 import { Alert } from '@/infra/alert'
 
 function getAuthedUserReq(token: string) {
     // TODO: need better solution
     const isPatToken = token.length === 64
-    return new UserReq(token, isPatToken)
+    return new UserReq(new Token(token, isPatToken))
 }
 
 export class AccountInfo implements ASAI {

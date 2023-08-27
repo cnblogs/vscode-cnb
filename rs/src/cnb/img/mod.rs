@@ -2,26 +2,23 @@ mod download;
 mod from_data_url;
 mod upload;
 
+use crate::cnb::oauth::Token;
 use crate::panic_hook;
 use alloc::boxed::Box;
-use alloc::string::{String, ToString};
+use alloc::string::String;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = ImgReq)]
 pub struct ImgReq {
-    token: String,
-    is_pat_token: bool,
+    token: Token,
 }
 
 #[wasm_bindgen(js_class = ImgReq)]
 impl ImgReq {
     #[wasm_bindgen(constructor)]
-    pub fn new(token: &str, is_pat_token: bool) -> ImgReq {
+    pub fn new(token: Token) -> ImgReq {
         panic_hook!();
-        ImgReq {
-            token: token.to_string(),
-            is_pat_token,
-        }
+        ImgReq { token }
     }
 }
 

@@ -1,3 +1,4 @@
+use crate::cnb::oauth::Token;
 use crate::cnb::user::UserReq;
 use crate::infra::http::setup_auth;
 use crate::infra::result::{IntoResult, ResultExt};
@@ -6,8 +7,7 @@ use alloc::format;
 use alloc::string::String;
 use anyhow::{bail, Result};
 use core::ops::Not;
-use serde::Deserialize;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use wasm_bindgen::prelude::*;
 
@@ -45,16 +45,20 @@ impl UserReq {
     #[wasm_bindgen(js_name = getInfo)]
     pub async fn export_get_info(&self) -> Result<UserInfo, String> {
         panic_hook!();
-        get_info(self).await.err_to_string()
+        let info = get_info(&self.token).await;
+        info.err_to_string()
     }
 }
 
-async fn get_info(req: &UserReq) -> Result<UserInfo> {
+async fn get_info(token: &Token) -> Result<UserInfo> {
     let url = openapi!("/users");
 
-    let client = reqwest::Client::new().get(url);
+    let client = reqwest::Client::new();
 
-    let req = setup_auth(client, &req.token, req.is_pat_token);
+    let req = {
+        let req = client.get(url);
+        setup_auth(req, &token.token, token.is_pat)
+    };
 
     let resp = req.send().await?;
     let code = resp.status();

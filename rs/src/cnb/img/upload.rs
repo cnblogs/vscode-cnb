@@ -1,4 +1,5 @@
 use crate::cnb::img::ImgReq;
+use crate::cnb::oauth::Token;
 use crate::http::{body_or_err, RsHttp};
 use crate::infra::http::setup_auth;
 use crate::infra::result::{HomoResult, ResultExt};
@@ -15,19 +16,19 @@ impl ImgReq {
     #[wasm_bindgen(js_name = upload)]
     pub async fn export_upload(&self, bytes: Vec<u8>, mime: &str) -> HomoResult<String> {
         panic_hook!();
-        let url = upload(self, bytes, mime).await;
+        let url = upload(&self.token, bytes, mime).await;
         url.err_to_string()
     }
 }
 
-async fn upload(img_req: &ImgReq, bytes: Vec<u8>, mime: &str) -> Result<String> {
+async fn upload(token: &Token, bytes: Vec<u8>, mime: &str) -> Result<String> {
     let client = reqwest::Client::new();
 
     let url = blog_backend!("/posts/body/images");
 
     let req = {
         let req = client.post(url);
-        let req = setup_auth(req, &img_req.token, img_req.is_pat_token);
+        let req = setup_auth(req, &token.token, token.is_pat);
 
         let form = {
             let img_ext = RsHttp::export_mime_to_img_ext(mime)

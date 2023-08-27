@@ -16,9 +16,12 @@ impl PostCatReq {
 
         let url = blog_backend!("/category/blog/{}", category_id);
 
-        let client = reqwest::Client::new().delete(url);
+        let client = reqwest::Client::new();
 
-        let req = setup_auth(client, &self.token, self.is_pat_token);
+        let req = {
+            let req = client.delete(url);
+            setup_auth(req, &self.token.token, self.token.is_pat)
+        };
 
         let result: Result<()> = try {
             let resp = req.send().await?;

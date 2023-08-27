@@ -15,9 +15,12 @@ impl PostCatReq {
         panic_hook!();
         let url = blog_backend!("/category/site");
 
-        let client = reqwest::Client::new().get(url);
+        let client = reqwest::Client::new();
 
-        let req = setup_auth(client, &self.token, self.is_pat_token);
+        let req = {
+            let req = client.get(url);
+            setup_auth(req, &self.token.token, self.token.is_pat)
+        };
 
         let result: Result<String> = try {
             let resp = req.send().await?;

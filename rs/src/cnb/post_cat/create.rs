@@ -18,11 +18,15 @@ impl PostCatReq {
 
         let url = blog_backend!("/category/blog/1");
 
-        let client = reqwest::Client::new().post(url);
+        let client = reqwest::Client::new();
 
-        let req = setup_auth(client, &self.token, self.is_pat_token)
-            .header(CONTENT_TYPE, APPLICATION_JSON.to_string())
-            .body(category_dto_json);
+        let req = {
+            let req = client.post(url);
+            let req = req
+                .header(CONTENT_TYPE, APPLICATION_JSON.to_string())
+                .body(category_dto_json);
+            setup_auth(req, &self.token.token, self.token.is_pat)
+        };
 
         let result: Result<()> = try {
             let resp = req.send().await?;

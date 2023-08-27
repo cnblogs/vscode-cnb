@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { Alert } from '@/infra/alert'
 import { join } from 'path'
-import { ImgBytes, ImgReq, RsHttp } from '@/wasm'
+import { ImgBytes, ImgReq, RsHttp, Token } from '@/wasm'
 import { AuthManager } from '@/auth/auth-manager'
 import { readableToBytes } from '@/infra/convert/readableToBuffer'
 
@@ -9,7 +9,7 @@ export async function getAuthedImgReq() {
     const token = await AuthManager.acquireToken()
     // TODO: need better solution
     const isPatToken = token.length === 64
-    return new ImgReq(token, isPatToken)
+    return new ImgReq(new Token(token, isPatToken))
 }
 
 export type ImgInfo = {

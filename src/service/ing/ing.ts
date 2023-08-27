@@ -1,13 +1,13 @@
 import { Ing, IngComment, IngType } from '@/model/ing'
 import { Alert } from '@/infra/alert'
-import { IngReq } from '@/wasm'
+import { IngReq, Token } from '@/wasm'
 import { AuthManager } from '@/auth/auth-manager'
 
 async function getAuthedIngReq() {
     const token = await AuthManager.acquireToken()
     // TODO: need better solution
     const isPatToken = token.length === 64
-    return new IngReq(token, isPatToken)
+    return new IngReq(new Token(token, isPatToken))
 }
 
 async function getComment(id: number) {

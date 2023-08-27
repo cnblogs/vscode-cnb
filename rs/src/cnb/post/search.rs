@@ -1,3 +1,4 @@
+use crate::cnb::oauth::Token;
 use crate::cnb::post::PostReq;
 use crate::infra::http::{cons_query_string, setup_auth};
 use crate::infra::result::{HomoResult, IntoResult, ResultExt};
@@ -19,13 +20,13 @@ impl PostReq {
         cat_id: Option<usize>,
     ) -> HomoResult<String> {
         panic_hook!();
-        let json = search(self, page_index, page_cap, keyword, cat_id).await;
+        let json = search(&self.token, page_index, page_cap, keyword, cat_id).await;
         json.homo_string()
     }
 }
 
 async fn search(
-    req: &PostReq,
+    token: &Token,
     page_index: usize,
     page_cap: usize,
     keyword: Option<String>,
@@ -49,9 +50,12 @@ async fn search(
 
     let url = blog_backend!("/posts/list?{}", query);
 
-    let client = reqwest::Client::new().get(url);
+    let client = reqwest::Client::new();
 
-    let req = setup_auth(client, &req.token, req.is_pat_token);
+    let req = {
+        let req = client.get(url);
+        setup_auth(req, &token.token, token.is_pat)
+    };
     let resp = req.send().await?;
 
     let code = resp.status();

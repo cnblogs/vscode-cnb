@@ -1,3 +1,4 @@
+use crate::cnb::oauth::Token;
 use crate::cnb::post::PostReq;
 use crate::infra::http::{cons_query_string, setup_auth};
 use crate::infra::result::{HomoResult, ResultExt};
@@ -14,19 +15,22 @@ impl PostReq {
     #[wasm_bindgen(js_name = getList)]
     pub async fn export_get_list(&self, page_index: usize, page_cap: usize) -> HomoResult<String> {
         panic_hook!();
-        let post_list_json = get_list(self, page_index, page_cap).await;
+        let post_list_json = get_list(&self.token, page_index, page_cap).await;
         post_list_json.homo_string()
     }
 }
 
-async fn get_list(req: &PostReq, page_index: usize, page_cap: usize) -> Result<String> {
+async fn get_list(token: &Token, page_index: usize, page_cap: usize) -> Result<String> {
     let query = vec![('t', 1), ('p', page_index), ('s', page_cap)];
     let query = cons_query_string(query);
     let url = blog_backend!("/posts/list?{}", query);
 
-    let client = reqwest::Client::new().get(url);
+    let client = reqwest::Client::new();
 
-    let req = setup_auth(client, &req.token, req.is_pat_token);
+    let req = {
+        let req = client.get(url);
+        setup_auth(req, &token.token, token.is_pat)
+    };
     let resp = req.send().await?;
 
     let code = resp.status();

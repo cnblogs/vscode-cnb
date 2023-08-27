@@ -8,14 +8,14 @@ import { Post } from '@/model/post'
 import { PostListRespItem } from '@/model/post-list-resp-item'
 import { MyConfig } from '@/model/my-config'
 import { AuthManager } from '@/auth/auth-manager'
-import { PostReq } from '@/wasm'
+import { PostReq, Token } from '@/wasm'
 import { PostListModel } from '@/service/post/post-list-view'
 
 async function getAuthedPostReq() {
     const token = await AuthManager.acquireToken()
     // TODO: need better solution
     const isPatToken = token.length === 64
-    return new PostReq(token, isPatToken)
+    return new PostReq(new Token(token, isPatToken))
 }
 
 export namespace PostService {

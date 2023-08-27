@@ -120,7 +120,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
                     try {
                         const token = await Oauth.getToken(verifyCode, authCode)
-                        const authSession = await this.onAccessTokenGranted(token.accessToken, {
+                        const authSession = await this.onAccessTokenGranted(token, {
                             onStateChange(state) {
                                 progress.report({ message: state })
                             },

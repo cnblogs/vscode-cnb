@@ -2,7 +2,7 @@ import { PostCat, PostCatAddDto } from '@/model/post-cat'
 import { Alert } from '@/infra/alert'
 import { SiteCat } from '@/model/site-category'
 import { AuthManager } from '@/auth/auth-manager'
-import { PostCatReq } from '@/wasm'
+import { PostCatReq, Token } from '@/wasm'
 
 // TODO: need better cache impl
 let siteCategoryCache: SiteCat[] | null = null
@@ -11,7 +11,7 @@ async function getAuthedPostCatReq() {
     const token = await AuthManager.acquireToken()
     // TODO: need better solution
     const isPatToken = token.length === 64
-    return new PostCatReq(token, isPatToken)
+    return new PostCatReq(new Token(token, isPatToken))
 }
 
 export namespace PostCatService {
