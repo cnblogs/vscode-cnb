@@ -36,6 +36,7 @@ export namespace Workspace {
         if (firstUri === undefined) return
 
         await WorkspaceCfg.setWorkspaceUri(firstUri)
+
         void Alert.info(`工作空间成功修改为: "${WorkspaceCfg.getWorkspaceUri().fsPath}"`)
     }
 }
