@@ -52,7 +52,7 @@ async fn get_all(token: &Token) -> Result<Vec<PostTag>> {
         struct Item {
             pub id: usize,
             pub name: String,
-
+            /*
             #[serde(rename = "createTime")]
             //'2023-08-03T12:36:08.643'
             pub create_time: String,
@@ -65,6 +65,7 @@ async fn get_all(token: &Token) -> Result<Vec<PostTag>> {
             pri_use_count: usize,
             #[serde(rename = "useCount")]
             use_count: usize,
+            */
         }
 
         serde_json::from_value::<Vec<Item>>(val)?

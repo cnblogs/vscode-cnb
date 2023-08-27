@@ -3,7 +3,7 @@ import { Component } from 'react'
 import { PostCat } from '@/model/post-cat'
 
 type Props = {
-    allCats: PostCat[]
+    userCats: PostCat[]
     selectedCatIds: number[]
     onChange: (categoryIds: number[]) => void
 }
@@ -16,7 +16,7 @@ export class CatSelect extends Component<Props, State> {
     }
 
     render() {
-        const opts = this.props.allCats.map(cat => ({
+        const opts = this.props.userCats.map(cat => ({
             data: cat.categoryId,
             key: cat.categoryId,
             text: cat.title,

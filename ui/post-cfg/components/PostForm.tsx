@@ -15,13 +15,14 @@ import { SiteHomeContributionOptionSelect } from './select/SiteHomeContributionO
 import UrlSlugInput from './input/UrlSlugInput'
 import { PermissionSelect } from './select/PermissionSelect'
 import { SiteCatSelect } from './select/SiteCatSelect'
-import { UserCatStore } from '../service/user-cat-store'
 import { SiteCat } from '@/model/site-category'
+import { PostCat } from '@/model/post-cat'
 
 type Props = {
     post: Post
     fileName?: string
     onTitleChange: (title: string) => void
+    userCats: PostCat[]
     siteCats: SiteCat[]
 }
 type State = Post
@@ -48,7 +49,7 @@ export class PostForm extends Component<Props, State> {
                 ></TitleInput>
                 <TagInput selectedTagNames={state.tags ?? []} onChange={tags => this.setState({ tags })} />
                 <CatSelect
-                    allCats={UserCatStore.get()}
+                    userCats={props.userCats}
                     selectedCatIds={state.categoryIds}
                     onChange={categoryIds => this.setState({ categoryIds })}
                 />

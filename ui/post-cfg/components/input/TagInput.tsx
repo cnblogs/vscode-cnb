@@ -11,16 +11,15 @@ import {
     Text,
 } from '@fluentui/react'
 import React, { Component } from 'react'
-import { TagStore } from '../../service/tag-store'
 import { PostTag } from '../../../../src/wasm'
 
 type Props = {
+    tags: PostTag[]
     selectedTagNames: string[]
     onChange: (tagNames: string[]) => void
 }
 
 type State = {
-    tags: PostTag[]
     selectedTags: ITag[]
 }
 
@@ -28,16 +27,13 @@ export class TagInput extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
 
-        const tags = TagStore.get()
-
         const selectedTags = this.props.selectedTagNames
-            .map(name => tags.find(x => x.name === name))
+            .map(name => this.props.tags.find(x => x.name === name))
             .filter(tag => tag !== undefined)
             .map(tag => tag as PostTag)
             .map(tag => ({ name: tag.name, key: tag.id }))
 
         this.state = {
-            tags,
             selectedTags,
         }
     }
@@ -49,7 +45,7 @@ export class TagInput extends Component<Props, State> {
                 <TagPicker
                     itemLimit={10}
                     onResolveSuggestions={(text, selectedItems) =>
-                        filterSuggestedTags(this.state, text, selectedItems ?? [])
+                        filterSuggestedTags(this.props.tags, text, selectedItems ?? [])
                     }
                     onRenderSuggestionsItem={tag => {
                         const isNewTag = (tag as NewTag).isNew ?? false
@@ -91,7 +87,7 @@ export class TagInput extends Component<Props, State> {
                             this.setState({ selectedTags: tags })
                         }
                     }}
-                    onEmptyResolveSuggestions={items => filterSuggestedTags(this.state, '', items ?? [])}
+                    onEmptyResolveSuggestions={items => filterSuggestedTags(this.props.tags, '', items ?? [])}
                     inputProps={{ placeholder: '点击选择' }}
                     onValidateInput={input => (input.length <= 50 ? ValidationState.valid : ValidationState.invalid)}
                     onInputChange={value => (value.length <= 50 ? value : value.substring(0, 49))}
@@ -107,10 +103,10 @@ type NewTag = {
     isNew?: boolean
 }
 
-function filterSuggestedTags(state: State, filterText: string, selectedTags: ITag[]) {
+function filterSuggestedTags(tags: PostTag[], filterText: string, selectedTags: ITag[]) {
     filterText = filterText.trim()
 
-    const filteredTags = state.tags
+    const filteredTags = tags
         .filter(
             tag =>
                 (filterText === '' || tag.name.indexOf(filterText) >= 0) &&
@@ -118,7 +114,7 @@ function filterSuggestedTags(state: State, filterText: string, selectedTags: ITa
         )
         .map(x => ({ name: x.name, key: x.id }) as ITag)
 
-    if (filteredTags.length <= 0 || state.tags.findIndex(t => t.name.toLowerCase() === filterText.toLowerCase()) < 0)
+    if (filteredTags.length <= 0 || tags.findIndex(t => t.name.toLowerCase() === filterText.toLowerCase()) < 0)
         filteredTags.push({ name: filterText, key: filterText, isNew: true } as NewTag)
 
     return filteredTags

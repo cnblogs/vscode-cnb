@@ -3,21 +3,23 @@ import { ThemeProvider } from '@fluentui/react/lib/Theme'
 import { Breadcrumb, IBreadcrumbItem, initializeIcons, PartialTheme, Spinner, Stack, Theme } from '@fluentui/react'
 import { PostForm } from './components/PostForm'
 import { Post } from '@/model/post'
-import { UserCatStore } from './service/user-cat-store'
-import { TagStore } from './service/tag-store'
 import { WebviewMsg } from '@/model/webview-msg'
 import { Webview } from '@/model/webview-cmd'
 import { ActiveThemeProvider } from 'share/active-theme-provider'
 import { darkTheme, lightTheme } from 'share/theme'
 import { getVsCodeApiSingleton } from 'share/vscode-api'
 import { SiteCat } from '@/model/site-category'
+import { PostCat } from '@/model/post-cat'
+import { PostTag } from '../../src/wasm'
 
 type State = {
     post?: Post
-    siteCats?: SiteCat[]
     theme?: Theme | PartialTheme
     breadcrumbs?: string[]
     fileName: string
+    tags: PostTag[]
+    userCats: PostCat[]
+    siteCats: SiteCat[]
 }
 
 export class App extends Component<unknown, State> {
@@ -26,6 +28,9 @@ export class App extends Component<unknown, State> {
         this.state = {
             theme: ActiveThemeProvider.activeTheme(),
             fileName: '',
+            tags: [],
+            userCats: [],
+            siteCats: [],
         }
         this.observerMessages()
         getVsCodeApiSingleton().postMessage({ command: Webview.Cmd.Ext.refreshPost })
@@ -57,7 +62,8 @@ export class App extends Component<unknown, State> {
                                     : undefined
                             }
                             fileName={fileName}
-                            siteCats={this.state.siteCats ?? []}
+                            userCats={this.state.userCats}
+                            siteCats={this.state.siteCats}
                         />
                     </Stack>
                 </>
@@ -89,15 +95,15 @@ export class App extends Component<unknown, State> {
             if (cmd === Webview.Cmd.Ui.editPostCfg) {
                 const { post, activeTheme, userCats, tags, siteCats, breadcrumbs, fileName } =
                     message as WebviewMsg.EditPostCfgMsg
-                UserCatStore.set(userCats)
-                TagStore.set(tags)
 
                 this.setState({
                     theme: (activeTheme as number) === 2 ? darkTheme : lightTheme,
                     post,
-                    siteCats,
                     breadcrumbs,
                     fileName,
+                    tags,
+                    userCats,
+                    siteCats,
                 })
             } else if (cmd === Webview.Cmd.Ui.updateBreadcrumbs) {
                 const { breadcrumbs } = message as WebviewMsg.UpdateBreadcrumbMsg
