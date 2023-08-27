@@ -17,7 +17,7 @@ export namespace WebviewMsg {
         userCats: PostCat[]
         siteCats: SiteCat[]
         tags: PostTag[]
-        breadcrumbs?: string[]
+        breadcrumbs: string[]
         fileName: string
     }
 
@@ -26,7 +26,7 @@ export namespace WebviewMsg {
     }
 
     export interface UpdateBreadcrumbMsg extends Msg {
-        breadcrumbs?: string[]
+        breadcrumbs: string[]
     }
 
     export interface UploadImgMsg extends Msg {

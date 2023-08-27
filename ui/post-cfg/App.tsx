@@ -13,10 +13,10 @@ import { PostCat } from '@/model/post-cat'
 import { PostTag } from '../../src/wasm'
 
 type State = {
-    post?: Post
     theme?: Theme | PartialTheme
-    breadcrumbs?: string[]
+    breadcrumbs: string[]
     fileName: string
+    post?: Post
     tags: PostTag[]
     userCats: PostCat[]
     siteCats: SiteCat[]
@@ -27,6 +27,7 @@ export class App extends Component<unknown, State> {
         super(props)
         this.state = {
             theme: ActiveThemeProvider.activeTheme(),
+            breadcrumbs: [],
             fileName: '',
             tags: [],
             userCats: [],

@@ -49,7 +49,14 @@ export namespace PostCfgPanel {
             return
         }
 
-        panel = await createPanel(panelTitle, post)
+        const panelId = `${post.id}-${post.title}`
+        panel = vscode.window.createWebviewPanel(panelId, panelTitle, vscode.ViewColumn.Two, {
+            enableScripts: true,
+            retainContextWhenHidden: true,
+        })
+        panel.iconPath = Uri.joinPath(globalCtx.extCtx.extensionUri, 'dist', 'assets', 'favicon.svg')
+        panels.set(panelId, panel)
+
         const webview = panel.webview
 
         let fileName: string
@@ -84,6 +91,8 @@ export namespace PostCfgPanel {
             observeThemeChange(webview),
             observePanelDispose(panel, disposables)
         )
+
+        await setHtml(panel.webview)
     }
 }
 const setHtml = async (webview: vscode.Webview): Promise<void> => {
@@ -100,19 +109,6 @@ const revealPanel = (panel: WebviewPanel, options: PostCfgPanelOpenOption) => {
         breadcrumbs,
     } as WebviewMsg.UpdateBreadcrumbMsg)
     panel.reveal()
-}
-
-const createPanel = async (panelTitle: string, post: Post): Promise<WebviewPanel> => {
-    const panelId = `${post.id}-${post.title}`
-    const panel = vscode.window.createWebviewPanel(panelId, panelTitle, vscode.ViewColumn.Two, {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-    })
-    const { webview } = panel
-    await setHtml(webview)
-    panel.iconPath = Uri.joinPath(globalCtx.extCtx.extensionUri, 'dist', 'assets', 'favicon.svg')
-    panels.set(panelId, panel)
-    return panel
 }
 
 const doUploadImg = async (webview: CodeWebview, message: WebviewMsg.UploadImgMsg) => {
