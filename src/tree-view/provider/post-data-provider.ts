@@ -9,7 +9,6 @@ import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { PostListCfg } from '@/ctx/cfg/post-list'
 import { Page } from '@/model/page'
 import { PostListView } from '@/cmd/post-list/post-list-view'
-import { getListState } from '@/service/post/post-list-view'
 
 export type PostListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
 
@@ -53,8 +52,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
         return toTreeItem(item)
     }
 
-    async loadPosts(): Promise<Page<Post>> {
-        const { pageIndex } = getListState() ?? {}
+    async loadPosts(pageIndex: number): Promise<Page<Post>> {
         const pageSize = PostListCfg.getListPageSize()
 
         try {

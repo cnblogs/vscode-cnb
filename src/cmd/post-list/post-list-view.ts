@@ -29,19 +29,9 @@ async function goPage(f: (currentIndex: number) => number) {
     if (isRefreshing) return
 
     const state = getListState()
-    if (state === undefined) {
-        void Alert.warn('操作失败: 状态错误')
-        return
-    }
-
-    const index = f(state.pageIndex)
-    if (!isPageIndexInRange(index, state)) {
-        void Alert.warn(`操作失败: 已达到最大页数`)
-        return
-    }
-
-    await updatePostListState(index, state.pageCap, state.pageItemCount, state.pageCount)
-    await PostListView.refresh()
+    let pageIndex = state?.pageIndex ?? 1
+    pageIndex = f(pageIndex)
+    await PostListView.refresh({ pageIndex: pageIndex })
 }
 
 function isPageIndexInRange(pageIndex: number, state: PostListState) {
@@ -65,7 +55,7 @@ function updatePostListViewTitle() {
 export namespace PostListView {
     import calcPageCount = PageList.calcPageCount
 
-    export async function refresh({ queue = false } = {}): Promise<boolean> {
+    export async function refresh({ queue = false, pageIndex = 1 } = {}): Promise<boolean> {
         if (isRefreshing && !queue) {
             await refreshTask
             return false
@@ -76,10 +66,9 @@ export namespace PostListView {
 
         const fut = async () => {
             await setRefreshing(true)
-            const page = await postDataProvider.loadPosts()
+            const page = await postDataProvider.loadPosts(pageIndex)
             const postCount = await PostService.getCount()
             const pageCount = calcPageCount(page.cap, postCount)
-            const pageIndex = page.index
             const hasPrev = PageList.hasPrev(pageIndex)
             const hasNext = PageList.hasNext(pageIndex, pageCount)
 
@@ -113,7 +102,7 @@ export namespace PostListView {
                 if (isNaN(n) || n === 0) return '请输入正确格式的页码'
 
                 const state = getListState()
-                if (state === undefined) return '博文列表尚未加载'
+                if (state === undefined) return undefined
 
                 if (isPageIndexInRange(n, state)) return undefined
 
