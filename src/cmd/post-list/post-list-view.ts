@@ -76,7 +76,7 @@ export namespace PostListView {
 
         const fut = async () => {
             await setRefreshing(true)
-            const page = await postDataProvider.loadPost()
+            const page = await postDataProvider.loadPosts()
             const postCount = await PostService.getCount()
             const pageCount = calcPageCount(page.cap, postCount)
             const pageIndex = page.index

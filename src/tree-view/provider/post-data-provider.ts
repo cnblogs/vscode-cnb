@@ -53,15 +53,15 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
         return toTreeItem(item)
     }
 
-    async loadPost() {
-        const pageIndex = getListState().pageIndex
-        const pageCap = PostListCfg.getListPageSize()
+    async loadPosts(): Promise<Page<Post>> {
+        const { pageIndex } = getListState() ?? {}
+        const pageSize = PostListCfg.getListPageSize()
 
         try {
-            const result = await PostService.getList(pageIndex, pageCap)
+            const result = await PostService.getList(pageIndex, pageSize)
             this.page = {
                 index: pageIndex,
-                cap: pageCap,
+                cap: pageSize,
                 // TODO: need better design
                 items: result.map(it => Object.assign(new Post(), it)),
             }
