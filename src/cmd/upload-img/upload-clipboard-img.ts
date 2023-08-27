@@ -1,12 +1,12 @@
 import { ProgressLocation, Uri, window, workspace } from 'vscode'
 import { Alert } from '@/infra/alert'
-import getClipboardImage from '@/infra/get-clipboard-img'
+import { getClipboardImg } from '@/infra/get-clipboard-img'
 import { uploadImgFromPath } from '@/cmd/upload-img/upload-img-from-path'
 
 const noImagePath = 'no image'
 
 export async function uploadClipboardImg() {
-    const img = await getClipboardImage()
+    const img = await getClipboardImg()
 
     if (img.imgPath === noImagePath) {
         void Alert.warn('剪贴板中没有找到图片')

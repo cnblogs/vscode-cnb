@@ -11,8 +11,8 @@ import {
     Text,
 } from '@fluentui/react'
 import React, { Component } from 'react'
-import { PostTag } from '@/model/post-tag'
 import { TagStore } from '../../service/tag-store'
+import { PostTag } from '../../../../src/wasm'
 
 type Props = {
     selectedTagNames: string[]

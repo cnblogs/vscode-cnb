@@ -1,4 +1,4 @@
-import { PostTag } from '@/model/post-tag'
+import { PostTag } from '../../../src/wasm'
 
 let tags: PostTag[] = []
 

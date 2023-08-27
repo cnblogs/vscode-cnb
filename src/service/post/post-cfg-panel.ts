@@ -3,7 +3,6 @@ import vscode, { WebviewPanel, Uri } from 'vscode'
 import { Post } from '@/model/post'
 import { globalCtx } from '@/ctx/global-ctx'
 import { PostCatService } from './post-cat'
-import { PostTagService } from './post-tag'
 import { PostService } from './post'
 import { WebviewMsg } from '@/model/webview-msg'
 import { WebviewCommonCmd, Webview } from '@/model/webview-cmd'
@@ -14,6 +13,17 @@ import path from 'path'
 import { Alert } from '@/infra/alert'
 import { uploadFsImage } from '@/cmd/upload-img/upload-fs-img'
 import { uploadClipboardImg } from '@/cmd/upload-img/upload-clipboard-img'
+import { Token } from '@/wasm'
+import { PostTagReq } from '@/wasm'
+import { PostTag } from '@/wasm'
+import { AuthManager } from '@/auth/auth-manager'
+
+async function getAuthedPostTagReq() {
+    const token = await AuthManager.acquireToken()
+    // TODO: need better solution
+    const isPatToken = token.length === 64
+    return new PostTagReq(new Token(token, isPatToken))
+}
 
 const panels: Map<string, WebviewPanel> = new Map()
 
@@ -52,6 +62,9 @@ export namespace PostCfgPanel {
         if (localFileUri !== undefined) fileName = path.basename(localFileUri.fsPath, path.extname(localFileUri.fsPath))
         else fileName = ''
 
+        const postTagReq = await getAuthedPostTagReq()
+        const tags = (await postTagReq.getAll()) as PostTag[]
+
         disposables.push(
             panel.webview.onDidReceiveMessage(async ({ command }: WebviewMsg.Msg) => {
                 if (command !== Webview.Cmd.Ext.refreshPost) return
@@ -66,7 +79,7 @@ export namespace PostCfgPanel {
                     activeTheme: vscode.window.activeColorTheme.kind,
                     userCats: cloneDeep(await PostCatService.getAll()),
                     siteCats: cloneDeep(await PostCatService.getSitePresetList()),
-                    tags: cloneDeep(await PostTagService.fetchTags()),
+                    tags: cloneDeep(tags),
                     breadcrumbs,
                     fileName,
                 } as WebviewMsg.EditPostCfgMsg)

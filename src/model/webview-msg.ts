@@ -3,8 +3,8 @@ import { Webview } from './webview-cmd'
 import { ColorThemeKind } from 'vscode'
 import { ImgUploadStatus } from './img-upload-status'
 import { PostCat } from '@/model/post-cat'
-import { PostTag } from '@/model/post-tag'
 import { SiteCat } from '@/model/site-category'
+import { PostTag } from '@/wasm'
 
 export namespace WebviewMsg {
     export type Msg = {
