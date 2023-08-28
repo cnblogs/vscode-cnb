@@ -37,7 +37,8 @@ export namespace PostService {
         const listModel = <PostListModel>JSON.parse(resp)
         const page = {
             index: listModel.pageIndex,
-            cap: listModel.pageSize,
+            size: listModel.pageSize,
+            count: PageList.calcPageCount(listModel.pageSize, listModel.postsCount),
             items: listModel.postList.map(x => Object.assign(new Post(), x)),
         } as Page<Post>
 
@@ -47,6 +48,19 @@ export namespace PostService {
             matchedPostCount: listModel.postsCount,
             zzkResult: listModel.zzkSearchResult,
         }
+    }
+
+    export async function getPosts({ pageIndex = 1, pageSize = 30, categoryId = <'' | number>'', search = '' }) {
+        const para = consUrlPara(
+            ['t', '1'],
+            ['p', pageIndex.toString()],
+            ['s', pageSize.toString()],
+            ['search', search],
+            ['cid', categoryId.toString()]
+        )
+        const url = `${AppConst.ApiBase.BLOG_BACKEND}/posts/list?${para}`
+        const resp = await AuthedReq.get(url, consHeader())
+        return <PostListModel>JSON.parse(resp)
     }
 
     export async function getList(pageIndex: number, pageCap: number) {

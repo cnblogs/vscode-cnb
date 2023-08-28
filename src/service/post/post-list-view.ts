@@ -1,6 +1,5 @@
 import { Post } from '@/model/post'
 import { extTreeViews } from '@/tree-view/tree-view-register'
-import { PageList } from '@/model/page'
 import { PostListState } from '@/model/post-list-state'
 import { LocalState } from '@/ctx/local-state'
 import { PostListRespItem } from '@/model/post-list-resp-item'
@@ -33,17 +32,14 @@ export function getListState() {
 
 export async function updatePostListState(
     pageIndex: number,
-    pageCap: number,
-    pageItemCount: number,
-    pageCount: number
-) {
-    const hasPrev = PageList.hasPrev(pageIndex)
-    const hasNext = PageList.hasNext(pageIndex, pageCount)
-
+    pageSize: number,
+    pageCount: number,
+    hasPrev: boolean,
+    hasNext: boolean
+): Promise<void> {
     const finalState = <PostListState>{
         pageIndex,
-        pageCap,
-        pageItemCount,
+        pageSize,
         pageCount,
         hasPrev,
         hasNext,
