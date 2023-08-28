@@ -10,7 +10,7 @@ import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provid
 import { setupUi } from '@/setup/setup-ui'
 import { LocalState } from '@/ctx/local-state'
 
-export function activate(ctx: ExtensionContext) {
+export async function activate(ctx: ExtensionContext) {
     globalCtx.extCtx = ctx
 
     // WRN: For old version compatibility, NEVER remove this line
@@ -28,7 +28,7 @@ export function activate(ctx: ExtensionContext) {
 
     window.registerUriHandler(extUriHandler)
 
-    void AuthManager.updateAuthStatus()
+    await AuthManager.updateAuthStatus()
 
     setupUi(LocalState.getExtCfg())
 
