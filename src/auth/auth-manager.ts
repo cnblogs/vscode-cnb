@@ -88,6 +88,7 @@ export namespace AuthManager {
         const isAuthed = await AuthManager.isAuthed()
 
         await setCtx('isAuthed', isAuthed)
+        await setCtx('isUnauthorized', !isAuthed)
 
         if (!isAuthed) return
 

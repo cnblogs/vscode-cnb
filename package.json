@@ -768,13 +768,13 @@
                 {
                     "id": "cnblogs-authorize",
                     "name": "登录/授权",
-                    "when": "!vscode-cnb.isAuthed",
+                    "when": "vscode-cnb.isUnauthorized",
                     "visibility": "visible"
                 },
                 {
                     "id": "vscode-cnb-workspace",
                     "name": "工作空间",
-                    "when": "vscode-cnb.isAuthed",
+                    "when": "!vscode-cnb.isUnauthorized",
                     "visibility": "collapsed"
                 },
                 {
@@ -1301,23 +1301,29 @@
                 "contents": "[从浏览器登录](command:vscode-cnb.login.web)  \n[个人访问令牌登录](command:vscode-cnb.login.pat)"
             },
             {
+                "view": "vscode-loading",
+                "contents": "",
+                "when": "!vscode-cnb.isUnauthrized"
+            },
+            {
                 "view": "vscode-cnb-workspace",
                 "contents": "[在 Code 中打开工作空间](command:vscode-cnb.workspace.code-open)",
-                "when": "!vscode-cnb.isTargetWorkspace"
+                "when": "!vscode-cnb.isTargetWorkspace && vscode-cnb.isAuthed"
             },
             {
                 "view": "vscode-cnb-workspace",
                 "contents": "[在访达中打开工作空间](command:vscode-cnb.workspace.os-open)",
-                "when": "isMac"
+                "when": "isMac && vscode-cnb.isAuhted"
             },
             {
                 "view": "vscode-cnb-workspace",
                 "contents": "[在文件资源器中打开工作空间](command:vscode-cnb.workspace.os-open)",
-                "when": "isWindows"
+                "when": "isWindows && vscode-cnb.isAuthed"
             },
             {
                 "view": "vscode-cnb-workspace",
-                "contents": "[设置工作空间](command:vscode-cnb.workspace.set)"
+                "contents": "[设置工作空间](command:vscode-cnb.workspace.set)",
+                "when": "vscode-cnb.isAuthed"
             }
         ]
     },

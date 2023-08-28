@@ -21,7 +21,6 @@ export async function activate(ctx: ExtensionContext) {
     await setupState()
     await AuthManager.updateAuthStatus()
     setupCmd()
-
     setupExtTreeView()
 
     ctx.subscriptions.push(
