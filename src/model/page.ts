@@ -1,6 +1,7 @@
 export type Page<T> = {
     index: number
-    cap: number
+    size: number
+    count: number
     items: T[]
 }
 
