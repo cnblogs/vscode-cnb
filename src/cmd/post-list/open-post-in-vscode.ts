@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { Uri, workspace } from 'vscode'
+import { FileSystemError, Uri, workspace } from 'vscode'
 import { Post } from '@/model/post'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
@@ -78,9 +78,13 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
 
 async function mkDirIfNotExist(uri: Uri) {
     try {
-        await workspace.fs.readDirectory(uri)
-    } catch (e) {
-        void Alert.err(`创建目录失败: ${<string>e}`)
-        throw e
+        await workspace.fs.stat(uri)
+    } catch (err) {
+        try {
+            if (err instanceof FileSystemError) await workspace.fs.createDirectory(uri)
+        } catch (e) {
+            void Alert.err(`创建目录失败: ${<string>e}`)
+            throw e
+        }
     }
 }
