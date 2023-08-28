@@ -7,6 +7,8 @@ export namespace ExtConst {
     export const EXT_NAME = 'vscode-cnb'
     export const EXT_PUBLISHER = 'cnblogs'
 
+    export const EXT_SESSION_STORAGE_KEY = 'cnblogs.sessions'
+
     export const CLIENT_ID = CNBLOGS_CLIENTID
     export const CLIENT_SEC = CNBLOGS_CLIENTSECRET
 

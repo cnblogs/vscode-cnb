@@ -1,20 +1,20 @@
 import { setCtx } from '@/ctx/global-ctx'
-import { window, authentication, AuthenticationGetSessionOptions as AuthGetSessionOpt } from 'vscode'
+import { authentication, AuthenticationGetSessionOptions as AuthGetSessionOpt, window } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 import { Oauth } from '@/auth/oauth'
 import { authProvider } from '@/auth/auth-provider'
-import { AuthSession } from '@/auth/auth-session'
+import { AuthenticationSession as AuthSession } from 'vscode'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
 import { Alert } from '@/infra/alert'
+import { LocalState } from '@/ctx/local-state'
+import { ExtConst } from '@/ctx/ext-const'
+import { UserService } from '@/service/user-info'
+import { isAuthSessionExpired } from '@/auth/is-auth-session-expired'
 
-let authSession: AuthSession | null = null
-
-authProvider.onDidChangeSessions(async ({ added }) => {
-    authSession = null
-    if (added != null && added.length > 0) await AuthManager.ensureSession()
-
+authProvider.onDidChangeSessions(async () => {
+    await AuthManager.ensureSession({ createIfNone: false })
     await AuthManager.updateAuthStatus()
 
     accountViewDataProvider.fireTreeDataChangedEvent()
@@ -25,38 +25,24 @@ authProvider.onDidChangeSessions(async ({ added }) => {
 })
 
 export namespace AuthManager {
-    export function isAuthed() {
-        return authSession !== null
+    export async function isAuthed() {
+        const sessionJsonList = await LocalState.getSecret(ExtConst.EXT_SESSION_STORAGE_KEY)
+        const sessionList = JSON.parse(sessionJsonList ?? '[]') as AuthSession[]
+        return sessionList.length > 0
     }
 
-    export function getUserInfo() {
-        return authSession?.account.userInfo
-    }
-
-    export async function ensureSession(opt?: AuthGetSessionOpt) {
-        let session
+    export function ensureSession(opt?: AuthGetSessionOpt) {
         try {
-            const result = await authentication.getSession(authProvider.providerId, [], opt)
-            if (result === undefined) session = null
-            // TODO: need better impl
-            else session = <AuthSession>result
+            return authentication.getSession(authProvider.providerId, [], opt)
         } catch (e) {
-            void Alert.err(`创建/获取 Session 失败: ${<string>e}`)
-            session = null
+            throw Error(`创建/获取 Session 失败: ${<string>e}`)
         }
-
-        if (session != null && session.account.userInfo.space_user_id < 0) {
-            authSession = null
-            await authProvider.removeSession(session.id)
-        } else {
-            authSession = session
-        }
-
-        return authSession
     }
 
-    export function webLogin() {
-        return ensureSession({ createIfNone: false, forceNewSession: true })
+    export async function webLogin() {
+        const session = await ensureSession({ createIfNone: false, forceNewSession: true })
+        if (session !== undefined)
+            await LocalState.setSecret(ExtConst.EXT_SESSION_STORAGE_KEY, JSON.stringify([session]))
     }
 
     export async function patLogin() {
@@ -70,7 +56,6 @@ export namespace AuthManager {
 
         try {
             await authProvider.onAccessTokenGranted(pat)
-            await ensureSession()
             await AuthManager.updateAuthStatus()
         } catch (e) {
             void Alert.err(`授权失败: ${<string>e}`)
@@ -78,15 +63,14 @@ export namespace AuthManager {
     }
 
     export async function logout() {
-        if (!AuthManager.isAuthed()) return
-
-        const session = await authentication.getSession(authProvider.providerId, [])
-        if (session === undefined) return
+        if (!(await AuthManager.isAuthed())) return
 
         try {
+            const session = await authentication.getSession(authProvider.providerId, [])
+            if (session === undefined) return
             await Oauth.revokeToken(session.accessToken)
             await authProvider.removeSession(session.id)
-        } catch (e: any) {
+        } catch (e) {
             void Alert.err(`登出发生错误: ${<string>e}`)
         }
     }
@@ -94,23 +78,25 @@ export namespace AuthManager {
     export async function acquireToken() {
         const session = await ensureSession({ createIfNone: false })
 
-        if (session == null) throw Error('未授权')
-        if (session.isExpired) throw Error('授权已过期')
+        if (session === undefined) throw Error('未授权')
+        if (isAuthSessionExpired(session)) throw Error('授权已过期')
 
         return session.accessToken
     }
 
     export async function updateAuthStatus() {
-        await AuthManager.ensureSession({ createIfNone: false })
-        const isAuthed = AuthManager.isAuthed()
+        const isAuthed = await AuthManager.isAuthed()
 
         await setCtx('isAuthed', isAuthed)
 
         if (!isAuthed) return
 
-        await setCtx('user', {
-            name: AuthManager.getUserInfo()?.display_name,
-            avatar: AuthManager.getUserInfo()?.avatar,
-        })
+        const userInfo = await UserService.getInfo()
+        if (userInfo !== undefined) {
+            await setCtx('user', {
+                name: userInfo.display_name,
+                avatar: userInfo.avatar,
+            })
+        }
     }
 }
