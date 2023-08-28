@@ -17,6 +17,7 @@ import { PermissionSelect } from './select/PermissionSelect'
 import { SiteCatSelect } from './select/SiteCatSelect'
 import { SiteCat } from '@/model/site-category'
 import { PostCat } from '@/model/post-cat'
+import { PostTag } from '@/wasm'
 
 type Props = {
     post: Post
@@ -24,6 +25,7 @@ type Props = {
     onTitleChange: (title: string) => void
     userCats: PostCat[]
     siteCats: SiteCat[]
+    tags: PostTag[]
 }
 type State = Post
 
@@ -47,7 +49,11 @@ export class PostForm extends Component<Props, State> {
                         this.props.onTitleChange?.(v ?? '')
                     }}
                 ></TitleInput>
-                <TagInput selectedTagNames={state.tags ?? []} onChange={tags => this.setState({ tags })} />
+                <TagInput
+                    selectedTagNames={state.tags ?? []}
+                    onChange={tags => this.setState({ tags })}
+                    tags={this.props.tags}
+                />
                 <CatSelect
                     userCats={props.userCats}
                     selectedCatIds={state.categoryIds}

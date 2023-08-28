@@ -13,7 +13,7 @@
         "strictPropertyInitialization": true,
         "baseUrl": ".",
         "paths": {
-            "@/model/*": ["../src/model/*"]
+            "@/*": ["../src/*"]
         },
         "lib": ["DOM", "ES2020"],
         "strictBindCallApply": true

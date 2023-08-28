@@ -11,7 +11,7 @@ import {
     Text,
 } from '@fluentui/react'
 import React, { Component } from 'react'
-import { PostTag } from '../../../../src/wasm'
+import { PostTag } from '@/wasm'
 
 type Props = {
     tags: PostTag[]

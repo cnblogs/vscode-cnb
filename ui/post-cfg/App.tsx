@@ -65,6 +65,7 @@ export class App extends Component<unknown, State> {
                             fileName={fileName}
                             userCats={this.state.userCats}
                             siteCats={this.state.siteCats}
+                            tags={this.state.tags}
                         />
                     </Stack>
                 </>
