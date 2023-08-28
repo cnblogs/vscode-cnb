@@ -19,7 +19,9 @@ export async function activate(ctx: ExtensionContext) {
     void LocalState.delSecret('user')
 
     await setupState()
+    await AuthManager.updateAuthStatus()
     setupCmd()
+
     setupExtTreeView()
 
     ctx.subscriptions.push(
@@ -30,8 +32,6 @@ export async function activate(ctx: ExtensionContext) {
     )
 
     window.registerUriHandler(extUriHandler)
-
-    await AuthManager.updateAuthStatus()
 
     setupUi(LocalState.getExtCfg())
 
