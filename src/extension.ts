@@ -31,7 +31,7 @@ export async function activate(ctx: ExtensionContext) {
 
     window.registerUriHandler(extUriHandler)
 
-    void AuthManager.updateAuthStatus()
+    await AuthManager.updateAuthStatus()
 
     setupUi(LocalState.getExtCfg())
 
