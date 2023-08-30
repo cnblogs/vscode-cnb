@@ -16,6 +16,8 @@ export async function activate(ctx: ExtensionContext) {
     // WRN: For old version compatibility, NEVER remove this line
     void LocalState.delSecret('user')
 
+    await AuthManager.updateAuthStatus()
+
     setupExtCmd()
     setupExtTreeView()
 
@@ -27,8 +29,6 @@ export async function activate(ctx: ExtensionContext) {
     )
 
     window.registerUriHandler(extUriHandler)
-
-    await AuthManager.updateAuthStatus()
 
     setupUi(LocalState.getExtCfg())
 

@@ -37,15 +37,7 @@
         "stats": "npm run --silent package -- --env namedChunks=true --profile --json > ./dist/stats.json && webpack-bundle-analyzer ./dist/stats.json ./dist"
     },
     "activationEvents": [
-        "workspaceContains:**",
-        "onView:cnblogs-authorize",
-        "onView:cnblogs-account",
-        "onView:cnblogs-post-list",
-        "onView:vscode-cnb-workspace",
-        "onCommand:vscode-cnb.workspace.code-open",
-        "onCommand:vscode-cnb.login.web",
-        "onCommand:vscode-cnb.logout",
-        "onCommand:vscode-cnb.ing-publish-select"
+        "onStartupFinished"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -769,13 +761,13 @@
                 {
                     "id": "cnblogs-authorize",
                     "name": "登录/授权",
-                    "when": "!vscode-cnb.isAuthed",
+                    "when": "vscode-cnb.isUnauthorized",
                     "visibility": "visible"
                 },
                 {
                     "id": "vscode-cnb-workspace",
                     "name": "工作空间",
-                    "when": "vscode-cnb.isAuthed",
+                    "when": "!vscode-cnb.isUnauthorized",
                     "visibility": "collapsed"
                 },
                 {

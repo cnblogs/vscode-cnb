@@ -107,6 +107,8 @@ export namespace AuthManager {
 
         await execCmd('setContext', `${globalCtx.extName}.isAuthed`, isAuthed)
 
+        await execCmd('setContext', `${globalCtx.extName}.isUnauthorized`, !isAuthed)
+
         if (!isAuthed) return
 
         await execCmd('setContext', `${globalCtx.extName}.user`, {
