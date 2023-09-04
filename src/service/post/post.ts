@@ -26,7 +26,8 @@ export namespace PostService {
             const listModel = <PostListModel>JSON.parse(json)
             const page = {
                 index: listModel.pageIndex,
-                cap: listModel.pageSize,
+                size: listModel.pageSize,
+                count: PageList.calcPageCount(pageCap, listModel.postsCount),
                 items: listModel.postList.map(x => Object.assign(new Post(), x)),
             } as Page<Post>
 

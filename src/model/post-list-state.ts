@@ -1,7 +1,6 @@
 export type PostListState = {
     pageIndex: number
-    pageCap: number
-    pageItemCount: number
+    pageSize: number
     pageCount: number
     hasPrev: boolean
     hasNext: boolean

@@ -1,5 +1,4 @@
 import { setCtx } from '@/ctx/global-ctx'
-import { PostService } from '@/service/post/post'
 import { window } from 'vscode'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { Alert } from '@/infra/alert'
@@ -50,8 +49,6 @@ function updatePostListViewTitle() {
 }
 
 export namespace PostListView {
-    import calcPageCount = PageList.calcPageCount
-
     export async function refresh({ queue = false, pageIndex = 1 } = {}): Promise<boolean> {
         if (isLoading && !queue) {
             await refreshTask
@@ -64,13 +61,13 @@ export namespace PostListView {
         const fut = async () => {
             await setRefreshing(true)
             const page = await postDataProvider.loadPosts(pageIndex)
-            const postCount = await PostService.getCount()
-            const pageCount = calcPageCount(page.cap, postCount)
+            const pageSize = page?.size ?? 30
+            const pageCount = page?.count ?? 1
             const hasPrev = PageList.hasPrev(pageIndex)
             const hasNext = PageList.hasNext(pageIndex, pageCount)
 
             await setPostListContext(pageCount, hasPrev, hasNext)
-            await updatePostListState(pageIndex, page.cap, page.items.length, pageCount)
+            await updatePostListState(pageIndex, pageSize, pageCount, hasPrev, hasNext)
             updatePostListViewTitle()
             await postDataProvider.refreshSearch()
             await setRefreshing(false)

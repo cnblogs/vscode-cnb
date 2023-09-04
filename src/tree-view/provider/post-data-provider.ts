@@ -7,7 +7,7 @@ import { PostEntryMetadata, PostMetadata } from '@/tree-view/model/post-metadata
 import { PostSearchResultEntry } from '@/tree-view/model/post-search-result-entry'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { PostListCfg } from '@/ctx/cfg/post-list'
-import { Page } from '@/model/page'
+import { Page, PageList } from '@/model/page'
 import { PostListView } from '@/cmd/post-list/post-list-view'
 
 export type PostListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
@@ -52,16 +52,18 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
         return toTreeItem(item)
     }
 
-    async loadPosts(pageIndex: number): Promise<Page<Post>> {
-        const pageSize = PostListCfg.getListPageSize()
+    async loadPosts(pageIndex: number): Promise<Page<Post> | null> {
+        const pageSize = PostListCfg.getListPageSize() ?? 30
 
         try {
-            const result = await PostService.getList(pageIndex, pageSize)
+            const list = await PostService.getList(pageIndex, pageSize)
+            const count = await PostService.getCount()
+
             this.page = {
                 index: pageIndex,
-                cap: pageSize,
-                // TODO: need better design
-                items: result.map(it => Object.assign(new Post(), it)),
+                size: pageSize,
+                count: PageList.calcPageCount(pageSize, count),
+                items: list.map(x => Object.assign(new Post(), x)),
             }
 
             this.fireTreeDataChangedEvent()
