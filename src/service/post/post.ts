@@ -10,6 +10,10 @@ import { MyConfig } from '@/model/my-config'
 import { AuthManager } from '@/auth/auth-manager'
 import { PostReq, Token } from '@/wasm'
 import { PostListModel } from '@/service/post/post-list-view'
+import { ExtConst } from '@/ctx/ext-const'
+import { AuthedReq } from '@/infra/http/authed-req'
+import { consHeader } from '@/infra/http/infra/header'
+import { consUrlPara } from '@/infra/http/infra/url-para'
 
 async function getAuthedPostReq() {
     const token = await AuthManager.acquireToken()
@@ -41,6 +45,19 @@ export namespace PostService {
             void Alert.err(`搜索失败: ${<string>e}`)
             throw e
         }
+    }
+
+    export async function getPosts({ pageIndex = 1, pageSize = 30, categoryId = <'' | number>'', search = '' }) {
+        const para = consUrlPara(
+            ['t', '1'],
+            ['p', pageIndex.toString()],
+            ['s', pageSize.toString()],
+            ['search', search],
+            ['cid', categoryId.toString()]
+        )
+        const url = `${ExtConst.ApiBase.BLOG_BACKEND}/posts/list?${para}`
+        const resp = await AuthedReq.get(url, consHeader())
+        return <PostListModel>JSON.parse(resp)
     }
 
     export async function getList(pageIndex: number, pageCap: number) {
