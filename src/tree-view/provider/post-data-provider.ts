@@ -56,14 +56,13 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
         const pageSize = PostListCfg.getListPageSize() ?? 30
 
         try {
-            const list = await PostService.getList(pageIndex, pageSize)
-            const count = await PostService.getCount()
+            const result = await PostService.getPosts({ pageIndex, pageSize })
 
             this.page = {
-                index: pageIndex,
+                index: result.pageIndex,
                 size: pageSize,
-                count: PageList.calcPageCount(pageSize, count),
-                items: list.map(x => Object.assign(new Post(), x)),
+                count: PageList.calcPageCount(pageSize, result.postsCount),
+                items: result.postList.map(x => Object.assign(new Post(), x)),
             }
 
             this.fireTreeDataChangedEvent()
