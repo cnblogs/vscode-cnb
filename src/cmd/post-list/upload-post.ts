@@ -155,11 +155,11 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto, conf
         path.extname(localFilePath).endsWith('md') || path.extname(localFilePath).endsWith('mkd') || post.isMarkdown
 
     if (MarkdownCfg.isShowConfirmMsgWhenUploadPost() && confirm) {
-        const answer = await Alert.warn(
-            '确认上传博文吗?',
+        const answer = await Alert.info(
+            '确认上传这篇博文吗?',
             {
                 modal: true,
-                detail: '本地博文将保存至服务端(可通过设置关闭对话框)',
+                detail: '本地博文将保存至服务端(可通过设置关闭此对话框)',
             },
             '确认'
         )
