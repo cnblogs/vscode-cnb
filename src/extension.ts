@@ -1,5 +1,6 @@
+import '@/setup/global-binding'
 import { setupExtTreeView } from '@/tree-view/tree-view-register'
-import { setupExtCmd } from '@/setup/setup-cmd'
+import { setupCmd } from '@/setup/setup-cmd'
 import { globalCtx } from '@/ctx/global-ctx'
 import { window, ExtensionContext } from 'vscode'
 import { AuthManager } from '@/auth/auth-manager'
@@ -9,6 +10,7 @@ import { extendMarkdownIt } from '@/markdown/extend-markdownIt'
 import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provider'
 import { setupUi } from '@/setup/setup-ui'
 import { LocalState } from '@/ctx/local-state'
+import { setupState } from '@/setup/setup-state'
 
 export async function activate(ctx: ExtensionContext) {
     globalCtx.extCtx = ctx
@@ -16,9 +18,9 @@ export async function activate(ctx: ExtensionContext) {
     // WRN: For old version compatibility, NEVER remove this line
     void LocalState.delSecret('user')
 
+    await setupState()
     await AuthManager.updateAuthStatus()
-
-    setupExtCmd()
+    setupCmd()
     setupExtTreeView()
 
     ctx.subscriptions.push(

@@ -1,18 +1,6 @@
 import { RsHttp } from '@/wasm'
 
-import fetch, { Headers, Request, Response } from 'node-fetch'
 import { mapToJson } from '@/infra/convert/map-to-json'
-
-/* eslint-disable */
-// @ts-ignore
-global.fetch = fetch
-// @ts-ignore
-global.Headers = Headers
-// @ts-ignore
-global.Request = Request
-// @ts-ignore
-global.Response = Response
-/* eslint-disable */
 
 type Header = Map<string, string>
 

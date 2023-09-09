@@ -1,6 +1,6 @@
-export class SiteCategory {
+export class SiteCat {
     id = -1
     title = ''
     parentId = -1
-    children: SiteCategory[] = []
+    children: SiteCat[] = []
 }

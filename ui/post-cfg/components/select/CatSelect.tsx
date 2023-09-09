@@ -1,9 +1,9 @@
 import { ComboBox } from '@fluentui/react'
 import { Component } from 'react'
-import { PostCategory } from '@/model/post-category'
+import { PostCat } from '@/model/post-cat'
 
 type Props = {
-    allCats: PostCategory[]
+    userCats: PostCat[]
     selectedCatIds: number[]
     onChange: (categoryIds: number[]) => void
 }
@@ -16,7 +16,7 @@ export class CatSelect extends Component<Props, State> {
     }
 
     render() {
-        const opts = this.props.allCats.map(cat => ({
+        const opts = this.props.userCats.map(cat => ({
             data: cat.categoryId,
             key: cat.categoryId,
             text: cat.title,

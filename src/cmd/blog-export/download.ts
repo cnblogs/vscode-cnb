@@ -1,7 +1,6 @@
 import { Alert } from '@/infra/alert'
 import { BlogExportApi } from '@/service/blog-export/blog-export'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
-import { globalCtx } from '@/ctx/global-ctx'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
 import { BlogExportRecordTreeItem } from '@/tree-view/model/blog-export'
 import { extTreeViews } from '@/tree-view/tree-view-register'
@@ -9,20 +8,14 @@ import fs from 'fs'
 import { Progress } from 'got'
 import path from 'path'
 import { promisify } from 'util'
-import { execCmd } from '@/infra/cmd'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import AdmZip from 'adm-zip'
+import { setCtx } from '@/ctx/global-ctx'
 
-function parseInput(input: unknown): BlogExportRecordTreeItem | null | undefined {
-    return input instanceof BlogExportRecordTreeItem ? input : null
-}
-
-export async function downloadBlogExport(input: unknown) {
-    const treeItem = parseInput(input)
-    if (treeItem == null) return
-    const {
-        record: { id: exportId, blogId },
-    } = treeItem
+export async function downloadBlogExport(treeItem?: BlogExportRecordTreeItem) {
+    if (!(treeItem instanceof BlogExportRecordTreeItem)) return
+    const exportId = treeItem.record.id
+    const blogId = treeItem.record.blogId
 
     if (blogId < 0 || exportId <= 0) return
 
@@ -31,18 +24,18 @@ export async function downloadBlogExport(input: unknown) {
     const nonZipFilePath = path.join(targetDir, treeItem.record.fileName)
     const zipFilePath = nonZipFilePath + '.zip'
     const downloadStream = BlogExportApi.download(blogId, exportId)
-    const isFileExist = await promisify(fs.exists)(zipFilePath)
+    const isFileExist = fs.existsSync(zipFilePath)
 
-    extTreeViews.blogExport.reveal(treeItem, { expand: true }).then(undefined, console.warn)
+    await extTreeViews.blogExport.reveal(treeItem, { expand: true })
 
     const { optionalInstance: blogExportProvider } = BlogExportProvider
-    await setIsDownloading(true)
+    await setCtx('backup.isDownloading', true)
 
-    const onError = (msg: string) => {
+    const onError = async (msg: string) => {
         void Alert.warn(msg)
         if (!isFileExist) fs.rmSync(zipFilePath)
         blogExportProvider?.refreshItem(treeItem)
-        setIsDownloading(false).then(undefined, console.warn)
+        await setCtx('backup.isDownloading', false)
     }
 
     downloadStream
@@ -53,45 +46,41 @@ export async function downloadBlogExport(input: unknown) {
         })
         .on('error', e => {
             treeItem.reportDownloadingProgress(null)
-            onError('下载博客备份失败' + ', ' + e.toString())
+            void onError('下载博客备份失败' + ', ' + e.toString())
         })
         .on('response', () => {
             const statusCode = downloadStream.response?.statusCode
-            if (statusCode != null && statusCode >= 200 && statusCode < 300) {
-                treeItem.reportDownloadingProgress({ percentage: 0 })
 
-                blogExportProvider?.refreshItem(treeItem)
-                downloadStream.pipe(
-                    fs
-                        .createWriteStream(zipFilePath)
-                        .on('error', error => {
-                            onError(`写入文件 ${zipFilePath} 时发生异常, ${error.message}`)
-                        })
-                        .on('finish', () => {
-                            treeItem.reportDownloadingProgress({ percentage: 100, message: '解压中' })
-                            blogExportProvider?.refreshItem(treeItem)
+            if (!(statusCode !== undefined && statusCode >= 200 && statusCode < 300))
+                void setCtx('backup.isDownloading', false)
 
-                            void (async () => {
-                                try {
-                                    const entry = new AdmZip(zipFilePath)
-                                    await promisify(entry.extractAllToAsync.bind(entry))(targetDir, true, undefined)
-                                    await promisify(fs.rm)(zipFilePath)
-                                    await DownloadedExportStore.add(nonZipFilePath, exportId)
-                                    treeItem.reportDownloadingProgress(null)
-                                    blogExportProvider?.refreshItem(treeItem)
-                                    await blogExportProvider?.refreshDownloadedExports()
-                                } finally {
-                                    setIsDownloading(false).then(undefined, console.warn)
-                                }
-                            })()
-                        })
-                )
-            } else {
-                setIsDownloading(false).then(undefined, console.warn)
-            }
+            treeItem.reportDownloadingProgress({ percentage: 0 })
+
+            blogExportProvider?.refreshItem(treeItem)
+            downloadStream.pipe(
+                fs
+                    .createWriteStream(zipFilePath)
+                    .on('error', e => {
+                        void onError(`写入文件 ${zipFilePath} 失败: ${e.message}`)
+                    })
+                    .on('finish', () => {
+                        treeItem.reportDownloadingProgress({ percentage: 100, message: '解压中' })
+                        blogExportProvider?.refreshItem(treeItem)
+
+                        void (async () => {
+                            try {
+                                const entry = new AdmZip(zipFilePath)
+                                await promisify(entry.extractAllToAsync.bind(entry))(targetDir, true, undefined)
+                                await promisify(fs.rm)(zipFilePath)
+                                await DownloadedExportStore.add(nonZipFilePath, exportId)
+                                treeItem.reportDownloadingProgress(null)
+                                blogExportProvider?.refreshItem(treeItem)
+                                await blogExportProvider?.refreshDownloadedExports()
+                            } finally {
+                                void setCtx('backup.isDownloading', false)
+                            }
+                        })()
+                    })
+            )
         })
-}
-
-function setIsDownloading(value: boolean) {
-    return execCmd('setContext', `${globalCtx.extName}.backup.downloading`, value || undefined)
 }

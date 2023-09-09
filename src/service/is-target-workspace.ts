@@ -1,8 +1,7 @@
 import os from 'os'
 import { workspace } from 'vscode'
-import { globalCtx } from '@/ctx/global-ctx'
-import { execCmd } from '@/infra/cmd'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
+import { setCtx } from '@/ctx/global-ctx'
 
 const diskSymbolRegex = /^(\S{1,5}:)(.*)/
 
@@ -18,6 +17,6 @@ export const isTargetWorkspace = (): boolean => {
         targetFolder = targetFolder.replace(diskSymbolRegex, replacer)
     }
     const isTarget = currentFolder === targetFolder
-    void execCmd('setContext', `${globalCtx.extName}.isTargetWorkspace`, isTarget)
+    void setCtx('isTargetWorkspace', isTarget)
     return isTarget
 }

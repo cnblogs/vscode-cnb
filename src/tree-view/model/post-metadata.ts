@@ -6,12 +6,12 @@ import zhCN from 'date-fns/locale/zh-CN'
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
 import { AccessPermission, Post, formatAccessPermission } from '@/model/post'
 import { PostEditDto } from '@/model/post-edit-dto'
-import { PostCategoryService } from '@/service/post/post-category'
+import { PostCatService } from '@/service/post/post-cat'
 import { PostService } from '@/service/post/post'
 import { BaseEntryTreeItem } from './base-entry-tree-item'
 import { BaseTreeItemSource } from './base-tree-item-source'
 import { PostTreeItem } from './post-tree-item'
-import { PostCategory } from '@/model/post-category'
+import { PostCat } from '@/model/post-cat'
 
 export enum RootPostMetadataType {
     categoryEntry = 'categoryEntry',
@@ -34,8 +34,8 @@ const rootMetadataMap = (parsedPost: Post, postEditDto: PostEditDto | undefined)
         [
             RootPostMetadataType.categoryEntry,
             () =>
-                PostCategoryMetadata.parse(parsedPost, postEditDto).then<PostMetadata | null, null>(
-                    x => (x.length <= 0 ? null : new PostCategoryEntryMetadata(parsedPost, x)),
+                PostCatMetadata.parse(parsedPost, postEditDto).then<PostMetadata | null, null>(
+                    x => (x.length <= 0 ? null : new PostCatEntryMetadata(parsedPost, x)),
                     () => null
                 ),
         ],
@@ -94,11 +94,11 @@ export abstract class PostEntryMetadata<T extends PostMetadata = PostMetadata>
     readonly getChildrenAsync = () => Promise.resolve(this.children)
 }
 
-export class PostCategoryEntryMetadata extends PostEntryMetadata<PostCategoryMetadata> {
+export class PostCatEntryMetadata extends PostEntryMetadata<PostCatMetadata> {
     constructor(parent: Post, children: PostMetadata[]) {
         super(
             parent,
-            children.filter((x): x is PostCategoryMetadata => x instanceof PostCategoryMetadata)
+            children.filter((x): x is PostCatMetadata => x instanceof PostCatMetadata)
         )
     }
 
@@ -124,7 +124,7 @@ export class PostTagEntryMetadata extends PostEntryMetadata<PostTagMetadata> {
     })
 }
 
-export class PostCategoryMetadata extends PostMetadata {
+export class PostCatMetadata extends PostMetadata {
     readonly icon = new ThemeIcon('vscode-cnb-folder-close')
 
     constructor(
@@ -135,18 +135,18 @@ export class PostCategoryMetadata extends PostMetadata {
         super(parent)
     }
 
-    static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCategoryMetadata[]> {
+    static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCatMetadata[]> {
         if (editDto === undefined) editDto = await PostService.getPostEditDto(parent.id)
 
         const categoryIds = editDto.post.categoryIds ?? []
-        const futList = categoryIds.map(PostCategoryService.getOne)
+        const futList = categoryIds.map(PostCatService.getOne)
         const categoryList = await Promise.all(futList)
 
         return categoryList
-            .filter((x): x is PostCategory => x != null)
+            .filter((x): x is PostCat => x != null)
             .map(
                 category =>
-                    new PostCategoryMetadata(
+                    new PostCatMetadata(
                         parent,
                         category
                             .flattenParents(true)

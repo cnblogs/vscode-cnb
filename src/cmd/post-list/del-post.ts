@@ -72,7 +72,7 @@ export async function delSelectedPost(arg: unknown) {
                     .map(p => PostFileMapManager.getFilePath(p.id) ?? '')
                     .filter(x => x !== '')
                     .forEach(path => {
-                        workspace.fs.delete(Uri.file(path)).then(undefined, e => console.error(e))
+                        void workspace.fs.delete(Uri.file(path))
                     })
             }
             await PostFileMapManager.updateOrCreateMany({

@@ -1,23 +1,22 @@
 import { flattenDepth, take } from 'lodash-es'
 import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { globalCtx } from '@/ctx/global-ctx'
-import { PostCategoryService } from '@/service/post/post-category'
+import { PostCatService } from '@/service/post/post-cat'
 import { PostService } from '@/service/post/post'
 import { toTreeItem } from '@/tree-view/convert'
-import { PostCategoriesListTreeItem } from '@/tree-view/model/category-list-tree-item'
-import { PostCategoryTreeItem } from '@/tree-view/model/post-category-tree-item'
+import { PostCatListTreeItem } from '@/tree-view/model/category-list-tree-item'
+import { PostCatTreeItem } from '@/tree-view/model/post-category-tree-item'
 import { PostEntryMetadata, PostMetadata, RootPostMetadataType } from '@/tree-view/model/post-metadata'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { Alert } from '@/infra/alert'
-import { execCmd } from '@/infra/cmd'
+import { setCtx } from '@/ctx/global-ctx'
 
-export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCategoriesListTreeItem> {
-    private _treeDataChanged = new EventEmitter<PostCategoriesListTreeItem | null | undefined>()
-    private _isRefreshing = false
-    private _roots: PostCategoryTreeItem[] | null = null
+export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTreeItem> {
+    private _treeDataChanged = new EventEmitter<PostCatListTreeItem | null | undefined>()
+    private _isLoading = false
+    private _roots: PostCatTreeItem[] | null = null
 
-    get isRefreshing() {
-        return this._isRefreshing
+    get isLoading() {
+        return this._isLoading
     }
 
     get roots() {
@@ -28,9 +27,7 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
         return (
             flattenDepth(
                 this._roots?.map(
-                    x =>
-                        x.children?.filter((c): c is PostTreeItem<PostCategoryTreeItem> => c instanceof PostTreeItem) ??
-                        []
+                    x => x.children?.filter((c): c is PostTreeItem<PostCatTreeItem> => c instanceof PostTreeItem) ?? []
                 ),
                 1
             ) ?? []
@@ -42,20 +39,20 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
     }
 
     async setIsRefreshing(value: boolean) {
-        await execCmd('setContext', `${globalCtx.extName}.postCategoriesList.isRefreshing`, value)
-        this._isRefreshing = value
+        await setCtx('post-cat-list.isLoading', value)
+        this._isLoading = value
     }
 
-    getTreeItem(element: PostCategoriesListTreeItem): TreeItem | Thenable<TreeItem> {
-        return toTreeItem(element)
+    getTreeItem(el: PostCatListTreeItem): TreeItem | Thenable<TreeItem> {
+        return toTreeItem(el)
     }
 
-    getChildren(item?: PostCategoriesListTreeItem): ProviderResult<PostCategoriesListTreeItem[]> {
-        if (this.isRefreshing) return Promise.resolve([])
+    getChildren(item?: PostCatListTreeItem): ProviderResult<PostCatListTreeItem[]> {
+        if (this.isLoading) return Promise.resolve([])
 
         if (item === undefined) {
-            return PostCategoryService.getAll().then(list => list.map(c => new PostCategoryTreeItem(c)))
-        } else if (item instanceof PostCategoryTreeItem) {
+            return PostCatService.getAll().then(list => list.map(c => new PostCatTreeItem(c)))
+        } else if (item instanceof PostCatTreeItem) {
             const categoryId = item.category.categoryId
             return Promise.all([this.getCategories(categoryId), this.getPost(item)]).then(
                 ([childCategories, childPost]) => (item.children = [...childCategories, ...childPost])
@@ -69,9 +66,9 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
         return Promise.resolve([])
     }
 
-    getParent = (el: any) => el.parent as PostCategoriesListTreeItem | null | undefined
+    getParent = (el: any) => el.parent as PostCatListTreeItem | null | undefined
 
-    fireTreeDataChangedEvent(item?: PostCategoriesListTreeItem) {
+    fireTreeDataChangedEvent(item?: PostCatListTreeItem) {
         this._treeDataChanged.fire(item)
     }
 
@@ -82,7 +79,7 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
 
     onPostUpdated({ refreshPost = false, postIds }: { postIds: number[]; refreshPost?: boolean }) {
         const postTreeItems = this.flattenPostItems.filter(x => postIds.includes(x.post.id))
-        const categories = new Set<PostCategoryTreeItem>()
+        const categories = new Set<PostCatTreeItem>()
         postTreeItems.forEach(treeItem => {
             if (treeItem.parent === undefined) return
 
@@ -96,15 +93,13 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
         })
     }
 
-    private async getPost(parent: PostCategoryTreeItem): Promise<PostTreeItem[]> {
-        const {
-            category: { categoryId },
-        } = parent
+    private async getPost(parent: PostCatTreeItem): Promise<PostTreeItem[]> {
+        const catId = parent.category.categoryId
 
-        const data = await PostService.fetchPostList({ categoryId, pageSize: 100 })
+        const data = await PostService.search(1, 100, undefined, catId)
         const postList = data.page.items
         const arr = postList.map(x =>
-            Object.assign(new PostTreeItem<PostCategoryTreeItem>(x, true), {
+            Object.assign(new PostTreeItem<PostCatTreeItem>(x, true), {
                 parent,
             })
         )
@@ -119,9 +114,9 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
     private async getCategories(parentId: number) {
         await this.setIsRefreshing(true)
         try {
-            const categories = await PostCategoryService.getAllUnder(parentId)
+            const categories = await PostCatService.getAllUnder(parentId)
             await this.setIsRefreshing(false)
-            return categories.map(x => new PostCategoryTreeItem(x))
+            return categories.map(x => new PostCatTreeItem(x))
         } catch (e) {
             void Alert.err(`获取博文分类失败: ${<string>e}`)
             await this.setIsRefreshing(false)
@@ -130,4 +125,4 @@ export class PostCategoryTreeDataProvider implements TreeDataProvider<PostCatego
     }
 }
 
-export const postCategoryDataProvider = new PostCategoryTreeDataProvider()
+export const postCategoryDataProvider = new PostCatTreeDataProvider()

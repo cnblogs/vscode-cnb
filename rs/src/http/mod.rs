@@ -1,5 +1,6 @@
 pub mod del;
 pub mod get;
+mod mime_infer;
 pub mod post;
 pub mod put;
 

@@ -35,29 +35,37 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         return this._treeDataChangedSource.event
     }
 
-    getTreeItem(element: BlogExportTreeItem): TreeItem | Thenable<TreeItem> {
-        return element instanceof TreeItem ? element : element.toTreeItem()
+    getTreeItem(el: BlogExportTreeItem): TreeItem | Thenable<TreeItem> {
+        return el instanceof TreeItem ? el : el.toTreeItem()
     }
 
-    getChildren(element?: BlogExportTreeItem | null): ProviderResult<BlogExportTreeItem[]> {
-        if (element instanceof BlogExportRecordTreeItem) return element.getChildrenAsync()
-        else if (element instanceof DownloadedExportsEntryTreeItem) return element.getChildrenAsync()
-        else if (element instanceof DownloadedExportTreeItem) return element.getChildrenAsync()
-        else if (element instanceof ExportPostEntryTreeItem) return element.getChildrenAsync()
-        else if (element == null)
+    getChildren(el?: BlogExportTreeItem | null): ProviderResult<BlogExportTreeItem[]> {
+        if (
+            el instanceof BlogExportRecordTreeItem ||
+            el instanceof DownloadedExportsEntryTreeItem ||
+            el instanceof ExportPostEntryTreeItem ||
+            el instanceof DownloadedExportTreeItem
+        ) {
+            // TODO: fix lint
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            return el.getChildrenAsync()
+        }
+
+        if (el == null)
             return [(this._downloadedExportEntry = new DownloadedExportsEntryTreeItem()), ...this.listRecords()]
 
         return null
     }
 
-    getParent(element: BlogExportTreeItem): ProviderResult<BlogExportTreeItem> {
+    getParent(el: BlogExportTreeItem): ProviderResult<BlogExportTreeItem> {
         if (
-            element instanceof BlogExportRecordMetadata ||
-            element instanceof DownloadedExportMetadata ||
-            element instanceof DownloadedExportTreeItem ||
-            element instanceof ExportPostEntryTreeItem
+            el instanceof BlogExportRecordMetadata ||
+            el instanceof DownloadedExportMetadata ||
+            el instanceof DownloadedExportTreeItem ||
+            el instanceof ExportPostEntryTreeItem
         )
-            return element.parent
+            return el.parent
 
         return null
     }
@@ -104,7 +112,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
             ? await BlogExportRecordsStore?.refresh()
                   .then(() => true)
                   .catch(e => {
-                      if (notifyOnError) void Alert.err(`刷新博客备份记录失败: ${<string>e}`)
+                      if (notifyOnError) void Alert.err(`刷新备份记录失败: ${<string>e}`)
                       return false
                   })
             : clearCache

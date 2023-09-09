@@ -11,7 +11,6 @@ impl RsHttp {
     pub async fn export_put(url: &str, header_json: &str, body: String) -> HomoResult<String> {
         panic_hook!();
         let body = put(url, header_json, body).await;
-
         body.homo_string()
     }
 }
@@ -21,12 +20,8 @@ async fn put(url: &str, header_json: &str, body: String) -> Result<String> {
 
     let client = reqwest::Client::new();
 
-    let resp = client
-        .put(url)
-        .headers(header_map)
-        .body(body)
-        .send()
-        .await?;
+    let req = client.put(url).headers(header_map).body(body);
+    let resp = req.send().await?;
 
     body_or_err(resp).await
 }

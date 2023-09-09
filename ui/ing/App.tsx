@@ -12,7 +12,7 @@ import { PartialTheme, Theme } from '@fluentui/react'
 export type State = {
     ingList?: Ing[]
     theme: Theme | PartialTheme
-    isRefreshing: boolean
+    isLoading: boolean
     comments?: Record<number, IngComment[]>
 }
 
@@ -22,7 +22,7 @@ export class App extends Component<unknown, State> {
 
         this.state = {
             theme: ActiveThemeProvider.activeTheme(),
-            isRefreshing: false,
+            isLoading: false,
         }
 
         this.observeMessages()
@@ -35,11 +35,11 @@ export class App extends Component<unknown, State> {
     }
 
     render(): ReactNode {
-        const { ingList, isRefreshing, theme, comments } = this.state
+        const { ingList, isLoading, theme, comments } = this.state
         return (
             <React.StrictMode>
                 <ThemeProvider theme={theme} style={{ fontSize: 'var(--vscode-font-size)' }}>
-                    {isRefreshing ? (
+                    {isLoading ? (
                         <Stack verticalAlign="center" style={{ height: '100vh' }}>
                             <Stack.Item>
                                 <Spinner label="加载中, 请稍后..."></Spinner>
@@ -56,10 +56,10 @@ export class App extends Component<unknown, State> {
     private observeMessages() {
         window.addEventListener('message', ({ data: { command, payload } }: { data: IngWebviewUiCmd }) => {
             if (command === Webview.Cmd.Ing.Ui.setAppState) {
-                const { ingList, isRefreshing, comments } = payload as Partial<State>
+                const { ingList, isLoading, comments } = payload as Partial<State>
                 this.setState({
                     ingList: ingList?.map(Ing.parse) ?? this.state.ingList,
-                    isRefreshing: isRefreshing ?? this.state.isRefreshing,
+                    isLoading: isLoading ?? this.state.isLoading,
                     comments:
                         comments !== undefined
                             ? Object.assign(
@@ -84,7 +84,7 @@ export class App extends Component<unknown, State> {
     private refresh() {
         const vscodeApi = getVsCodeApiSingleton()
         vscodeApi.postMessage({
-            command: Webview.Cmd.Ing.Ext.refreshingList,
+            command: Webview.Cmd.Ing.Ext.reload,
             payload: {},
         })
     }

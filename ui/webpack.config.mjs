@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/naming-convention */
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import { rmSync, readdirSync, cpSync, existsSync } from 'fs'
+import fs, { rmSync, readdirSync, cpSync } from 'fs'
 import tailwindConfig from './tailwind.config.js'
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
@@ -27,7 +24,7 @@ const buildEntry = () => {
     }
 
     const libPath = './ui/lib/'
-    if (existsSync(libPath)) cpSync(libPath, './dist/assets/ui/lib/', { recursive: true })
+    if (fs.existsSync(libPath)) cpSync(libPath, './dist/assets/ui/lib/', { recursive: true })
 
     cpSync('./node_modules/@fluentui/font-icons-mdl2/fonts/', './dist/assets/fonts/', { recursive: true })
 

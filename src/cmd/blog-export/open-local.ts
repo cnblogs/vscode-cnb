@@ -51,8 +51,7 @@ export async function openLocalExport(opts: Partial<typeof defaultOptions> = def
     }
     const dbFileName = path.basename(dbFilePath)
 
-    const isExist = await promisify(fs.exists)(dbFilePath)
-    if (!isExist) return void Alert.warn('文件不存在')
+    if (!fs.existsSync(dbFilePath)) return void Alert.warn('文件不存在')
 
     const treeProvider = BlogExportProvider.optionalInstance
     const dbFileSize = (await promisify(fs.stat)(dbFilePath)).size

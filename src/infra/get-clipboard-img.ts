@@ -1,13 +1,13 @@
 // reference: https://github.com/PicGo/PicGo-Core/blob/dev/src/utils/getClipboardImage.ts
 
-import { spawn } from 'child_process'
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import path from 'path'
 import fs from 'fs'
 import os from 'os'
 import isWsl from 'is-wsl'
 import { globalCtx } from '@/ctx/global-ctx'
 import { Alert } from '@/infra/alert'
-import { IClipboardImg } from '@/model/clipboard-img'
+import { ClipboardImg } from '@/model/clipboard-img'
 import format from 'date-fns/format'
 
 export type Platform = 'darwin' | 'win32' | 'win10' | 'linux' | 'wsl'
@@ -57,40 +57,41 @@ const platform2ScriptFilename: {
     wsl: 'wsl.sh',
 }
 
-const getClipboardImage = (): Promise<IClipboardImg> => {
+export function getClipboardImg() {
     const imagePath = path.join(
         globalCtx.extCtx?.asAbsolutePath('./') ?? '',
         `${format(new Date(), 'yyyyMMddHHmmss')}.png`
     )
-    return new Promise<IClipboardImg>((resolve, reject): void => {
-        const platform = getCurrentPlatform()
-        const scriptPath = path.join(__dirname, platform2ScriptFilename[platform])
-        // If the script does not exist yet, we need to write the content to the script file
-        if (!fs.existsSync(scriptPath)) fs.writeFileSync(scriptPath, platform2ScriptContent()[platform], 'utf8')
 
-        let execution
-        if (platform === 'darwin') {
-            execution = spawn('osascript', [scriptPath, imagePath])
-        } else if (platform === 'win32' || platform === 'win10') {
-            execution = spawn('powershell', [
-                '-noprofile',
-                '-noninteractive',
-                '-nologo',
-                '-sta',
-                '-executionpolicy',
-                'unrestricted',
-                // fix windows 10 native cmd crash bug when "picgo upload"
-                // https://github.com/PicGo/PicGo-Core/issues/32
-                // '-windowstyle','hidden',
-                // '-noexit',
-                '-file',
-                scriptPath,
-                imagePath,
-            ])
-        } else {
-            execution = spawn('sh', [scriptPath, imagePath])
-        }
+    const platform = getCurrentPlatform()
+    const scriptPath = path.join(__dirname, platform2ScriptFilename[platform])
+    // If the script does not exist yet, we need to write the content to the script file
+    if (!fs.existsSync(scriptPath)) fs.writeFileSync(scriptPath, platform2ScriptContent()[platform], 'utf8')
 
+    let execution: ChildProcessWithoutNullStreams
+    if (platform === 'darwin') {
+        execution = spawn('osascript', [scriptPath, imagePath])
+    } else if (platform === 'win32' || platform === 'win10') {
+        execution = spawn('powershell', [
+            '-noprofile',
+            '-noninteractive',
+            '-nologo',
+            '-sta',
+            '-executionpolicy',
+            'unrestricted',
+            // fix windows 10 native cmd crash bug when "picgo upload"
+            // https://github.com/PicGo/PicGo-Core/issues/32
+            // '-windowstyle','hidden',
+            // '-noexit',
+            '-file',
+            scriptPath,
+            imagePath,
+        ])
+    } else {
+        execution = spawn('sh', [scriptPath, imagePath])
+    }
+
+    return new Promise<ClipboardImg>((resolve, reject): void => {
         execution.stdout.on('data', (data: Buffer) => {
             if (platform === 'linux') {
                 if (data.toString().trim() === 'no xclip') {
@@ -120,5 +121,3 @@ const getClipboardImage = (): Promise<IClipboardImg> => {
         })
     })
 }
-
-export default getClipboardImage

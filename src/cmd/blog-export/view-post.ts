@@ -1,24 +1,17 @@
-import { DownloadedBlogExport } from '@/model/blog-export'
-import { ExportPost } from '@/model/blog-export/export-post'
 import { ExportPostTreeItem } from '@/tree-view/model/blog-export/post'
 import { URLSearchParams } from 'url'
 import { languages, TextDocumentContentProvider, Uri, window, workspace } from 'vscode'
 
-const schema = 'vscode-cnb.backup.post'
+export async function viewPostBlogExport(treeItem?: ExportPostTreeItem) {
+    if (!(treeItem instanceof ExportPostTreeItem)) return
+    if (treeItem.parent.downloadedExport == null) return
 
-function parseInput(input: unknown): ExportPostTreeItem | null | undefined {
-    return input instanceof ExportPostTreeItem ? input : null
-}
+    const downloadedExport = treeItem.parent.downloadedExport
+    const postId = treeItem.post.id
+    const postTitle = treeItem.post.title
+    const isMkdPost = treeItem.post.isMarkdown
 
-export async function viewPostBlogExport(input: unknown) {
-    const parsedInput = parseInput(input)
-    if (parsedInput == null || parsedInput.parent.downloadedExport == null) return
-
-    await provide(parsedInput.parent.downloadedExport, parsedInput.post)
-}
-
-async function provide(downloadedExport: DownloadedBlogExport, { id: postId, title, isMarkdown }: ExportPost) {
-    const schemaWithId = `${schema}-${postId}`
+    const schemaWithId = `vscode-cnb.backup.post-${postId}`
 
     const matchedEditor = window.visibleTextEditors.find(({ document }) => {
         if (document.uri.scheme === schemaWithId && !document.isClosed) {
@@ -45,11 +38,11 @@ async function provide(downloadedExport: DownloadedBlogExport, { id: postId, tit
         })()
     )
 
-    const uri = Uri.parse(`${schemaWithId}:(只读) ${title}.${isMarkdown ? 'md' : 'html'}?postId=${postId}`)
+    const uri = Uri.parse(`${schemaWithId}:(只读) ${postTitle}.${isMkdPost ? 'md' : 'html'}?postId=${postId}`)
     const document = await workspace.openTextDocument(uri)
 
     await window.showTextDocument(document)
-    await languages.setTextDocumentLanguage(document, isMarkdown ? 'markdown' : 'html')
+    await languages.setTextDocumentLanguage(document, isMkdPost ? 'markdown' : 'html')
 
     disposable.dispose()
 }

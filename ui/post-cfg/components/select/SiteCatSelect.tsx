@@ -1,53 +1,50 @@
 import { ActionButton, Checkbox, Label, Stack } from '@fluentui/react'
-import { SiteCategory } from '@/model/site-category'
+import { SiteCat } from '@/model/site-category'
 import React, { Component } from 'react'
-import { SiteCategoryStore } from '../../service/site-category-store'
 
 type Props = {
-    categoryIds: number[]
+    catIds: number[]
+    siteCats: SiteCat[]
     onChange: (siteCategoryId: number) => void
 }
 
 type State = {
-    siteCategories: SiteCategory[]
     isCollapsed: boolean
-    categoryIds: number[]
-    categoryExpandState: { [key: number]: boolean | undefined }
+    catIds: number[]
+    catExpandState: { [key: number]: boolean | undefined }
 }
 
 export class SiteCatSelect extends Component<Props, State> {
     constructor(props: Props) {
         super(props)
 
-        const siteCategories = SiteCategoryStore.get()
-        const categoryExpandState: { selectedParentCategoryId?: boolean } = {}
+        const catExpandState: { selectedParentCategoryId?: boolean } = {}
         let selectedParentCategoryId = -1
-        if (props.categoryIds.length > 0) {
+        if (props.catIds.length > 0) {
             selectedParentCategoryId =
-                siteCategories.find(x => x.children.find(child => child.id === props.categoryIds?.[0]))?.id ?? -1
+                this.props.siteCats.find(x => x.children.find(child => child.id === props.catIds?.[0]))?.id ?? -1
         }
-        if (selectedParentCategoryId > 0) categoryExpandState.selectedParentCategoryId = true
+        if (selectedParentCategoryId > 0) catExpandState.selectedParentCategoryId = true
 
         this.state = {
-            siteCategories: siteCategories,
             isCollapsed: true,
-            categoryIds: props.categoryIds,
-            categoryExpandState,
+            catIds: this.props.catIds,
+            catExpandState,
         }
     }
 
     render() {
-        const { siteCategories } = this.state
-        const { categoryIds } = this.state
-        const group = siteCategories.map(parent => {
+        const { siteCats } = this.props
+        const { catIds } = this.state
+        const group = siteCats.map(parent => {
             const { children, id: parentId } = parent
-            const { categoryExpandState } = this.state
-            const isParentExpanded = categoryExpandState[parentId] === true
+            const { catExpandState } = this.state
+            const isParentExpanded = catExpandState[parentId] === true
             const groupItems = children.map(child => (
                 <Checkbox
                     key={child.id.toString()}
                     label={child.title}
-                    checked={categoryIds.includes(child.id)}
+                    checked={catIds.includes(child.id)}
                     onChange={(_, checked) => this.onCheckboxChange(child.id, checked)}
                 ></Checkbox>
             ))
@@ -55,8 +52,8 @@ export class SiteCatSelect extends Component<Props, State> {
                 <Stack key={parentId} tokens={{ childrenGap: 12, padding: ' 0 0 0 8px' }}>
                     <Stack
                         onClick={() => {
-                            categoryExpandState[parentId] = !isParentExpanded
-                            this.setState({ categoryExpandState })
+                            catExpandState[parentId] = !isParentExpanded
+                            this.setState({ catExpandState })
                         }}
                         horizontal
                         verticalAlign="center"
@@ -69,7 +66,7 @@ export class SiteCatSelect extends Component<Props, State> {
                             ></ActionButton>
                         </ActionButton>
                     </Stack>
-                    {this.state.categoryExpandState[parentId] === true ? (
+                    {this.state.catExpandState[parentId] === true ? (
                         <Stack horizontal wrap tokens={{ childrenGap: 12, padding: '0 0 4px 16px' }}>
                             {groupItems}
                         </Stack>
@@ -120,7 +117,7 @@ export class SiteCatSelect extends Component<Props, State> {
     }
 
     private onCheckboxChange(categoryId: number, checked = false) {
-        this.setState({ categoryIds: checked ? [categoryId] : [] })
+        this.setState({ catIds: checked ? [categoryId] : [] })
         this.props.onChange(categoryId)
     }
 }

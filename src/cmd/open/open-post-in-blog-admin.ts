@@ -1,14 +1,21 @@
 import { Uri } from 'vscode'
-import { execCmd } from '@/infra/cmd'
 import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
+import { Browser } from '@/cmd/browser'
 
-export const openPostInBlogAdmin = (item?: Post | PostTreeItem | Uri) => {
-    if (item === undefined) return
-
-    item = item instanceof PostTreeItem ? item.post : item
-    const postId = item instanceof Post ? item.id : PostFileMapManager.getPostId(item.fsPath) ?? -1
-
-    void execCmd('vscode.open', Uri.parse(`https://i.cnblogs.com/posts/edit;postId=${postId}`))
+export const openPostInBlogAdmin = (arg?: PostTreeItem | Post | Uri) => {
+    if (arg instanceof Post) {
+        const postId = arg.id
+        return Browser.Open.open(`https://i.cnblogs.com/posts/edit;postId=${postId}`)
+    }
+    if (arg instanceof PostTreeItem) {
+        const postId = arg.post.id
+        return Browser.Open.open(`https://i.cnblogs.com/posts/edit;postId=${postId}`)
+    }
+    if (arg instanceof Uri) {
+        const postId = PostFileMapManager.getPostId(arg.path)
+        if (postId === undefined) return
+        return Browser.Open.open(`https://i.cnblogs.com/posts/edit;postId=${postId}`)
+    }
 }

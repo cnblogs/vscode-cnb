@@ -1,23 +1,21 @@
 import { workspace } from 'vscode'
 import { isTargetWorkspace } from '@/service/is-target-workspace'
 import { PostFileMapManager } from '@/service/post/post-file-map'
-import { refreshPostCategoryList } from '@/cmd/post-category/refresh-post-category-list'
 import { execCmd } from '@/infra/cmd'
 import { setupUi } from '@/setup/setup-ui'
 import { LocalState } from '@/ctx/local-state'
 import { PostListView } from '@/cmd/post-list/post-list-view'
+import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 
 export const setupCfgWatch = () =>
     workspace.onDidChangeConfiguration(ev => {
         if (ev.affectsConfiguration('cnblogsClient')) isTargetWorkspace()
 
-        if (ev.affectsConfiguration('workbench.iconTheme')) refreshPostCategoryList()
+        if (ev.affectsConfiguration('workbench.iconTheme')) postCategoryDataProvider.refresh()
 
-        if (ev.affectsConfiguration('cnblogsClient.pageSize.postList'))
-            PostListView.refresh({ queue: true }).catch(() => undefined)
+        if (ev.affectsConfiguration('cnblogsClient.pageSize.postList')) void PostListView.refresh({ queue: true })
 
-        if (ev.affectsConfiguration('cnblogsClient.markdown'))
-            execCmd('markdown.preview.refresh').then(undefined, () => undefined)
+        if (ev.affectsConfiguration('cnblogsClient.markdown')) void execCmd('markdown.preview.refresh')
 
         if (ev.affectsConfiguration('cnblogsClient.ui')) setupUi(LocalState.getExtCfg())
     })

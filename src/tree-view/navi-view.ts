@@ -1,12 +1,12 @@
 import { ProviderResult, TreeItem, TreeDataProvider, ThemeIcon } from 'vscode'
 
 export class NaviViewDataProvider implements TreeDataProvider<TreeItem> {
-    getTreeItem(element: TreeItem): TreeItem | Thenable<TreeItem> {
-        return element
+    getTreeItem(el: TreeItem): TreeItem | Thenable<TreeItem> {
+        return el
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getChildren(element?: TreeItem): ProviderResult<TreeItem[]> {
+    getChildren(el?: TreeItem): ProviderResult<TreeItem[]> {
         return [
             {
                 label: '首页',

@@ -41,7 +41,7 @@ export class ExportPostEntryTreeItem extends BaseTreeItemSource implements BaseE
         throw new Error('Not implemented')
     }
 
-    getChildrenAsync: () => Promise<ExportPostTreeItem[]> = async () => {
+    async getChildrenAsync() {
         const { ExportPostStore } = await import('@/service/blog-export/blog-export-post.store')
         const { downloadedExport } = this
         const store = new ExportPostStore(downloadedExport)

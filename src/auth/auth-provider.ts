@@ -1,4 +1,4 @@
-import { AuthSession } from '@/auth/auth-session'
+import { AuthenticationSession as AuthSession } from 'vscode'
 import { genVerifyChallengePair } from '@/service/code-challenge'
 import {
     authentication,
@@ -15,17 +15,17 @@ import {
 import { globalCtx } from '@/ctx/global-ctx'
 import { Oauth } from '@/auth/oauth'
 import { extUriHandler } from '@/infra/uri-handler'
-import { AccountInfo } from '@/auth/account-info'
 import { consUrlPara } from '@/infra/http/infra/url-para'
 import { RsRand } from '@/wasm'
 import { Alert } from '@/infra/alert'
 import { LocalState } from '@/ctx/local-state'
-import { AppConst } from '@/ctx/app-const'
+import { ExtConst } from '@/ctx/ext-const'
+import { UserService } from '@/service/user-info'
 
 async function browserSignIn(challengeCode: string, scopes: string[]) {
     const para = consUrlPara(
-        ['client_id', AppConst.CLIENT_ID],
-        ['client_secret', AppConst.CLIENT_SEC],
+        ['client_id', ExtConst.CLIENT_ID],
+        ['client_secret', ExtConst.CLIENT_SEC],
         ['response_type', 'code'],
         ['nonce', RsRand.string(32)],
         ['code_challenge', challengeCode],
@@ -34,7 +34,7 @@ async function browserSignIn(challengeCode: string, scopes: string[]) {
         ['redirect_uri', globalCtx.extUrl]
     )
 
-    const uri = Uri.parse(`${AppConst.ApiBase.OAUTH}/connect/authorize?${para}`)
+    const uri = Uri.parse(`${ExtConst.ApiBase.OAUTH}/connect/authorize?${para}`)
 
     try {
         await env.openExternal(uri)
@@ -47,10 +47,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     readonly providerId = 'cnblogs'
     readonly providerName = '博客园Cnblogs'
 
-    protected readonly sessionStorageKey = `${this.providerId}.sessions`
-    protected readonly allScopes = AppConst.OAUTH_SCOPES
-
-    private _allSessions?: AuthSession[] | null
+    private _allSessions: AuthSession[] = []
 
     private readonly _sessionChangeEmitter = new EventEmitter<APASCE>()
     private readonly _disposable = Disposable.from(
@@ -59,7 +56,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             supportsMultipleAccounts: false,
         }),
         this.onDidChangeSessions(() => {
-            this._allSessions = null
+            this._allSessions = []
         })
     )
 
@@ -74,13 +71,8 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         return sessions.filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
     }
 
-    createSession(scopes: string[]): Thenable<AuthSession> {
+    createSession(scopes: string[]) {
         const parsedScopes = this.ensureScopes(scopes)
-        const options = {
-            title: `${globalCtx.displayName} - 登录`,
-            cancellable: true,
-            location: ProgressLocation.Notification,
-        }
 
         const cancelTokenSrc = new CancellationTokenSource()
 
@@ -94,6 +86,12 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             },
             30 * 60 * 1000
         ) // 30 min
+
+        const options = {
+            title: `博客园客户端 - 登录`,
+            cancellable: true,
+            location: ProgressLocation.Notification,
+        }
 
         return window.withProgress(options, async (progress, cancelToken) => {
             progress.report({ message: '等待用户在浏览器中进行授权...' })
@@ -119,11 +117,9 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
                     try {
                         const token = await Oauth.getToken(verifyCode, authCode)
-                        const authSession = await this.onAccessTokenGranted(token.accessToken, {
-                            onStateChange(state) {
-                                progress.report({ message: state })
-                            },
-                        })
+                        const authSession = await this.onAccessTokenGranted(token, state =>
+                            progress.report({ message: state })
+                        )
 
                         resolve(authSession)
                     } catch (e) {
@@ -152,36 +148,26 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             },
             { remove: <AuthSession[]>[], keep: <AuthSession[]>[] }
         )
-        await LocalState.setSecret(this.sessionStorageKey, JSON.stringify(data.keep))
+        await LocalState.setSecret(ExtConst.EXT_SESSION_STORAGE_KEY, JSON.stringify(data.keep))
         this._sessionChangeEmitter.fire({ removed: data.remove, added: undefined, changed: undefined })
     }
 
-    async onAccessTokenGranted(
-        accessToken: string,
-        {
-            onStateChange,
-            shouldFireSessionAddedEvent = true,
-        }: {
-            onStateChange?: (state: string) => void
-            shouldFireSessionAddedEvent?: boolean
-        } = {}
-    ) {
+    async onAccessTokenGranted(token: string, onStateChange?: (state: string) => void) {
         onStateChange?.('正在获取账户信息...')
 
-        const accountInfo = await AccountInfo.get(accessToken)
-        if (accountInfo === undefined) throw Error('用户信息获取失败')
+        const userInfo = await UserService.getInfoWithToken(token)
+        if (userInfo === undefined) throw Error('用户信息获取失败')
+        const accountInfo = { id: userInfo.space_user_id.toString(), label: userInfo.display_name }
 
         onStateChange?.('即将完成...')
 
-        const session = new AuthSession(
-            accountInfo,
-            `${this.providerId}-${accountInfo.userInfo.SpaceUserID}`,
-            accessToken,
-            this.ensureScopes(null)
-        )
-        await LocalState.setSecret(this.sessionStorageKey, JSON.stringify([session]))
-
-        if (!shouldFireSessionAddedEvent) return session
+        const session = <AuthSession>{
+            account: accountInfo,
+            id: `${this.providerId}-${userInfo.space_user_id}`,
+            accessToken: token,
+            scopes: this.ensureScopes(null),
+        }
+        await LocalState.setSecret(ExtConst.EXT_SESSION_STORAGE_KEY, JSON.stringify([session]))
 
         this._sessionChangeEmitter.fire({
             added: [session],
@@ -196,13 +182,10 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         this._disposable.dispose()
     }
 
-    protected async getAllSessions(): Promise<AuthSession[]> {
-        if (this._allSessions == null || this._allSessions.length <= 0) {
-            const storage = await LocalState.getSecret(this.sessionStorageKey)
-            const sessions = JSON.parse(storage ?? '[]') as AuthSession[] | null | undefined
-
-            if (Array.isArray(sessions)) this._allSessions = sessions
-            else this._allSessions = []
+    protected async getAllSessions() {
+        if (this._allSessions.length === 0) {
+            const sessionJsonList = await LocalState.getSecret(ExtConst.EXT_SESSION_STORAGE_KEY)
+            this._allSessions = JSON.parse(sessionJsonList ?? '[]') as AuthSession[]
         }
 
         return this._allSessions
@@ -210,7 +193,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
     private ensureScopes(
         scopes: string[] | null | undefined,
-        { default: defaultScopes = this.allScopes } = {}
+        { default: defaultScopes = ExtConst.OAUTH_SCOPES } = {}
     ): string[] {
         return scopes == null || scopes.length <= 0 ? defaultScopes : scopes
     }

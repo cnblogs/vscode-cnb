@@ -1,23 +1,19 @@
 mod get_info;
 
+use crate::cnb::oauth::Token;
 use crate::panic_hook;
-use alloc::string::{String, ToString};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = UserReq)]
 pub struct UserReq {
-    token: String,
-    is_pat_token: bool,
+    token: Token,
 }
 
 #[wasm_bindgen(js_class = UserReq)]
 impl UserReq {
     #[wasm_bindgen(constructor)]
-    pub fn new(token: &str, is_pat_token: bool) -> UserReq {
+    pub fn new(token: Token) -> UserReq {
         panic_hook!();
-        UserReq {
-            token: token.to_string(),
-            is_pat_token,
-        }
+        UserReq { token }
     }
 }

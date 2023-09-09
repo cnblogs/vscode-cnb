@@ -2,9 +2,9 @@ import { Post } from './post'
 import { Webview } from './webview-cmd'
 import { ColorThemeKind } from 'vscode'
 import { ImgUploadStatus } from './img-upload-status'
-import { SiteCategory } from '@/model/site-category'
-import { PostCategory } from '@/model/post-category'
-import { PostTag } from '@/model/post-tag'
+import { PostCat } from '@/model/post-cat'
+import { SiteCat } from '@/model/site-category'
+import { PostTag } from '@/wasm'
 
 export namespace WebviewMsg {
     export type Msg = {
@@ -14,10 +14,10 @@ export namespace WebviewMsg {
     export interface EditPostCfgMsg extends Msg {
         post: Post
         activeTheme: ColorThemeKind
-        personalCategories: PostCategory[]
-        siteCategories: SiteCategory[]
+        userCats: PostCat[]
+        siteCats: SiteCat[]
         tags: PostTag[]
-        breadcrumbs?: string[]
+        breadcrumbs: string[]
         fileName: string
     }
 
@@ -26,7 +26,7 @@ export namespace WebviewMsg {
     }
 
     export interface UpdateBreadcrumbMsg extends Msg {
-        breadcrumbs?: string[]
+        breadcrumbs: string[]
     }
 
     export interface UploadImgMsg extends Msg {

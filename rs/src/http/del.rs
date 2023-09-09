@@ -11,7 +11,6 @@ impl RsHttp {
     pub async fn export_del(url: &str, header_json: &str) -> HomoResult<String> {
         panic_hook!();
         let body = del(url, header_json).await;
-
         body.homo_string()
     }
 }
@@ -21,7 +20,8 @@ async fn del(url: &str, header_json: &str) -> Result<String> {
 
     let client = reqwest::Client::new();
 
-    let resp = client.delete(url).headers(header_map).send().await?;
+    let req = client.delete(url).headers(header_map);
+    let resp = req.send().await?;
 
     body_or_err(resp).await
 }

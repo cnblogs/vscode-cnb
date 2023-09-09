@@ -1,11 +1,11 @@
 pub const BLOG_BACKEND: &str = "https://i.cnblogs.com/api";
+
 #[macro_export]
 macro_rules! blog_backend {
     ($($arg:tt)*) => {{
         use $crate::cnb::api_base::BLOG_BACKEND;
         use alloc::format;
-        let rest = format!($($arg)*);
-        format!("{}{}", BLOG_BACKEND, rest)
+        format!("{}{}", BLOG_BACKEND, format_args!($($arg)*))
     }};
 }
 
@@ -15,8 +15,7 @@ macro_rules! openapi {
     ($($arg:tt)*) => {{
         use $crate::cnb::api_base::OPENAPI;
         use alloc::format;
-        let rest = format!($($arg)*);
-        format!("{}{}", OPENAPI, rest)
+        format!("{}{}", OPENAPI, format_args!($($arg)*))
     }};
 }
 
@@ -26,7 +25,16 @@ macro_rules! oauth {
     ($($arg:tt)*) => {{
         use $crate::cnb::api_base::OAUTH;
         use alloc::format;
-        let rest = format!($($arg)*);
-        format!("{}{}", OAUTH, rest)
+        format!("{}{}", OAUTH, format_args!($($arg)*))
+    }};
+}
+
+pub const BACKUP: &str = "https://export.cnblogs.com";
+#[macro_export]
+macro_rules! backup {
+    ($($arg:tt)*) => {{
+        use $crate::cnb::api_base::BACKUP;
+        use alloc::format;
+        format!("{}{}", OAUTH, format_args!($($arg)*))
     }};
 }

@@ -15,12 +15,17 @@ import { SiteHomeContributionOptionSelect } from './select/SiteHomeContributionO
 import UrlSlugInput from './input/UrlSlugInput'
 import { PermissionSelect } from './select/PermissionSelect'
 import { SiteCatSelect } from './select/SiteCatSelect'
-import { PersonalCategoryStore } from '../service/personal-category-store'
+import { SiteCat } from '@/model/site-category'
+import { PostCat } from '@/model/post-cat'
+import { PostTag } from '@/wasm'
 
 type Props = {
     post: Post
     fileName?: string
     onTitleChange: (title: string) => void
+    userCats: PostCat[]
+    siteCats: SiteCat[]
+    tags: PostTag[]
 }
 type State = Post
 
@@ -44,9 +49,13 @@ export class PostForm extends Component<Props, State> {
                         this.props.onTitleChange?.(v ?? '')
                     }}
                 ></TitleInput>
-                <TagInput selectedTagNames={state.tags ?? []} onChange={tags => this.setState({ tags })} />
+                <TagInput
+                    selectedTagNames={state.tags ?? []}
+                    onChange={tags => this.setState({ tags })}
+                    tags={this.props.tags}
+                />
                 <CatSelect
-                    allCats={PersonalCategoryStore.get()}
+                    userCats={props.userCats}
                     selectedCatIds={state.categoryIds}
                     onChange={categoryIds => this.setState({ categoryIds })}
                 />
@@ -77,7 +86,8 @@ export class PostForm extends Component<Props, State> {
                     inSiteHome={state.inSiteHome}
                 />
                 <SiteCatSelect
-                    categoryIds={state.siteCategoryId !== undefined ? [state.siteCategoryId] : []}
+                    catIds={state.siteCategoryId !== undefined ? [state.siteCategoryId] : []}
+                    siteCats={props.siteCats}
                     onChange={categoryId => this.setState({ siteCategoryId: categoryId })}
                 />
                 <UrlSlugInput entryName={state.entryName} onChange={value => this.setState({ entryName: value })} />

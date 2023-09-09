@@ -1,12 +1,12 @@
-import { PostCategory } from '@/model/post-category'
+import { PostCat } from '@/model/post-cat'
 import { toTreeItem } from '@/tree-view/convert'
 import { BaseTreeItemSource } from './base-tree-item-source'
 import { PostTreeItem } from './post-tree-item'
 
-export class PostCategoryTreeItem extends BaseTreeItemSource {
+export class PostCatTreeItem extends BaseTreeItemSource {
     constructor(
-        public readonly category: PostCategory,
-        public children: (PostCategoryTreeItem | PostTreeItem)[] = []
+        public readonly category: PostCat,
+        public children: (PostCatTreeItem | PostTreeItem)[] = []
     ) {
         super()
     }

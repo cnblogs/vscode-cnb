@@ -8,29 +8,18 @@ import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
 
-function parseInput(input: unknown): DownloadedExportTreeItem | BlogExportRecordTreeItem | null | undefined {
-    return input instanceof DownloadedExportTreeItem || input instanceof BlogExportRecordTreeItem ? input : null
+export async function deleteBlogExport(treeItem?: DownloadedExportTreeItem | BlogExportRecordTreeItem): Promise<void> {
+    if (treeItem instanceof DownloadedExportTreeItem) await deleteDownloadedExportItem(treeItem)
+    if (treeItem instanceof BlogExportRecordTreeItem) await deleteExportRecordItem(treeItem)
 }
 
-export async function deleteBlogExport(input: unknown): Promise<void> {
-    const parsedInput = parseInput(input)
-    if (parsedInput instanceof DownloadedExportTreeItem) await deleteDownloadedExportItem(parsedInput)
-    if (parsedInput instanceof BlogExportRecordTreeItem) await deleteExportRecordItem(parsedInput)
-}
-
-function confirm(
-    itemName: string,
-    hasLocalFile = true,
-    detail: string
-): Thenable<null | { shouldDeleteLocal: boolean } | undefined> {
+async function confirm(itemName: string, hasLocalFile = true, detail: string) {
     const options = [
         { title: '确定' + (hasLocalFile ? '(保留本地文件)' : ''), result: { shouldDeleteLocal: false } },
         ...(hasLocalFile ? [{ title: '确定(同时删除本地文件)', result: { shouldDeleteLocal: true } }] : []),
     ]
-    return Alert.info(`确定要删除 ${itemName} 吗?`, { modal: true, detail }, ...options).then(
-        x => x?.result,
-        () => undefined
-    )
+    const x = await Alert.info(`确定要删除 ${itemName} 吗?`, { modal: true, detail }, ...options)
+    return x?.result
 }
 
 async function deleteDownloadedExportItem(
@@ -40,7 +29,7 @@ async function deleteDownloadedExportItem(
     const result = hasConfirmed
         ? { shouldDeleteLocal: true }
         : await confirm(`博客备份-${path.basename(item.downloadedExport.filePath)}`, false, '删除后备份文件无法恢复')
-    if (result == null) return
+    if (result === undefined) return
 
     await removeDownloadedBlogExport(item.downloadedExport, { shouldDeleteLocal: true })
 
@@ -53,7 +42,7 @@ async function deleteExportRecordItem(item: BlogExportRecordTreeItem) {
     const downloaded = await DownloadedExportStore.findById(record.id)
 
     const confirmResult = await confirm(`云端博客备份-${record.fileName}`, downloaded != null, '删除后备份无法恢复')
-    if (confirmResult == null) return
+    if (confirmResult === undefined) return
 
     const { shouldDeleteLocal } = confirmResult
     const hasDeleted = await BlogExportApi.del(record.id)

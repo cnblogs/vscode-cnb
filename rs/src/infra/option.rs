@@ -3,7 +3,7 @@ where
     Self: Sized,
 {
     #[inline]
-    fn into_some<E>(self) -> Option<Self> {
+    fn into_some(self) -> Option<Self> {
         Some(self)
     }
 }

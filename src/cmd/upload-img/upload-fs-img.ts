@@ -1,6 +1,5 @@
 import { ProgressLocation, window } from 'vscode'
-import { ImgService } from '@/service/img'
-import fs from 'fs'
+import { uploadImgFromPath } from '@/cmd/upload-img/upload-img-from-path'
 
 export async function uploadFsImage() {
     const uriList = await window.showOpenDialog({
@@ -13,21 +12,18 @@ export async function uploadFsImage() {
     })
     if (uriList === undefined) return
 
-    const imageFileUri = uriList[0]
+    const path = uriList[0].path
 
-    const imageFilePath = imageFileUri.fsPath
     return window.withProgress(
         {
             title: '正在上传图片',
             location: ProgressLocation.Notification,
         },
         async p => {
-            p.report({ increment: 20 })
-            const stream = fs.createReadStream(imageFilePath)
-            p.report({ increment: 60 })
-            const result = await ImgService.upload(stream)
+            p.report({ increment: 30 })
+            const url = await uploadImgFromPath(path)
             p.report({ increment: 100 })
-            return result
+            return url
         }
     )
 }

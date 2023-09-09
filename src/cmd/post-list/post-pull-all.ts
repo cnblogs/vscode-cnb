@@ -1,11 +1,11 @@
 import { PostService } from '@/service/post/post'
 import { Alert } from '@/infra/alert'
 import { PostFileMapManager } from '@/service/post/post-file-map'
-import { existsSync } from 'fs'
+import fs from 'fs'
 import { basename } from 'path'
 import { ProgressLocation, Uri, window, workspace } from 'vscode'
 import { buildLocalPostFileUri } from '@/cmd/post-list/open-post-in-vscode'
-import { AuthManager } from '@/auth/auth-manager'
+import { UserService } from '@/service/user-info'
 
 enum ConflictStrategy {
     ask,
@@ -26,7 +26,7 @@ const MAX_POST_LIMIT = 1000
 const MAX_BYTE_LIMIT = MAX_POST_LIMIT * 10000
 
 export async function postPullAll() {
-    const isVip = AuthManager.getUserInfo()?.IsVip ?? false
+    const isVip = (await UserService.getInfo())?.is_vip ?? false
     if (!isVip) {
         void Alert.info('下载随笔: 您是普通用户, 此功能目前仅面向 [VIP](https://cnblogs.vip/) 用户开放')
         return
@@ -56,7 +56,7 @@ export async function postPullAll() {
             const path = PostFileMapManager.getFilePath(post.id)
 
             // 本地没有博文或关联到的文件不存在
-            if (path === undefined || !existsSync(path)) {
+            if (path === undefined || !fs.existsSync(path)) {
                 const uri = await buildLocalPostFileUri(post, false)
                 const buf = Buffer.from(post.postBody)
                 await workspace.fs.writeFile(uri, buf)

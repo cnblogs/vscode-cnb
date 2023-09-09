@@ -1,5 +1,6 @@
 import { AuthManager } from '@/auth/auth-manager'
-import { EventEmitter, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode'
+import { EventEmitter, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode'
+import { UserService } from '@/service/user-info'
 
 export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     protected _onDidChangeTreeData = new EventEmitter<null | undefined>()
@@ -8,14 +9,14 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
         return this._onDidChangeTreeData.event
     }
 
-    getTreeItem(element: TreeItem): TreeItem | Thenable<TreeItem> {
-        return element
+    getTreeItem(el: TreeItem): TreeItem | Thenable<TreeItem> {
+        return el
     }
 
-    getChildren(element?: TreeItem): ProviderResult<TreeItem[]> {
-        if (!AuthManager.isAuthed() || element !== undefined) return []
+    async getChildren(el?: TreeItem) {
+        if (!(await AuthManager.isAuthed()) || el !== undefined) return []
 
-        const userName = AuthManager.getUserInfo()?.DisplayName
+        const userName = (await UserService.getInfo())?.display_name
         return [
             { label: userName, tooltip: '用户名', iconPath: new ThemeIcon('account') },
             {

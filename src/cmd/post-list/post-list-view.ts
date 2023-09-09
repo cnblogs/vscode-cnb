@@ -1,31 +1,28 @@
-import { globalCtx } from '@/ctx/global-ctx'
+import { setCtx } from '@/ctx/global-ctx'
 import { window } from 'vscode'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { Alert } from '@/infra/alert'
 import { PostListState } from '@/model/post-list-state'
 import { extTreeViews } from '@/tree-view/tree-view-register'
-import { execCmd } from '@/infra/cmd'
 import { PageList } from '@/model/page'
 import { getListState, updatePostListState } from '@/service/post/post-list-view'
 
 let refreshTask: Promise<boolean> | null = null
-let isRefreshing = false
+let isLoading = false
 
 async function setRefreshing(value = false) {
-    const extName = globalCtx.extName
-    await execCmd('setContext', `${extName}.post.list-view.refreshing`, value).then(undefined, () => false)
-    isRefreshing = value
+    await setCtx('post-list.isLoading', value)
+    isLoading = value
 }
 
 async function setPostListContext(pageCount: number, hasPrev: boolean, hasNext: boolean) {
-    const extName = globalCtx.extName
-    await execCmd('setContext', `${extName}.post.list-view.hasPrev`, hasPrev)
-    await execCmd('setContext', `${extName}.post.list-view.hasNext`, hasNext)
-    await execCmd('setContext', `${extName}.post.list-view.pageCount`, pageCount)
+    await setCtx('post-list.hasPrev', hasPrev)
+    await setCtx('post-list.hasNext', hasNext)
+    await setCtx('post-list.pageCount', pageCount)
 }
 
 async function goPage(f: (currentIndex: number) => number) {
-    if (isRefreshing) return
+    if (isLoading) return
 
     const state = getListState()
     let pageIndex = state?.pageIndex ?? 1
@@ -53,10 +50,10 @@ function updatePostListViewTitle() {
 
 export namespace PostListView {
     export async function refresh({ queue = false, pageIndex = 1 } = {}): Promise<boolean> {
-        if (isRefreshing && !queue) {
+        if (isLoading && !queue) {
             await refreshTask
             return false
-        } else if (isRefreshing && refreshTask != null) {
+        } else if (isLoading && refreshTask != null) {
             await refreshTask
             return refresh()
         }
@@ -79,7 +76,7 @@ export namespace PostListView {
         refreshTask = fut()
             .then(() => true)
             .catch(e => {
-                void Alert.err(`刷新博文列表失败: ${<string>e}`)
+                void Alert.err(`刷新随笔列表失败: ${<string>e}`)
                 return false
             })
             .finally(() => (refreshTask = null))
@@ -114,14 +111,14 @@ export namespace PostListView {
         export async function search() {
             const searchKey = await window.showInputBox({
                 ignoreFocusOut: true,
-                title: '搜索博文',
-                prompt: '输入关键词搜索博文',
+                title: '搜索随笔',
+                prompt: '输入关键词搜索随笔',
                 placeHolder: '在此输入关键词',
                 validateInput: value => (value.length <= 30 ? null : '最多输入30个字符'),
             })
             if (searchKey === undefined) return
 
-            await postDataProvider.search({ key: searchKey })
+            await postDataProvider.search(searchKey)
         }
 
         export const clear = () => postDataProvider.clearSearch()

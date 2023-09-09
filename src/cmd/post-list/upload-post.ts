@@ -14,9 +14,11 @@ import { saveFilePendingChanges } from '@/infra/save-file-pending-changes'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { PostListView } from '@/cmd/post-list/post-list-view'
-import { extractImg } from '@/cmd/extract-img/extract-img'
 import { LocalPost } from '@/service/local-post'
-import { existsSync } from 'fs'
+import fs from 'fs'
+import { extractImg } from '@/service/extract-img/extract-img'
+import { dirname } from 'path'
+import { Workspace } from '@/cmd/workspace'
 
 async function parseFileUri(fileUri?: Uri) {
     if (fileUri !== undefined && fileUri.scheme !== 'file') return undefined
@@ -62,17 +64,34 @@ export async function saveLocalPost(localPost: LocalPost) {
         beforeUpdate: async postToSave => {
             await saveFilePendingChanges(localPost.filePath)
 
-            if (!existsSync(localPost.filePath)) {
+            if (!fs.existsSync(localPost.filePath)) {
                 void Alert.warn('本地文件已删除, 无法新建博文')
                 return false
             }
-            const body = await localPost.readAllText()
-            if (isEmptyBody(body)) return false
+            const text = await localPost.readAllText()
+            if (isEmptyBody(text)) return false
 
+            // TODO: need refactor
             const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
-            if (autoExtractImgSrc !== undefined) await extractImg(Uri.file(localPost.filePath), autoExtractImgSrc)
+            const fileDir = dirname(localPost.filePath)
+            if (autoExtractImgSrc !== undefined) {
+                const extracted = await extractImg(text, fileDir, autoExtractImgSrc)
+                if (extracted !== undefined) {
+                    postToSave.postBody = extracted
 
-            postToSave.postBody = body
+                    if (MarkdownCfg.getApplyAutoExtractImgToLocal()) {
+                        const doc = window.visibleTextEditors.find(x => x.document.uri.fsPath === localPost.filePath)
+                            ?.document
+                        if (doc !== undefined) {
+                            const we = Workspace.resetTextDoc(doc, extracted)
+                            await workspace.applyEdit(we)
+                        }
+                    }
+                }
+            } else {
+                postToSave.postBody = text
+            }
+
             return true
         },
     })
@@ -105,11 +124,30 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto, conf
     const localFilePath = PostFileMapManager.getFilePath(post.id)
     if (localFilePath === undefined) return Alert.warn('本地无该博文的编辑记录')
 
-    const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
-    if (autoExtractImgSrc !== undefined) await extractImg(Uri.file(localFilePath), autoExtractImgSrc)
-
     await saveFilePendingChanges(localFilePath)
-    post.postBody = (await workspace.fs.readFile(Uri.file(localFilePath))).toString()
+
+    const localPost = new LocalPost(localFilePath)
+
+    // TODO: need refactor
+    const text = await localPost.readAllText()
+    const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
+    const fileDir = dirname(localPost.filePath)
+    if (autoExtractImgSrc !== undefined) {
+        const extracted = await extractImg(text, fileDir, autoExtractImgSrc)
+        if (extracted !== undefined) {
+            post.postBody = extracted
+
+            if (MarkdownCfg.getApplyAutoExtractImgToLocal()) {
+                const doc = window.visibleTextEditors.find(x => x.document.uri.fsPath === localPost.filePath)?.document
+                if (doc !== undefined) {
+                    const we = Workspace.resetTextDoc(doc, extracted)
+                    await workspace.applyEdit(we)
+                }
+            }
+        }
+    } else {
+        post.postBody = text
+    }
 
     if (isEmptyBody(post.postBody)) return false
 
