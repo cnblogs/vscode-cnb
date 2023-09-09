@@ -21,9 +21,10 @@ async function overwriteFile(path: string, text: string) {
 }
 
 // 单次累计随笔请求上限
-const MAX_POST_LIMIT = 1000
+const MAX_POST_LIMIT = 1024
 // 单次累计随笔字节上限
-const MAX_BYTE_LIMIT = MAX_POST_LIMIT * 10000
+const MAX_BYTE_LIMIT = MAX_POST_LIMIT * 1024 * 20
+const MAX_MB_LIMIT = Math.round(MAX_BYTE_LIMIT / 1024 / 1024)
 
 export async function postPullAll() {
     const isVip = (await UserService.getInfo())?.is_vip ?? false
@@ -31,6 +32,16 @@ export async function postPullAll() {
         void Alert.info('下载随笔: 您是普通用户, 此功能目前仅面向 [VIP](https://cnblogs.vip/) 用户开放')
         return
     }
+
+    const answer = await Alert.info(
+        '确认下载所有随笔吗?',
+        {
+            modal: true,
+            detail: `单次下载最多${MAX_POST_LIMIT}篇，累计字符数不超过${MAX_MB_LIMIT}MB`,
+        },
+        '确认'
+    )
+    if (answer !== '确认') return
 
     let strategy = ConflictStrategy.ask
 
