@@ -23,7 +23,12 @@ export async function revealPostListItem(
     if (post === undefined) return
 
     const view = extTreeViews.visiblePostList()
-    await view?.reveal(post, options)
+
+    try {
+        await view?.reveal(post, options)
+    } catch (ex) {
+        console.log(ex)
+    }
 }
 
 export function getListState() {
