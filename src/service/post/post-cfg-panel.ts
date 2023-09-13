@@ -43,10 +43,16 @@ export namespace PostCfgPanel {
         await openPostFile(post, {
             viewColumn: vscode.ViewColumn.One,
         })
+
         let panel = findPanelById(`${post.id}-${post.title}`)
         if (panel !== undefined) {
-            revealPanel(panel, option)
-            return
+            try {
+                revealPanel(panel, option)
+                return
+            } catch (e) {
+                console.log(e)
+                panels.delete(panel.viewType)
+            }
         }
 
         const panelId = `${post.id}-${post.title}`
@@ -108,6 +114,7 @@ const revealPanel = (panel: WebviewPanel, options: PostCfgPanelOpenOption) => {
         command: Webview.Cmd.Ui.updateBreadcrumbs,
         breadcrumbs,
     } as WebviewMsg.UpdateBreadcrumbMsg)
+
     panel.reveal()
 }
 
