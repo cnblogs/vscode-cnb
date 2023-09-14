@@ -8,7 +8,22 @@ use crate::panic_hook;
 use alloc::string::{String, ToString};
 use lazy_static::lazy_static;
 use regex::Regex;
+use serde_repr::{Deserialize_repr, Serialize_repr};
 use wasm_bindgen::prelude::*;
+
+#[derive(Clone, Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u8)]
+pub enum IngSendFrom {
+    None = 0,
+    Ms = 1,
+    GTalk = 2,
+    Qq = 3,
+    Sms = 5,
+    CellPhone = 6,
+    Web = 8,
+    VsCode = 9,
+    Cli = 13,
+}
 
 #[wasm_bindgen(js_name = IngReq)]
 pub struct IngReq {

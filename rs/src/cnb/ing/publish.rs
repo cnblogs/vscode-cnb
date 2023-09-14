@@ -1,4 +1,4 @@
-use crate::cnb::ing::IngReq;
+use crate::cnb::ing::{IngReq, IngSendFrom};
 use crate::cnb::oauth::Token;
 use crate::http::unit_or_err;
 use crate::infra::http::setup_auth;
@@ -27,6 +27,7 @@ async fn publish(token: &Token, content: &str, is_private: bool) -> Result<()> {
     let body = json!({
         "content": content,
         "isPrivate": is_private,
+        "clientType": IngSendFrom::VsCode,
     })
     .to_string();
 
