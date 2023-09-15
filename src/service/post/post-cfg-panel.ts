@@ -44,6 +44,8 @@ export namespace PostCfgPanel {
             viewColumn: vscode.ViewColumn.One,
         })
 
+        const channel = vscode.window.createOutputChannel('vscode-cnb')
+
         let panel = findPanelById(`${post.id}-${post.title}`)
         if (panel !== undefined) {
             try {
@@ -68,6 +70,8 @@ export namespace PostCfgPanel {
         let fileName: string
         if (localFileUri !== undefined) fileName = path.basename(localFileUri.fsPath, path.extname(localFileUri.fsPath))
         else fileName = ''
+
+        channel.appendLine('fileName: ' + fileName)
 
         const postTagReq = await getAuthedPostTagReq()
         const tags = (await postTagReq.getAll()) as PostTag[]
