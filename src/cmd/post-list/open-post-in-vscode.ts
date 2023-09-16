@@ -1,4 +1,3 @@
-import fs from 'fs'
 import path from 'path'
 import { FileSystemError, Uri, workspace } from 'vscode'
 import { Post } from '@/model/post'
@@ -10,6 +9,7 @@ import { PostCatService } from '@/service/post/post-cat'
 import sanitizeFileName from 'sanitize-filename'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { PostCatCfg } from '@/ctx/cfg/post-cat'
+import { fsUtil } from '@/infra/fs/fsUtil'
 
 export async function buildLocalPostFileUri(post: Post, includePostId = false): Promise<Uri> {
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
@@ -39,7 +39,7 @@ export async function buildLocalPostFileUri(post: Post, includePostId = false): 
 export async function openPostInVscode(postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> {
     let mappedPostFilePath = PostFileMapManager.getFilePath(postId)
 
-    const isFileExist = mappedPostFilePath !== undefined && fs.existsSync(mappedPostFilePath)
+    const isFileExist = mappedPostFilePath !== undefined && (await fsUtil.exists(mappedPostFilePath))
     if (mappedPostFilePath !== undefined && isFileExist && !forceUpdateLocalPostFile) {
         await openPostFile(mappedPostFilePath)
         return Uri.file(mappedPostFilePath)
@@ -58,7 +58,7 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
 
     // 博文尚未关联到本地文件的情况
     // 本地存在和博文同名的文件, 询问用户是要覆盖还是同时保留两者
-    if (mappedPostFilePath === undefined && fs.existsSync(fileUri.fsPath)) {
+    if (mappedPostFilePath === undefined && (await fsUtil.exists(fileUri.fsPath))) {
         const opt = ['保留本地文件并以博文 ID 为文件名新建另一个文件', '覆盖本地文件']
         const selected = await Alert.info(
             `无法建立博文与本地文件的关联, 文件名冲突`,

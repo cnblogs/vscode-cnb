@@ -4,6 +4,7 @@ import { join } from 'path'
 import { ImgBytes, ImgReq, RsHttp, Token } from '@/wasm'
 import { AuthManager } from '@/auth/auth-manager'
 import { readableToBytes } from '@/infra/convert/readableToBuffer'
+import { fsUtil } from '@/infra/fs/fsUtil'
 
 export async function getAuthedImgReq() {
     const token = await AuthManager.acquireToken()
@@ -56,11 +57,11 @@ async function caseFsImg(baseDirPath: string, path: string) {
     path = decodeURIComponent(path)
 
     let readable
-    if (fs.existsSync(path)) {
+    if (await fsUtil.exists(path)) {
         readable = fs.createReadStream(path)
     } else {
         const absPath = join(baseDirPath, path)
-        if (fs.existsSync(absPath)) readable = fs.createReadStream(absPath)
+        if (await fsUtil.exists(absPath)) readable = fs.createReadStream(absPath)
         else throw Error('文件不存在')
     }
 

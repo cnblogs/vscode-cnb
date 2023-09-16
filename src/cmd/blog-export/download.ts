@@ -11,6 +11,7 @@ import { promisify } from 'util'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import AdmZip from 'adm-zip'
 import { setCtx } from '@/ctx/global-ctx'
+import { fsUtil } from '@/infra/fs/fsUtil'
 
 export async function downloadBlogExport(treeItem?: BlogExportRecordTreeItem) {
     if (!(treeItem instanceof BlogExportRecordTreeItem)) return
@@ -24,7 +25,7 @@ export async function downloadBlogExport(treeItem?: BlogExportRecordTreeItem) {
     const nonZipFilePath = path.join(targetDir, treeItem.record.fileName)
     const zipFilePath = nonZipFilePath + '.zip'
     const downloadStream = BlogExportApi.download(blogId, exportId)
-    const isFileExist = fs.existsSync(zipFilePath)
+    const isFileExist = await fsUtil.exists(zipFilePath)
 
     await extTreeViews.blogExport.reveal(treeItem, { expand: true })
 

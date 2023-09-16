@@ -5,12 +5,12 @@ import { PostService } from '@/service/post/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { revealPostListItem } from '@/service/post/post-list-view'
 import { PostCfgPanel } from '@/service/post/post-cfg-panel'
-import fs from 'fs'
 import { LocalPost } from '@/service/local-post'
 import { saveFilePendingChanges } from '@/infra/save-file-pending-changes'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
+import { fsUtil } from '@/infra/fs/fsUtil'
 
 export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
     let post: Post | undefined
@@ -43,7 +43,7 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
             postCategoryDataProvider.onPostUpdated({ refreshPost: false, postIds: [id] })
         },
         beforeUpdate: async post => {
-            if (localFilePath !== undefined && fs.existsSync(localFilePath)) {
+            if (localFilePath !== undefined && (await fsUtil.exists(localFilePath))) {
                 await saveFilePendingChanges(localFilePath)
                 post.postBody = await new LocalPost(localFilePath).readAllText()
             }
