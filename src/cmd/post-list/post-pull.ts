@@ -10,7 +10,7 @@ import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { fsUtil } from '@/infra/fs/fsUtil'
 
-export async function postPull(input: Post | PostTreeItem | Uri | undefined | null) {
+export async function postPull(input: Post | PostTreeItem | Uri | undefined | null, showConfirm = true, mute = false) {
     const ctxList: CmdCtx[] = []
     input = input instanceof PostTreeItem ? input.post : input
     if (parsePostInput(input) && input.id > 0) {
@@ -22,7 +22,7 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
 
     const fileName = resolveFileNames(ctxList)
 
-    if (MarkdownCfg.isShowConfirmMsgWhenPullPost()) {
+    if (showConfirm && MarkdownCfg.isShowConfirmMsgWhenPullPost()) {
         const answer = await Alert.warn(
             '确认要拉取远程博文吗?',
             {
@@ -38,7 +38,7 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
 
     await update(ctxList)
 
-    void Alert.info(`本地文件 ${resolveFileNames(ctxList)} 已更新`)
+    if (!mute) void Alert.info(`本地文件 ${resolveFileNames(ctxList)} 已更新`)
 }
 
 type InputType = Post | Uri | undefined | null
