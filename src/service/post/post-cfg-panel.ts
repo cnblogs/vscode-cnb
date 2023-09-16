@@ -40,9 +40,13 @@ export namespace PostCfgPanel {
     export async function open(option: PostCfgPanelOpenOption) {
         const { post, breadcrumbs, localFileUri } = option
         const panelTitle = option.panelTitle !== undefined ? option.panelTitle : `博文设置 - ${post.title}`
-        await openPostFile(post, {
-            viewColumn: vscode.ViewColumn.One,
-        })
+        await openPostFile(
+            post,
+            {
+                viewColumn: vscode.ViewColumn.One,
+            },
+            true
+        )
 
         let panel = findPanelById(`${post.id}-${post.title}`)
         if (panel !== undefined) {
