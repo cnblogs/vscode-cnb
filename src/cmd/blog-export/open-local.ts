@@ -6,6 +6,7 @@ import { Alert } from '@/infra/alert'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
 import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
 import { BlogExportRecordsStore } from '@/service/blog-export/blog-export-records.store'
+import { fsUtil } from '@/infra/fs/fsUtil'
 
 const defaultOptions = { confirmUnzip: true }
 
@@ -51,7 +52,7 @@ export async function openLocalExport(opts: Partial<typeof defaultOptions> = def
     }
     const dbFileName = path.basename(dbFilePath)
 
-    if (!fs.existsSync(dbFilePath)) return void Alert.warn('文件不存在')
+    if (!(await fsUtil.exists(dbFilePath))) return void Alert.warn('文件不存在')
 
     const treeProvider = BlogExportProvider.optionalInstance
     const dbFileSize = (await promisify(fs.stat)(dbFilePath)).size

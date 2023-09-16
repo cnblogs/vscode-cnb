@@ -1,11 +1,11 @@
 import { PostService } from '@/service/post/post'
 import { Alert } from '@/infra/alert'
 import { PostFileMapManager } from '@/service/post/post-file-map'
-import fs from 'fs'
 import { basename } from 'path'
 import { ProgressLocation, Uri, window, workspace } from 'vscode'
 import { buildLocalPostFileUri } from '@/cmd/post-list/open-post-in-vscode'
 import { UserService } from '@/service/user-info'
+import { fsUtil } from '@/infra/fs/fsUtil'
 
 enum ConflictStrategy {
     ask,
@@ -67,7 +67,7 @@ export async function postPullAll() {
             const path = PostFileMapManager.getFilePath(post.id)
 
             // 本地没有博文或关联到的文件不存在
-            if (path === undefined || !fs.existsSync(path)) {
+            if (path === undefined || !(await fsUtil.exists(path))) {
                 const uri = await buildLocalPostFileUri(post, false)
                 const buf = Buffer.from(post.postBody)
                 await workspace.fs.writeFile(uri, buf)

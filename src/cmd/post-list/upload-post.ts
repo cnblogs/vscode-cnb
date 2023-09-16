@@ -15,10 +15,10 @@ import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { PostListView } from '@/cmd/post-list/post-list-view'
 import { LocalPost } from '@/service/local-post'
-import fs from 'fs'
 import { extractImg } from '@/service/extract-img/extract-img'
 import { dirname } from 'path'
 import { Workspace } from '@/cmd/workspace'
+import { fsUtil } from '@/infra/fs/fsUtil'
 
 async function parseFileUri(fileUri?: Uri) {
     if (fileUri !== undefined && fileUri.scheme !== 'file') return undefined
@@ -64,7 +64,7 @@ export async function saveLocalPost(localPost: LocalPost) {
         beforeUpdate: async postToSave => {
             await saveFilePendingChanges(localPost.filePath)
 
-            if (!fs.existsSync(localPost.filePath)) {
+            if (!(await fsUtil.exists(localPost.filePath))) {
                 void Alert.warn('本地文件已删除, 无法新建博文')
                 return false
             }
