@@ -12,9 +12,20 @@ import { fsUtil } from '@/infra/fs/fsUtil'
 
 export async function postPull(input: Post | PostTreeItem | Uri | undefined | null, showConfirm = true, mute = false) {
     const ctxList: CmdCtx[] = []
+    let isFreshPull = false
     input = input instanceof PostTreeItem ? input.post : input
     if (parsePostInput(input) && input.id > 0) {
-        await handlePostInput(input, ctxList)
+        const post = input
+        const path = PostFileMapManager.getFilePath(post.id)
+        if (path === undefined || !(await fsUtil.exists(path))) {
+            isFreshPull = true
+            const uri = await buildLocalPostFileUri(post, false)
+            await workspace.fs.writeFile(uri, Buffer.from(post.postBody))
+            await PostFileMapManager.updateOrCreate(post.id, uri.path)
+        } else {
+            isFreshPull = !(await fsUtil.exists(path))
+            await handlePostInput(input, ctxList, path)
+        }
     } else {
         const uri = parseUriInput(input)
         if (uri !== undefined) handleUriInput(uri, ctxList)
@@ -22,7 +33,7 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
 
     const fileName = resolveFileNames(ctxList)
 
-    if (showConfirm && MarkdownCfg.isShowConfirmMsgWhenPullPost()) {
+    if (showConfirm && !isFreshPull && MarkdownCfg.isShowConfirmMsgWhenPullPost()) {
         const answer = await Alert.warn(
             '确认要拉取远程博文吗?',
             {
@@ -38,7 +49,10 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
 
     await update(ctxList)
 
-    if (!mute) void Alert.info(`本地文件 ${resolveFileNames(ctxList)} 已更新`)
+    if (!mute) {
+        if (isFreshPull) void Alert.info(`博文已下载至本地：${resolveFileNames(ctxList)}`)
+        else void Alert.info(`本地文件已更新: ${resolveFileNames(ctxList)}`)
+    }
 }
 
 type InputType = Post | Uri | undefined | null
@@ -49,16 +63,7 @@ type CmdCtx = {
 
 const parsePostInput = (input: InputType): input is Post => input instanceof Post
 
-async function handlePostInput(post: Post, contexts: CmdCtx[]) {
-    const path = PostFileMapManager.getFilePath(post.id)
-    // 本地没有博文或关联到的文件不存在
-    if (path === undefined || !(await fsUtil.exists(path))) {
-        const uri = await buildLocalPostFileUri(post, false)
-        await workspace.fs.writeFile(uri, Buffer.from(post.postBody))
-        await PostFileMapManager.updateOrCreate(post.id, uri.path)
-        return
-    }
-
+async function handlePostInput(post: Post, contexts: CmdCtx[], path: string) {
     await revealPostListItem(post)
     contexts.push({ postId: post.id, fileUri: Uri.file(path) })
 }
