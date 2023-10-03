@@ -22,6 +22,7 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
             const uri = await buildLocalPostFileUri(post, false)
             await workspace.fs.writeFile(uri, Buffer.from(post.postBody))
             await PostFileMapManager.updateOrCreate(post.id, uri.path)
+            await handlePostInput(input, ctxList, uri.path)
         } else {
             isFreshPull = !(await fsUtil.exists(path))
             await handlePostInput(input, ctxList, path)
