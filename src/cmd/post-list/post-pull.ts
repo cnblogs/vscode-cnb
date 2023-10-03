@@ -39,7 +39,7 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
             '确认要拉取远程博文吗?',
             {
                 modal: true,
-                detail: `本地文件 ${fileName} 将被覆盖(可通过设置关闭对话框)`,
+                detail: `本地文件「${fileName}」将被覆盖(可通过设置关闭对话框)`,
             },
             '确认'
         )
