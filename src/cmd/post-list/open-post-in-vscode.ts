@@ -44,6 +44,7 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
         await openPostFile(mappedPostFilePath)
         return Uri.file(mappedPostFilePath)
     }
+
     // 本地文件已经被删除了, 确保重新生成博文与本地文件的关联
     if (mappedPostFilePath !== undefined && !isFileExist) {
         await PostFileMapManager.updateOrCreate(postId, '')

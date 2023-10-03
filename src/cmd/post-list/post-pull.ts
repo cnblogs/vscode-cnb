@@ -50,8 +50,8 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
     await update(ctxList)
 
     if (!mute) {
-        if (isFreshPull) void Alert.info(`博文已下载至本地：${resolveFileNames(ctxList)}`)
-        else void Alert.info(`本地文件已更新: ${resolveFileNames(ctxList)}`)
+        if (isFreshPull) await Alert.info(`博文已下载至本地：${resolveFileNames(ctxList)}`)
+        else await Alert.info(`本地文件已更新: ${resolveFileNames(ctxList)}`)
     }
 }
 
