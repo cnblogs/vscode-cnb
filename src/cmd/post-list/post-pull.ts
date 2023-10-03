@@ -97,5 +97,5 @@ async function update(contexts: CmdCtx[]) {
 
 function resolveFileNames(ctxList: CmdCtx[]) {
     const arr = ctxList.map(x => path.basename(x.fileUri.fsPath))
-    return `"${arr.join('", ')}`
+    return `${arr.join(', ')}`
 }
