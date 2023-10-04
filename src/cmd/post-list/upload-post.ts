@@ -78,6 +78,7 @@ export async function saveLocalPost(localPost: LocalPost) {
                 const extracted = await extractImg(text, fileDir, autoExtractImgSrc)
                 if (extracted !== undefined) {
                     postToSave.postBody = extracted
+                    if (isEmptyBody(text, '（发生于提取图片后')) return false
 
                     if (MarkdownCfg.getApplyAutoExtractImgToLocal()) {
                         const doc = window.visibleTextEditors.find(x => x.document.uri.fsPath === localPost.filePath)
@@ -97,9 +98,9 @@ export async function saveLocalPost(localPost: LocalPost) {
     })
 }
 
-function isEmptyBody(body: string) {
+function isEmptyBody(body: string, tip: string = '') {
     if (body === '') {
-        void Alert.warn('博文内容不能为空')
+        void Alert.warn('博文内容不能为空' + tip)
         return true
     }
 

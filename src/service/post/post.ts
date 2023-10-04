@@ -123,6 +123,9 @@ export namespace PostService {
 
     export async function update(post: Post) {
         if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
+
+        if (post.postBody === '') void Alert.warn('博文内容不能为空（发生于 http post 请求之前）')
+
         const body = JSON.stringify(post)
         const req = await getAuthedPostReq()
         const resp = await req.update(body)
