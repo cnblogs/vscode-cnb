@@ -1182,23 +1182,23 @@
                 },
                 {
                     "command": "vscode-cnb.post.show-local-file-info",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.post-show-local-file-info"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.editor.post-show-local-file-info"
                 },
                 {
                     "command": "vscode-cnb.post.upload-file-no-confirm",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.post-upload-file-no-confirm"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.editor.post-upload-file-no-confirm"
                 },
                 {
                     "command": "vscode-cnb.post.pull",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.post-pull"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.editor.post-pull"
                 },
                 {
                     "command": "vscode-cnb.post.modify-setting",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.post-modify-setting"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.editor.post-modify-setting"
                 },
                 {
                     "command": "vscode-cnb.post.open-in-blog-admin",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.editor.post-open-in-blog-admin"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.editor.post-open-in-blog-admin"
                 },
                 {
                     "command": "vscode-cnb.post.export-to-pdf",
@@ -1240,23 +1240,23 @@
                 },
                 {
                     "command": "vscode-cnb.post.upload-file",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.post-upload-file"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.explorer.post-upload-file"
                 },
                 {
                     "command": "vscode-cnb.post.pull",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.post-pull"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.explorer.post-pull"
                 },
                 {
                     "command": "vscode-cnb.post.modify-setting",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.post-modify-setting"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.explorer.post-modify-setting"
                 },
                 {
                     "command": "vscode-cnb.post.show-local-file-info",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.post-show-local-file-info"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.explorer.post-show-local-file-info"
                 },
                 {
                     "command": "vscode-cnb.post.open-in-blog-admin",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.post-open-in-blog-admin"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.explorer.post-open-in-blog-admin"
                 },
                 {
                     "command": "vscode-cnb.post.export-to-pdf",
@@ -1264,7 +1264,7 @@
                 },
                 {
                     "command": "vscode-cnb.post.copy-link",
-                    "when": "resourceLangId == markdown && config.cnblogsClient.menus.context.explorer.post-copy-link"
+                    "when": "(resourceLangId == markdown || resourceLangId == html) && config.cnblogsClient.menus.context.explorer.post-copy-link"
                 }
             ]
         },

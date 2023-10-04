@@ -38,8 +38,8 @@ async function parseFileUri(fileUri?: Uri) {
 
 export async function saveLocalPost(localPost: LocalPost) {
     // check format
-    if (!['.md', '.mkd'].some(x => localPost.fileExt === x)) {
-        void Alert.warn('格式错误, 只支持 Markdown 文件')
+    if (!['.md', '.mkd', '.htm', '.html'].some(x => localPost.fileExt === x)) {
+        void Alert.warn('格式错误, 只支持 Markdown 或者 html 文件')
         return
     }
     const { post } = await PostService.getTemplate()
