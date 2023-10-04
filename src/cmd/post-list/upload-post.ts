@@ -209,7 +209,7 @@ export async function uploadPostFile(fileUri?: Uri, confirm = true) {
 
     if (postId !== undefined && postId >= 0) {
         const dto = await PostService.getPostEditDto(postId)
-        if (dto !== undefined) await uploadPost(dto)
+        if (dto !== undefined) await uploadPost(dto, confirm)
         return
     }
 
