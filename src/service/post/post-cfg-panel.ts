@@ -25,8 +25,6 @@ async function getAuthedPostTagReq() {
     return new PostTagReq(new Token(token, isPatToken))
 }
 
-const panels: Map<string, WebviewPanel> = new Map()
-
 type PostCfgPanelOpenOption = {
     post: Post
     panelTitle?: string
@@ -40,6 +38,7 @@ export namespace PostCfgPanel {
     export async function open(option: PostCfgPanelOpenOption) {
         const { post, breadcrumbs, localFileUri } = option
         const panelTitle = option.panelTitle !== undefined ? option.panelTitle : `博文设置 - ${post.title}`
+
         await openPostFile(
             post,
             {
@@ -48,24 +47,11 @@ export namespace PostCfgPanel {
             true
         )
 
-        let panel = findPanelById(`${post.id}-${post.title}`)
-        if (panel !== undefined) {
-            try {
-                revealPanel(panel, option)
-                return
-            } catch (e) {
-                console.log(e)
-                panels.delete(panel.viewType)
-            }
-        }
-
-        const panelId = `${post.id}-${post.title}`
-        panel = vscode.window.createWebviewPanel(panelId, panelTitle, vscode.ViewColumn.Two, {
+        const panel = vscode.window.createWebviewPanel('post-cfg-panel', panelTitle, vscode.ViewColumn.Two, {
             enableScripts: true,
             retainContextWhenHidden: true,
         })
         panel.iconPath = Uri.joinPath(globalCtx.extCtx.extensionUri, 'dist', 'assets', 'favicon.svg')
-        panels.set(panelId, panel)
 
         const webview = panel.webview
 
@@ -107,19 +93,6 @@ export namespace PostCfgPanel {
 }
 const setHtml = async (webview: vscode.Webview): Promise<void> => {
     webview.html = await parseWebviewHtml('post-cfg', webview)
-}
-
-export const findPanelById = (panelId: string) => panels.get(panelId)
-
-const revealPanel = (panel: WebviewPanel, options: PostCfgPanelOpenOption) => {
-    const { breadcrumbs } = options
-    const { webview } = panel
-    void webview.postMessage({
-        command: Webview.Cmd.Ui.updateBreadcrumbs,
-        breadcrumbs,
-    } as WebviewMsg.UpdateBreadcrumbMsg)
-
-    panel.reveal()
 }
 
 const doUploadImg = async (webview: CodeWebview, message: WebviewMsg.UploadImgMsg) => {
@@ -201,7 +174,5 @@ const observeWebviewMsg = (panel: WebviewPanel, options: PostCfgPanelOpenOption)
 
 const observePanelDispose = (panel: WebviewPanel, disposables: Disposable[]) =>
     panel.onDidDispose(() => {
-        const panelId = panel.viewType
-        panels.delete(panelId)
         disposables.forEach(disposable => void disposable?.dispose())
     })
