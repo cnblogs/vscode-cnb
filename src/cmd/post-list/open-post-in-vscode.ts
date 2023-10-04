@@ -37,7 +37,7 @@ export async function buildLocalPostFileUri(post: Post, includePostId = false): 
 }
 
 export async function openPostInVscode(postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> {
-    let mappedPostFilePath = PostFileMapManager.getFilePath(postId)
+    const mappedPostFilePath = PostFileMapManager.getFilePath(postId)
 
     const isFileExist = mappedPostFilePath !== undefined && (await fsUtil.exists(mappedPostFilePath))
     if (mappedPostFilePath !== undefined && isFileExist && !forceUpdateLocalPostFile) {
@@ -46,10 +46,8 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
     }
 
     // 本地文件已经被删除了, 确保重新生成博文与本地文件的关联
-    if (mappedPostFilePath !== undefined && !isFileExist) {
-        await PostFileMapManager.updateOrCreate(postId, '')
-        mappedPostFilePath = undefined
-    }
+    if (mappedPostFilePath !== undefined && !isFileExist)
+        await PostFileMapManager.updateOrCreate(postId, mappedPostFilePath)
 
     const { post } = await PostService.getPostEditDto(postId)
 
