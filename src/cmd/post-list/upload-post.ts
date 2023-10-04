@@ -74,11 +74,12 @@ export async function saveLocalPost(localPost: LocalPost) {
             // TODO: need refactor
             const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
             const fileDir = dirname(localPost.filePath)
+            postToSave.postBody = text
             if (autoExtractImgSrc !== undefined) {
                 const extracted = await extractImg(text, fileDir, autoExtractImgSrc)
                 if (extracted !== undefined) {
                     postToSave.postBody = extracted
-                    if (isEmptyBody(text, '（发生于提取图片后')) return false
+                    if (isEmptyBody(postToSave.postBody, '（发生于提取图片后')) return false
 
                     if (MarkdownCfg.getApplyAutoExtractImgToLocal()) {
                         const doc = window.visibleTextEditors.find(x => x.document.uri.fsPath === localPost.filePath)
@@ -89,8 +90,6 @@ export async function saveLocalPost(localPost: LocalPost) {
                         }
                     }
                 }
-            } else {
-                postToSave.postBody = text
             }
 
             return true
@@ -133,10 +132,12 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto, conf
     const text = await localPost.readAllText()
     const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
     const fileDir = dirname(localPost.filePath)
+    post.postBody = text
     if (autoExtractImgSrc !== undefined) {
         const extracted = await extractImg(text, fileDir, autoExtractImgSrc)
         if (extracted !== undefined) {
             post.postBody = extracted
+            if (isEmptyBody(post.postBody, '（发生于提取图片后')) return false
 
             if (MarkdownCfg.getApplyAutoExtractImgToLocal()) {
                 const doc = window.visibleTextEditors.find(x => x.document.uri.fsPath === localPost.filePath)?.document
@@ -146,8 +147,6 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto, conf
                 }
             }
         }
-    } else {
-        post.postBody = text
     }
 
     if (isEmptyBody(post.postBody)) return false
