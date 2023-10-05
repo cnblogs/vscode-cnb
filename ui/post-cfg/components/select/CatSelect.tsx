@@ -32,15 +32,16 @@ export class CatSelect extends Component<Props, State> {
                 useComboBoxAsMenuWidth
                 onChange={(_, opt, __, val) => {
                     if (opt !== undefined) {
-                        if (val === undefined) {
+                        if (opt.selected !== true || val === undefined) {
                             const selectedCatIds = this.state.selectedCatIds.filter(x => x !== opt.data)
                             this.setState({ selectedCatIds })
+                            this.props.onChange(selectedCatIds)
                         } else {
                             this.state.selectedCatIds.push(opt.data as number)
                             this.setState(this.state)
+                            this.props.onChange(this.state.selectedCatIds)
                         }
                     }
-                    this.props.onChange(this.state.selectedCatIds)
                 }}
             />
         )
