@@ -570,7 +570,7 @@
                         "scope": "application",
                         "default": true,
                         "editPresentation": "singlelineText",
-                        "markdownDescription": "在上传博文时显示确认消息"
+                        "markdownDescription": "侧边栏上传博文时显示确认对话框"
                     },
                     "cnblogsClient.markdown.showConfirmMsgWhenPullPost": {
                         "order": 13,
@@ -578,7 +578,7 @@
                         "scope": "application",
                         "default": true,
                         "editPresentation": "singlelineText",
-                        "markdownDescription": "在拉取博文时显示确认消息"
+                        "markdownDescription": "拉取博文显示确认对话框"
                     },
                     "cnblogsClient.markdown.ignoreYfmWhenUploadPost": {
                         "order": 14,
@@ -1228,8 +1228,8 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "vscode-cnb.post.upload-file",
-                    "when": "resourceLangId == markdown",
+                    "command": "vscode-cnb.post.upload-file-no-confirm",
+                    "when": "resourceLangId == markdown || resourceLangId == html",
                     "group": "navigation"
                 }
             ],
