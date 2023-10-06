@@ -1,4 +1,4 @@
-import { AuthenticationSession as AuthSession } from 'vscode'
+import { AuthenticationSession as AuthSession, AuthenticationSession } from 'vscode'
 import { genVerifyChallengePair } from '@/service/code-challenge'
 import {
     authentication,
@@ -48,6 +48,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     readonly providerName = '博客园Cnblogs'
 
     private _allSessions: AuthSession[] = []
+    private _usePat = false
 
     private readonly _sessionChangeEmitter = new EventEmitter<APASCE>()
     private readonly _disposable = Disposable.from(
@@ -64,6 +65,14 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         return this._sessionChangeEmitter.event
     }
 
+    useBrowser() {
+        this._usePat = false
+    }
+
+    usePat() {
+        this._usePat = true
+    }
+
     async getSessions(scopes?: string[]): Promise<readonly AuthSession[]> {
         const sessions = await this.getAllSessions()
         const parsedScopes = this.ensureScopes(scopes)
@@ -72,6 +81,25 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     }
 
     createSession(scopes: string[]) {
+        return this._usePat ? this.createSessionFromPat(scopes) : this.createSessionFromBrowser(scopes)
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async createSessionFromPat(scopes: string[]) {
+        const opt = {
+            title: '请输入您的个人访问令牌 (PAT)',
+            prompt: '可通过 https://account.cnblos.com/tokens 获取',
+            password: true,
+            validator: (value: string) => (value.length === 0 ? '个人访问令牌（PAT)不能为空' : ''),
+        }
+
+        const pat = await window.showInputBox(opt)
+        if ((pat ?? '').length === 0) throw new Error('个人访问令牌（PAT)不能为空')
+
+        return authProvider.onAccessTokenGranted(pat ?? '')
+    }
+
+    createSessionFromBrowser(scopes: string[]) {
         const parsedScopes = this.ensureScopes(scopes)
 
         const cancelTokenSrc = new CancellationTokenSource()
@@ -93,7 +121,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
             location: ProgressLocation.Notification,
         }
 
-        return window.withProgress(options, async (progress, cancelToken) => {
+        const session = window.withProgress(options, async (progress, cancelToken) => {
             progress.report({ message: '等待用户在浏览器中进行授权...' })
 
             cancelToken.onCancellationRequested(() => cancelTokenSrc.cancel())
@@ -136,6 +164,8 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
             return fut
         })
+
+        return session
     }
 
     async removeSession(sessionId: string): Promise<void> {
@@ -161,12 +191,13 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
         onStateChange?.('即将完成...')
 
-        const session = <AuthSession>{
+        const session = <AuthenticationSession>{
             account: accountInfo,
             id: `${this.providerId}-${userInfo.space_user_id}`,
             accessToken: token,
             scopes: this.ensureScopes(null),
         }
+
         await LocalState.setSecret(ExtConst.EXT_SESSION_STORAGE_KEY, JSON.stringify([session]))
 
         this._sessionChangeEmitter.fire({
