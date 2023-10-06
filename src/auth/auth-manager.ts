@@ -1,5 +1,5 @@
 import { setCtx } from '@/ctx/global-ctx'
-import { authentication, AuthenticationGetSessionOptions as AuthGetSessionOpt, window } from 'vscode'
+import { authentication, AuthenticationGetSessionOptions as AuthGetSessionOpt } from 'vscode'
 import { accountViewDataProvider } from '@/tree-view/provider/account-view-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
@@ -40,26 +40,19 @@ export namespace AuthManager {
     }
 
     export async function webLogin() {
-        const session = await ensureSession({ createIfNone: false, forceNewSession: true })
-        if (session !== undefined)
-            await LocalState.setSecret(ExtConst.EXT_SESSION_STORAGE_KEY, JSON.stringify([session]))
+        authProvider.useBrowser()
+        await login()
     }
 
     export async function patLogin() {
-        const opt = {
-            title: '请输入您的个人访问令牌 (PAT)',
-            prompt: '可通过 https://account.cnblos.com/tokens 获取',
-            password: true,
-        }
-        const pat = await window.showInputBox(opt)
-        if (pat === undefined) return
+        authProvider.usePat()
+        await login()
+    }
 
-        try {
-            await authProvider.onAccessTokenGranted(pat)
-            await AuthManager.updateAuthStatus()
-        } catch (e) {
-            void Alert.err(`授权失败: ${<string>e}`)
-        }
+    export async function login() {
+        const session = await ensureSession({ createIfNone: false, forceNewSession: true })
+        if (session !== undefined)
+            await LocalState.setSecret(ExtConst.EXT_SESSION_STORAGE_KEY, JSON.stringify([session]))
     }
 
     export async function logout() {
@@ -86,7 +79,6 @@ export namespace AuthManager {
 
     export async function updateAuthStatus() {
         const isAuthed = await AuthManager.isAuthed()
-
         await setCtx('isAuthed', isAuthed)
         await setCtx('isUnauthorized', !isAuthed)
 
