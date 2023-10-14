@@ -10,7 +10,7 @@ import { BlogExportProvider } from '@/tree-view/provider/blog-export-provider'
 import { Alert } from '@/infra/alert'
 import { LocalState } from '@/ctx/local-state'
 import { ExtConst } from '@/ctx/ext-const'
-import { UserService } from '@/service/user-info'
+import { UserService } from '@/service/user.service'
 import { isAuthSessionExpired } from '@/auth/is-auth-session-expired'
 
 authProvider.onDidChangeSessions(async () => {
@@ -60,11 +60,12 @@ export namespace AuthManager {
 
         try {
             const session = await authentication.getSession(authProvider.providerId, [])
-            if (session === undefined) return
+            if (session == null) return
             await Oauth.revokeToken(session.accessToken)
             await authProvider.removeSession(session.id)
         } catch (e) {
             void Alert.err(`登出发生错误: ${<string>e}`)
+            throw e
         }
     }
 
@@ -84,10 +85,10 @@ export namespace AuthManager {
 
         if (!isAuthed) return
 
-        const userInfo = await UserService.getInfo()
-        if (userInfo !== undefined) {
+        const userInfo = await UserService.getUserInfo()
+        if (userInfo !== null) {
             await setCtx('user', {
-                name: userInfo.display_name,
+                name: userInfo.displayName,
                 avatar: userInfo.avatar,
             })
         }

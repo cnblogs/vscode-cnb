@@ -5,7 +5,7 @@ import { BlogSettingService } from '@/service/blog-setting'
 import { PostCatService } from '@/service/post/post-cat'
 import { PostCat } from '@/model/post-cat'
 import { markdownItFactory } from '@cnblogs/markdown-it-presets'
-import { UserService } from '@/service/user-info'
+import { UserService } from '@/service/user.service'
 
 export namespace PostPdfTemplateBuilder {
     export const HighlightedMessage = 'markdown-highlight-finished'
@@ -66,7 +66,7 @@ export namespace PostPdfTemplateBuilder {
             blogId,
         } = setting
 
-        const userId = (await UserService.getInfo())?.user_id
+        const userId = (await UserService.getUserInfo())?.userId
 
         return `<html lang="en">
         <head>

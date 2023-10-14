@@ -20,7 +20,7 @@ import { RsRand } from '@/wasm'
 import { Alert } from '@/infra/alert'
 import { LocalState } from '@/ctx/local-state'
 import { ExtConst } from '@/ctx/ext-const'
-import { UserService } from '@/service/user-info'
+import { UserService } from '@/service/user.service'
 
 async function browserSignIn(challengeCode: string, scopes: string[]) {
     const para = consUrlPara(
@@ -96,7 +96,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         const pat = await window.showInputBox(opt)
         if ((pat ?? '').length === 0) throw new Error('个人访问令牌（PAT)不能为空')
 
-        return authProvider.onAccessTokenGranted(pat ?? '')
+        return authProvider.onAccessTokenGranted(pat ?? '', true)
     }
 
     createSessionFromBrowser(scopes: string[]) {
@@ -145,7 +145,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
                     try {
                         const token = await Oauth.getToken(verifyCode, authCode)
-                        const authSession = await this.onAccessTokenGranted(token, state =>
+                        const authSession = await this.onAccessTokenGranted(token, false, state =>
                             progress.report({ message: state })
                         )
 
@@ -182,18 +182,29 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         this._sessionChangeEmitter.fire({ removed: data.remove, added: undefined, changed: undefined })
     }
 
-    async onAccessTokenGranted(token: string, onStateChange?: (state: string) => void) {
+    async onAccessTokenGranted(token: string, isPat: boolean, onStateChange?: (state: string) => void) {
         onStateChange?.('正在获取账户信息...')
 
-        const userInfo = await UserService.getInfoWithToken(token)
-        if (userInfo === undefined) throw Error('用户信息获取失败')
-        const accountInfo = { id: userInfo.space_user_id.toString(), label: userInfo.display_name }
+        const userInfo = await UserService.getUserInfoWithToken(token, isPat)
+        if (userInfo == null) {
+            const errorMsg = '获取用户信息失败: userInfo is null'
+            void Alert.warn
+            throw Error(errorMsg)
+        }
+
+        if (userInfo.blogApp == null)
+            void Alert.warn('您的账号未开通博客，[立即开通](https://account.cnblogs.com/blog-apply)')
 
         onStateChange?.('即将完成...')
 
+        const { accountId, displayName } = userInfo
+
         const session = <AuthenticationSession>{
-            account: accountInfo,
-            id: `${this.providerId}-${userInfo.space_user_id}`,
+            account: {
+                id: new Number(accountId).toString(),
+                label: displayName,
+            },
+            id: `${this.providerId}-${userInfo.accountId}`,
             accessToken: token,
             scopes: this.ensureScopes(null),
         }

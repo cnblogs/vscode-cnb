@@ -1,6 +1,6 @@
 import { AuthManager } from '@/auth/auth-manager'
 import { EventEmitter, ThemeIcon, TreeDataProvider, TreeItem } from 'vscode'
-import { UserService } from '@/service/user-info'
+import { UserService } from '@/service/user.service'
 
 export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     protected _onDidChangeTreeData = new EventEmitter<null | undefined>()
@@ -16,7 +16,7 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     async getChildren(el?: TreeItem) {
         if (!(await AuthManager.isAuthed()) || el !== undefined) return []
 
-        const userName = (await UserService.getInfo())?.display_name
+        const userName = (await UserService.getUserInfo())?.displayName
         return [
             { label: userName, tooltip: '用户名', iconPath: new ThemeIcon('account') },
             {
@@ -53,7 +53,6 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
             },
             {
                 label: '退出登录',
-                tooltip: '',
                 command: {
                     title: '退出登录',
                     command: 'vscode-cnb.logout',

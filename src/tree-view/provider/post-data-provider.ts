@@ -9,6 +9,7 @@ import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { PostListCfg } from '@/ctx/cfg/post-list'
 import { Page, PageList } from '@/model/page'
 import { PostListView } from '@/cmd/post-list/post-list-view'
+import { UserService } from '@/service/user.service'
 
 export type PostListTreeItem = Post | PostTreeItem | TreeItem | PostMetadata | PostSearchResultEntry
 
@@ -69,7 +70,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
 
             return this.page
         } catch (e) {
-            void Alert.err(`加载博文失败: ${<string>e}`)
+            if (await UserService.hasBlog()) void Alert.err(`加载博文失败: ${<string>e}`)
             throw e
         }
     }
