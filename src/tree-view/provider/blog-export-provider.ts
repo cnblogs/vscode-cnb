@@ -14,6 +14,7 @@ import {
 import { Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
 import { Alert } from '@/infra/alert'
 import { BlogExportRecord } from '@/model/blog-export'
+import { UserService } from '@/service/user.service'
 
 export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> {
     private static _instance: BlogExportProvider | null = null
@@ -111,8 +112,9 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         const hasCacheRefreshed = force
             ? await BlogExportRecordsStore?.refresh()
                   .then(() => true)
-                  .catch(e => {
-                      if (notifyOnError) void Alert.err(`刷新备份记录失败: ${<string>e}`)
+                  .catch(async e => {
+                      if (notifyOnError && (await UserService.hasBlog()))
+                          void Alert.err(`刷新备份记录失败: ${<string>e}`)
                       return false
                   })
             : clearCache

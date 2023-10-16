@@ -6,6 +6,7 @@ import { PostListState } from '@/model/post-list-state'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { PageList } from '@/model/page'
 import { getListState, updatePostListState } from '@/service/post/post-list-view'
+import { UserService } from '@/service/user.service'
 
 let refreshTask: Promise<boolean> | null = null
 let isLoading = false
@@ -75,8 +76,8 @@ export namespace PostListView {
 
         refreshTask = fut()
             .then(() => true)
-            .catch(e => {
-                void Alert.err(`刷新随笔列表失败: ${<string>e}`)
+            .catch(async e => {
+                if (await UserService.hasBlog()) void Alert.err(`刷新随笔列表失败: ${<string>e}`)
                 return false
             })
             .finally(() => (refreshTask = null))

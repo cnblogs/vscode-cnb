@@ -4,7 +4,7 @@ import { PostFileMapManager } from '@/service/post/post-file-map'
 import { basename } from 'path'
 import { ProgressLocation, Uri, window, workspace } from 'vscode'
 import { buildLocalPostFileUri } from '@/cmd/post-list/open-post-in-vscode'
-import { UserService } from '@/service/user-info'
+import { UserService } from '@/service/user.service'
 import { fsUtil } from '@/infra/fs/fsUtil'
 
 enum ConflictStrategy {
@@ -27,7 +27,7 @@ const MAX_BYTE_LIMIT = MAX_POST_LIMIT * 1024 * 20
 const MAX_MB_LIMIT = Math.round(MAX_BYTE_LIMIT / 1024 / 1024)
 
 export async function postPullAll() {
-    const isVip = (await UserService.getInfo())?.is_vip ?? false
+    const isVip = (await UserService.getUserInfo())?.isVip ?? false
     if (!isVip) {
         void Alert.info('下载随笔: 您是普通用户, 此功能目前仅面向 [VIP](https://cnblogs.vip/) 用户开放')
         return

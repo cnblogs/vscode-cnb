@@ -3,6 +3,7 @@ import { Alert } from '@/infra/alert'
 import { SiteCat } from '@/model/site-category'
 import { AuthManager } from '@/auth/auth-manager'
 import { PostCatReq, Token } from '@/wasm'
+import { UserService } from '../user.service'
 
 // TODO: need better cache impl
 let siteCategoryCache: SiteCat[] | null = null
@@ -22,7 +23,7 @@ export namespace PostCatService {
             const { categories } = <{ categories: PostCat[] }>JSON.parse(resp)
             return categories.map(x => Object.assign(new PostCat(), x))
         } catch (e) {
-            void Alert.err(`查询随笔分类失败: ${<string>e}`)
+            if (await UserService.hasBlog()) void Alert.err(`查询随笔分类失败: ${<string>e}`)
             throw e
         }
     }
@@ -34,7 +35,7 @@ export namespace PostCatService {
             const { parent } = <{ parent: PostCat | null }>JSON.parse(resp)
             return Object.assign(new PostCat(), parent)
         } catch (e) {
-            void Alert.err(`查询随笔分类失败: ${<string>e}`)
+            if (await UserService.hasBlog()) void Alert.err(`查询随笔分类失败: ${<string>e}`)
             throw e
         }
     }
@@ -46,7 +47,7 @@ export namespace PostCatService {
             const { categories } = <{ categories: PostCat[] }>JSON.parse(resp)
             return categories.map(x => Object.assign(new PostCat(), x))
         } catch (e) {
-            void Alert.err(`查询随笔分类失败: ${<string>e}`)
+            if (await UserService.hasBlog()) void Alert.err(`查询随笔分类失败: ${<string>e}`)
             throw e
         }
     }
