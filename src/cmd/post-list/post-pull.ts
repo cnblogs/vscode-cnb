@@ -18,6 +18,8 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
     if (parsePostInput(input) && input.id > 0) {
         const post = input
         const path = PostFileMapManager.getFilePath(post.id)
+        console.log('path: ' + path)
+        console.log('getWorkspaceUri path: ' + WorkspaceCfg.getWorkspaceUri().path)
         if (
             path === undefined ||
             !(await fsUtil.exists(path)) ||
