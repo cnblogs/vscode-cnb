@@ -6,6 +6,7 @@ import { LocalPost } from '@/service/local-post'
 import { fsUtil } from '@/infra/fs/fsUtil'
 import { postPull } from './post-pull'
 import { Alert } from '@/infra/alert'
+import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 export async function openPostFile(
     post: LocalPost | Post | string,
@@ -17,7 +18,10 @@ export async function openPostFile(
         filePath = post.filePath
     } else if (post instanceof Post) {
         filePath = PostFileMapManager.getFilePath(post.id) ?? ''
-        if (autoPull) if (!(await fsUtil.exists(filePath))) await postPull(post, false, true)
+        if (autoPull) {
+            if (!(await fsUtil.exists(filePath)) || filePath.indexOf(WorkspaceCfg.getWorkspaceUri().path) < 0)
+                await postPull(post, false, true)
+        }
     } else {
         filePath = post
     }

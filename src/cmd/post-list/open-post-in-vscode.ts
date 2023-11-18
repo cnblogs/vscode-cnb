@@ -5,35 +5,17 @@ import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { openPostFile } from './open-post-file'
-import { PostCatService } from '@/service/post/post-cat'
 import sanitizeFileName from 'sanitize-filename'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
-import { PostCatCfg } from '@/ctx/cfg/post-cat'
 import { fsUtil } from '@/infra/fs/fsUtil'
 
-export async function buildLocalPostFileUri(post: Post, includePostId = false): Promise<Uri> {
+export function buildLocalPostFileUri(post: Post, includePostId = false): Uri {
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
-    const shouldCreateLocalPostFileWithCategory = PostCatCfg.isCreateLocalPostFileWithCategory()
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`
     const postIdSegment = includePostId ? `.${post.id}` : ''
     const postTitle = sanitizeFileName(post.title)
 
-    if (!shouldCreateLocalPostFileWithCategory) return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`)
-
-    const firstCategoryId = post.categoryIds?.[0] ?? null
-    let i = firstCategoryId !== null ? await PostCatService.getOne(firstCategoryId) : null
-    let categoryTitle = ''
-    while (i != null) {
-        categoryTitle = path.join(
-            sanitizeFileName(i.title, {
-                replacement: invalidChar => (invalidChar === '/' ? '_' : ''),
-            }),
-            categoryTitle
-        )
-        i = i.parent ?? null
-    }
-
-    return Uri.joinPath(workspaceUri, categoryTitle, `${postTitle}${postIdSegment}${ext}`)
+    return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`)
 }
 
 export async function openPostInVscode(postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> {
@@ -53,7 +35,7 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
 
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
     await mkDirIfNotExist(workspaceUri)
-    let fileUri = mappedPostFilePath !== undefined ? Uri.file(mappedPostFilePath) : await buildLocalPostFileUri(post)
+    let fileUri = mappedPostFilePath !== undefined ? Uri.file(mappedPostFilePath) : buildLocalPostFileUri(post)
 
     // 博文尚未关联到本地文件的情况
     // 本地存在和博文同名的文件, 询问用户是要覆盖还是同时保留两者
@@ -65,7 +47,7 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
             ...opt
         )
 
-        if (selected === opt[0]) fileUri = await buildLocalPostFileUri(post, true)
+        if (selected === opt[0]) fileUri = buildLocalPostFileUri(post, true)
     }
 
     // 博文内容写入本地文件, 若文件不存在, 会自动创建对应的文件
