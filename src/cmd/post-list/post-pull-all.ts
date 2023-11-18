@@ -68,7 +68,7 @@ export async function postPullAll() {
 
             // 本地没有博文或关联到的文件不存在
             if (path === undefined || !(await fsUtil.exists(path))) {
-                const uri = await buildLocalPostFileUri(post, false)
+                const uri = buildLocalPostFileUri(post, false)
                 const buf = Buffer.from(post.postBody)
                 await workspace.fs.writeFile(uri, buf)
                 await PostFileMapManager.updateOrCreate(post.id, uri.path)

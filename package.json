@@ -487,13 +487,6 @@
                         "editPresentation": "singlelineText",
                         "markdownDescription": "macOS 上 Chromium 可执行文件路径, 用于进行 PDF 导出等操作"
                     },
-                    "cnblogsClient.createLocalPostFileWithCategory": {
-                        "order": 5,
-                        "default": true,
-                        "scope": "application",
-                        "type": "boolean",
-                        "markdownDescription": "创建本地博文时, 是否根据博文分类保存到对应的文件夹中"
-                    },
                     "cnblogsClient.pageSize.postList": {
                         "order": 6,
                         "default": 30,
