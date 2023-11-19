@@ -29,7 +29,7 @@ export const setupWorkspaceFileWatch = () =>
     workspace.onDidRenameFiles(e => {
         for (const item of e.files) {
             const { oldUri, newUri } = item
-            const postId = PostFileMapManager.getPostId(oldUri.fsPath)
-            if (postId !== undefined) void PostFileMapManager.updateOrCreate(postId, newUri.fsPath)
+            const postId = PostFileMapManager.getPostId(oldUri.path)
+            if (postId !== undefined) void PostFileMapManager.updateOrCreate(postId, newUri.path)
         }
     })

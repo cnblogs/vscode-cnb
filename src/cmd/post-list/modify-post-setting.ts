@@ -22,7 +22,7 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
         postId = input.id
     } else {
         //type of input is Uri
-        postId = PostFileMapManager.getPostId(input.fsPath) ?? -1
+        postId = PostFileMapManager.getPostId(input.path) ?? -1
         if (postId < 0) return Alert.fileNotLinkedToPost(input)
     }
 

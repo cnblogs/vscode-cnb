@@ -29,7 +29,7 @@ async function renameLinkedFile(post: Post): Promise<void> {
         const ext = path.extname(fileName)
         const newFilePath = filePath.replace(new RegExp(`${escapeRegExp(fileName)}$`), `${post.title}${ext}`)
         await workspace.fs.rename(fileUri, Uri.file(newFilePath))
-        await PostFileMapManager.updateOrCreate(post.id, newFilePath)
+        await PostFileMapManager.updateOrCreate(post.id, fileUri.path)
         postDataProvider.fireTreeDataChangedEvent(post)
     }
 }

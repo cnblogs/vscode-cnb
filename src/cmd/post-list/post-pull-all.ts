@@ -6,6 +6,7 @@ import { ProgressLocation, Uri, window, workspace } from 'vscode'
 import { buildLocalPostFileUri } from '@/cmd/post-list/open-post-in-vscode'
 import { UserService } from '@/service/user.service'
 import { fsUtil } from '@/infra/fs/fsUtil'
+import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 enum ConflictStrategy {
     ask,
@@ -67,7 +68,11 @@ export async function postPullAll() {
             const path = PostFileMapManager.getFilePath(post.id)
 
             // 本地没有博文或关联到的文件不存在
-            if (path === undefined || !(await fsUtil.exists(path))) {
+            if (
+                path === undefined ||
+                !(await fsUtil.exists(path)) ||
+                path.indexOf(WorkspaceCfg.getWorkspaceUri().path) < 0
+            ) {
                 const uri = buildLocalPostFileUri(post, false)
                 const buf = Buffer.from(post.postBody)
                 await workspace.fs.writeFile(uri, buf)

@@ -30,6 +30,7 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
             await handlePostInput(input, ctxList, uri.path)
         } else {
             isFreshPull = !(await fsUtil.exists(path))
+            if (!path.startsWith('/')) await PostFileMapManager.updateOrCreate(post.id, Uri.file(path).path)
             await handlePostInput(input, ctxList, path)
         }
     } else {
@@ -82,7 +83,7 @@ function parseUriInput(input: InputType): Uri | undefined {
 }
 
 function handleUriInput(fileUri: Uri, contexts: CmdCtx[]) {
-    const postId = PostFileMapManager.getPostId(fileUri.fsPath)
+    const postId = PostFileMapManager.getPostId(fileUri.path)
     if (postId === undefined) return Alert.fileNotLinkedToPost(fileUri)
 
     contexts.push({ postId, fileUri })
