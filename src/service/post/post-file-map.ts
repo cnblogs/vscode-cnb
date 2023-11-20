@@ -1,6 +1,7 @@
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { LocalState } from '@/ctx/local-state'
+import { Uri } from 'vscode'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && map[1] !== ''
 
@@ -58,7 +59,9 @@ export namespace PostFileMapManager {
 
     export function findByFilePath(path: string) {
         const maps = getMaps().filter(validatePostFileMap)
-        return maps.find(x => x[0] !== 0 && x[1] === path)
+        let map = maps.find(x => x[0] !== 0 && x[1] === path)
+        if (map === undefined) map = maps.find(x => x[0] !== 0 && x[1] === Uri.parse(path).fsPath)
+        return map
     }
 
     export function getFilePath(postId: number) {

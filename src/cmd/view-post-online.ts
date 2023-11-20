@@ -10,7 +10,7 @@ export async function viewPostOnline(input?: Post | PostTreeItem | Uri) {
     if (input === undefined) input = window.activeTextEditor?.document.uri
 
     if (input instanceof Uri) {
-        const postId = PostFileMapManager.getPostId(input.fsPath)
+        const postId = PostFileMapManager.getPostId(input.path)
         if (postId !== undefined) post = (await PostService.getPostEditDto(postId))?.post
     }
 

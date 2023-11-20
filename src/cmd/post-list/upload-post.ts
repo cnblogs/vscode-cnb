@@ -205,7 +205,7 @@ export async function uploadPostFile(fileUri?: Uri, confirm = true) {
     if (parsedFileUri === undefined) return
 
     const { fsPath: filePath } = parsedFileUri
-    const postId = PostFileMapManager.getPostId(filePath)
+    const postId = PostFileMapManager.getPostId(parsedFileUri.path)
 
     if (postId !== undefined && postId >= 0) {
         const dto = await PostService.getPostEditDto(postId)
@@ -232,7 +232,7 @@ export async function uploadPostFile(fileUri?: Uri, confirm = true) {
         )
         if (selectedPost === undefined) return
 
-        await PostFileMapManager.updateOrCreate(selectedPost.id, filePath)
+        await PostFileMapManager.updateOrCreate(selectedPost.id, parsedFileUri.path)
         const postEditDto = await PostService.getPostEditDto(selectedPost.id)
         if (postEditDto === undefined) return
         if (fileContent === '') await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))

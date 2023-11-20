@@ -35,7 +35,7 @@ export async function copyPostLink(input: Post | PostTreeItem | Uri) {
         post = input.post
     } else {
         // input instanceof Uri
-        const postId = PostFileMapManager.findByFilePath(input.fsPath)?.[0]
+        const postId = PostFileMapManager.findByFilePath(input.path)?.[0]
         if (postId === undefined || postId <= 0) {
             void Alert.fileNotLinkedToPost(input)
             return

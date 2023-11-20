@@ -144,7 +144,7 @@ function handlePostInput(post: Post | PostTreeItem) {
 
 async function handleUriInput(uri: Uri) {
     const { fsPath } = uri
-    const postId = PostFileMapManager.getPostId(fsPath)
+    const postId = PostFileMapManager.getPostId(uri.path)
     if (postId === undefined) return []
     const { post: inputPost } = await PostService.getPostEditDto(postId)
 

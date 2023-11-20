@@ -52,7 +52,7 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
 
     // 博文内容写入本地文件, 若文件不存在, 会自动创建对应的文件
     await workspace.fs.writeFile(fileUri, Buffer.from(post.postBody))
-    await PostFileMapManager.updateOrCreate(postId, fileUri.fsPath)
+    await PostFileMapManager.updateOrCreate(postId, fileUri.path)
     await openPostFile(post)
     return fileUri
 }
