@@ -79,13 +79,16 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTree
 
     onPostUpdated({ refreshPost = false, postIds }: { postIds: number[]; refreshPost?: boolean }) {
         const postTreeItems = this.flattenPostItems.filter(x => postIds.includes(x.post.id))
+        console.log('postTreeItems.length: ' + postTreeItems.length)
         const categories = new Set<PostCatTreeItem>()
         postTreeItems.forEach(treeItem => {
             if (treeItem.parent === undefined) return
 
+            console.log('fireTreeDataChangedEvent: ' + treeItem.post.title)
             if (refreshPost) treeItem.parent.children = []
             else this.fireTreeDataChangedEvent(treeItem)
 
+            console.log('categories.has(treeItem.parent): ' + categories.has(treeItem.parent))
             if (!categories.has(treeItem.parent)) {
                 categories.add(treeItem.parent)
                 this.fireTreeDataChangedEvent(treeItem.parent)
