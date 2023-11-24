@@ -51,7 +51,7 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTree
         if (this.isLoading) return Promise.resolve([])
 
         if (item === undefined) {
-            return PostCatService.getAll().then(list => list.map(c => new PostCatTreeItem(c)))
+            return this.getRoots()
         } else if (item instanceof PostCatTreeItem) {
             const categoryId = item.category.categoryId
             return Promise.all([this.getCategories(categoryId), this.getPost(item)]).then(
@@ -91,6 +91,11 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTree
                 this.fireTreeDataChangedEvent(treeItem.parent)
             }
         })
+    }
+
+    private async getRoots() {
+        this._roots = await PostCatService.getAll().then(list => list.map(c => new PostCatTreeItem(c)))
+        return this._roots
     }
 
     private async getPost(parent: PostCatTreeItem): Promise<PostTreeItem[]> {
