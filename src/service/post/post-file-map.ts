@@ -48,7 +48,7 @@ export namespace PostFileMapManager {
         await LocalState.setState(storageKey, maps.filter(validatePostFileMap))
         if (emitEvent) {
             postDataProvider.fireTreeDataChangedEvent(postId)
-            postCategoryDataProvider.refresh()
+            postCategoryDataProvider.onPostUpdated({ refreshPost: false, postIds: [postId] })
         }
     }
 
