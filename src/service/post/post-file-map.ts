@@ -67,8 +67,9 @@ export namespace PostFileMapManager {
     export function getFilePath(postId: number) {
         const map = findByPostId(postId)
         if (map === undefined) return
-        if (map[1] === '') return
-        return map[1]
+        const path = map[1]
+        if (path === '') return
+        return path.startsWith('/') ? Uri.parse(path).fsPath : path
     }
 
     export function getPostId(filePath: string) {
