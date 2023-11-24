@@ -12,7 +12,7 @@ export async function uploadFsImage() {
     })
     if (uriList === undefined) return
 
-    const path = uriList[0].path
+    const path = uriList[0].fsPath
 
     return window.withProgress(
         {
