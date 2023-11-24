@@ -21,7 +21,7 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
         if (
             path === undefined ||
             !(await fsUtil.exists(path)) ||
-            path.indexOf(WorkspaceCfg.getWorkspaceUri().path) < 0
+            path.indexOf(WorkspaceCfg.getWorkspaceUri().fsPath) < 0
         ) {
             isFreshPull = true
             const uri = buildLocalPostFileUri(post, false)
