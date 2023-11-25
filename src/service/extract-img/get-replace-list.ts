@@ -66,8 +66,8 @@ async function caseFsImg(baseDirPath: string, path: string) {
     }
 
     const bytes = await readableToBytes(readable)
-    const mime = RsHttp.mimeInfer(path)
-    if (mime === undefined) throw Error('未知的 MIME 类型')
+    let mime = RsHttp.mimeInfer(path)
+    if (mime === undefined) mime = 'image/png'
 
     return new ImgBytes(bytes, mime)
 }
