@@ -7,12 +7,10 @@ import { RsMatch, RsRegex } from '@/wasm'
 // Related RFC:
 // https://datatracker.ietf.org/doc/html/rfc2397
 
-const imgExtPat = r`png|jpg|jpeg|webp|svg|gif`
-const imgUrlPat = r`.*?\.(?:${imgExtPat})`
 const dataUrlPat = r`data:image\/.*?,[a-zA-Z0-9+/]*?=?=?`
 
 const imgTagDataUrlImgPat = r`(<img.*?src\s*=\s*")(${dataUrlPat})"[^/]*?\/?>`
-const mkdUrlImgPat = r`(!\[.*?]\()(${imgUrlPat})\)`
+const mkdUrlImgPat = r`(!\[[^]]*\]\()([^)]+)\)`
 const imgTagUrlImgPat = r`(<img\s*.*?src\s*=\s*["'])(.*?)["'][^>]*?>`
 const mkdDataUrlImgPat = r`(!\[.*?]\()(${dataUrlPat})\)`
 const cnbDomain = r`\.cnblogs\.com\/`
