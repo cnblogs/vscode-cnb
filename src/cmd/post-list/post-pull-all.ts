@@ -71,7 +71,7 @@ export async function postPullAll() {
             if (
                 path === undefined ||
                 !(await fsUtil.exists(path)) ||
-                path.indexOf(WorkspaceCfg.getWorkspaceUri().path) < 0
+                path.indexOf(WorkspaceCfg.getWorkspaceUri().fsPath) < 0
             ) {
                 const uri = buildLocalPostFileUri(post, false)
                 const buf = Buffer.from(post.postBody)
