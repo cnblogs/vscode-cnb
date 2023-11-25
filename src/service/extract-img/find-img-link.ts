@@ -13,7 +13,7 @@ const dataUrlPat = r`data:image\/.*?,[a-zA-Z0-9+/]*?=?=?`
 
 const imgTagDataUrlImgPat = r`(<img.*?src\s*=\s*")(${dataUrlPat})"[^/]*?\/?>`
 const mkdUrlImgPat = r`(!\[.*?]\()(${imgUrlPat})\)`
-const imgTagUrlImgPat = r`(<img.*?src\s*=\s*")(${imgUrlPat})"[^/]*?\/?>`
+const imgTagUrlImgPat = r`(<img\s*.*?src\s*=\s*["'])(.*?)["'][^>]*?>`
 const mkdDataUrlImgPat = r`(!\[.*?]\()(${dataUrlPat})\)`
 const cnbDomain = r`\.cnblogs\.com\/`
 
