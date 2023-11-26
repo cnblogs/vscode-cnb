@@ -9,7 +9,6 @@ import { revealPostListItem } from '@/service/post/post-list-view'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { fsUtil } from '@/infra/fs/fsUtil'
-import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 export async function postPull(input: Post | PostTreeItem | Uri | undefined | null, showConfirm = true, mute = false) {
     const ctxList: CmdCtx[] = []
@@ -18,11 +17,7 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
     if (parsePostInput(input) && input.id > 0) {
         const post = input
         const path = PostFileMapManager.getFilePath(post.id)
-        if (
-            path === undefined ||
-            !(await fsUtil.exists(path)) ||
-            path.indexOf(WorkspaceCfg.getWorkspaceUri().fsPath) < 0
-        ) {
+        if (path === undefined || !(await fsUtil.exists(path))) {
             isFreshPull = true
             const uri = buildLocalPostFileUri(post, false)
             await workspace.fs.writeFile(uri, Buffer.from(post.postBody))
