@@ -19,7 +19,7 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
         const path = PostFileMapManager.getFilePath(post.id)
         if (path === undefined || !(await fsUtil.exists(path))) {
             isFreshPull = true
-            const uri = buildLocalPostFileUri(post, false)
+            const uri = buildLocalPostFileUri(post)
             await workspace.fs.writeFile(uri, Buffer.from(post.postBody))
             await PostFileMapManager.updateOrCreate(post.id, uri.path)
             await handlePostInput(input, ctxList, uri.path)
