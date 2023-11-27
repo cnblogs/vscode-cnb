@@ -119,10 +119,10 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto, conf
         post = input.post
     }
 
-    if (post === undefined) return
+    if (post == null) return Alert.err('博文不存在')
 
     const localFilePath = PostFileMapManager.getFilePath(post.id)
-    if (localFilePath === undefined) return Alert.warn('本地无该博文的编辑记录')
+    if (localFilePath == null) return Alert.warn('本地文件未关联到博客园博文，请确认文件路径或者重新关联')
 
     await saveFilePendingChanges(localFilePath)
 
