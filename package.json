@@ -778,7 +778,7 @@
                 },
                 {
                     "id": "cnblogs-post-category-list",
-                    "name": "分类列表",
+                    "name": "随笔分类",
                     "when": "vscode-cnb.isAuthed",
                     "visibility": "collapsed"
                 },
@@ -790,13 +790,13 @@
                 },
                 {
                     "id": "cnblogs-account",
-                    "name": "账户信息",
+                    "name": "账号中心",
                     "when": "vscode-cnb.isAuthed",
                     "visibility": "collapsed"
                 },
                 {
                     "id": "cnblogs-navi",
-                    "name": "博客园导航",
+                    "name": "网站导航",
                     "when": "vscode-cnb.isAuthed",
                     "visibility": "collapsed"
                 },

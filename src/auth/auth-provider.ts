@@ -183,7 +183,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     }
 
     async onAccessTokenGranted(token: string, isPat: boolean, onStateChange?: (state: string) => void) {
-        onStateChange?.('正在获取账户信息...')
+        onStateChange?.('正在获取账号信息...')
 
         const userInfo = await UserService.getUserInfoWithToken(token, isPat)
         if (userInfo == null) {

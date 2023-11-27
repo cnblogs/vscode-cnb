@@ -20,9 +20,9 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
         return [
             { label: userName, tooltip: '用户名', iconPath: new ThemeIcon('account') },
             {
-                label: '账户设置',
+                label: '账号设置',
                 command: {
-                    title: '打开账户设置',
+                    title: '打开账号设置',
                     command: 'vscode-cnb.open.account-setting',
                 },
                 iconPath: new ThemeIcon('gear'),
