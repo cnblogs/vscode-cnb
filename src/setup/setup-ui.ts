@@ -13,16 +13,16 @@ export function applyTreeViewTitleStyle(cfg: WorkspaceCfg) {
     if (option === 'normal') {
         extTreeViews.postList.title = '随笔列表'
         extTreeViews.anotherPostList.title = '随笔列表'
-        extTreeViews.account.title = '账户信息'
-        extTreeViews.postCategoriesList.title = '分类列表'
+        extTreeViews.account.title = '账号中心'
+        extTreeViews.postCategoriesList.title = '随笔分类'
         extTreeViews.blogExport.title = '博客备份'
-        extTreeViews.navi.title = '博客园导航'
+        extTreeViews.navi.title = '网站导航'
         return
     }
     if (option === 'short') {
         extTreeViews.postList.title = '随笔'
         extTreeViews.anotherPostList.title = '随笔'
-        extTreeViews.account.title = '账户'
+        extTreeViews.account.title = '账号'
         extTreeViews.postCategoriesList.title = '分类'
         extTreeViews.blogExport.title = '备份'
         extTreeViews.navi.title = '导航'
