@@ -9,13 +9,11 @@ import sanitizeFileName from 'sanitize-filename'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { fsUtil } from '@/infra/fs/fsUtil'
 
-export function buildLocalPostFileUri(post: Post, includePostId = false): Uri {
+export function buildLocalPostFileUri(post: Post, appendToFileName = ''): Uri {
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
     const ext = `.${post.isMarkdown ? 'md' : 'html'}`
-    const postIdSegment = includePostId ? `.${post.id}` : ''
     const postTitle = sanitizeFileName(post.title)
-
-    return Uri.joinPath(workspaceUri, `${postTitle}${postIdSegment}${ext}`)
+    return Uri.joinPath(workspaceUri, `${postTitle}${appendToFileName}.${post.id}${ext}`)
 }
 
 export async function openPostInVscode(postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> {
@@ -40,14 +38,14 @@ export async function openPostInVscode(postId: number, forceUpdateLocalPostFile 
     // 博文尚未关联到本地文件的情况
     // 本地存在和博文同名的文件, 询问用户是要覆盖还是同时保留两者
     if (mappedPostFilePath === undefined && (await fsUtil.exists(fileUri.fsPath))) {
-        const opt = ['保留本地文件并以博文 ID 为文件名新建另一个文件', '覆盖本地文件']
+        const opt = ['保留本地文件并新建另一个文件', '覆盖本地文件']
         const selected = await Alert.info(
             `无法建立博文与本地文件的关联, 文件名冲突`,
             { detail: `本地已存在名为 ${path.basename(fileUri.fsPath)} 的文件`, modal: true },
             ...opt
         )
 
-        if (selected === opt[0]) fileUri = buildLocalPostFileUri(post, true)
+        if (selected === opt[0]) fileUri = buildLocalPostFileUri(post, '-new')
     }
 
     // 博文内容写入本地文件, 若文件不存在, 会自动创建对应的文件

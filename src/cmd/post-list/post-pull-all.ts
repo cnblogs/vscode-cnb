@@ -73,7 +73,7 @@ export async function postPullAll() {
                 !(await fsUtil.exists(path)) ||
                 path.indexOf(WorkspaceCfg.getWorkspaceUri().fsPath) < 0
             ) {
-                const uri = buildLocalPostFileUri(post, false)
+                const uri = buildLocalPostFileUri(post)
                 const buf = Buffer.from(post.postBody)
                 await workspace.fs.writeFile(uri, buf)
                 await PostFileMapManager.updateOrCreate(post.id, uri.path)
