@@ -2,7 +2,6 @@ import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tre
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { LocalState } from '@/ctx/local-state'
 import { Uri } from 'vscode'
-import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && map[1] !== ''
 
@@ -70,7 +69,6 @@ export namespace PostFileMapManager {
         if (map === undefined) return
         const path = map[1]
         if (path === '') return
-        if (path.indexOf(WorkspaceCfg.getWorkspaceUri().path) < 0) return
         return path.startsWith('/') ? Uri.parse(path).fsPath : path
     }
 
