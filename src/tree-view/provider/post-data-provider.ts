@@ -22,6 +22,10 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
         return this._onDidChangeTreeData.event
     }
 
+    refresh(): void {
+        this._onDidChangeTreeData.fire(undefined)
+    }
+
     getPage() {
         return this.page
     }

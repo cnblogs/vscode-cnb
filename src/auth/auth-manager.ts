@@ -12,14 +12,17 @@ import { LocalState } from '@/ctx/local-state'
 import { ExtConst } from '@/ctx/ext-const'
 import { UserService } from '@/service/user.service'
 import { isAuthSessionExpired } from '@/auth/is-auth-session-expired'
+import { PostListView } from '@/cmd/post-list/post-list-view'
 
-authProvider.onDidChangeSessions(async () => {
+authProvider.onDidChangeSessions(async e => {
     await AuthManager.ensureSession({ createIfNone: false })
     await AuthManager.updateAuthStatus()
-
     accountViewDataProvider.fireTreeDataChangedEvent()
-    postDataProvider.fireTreeDataChangedEvent()
-    postCategoryDataProvider.fireTreeDataChangedEvent()
+
+    postCategoryDataProvider.refresh()
+
+    if (e.removed != null) postDataProvider.refresh()
+    else await PostListView.refresh()
 
     await BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true })
 })
