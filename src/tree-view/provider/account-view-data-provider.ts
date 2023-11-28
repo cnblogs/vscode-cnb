@@ -16,9 +16,11 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
     async getChildren(el?: TreeItem) {
         if (!(await AuthManager.isAuthed()) || el !== undefined) return []
 
-        const userName = (await UserService.getUserInfo())?.displayName
-        return [
-            { label: userName, tooltip: '用户名', iconPath: new ThemeIcon('account') },
+        const user = await UserService.getUserInfo()
+        if (user == null) return []
+
+        const items = [
+            { label: user.displayName, tooltip: '用户名', iconPath: new ThemeIcon('account') },
             {
                 label: '账号设置',
                 command: {
@@ -27,22 +29,41 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                 },
                 iconPath: new ThemeIcon('gear'),
             },
-            {
-                label: '博客后台',
+        ]
+
+        if (user.isVip !== true) {
+            items.push({
+                label: '购买会员',
                 command: {
-                    title: '打开博客后台',
-                    command: 'vscode-cnb.open.blog-console',
+                    title: '购买博客园会员',
+                    command: 'vscode-cnb.open.buy-vip',
                 },
-                iconPath: new ThemeIcon('console'),
-            },
-            {
-                label: '我的博客',
-                command: {
-                    title: '打开我的博客',
-                    command: 'vscode-cnb.open.my-blog',
+                iconPath: new ThemeIcon('heart'),
+            })
+        }
+
+        if (user.blogApp != null) {
+            items.push(
+                {
+                    label: '博客后台',
+                    command: {
+                        title: '打开博客后台',
+                        command: 'vscode-cnb.open.blog-console',
+                    },
+                    iconPath: new ThemeIcon('console'),
                 },
-                iconPath: new ThemeIcon('window'),
-            },
+                {
+                    label: '我的博客',
+                    command: {
+                        title: '打开我的博客',
+                        command: 'vscode-cnb.open.my-blog',
+                    },
+                    iconPath: new ThemeIcon('window'),
+                }
+            )
+        }
+
+        items.push(
             {
                 label: '我的主页',
                 command: {
@@ -58,8 +79,10 @@ export class AccountViewDataProvider implements TreeDataProvider<TreeItem> {
                     command: 'vscode-cnb.logout',
                 },
                 iconPath: new ThemeIcon('log-out'),
-            },
-        ]
+            }
+        )
+
+        return items
     }
 
     fireTreeDataChangedEvent() {

@@ -18,6 +18,7 @@ export namespace Browser.Open.Cnb {
 
 export namespace Browser.Open.User {
     export const accountSetting = () => open('https://account.cnblogs.com/settings/account')
+    export const buyVip = () => open('https://cnblogs.vip/')
 
     export async function blog() {
         const blogApp = (await UserService.getUserInfo())?.blogApp

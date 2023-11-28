@@ -110,6 +110,7 @@ export function setupCmd() {
         regCmd(extName`.open.my-home`, Browser.Open.User.home),
         regCmd(extName`.open.blog-console`, Browser.Open.User.blogConsole),
         regCmd(extName`.open.account-setting`, Browser.Open.User.accountSetting),
+        regCmd(extName`.open.buy-vip`, Browser.Open.User.buyVip),
         // ing list
         regCmd(extName`.ing-list.next`, Ing.ListView.goNext),
         regCmd(extName`.ing-list.prev`, Ing.ListView.goPrev),
