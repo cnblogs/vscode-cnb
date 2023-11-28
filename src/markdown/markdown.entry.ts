@@ -1,9 +1,10 @@
 /// <reference lib="dom" />
 
-import { HighlightersFactory, HljsHighlighter } from '@cnblogs/code-highlight-adapter'
+// import { HighlightersFactory, HljsHighlighter } from '@cnblogs/code-highlight-adapter'
 
-HighlightersFactory.configCodeHighlightOptions({ enableCodeLineNumber: false })
+// HighlightersFactory.configCodeHighlightOptions({ enableCodeLineNumber: false })
 
+/*
 function highlightLines(this: void) {
     const bgDefinitionStyleId = 'highlightedLineBackground'
     if (document.querySelector(`#${bgDefinitionStyleId}`) === null) {
@@ -25,3 +26,4 @@ function highlightLines(this: void) {
 
 window.addEventListener('vscode.markdown.updateContent', highlightLines)
 highlightLines()
+*/

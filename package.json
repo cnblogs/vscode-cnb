@@ -42,12 +42,6 @@
     "main": "./dist/extension.js",
     "contributes": {
         "markdown.markdownItPlugins": true,
-        "markdown.previewScripts": [
-            "./dist/markdown.js"
-        ],
-        "markdown.previewStyles": [
-            "./dist/assets/styles/highlight-code-lines.css"
-        ],
         "icons": {
             "vscode-cnb-date": {
                 "description": "date",
