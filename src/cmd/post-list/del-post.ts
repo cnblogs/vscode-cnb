@@ -53,9 +53,8 @@ export async function delSelectedPost(arg: unknown) {
         return
     }
 
-    const { confirmed: hasConfirmed, deleteLocalFileAtSameTime: isToDeleteLocalFile } = await confirmDelete(
-        selectedPost
-    )
+    const { confirmed: hasConfirmed, deleteLocalFileAtSameTime: isToDeleteLocalFile } =
+        await confirmDelete(selectedPost)
     if (!hasConfirmed) return
 
     isDeleting = true
