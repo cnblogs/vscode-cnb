@@ -14,13 +14,13 @@ import format from 'date-fns/format'
  * @param {(Uri | number)} input
  * @returns {*}  {Promise<void>}
  */
-export async function showLocalFileToPostInfo(input: Uri | number): Promise<void> {
+export async function showLocalFileToPostInfo(input: Uri | number): Promise<number | undefined> {
     let filePath: string | undefined
     let postId: number | undefined
     if (input instanceof Uri && input.scheme === 'file') {
         postId = PostFileMapManager.getPostId(input.path)
         filePath = input.fsPath
-        if (postId === undefined) {
+        if (postId == null) {
             const options = ['现在去关联']
             const selected = await Alert.info(
                 '本地文件尚未关联到博文',
@@ -31,14 +31,27 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
                 ...options
             )
             if (selected === options[0]) {
-                const selectedPost = await searchPostByTitle(
-                    path.basename(filePath, path.extname(filePath)),
-                    '搜索要关联的博文'
-                )
-                if (selectedPost !== undefined) {
-                    await PostFileMapManager.updateOrCreate(selectedPost.id, input.path)
-                    void Alert.info(`本地文件已与博文(${selectedPost.title}, Id: ${selectedPost.id})建立关联`)
+                const filenName = path.basename(filePath, path.extname(filePath))
+                postId = PostFileMapManager.extractPostId(filenName)
+                if (postId == null) {
+                    const selectedPost = await searchPostByTitle(filenName, '搜索要关联的博文')
+
+                    if (selectedPost == null) {
+                        void Alert.info('未选择要关联的博文')
+                        return
+                    }
+                    postId = selectedPost.id
                 }
+
+                const dto = await PostService.getPostEditDto(postId)
+                if (dto == null) {
+                    void Alert.err(`对应的博文不存在(Id: ${postId})`)
+                    return
+                }
+
+                await PostFileMapManager.updateOrCreate(postId, input.path)
+                void Alert.info(`本地文件已与博文(Id: ${postId})建立关联`)
+                return postId
             }
             return
         }
@@ -74,6 +87,6 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<void
         await viewPostOnline(post)
     } else if (selected === options[1]) {
         await PostFileMapManager.updateOrCreate(postId, '')
-        void Alert.info(`博文 ${post.title} 已与 ${filePath} 取消关联`)
+        void Alert.info(`本地文件已与博文(Id: ${postId})取消关联`)
     }
 }

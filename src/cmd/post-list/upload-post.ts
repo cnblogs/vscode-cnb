@@ -21,19 +21,17 @@ import { Workspace } from '@/cmd/workspace'
 import { fsUtil } from '@/infra/fs/fsUtil'
 
 async function parseFileUri(fileUri?: Uri) {
-    if (fileUri !== undefined && fileUri.scheme !== 'file') return undefined
+    if (fileUri !== undefined && fileUri.scheme !== 'file') return
     if (fileUri !== undefined) return fileUri
 
     const { activeTextEditor } = window
-    if (activeTextEditor === undefined) return undefined
+    if (activeTextEditor == null) return
 
     const { document } = activeTextEditor
     if (document.languageId === 'markdown' && !document.isUntitled) {
         await document.save()
         return document.uri
     }
-
-    return undefined
 }
 
 export async function saveLocalPost(localPost: LocalPost) {
@@ -202,43 +200,45 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto, conf
 
 export async function uploadPostFile(fileUri?: Uri, confirm = true) {
     const parsedFileUri = await parseFileUri(fileUri)
-    if (parsedFileUri === undefined) return
-
-    const { fsPath: filePath } = parsedFileUri
-    const postId = PostFileMapManager.getPostId(parsedFileUri.path)
-
-    if (postId !== undefined && postId >= 0) {
-        const dto = await PostService.getPostEditDto(postId)
-        if (dto !== undefined) await uploadPost(dto, confirm)
-        return
-    }
+    if (parsedFileUri == null) return
 
     const fileContent = Buffer.from(await workspace.fs.readFile(parsedFileUri)).toString()
     if (isEmptyBody(fileContent)) return
 
-    const selected = await Alert.info(
-        '本地文件尚未关联到博客园博文',
-        {
-            modal: true,
-            detail: `您可以选择新建一篇博文或将本地文件关联到一篇博客园博文(您可以根据标题搜索您在博客园博文)`,
-        },
-        '新建博文',
-        '关联已有博文'
-    )
-    if (selected === '关联已有博文') {
-        const selectedPost = await searchPostByTitle(
-            path.basename(filePath, path.extname(filePath)),
-            '搜索要关联的博文'
+    const { fsPath: fsPath } = parsedFileUri
+    let postId = PostFileMapManager.getPostId(parsedFileUri.path)
+
+    if (postId == null) {
+        const createPost = '新建博文'
+        const mapPost = '关联已有博文并上传'
+        const selected = await Alert.info(
+            '本地文件尚未关联到博客园博文',
+            {
+                modal: true,
+                detail: `您可以选择新建一篇博文或将当前本地文件关联到已有博客园博文`,
+            },
+            createPost,
+            mapPost
         )
-        if (selectedPost === undefined) return
 
-        await PostFileMapManager.updateOrCreate(selectedPost.id, parsedFileUri.path)
-        const postEditDto = await PostService.getPostEditDto(selectedPost.id)
-        if (postEditDto === undefined) return
-        if (fileContent === '') await workspace.fs.writeFile(parsedFileUri, Buffer.from(postEditDto.post.postBody))
+        if (selected === mapPost) {
+            const filenName = path.basename(fsPath, path.extname(fsPath))
+            postId = PostFileMapManager.extractPostId(filenName)
+            if (postId == null) {
+                const selectedPost = await searchPostByTitle(filenName, '搜索要关联的博文')
 
-        await uploadPost(postEditDto.post, confirm)
-    } else if (selected === '新建博文') {
-        await saveLocalPost(new LocalPost(filePath))
+                if (selectedPost == null) return Alert.info('未选择要关联的博文')
+                postId = selectedPost.id
+            }
+            if (postId != null) await PostFileMapManager.updateOrCreate(postId, parsedFileUri.path)
+        } else if (selected === createPost) {
+            await saveLocalPost(new LocalPost(fsPath))
+        }
+    }
+
+    if (postId != null) {
+        const dto = await PostService.getPostEditDto(postId)
+        if (dto == null) return Alert.err(`对应的博文不存在(Id: ${postId})`)
+        await uploadPost(dto, confirm)
     }
 }

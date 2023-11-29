@@ -4,9 +4,7 @@ import { LocalState } from '@/ctx/local-state'
 import { Uri } from 'vscode'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && map[1] !== ''
-
 export type PostFileMap = [postId: number, filePath: string]
-
 const storageKey = 'postFileMaps'
 
 function getMaps(): PostFileMap[] {
@@ -36,7 +34,7 @@ export namespace PostFileMapManager {
     }
 
     export async function updateOrCreate(postId: number, filePath: string, { emitEvent = true } = {}) {
-        const validFileExt = ['.md', '.html']
+        const validFileExt = ['.md', '.mkd', '.htm', '.html']
         if (filePath !== '' && !validFileExt.some(x => filePath.endsWith(x)))
             throw Error('Invalid filepath, file must have type markdown or html')
 
@@ -72,9 +70,15 @@ export namespace PostFileMapManager {
         return path.startsWith('/') ? Uri.parse(path).fsPath : path
     }
 
-    export function getPostId(filePath: string) {
+    export function getPostId(filePath: string): number | undefined {
         const map = findByFilePath(filePath)
-        if (map === undefined) return
+        if (map == null) return
         return map[0]
+    }
+
+    export function extractPostId(fileNameWithoutExt: string): number | undefined {
+        const match = /\.(\d+)$/g.exec(fileNameWithoutExt)
+        if (match == null) return
+        return Number(match[1])
     }
 }
