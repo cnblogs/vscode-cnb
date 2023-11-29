@@ -11,9 +11,10 @@ import { fsUtil } from '@/infra/fs/fsUtil'
 
 export function buildLocalPostFileUri(post: Post, appendToFileName = ''): Uri {
     const workspaceUri = WorkspaceCfg.getWorkspaceUri()
-    const ext = `.${post.isMarkdown ? 'md' : 'html'}`
-    const postTitle = sanitizeFileName(post.title)
-    return Uri.joinPath(workspaceUri, `${postTitle}${appendToFileName}.${post.id}${ext}`)
+    const ext = `${post.isMarkdown ? 'md' : 'html'}`
+    let postTitle = sanitizeFileName(post.title)
+    if (/\.\d+$/.test(postTitle)) postTitle += '_'
+    return Uri.joinPath(workspaceUri, `${postTitle}${appendToFileName}.${post.id}.${ext}`)
 }
 
 export async function openPostInVscode(postId: number, forceUpdateLocalPostFile = false): Promise<Uri | false> {

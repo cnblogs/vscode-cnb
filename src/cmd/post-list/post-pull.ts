@@ -9,6 +9,7 @@ import { revealPostListItem } from '@/service/post/post-list-view'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { fsUtil } from '@/infra/fs/fsUtil'
+import { searchPostByTitle } from '@/service/post/search-post-by-title'
 
 export async function postPull(input: Post | PostTreeItem | Uri | undefined | null, showConfirm = true, mute = false) {
     const ctxList: CmdCtx[] = []
@@ -30,7 +31,7 @@ export async function postPull(input: Post | PostTreeItem | Uri | undefined | nu
         }
     } else {
         const uri = parseUriInput(input)
-        if (uri !== undefined) handleUriInput(uri, ctxList)
+        if (uri != null) await handleUriInput(uri, ctxList)
     }
 
     const fileName = resolveFileNames(ctxList)
@@ -77,9 +78,34 @@ function parseUriInput(input: InputType): Uri | undefined {
     if (doc !== undefined && !doc.isUntitled) return doc.uri
 }
 
-function handleUriInput(fileUri: Uri, contexts: CmdCtx[]) {
-    const postId = PostFileMapManager.getPostId(fileUri.path)
-    if (postId === undefined) return Alert.fileNotLinkedToPost(fileUri)
+async function handleUriInput(fileUri: Uri, contexts: CmdCtx[]) {
+    let postId = PostFileMapManager.getPostId(fileUri.path)
+    if (postId == null) {
+        const mapPost = '关联已有博文并拉取'
+        const selected = await Alert.info(
+            '本地文件尚未关联到博客园博文',
+            {
+                modal: true,
+                detail: `您可以将当前本地文件关联到已有博客园博文`,
+            },
+            mapPost
+        )
+
+        if (selected === mapPost) {
+            const fsPath = fileUri.fsPath
+            const filenName = path.basename(fsPath, path.extname(fsPath))
+            postId = PostFileMapManager.extractPostId(filenName)
+            if (postId == null) {
+                const selectedPost = await searchPostByTitle(filenName, '搜索要关联的博文')
+                if (selectedPost == null) return Alert.info('未选择要关联的博文')
+                postId = selectedPost.id
+            }
+        }
+
+        if (postId != null) await PostFileMapManager.updateOrCreate(postId, fileUri.path)
+    }
+
+    if (postId == null) return Alert.fileNotLinkedToPost(fileUri)
 
     contexts.push({ postId, fileUri })
 }

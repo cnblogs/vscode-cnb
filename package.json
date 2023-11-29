@@ -242,7 +242,7 @@
             },
             {
                 "command": "vscode-cnb.post.show-local-file-info",
-                "title": "博客园关联博文",
+                "title": "关联博客园博文",
                 "enablement": "vscode-cnb.isAuthed"
             },
             {
@@ -616,7 +616,7 @@
                             },
                             "post-show-local-file-info": {
                                 "order": 3,
-                                "description": "博客园关联博文",
+                                "description": "关联博客园博文",
                                 "type": "boolean",
                                 "default": true
                             },
@@ -677,7 +677,7 @@
                             },
                             "post-show-local-file-info": {
                                 "order": 3,
-                                "description": "博客园关联博文",
+                                "description": "关联博客园博文",
                                 "type": "boolean"
                             },
                             "post-open-in-blog-admin": {
