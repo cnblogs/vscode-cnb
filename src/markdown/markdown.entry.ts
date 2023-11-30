@@ -4,6 +4,9 @@ import { HighlightersFactory, HljsHighlighter } from '@cnblogs/code-highlight-ad
 
 HighlightersFactory.configCodeHighlightOptions({ enableCodeLineNumber: false })
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const module = {}
+
 function highlightLines(this: void) {
     const bgDefinitionStyleId = 'highlightedLineBackground'
     if (document.querySelector(`#${bgDefinitionStyleId}`) === null) {
