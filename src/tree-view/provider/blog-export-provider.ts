@@ -118,11 +118,11 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
                       return false
                   })
             : clearCache
-            ? await BlogExportRecordsStore.clearCache().then(
-                  () => true,
-                  () => true
-              )
-            : true
+              ? await BlogExportRecordsStore.clearCache().then(
+                    () => true,
+                    () => true
+                )
+              : true
 
         if (hasCacheRefreshed) this._treeDataChangedSource?.fire(null)
 

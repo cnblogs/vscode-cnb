@@ -157,10 +157,10 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
         total ??= 0
         percentage ??= 0
         let formattedTransfer = filesize(transferred)
-        formattedTransfer = typeof formattedTransfer === 'string' ? formattedTransfer : transferred
+        formattedTransfer = typeof formattedTransfer === 'string' ? formattedTransfer : transferred.toString()
 
         let formattedTotal = filesize(total)
-        formattedTotal = typeof formattedTotal === 'string' ? formattedTotal : total
+        formattedTotal = typeof formattedTotal === 'string' ? formattedTotal : total.toString()
         message ??= '下载中'
         return `${message}: ${formattedTransfer}/${formattedTotal} (${percentage}%)`
     }
