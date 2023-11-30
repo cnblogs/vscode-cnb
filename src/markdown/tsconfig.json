@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "target": "es2020",
+        "lib": ["es2020", "DOM", "DOM.Iterable"]
+    },
+    "exclude": [".vscode-test", "ui", "src/test", "test", "__mocks__", "node_modules"]
+}

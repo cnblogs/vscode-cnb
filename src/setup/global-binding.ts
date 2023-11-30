@@ -13,6 +13,9 @@ global.Response = Response
 
 import { Blob, File, FormData } from 'formdata-node'
 
+// @ts-ignore
 global.FormData = FormData
+// @ts-ignore
 global.Blob = Blob
+// @ts-ignore
 global.File = File

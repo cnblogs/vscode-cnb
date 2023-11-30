@@ -2,6 +2,7 @@ import { Alert } from '@/infra/alert'
 import { AuthManager } from '@/auth/auth-manager'
 import { UserInfo } from '@/model/user-info'
 import { ExtConst } from '@/ctx/ext-const'
+import fetch, { Headers } from 'node-fetch'
 
 export namespace UserService {
     export async function getUserInfo(): Promise<UserInfo> {

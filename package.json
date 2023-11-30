@@ -6,6 +6,7 @@
     "license": "LICENSE.txt",
     "preview": false,
     "publisher": "cnblogs",
+    "type": "module",
     "repository": {
         "type": "github",
         "url": "https://github.com/cnblogs/vscode-cnb"
