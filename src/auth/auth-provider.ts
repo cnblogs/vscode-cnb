@@ -86,17 +86,22 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async createSessionFromPat(scopes: string[]) {
-        const opt = {
-            title: '请输入您的个人访问令牌 (PAT)',
-            prompt: '可通过 https://account.cnblos.com/tokens 获取',
-            password: true,
-            validator: (value: string) => (value.length === 0 ? '个人访问令牌（PAT)不能为空' : ''),
+        const validateInput = (value: string) => {
+            if (value.trim().length === 0)
+                return '请输入个人访问令牌（PAT)，如若没有，可以[创建](https://account.cnblogs.com/settings/tokens)'
+            if (value.length > 500) return '无效的个人访问令牌（PAT)'
         }
 
-        const pat = await window.showInputBox(opt)
-        if ((pat ?? '').length === 0) throw new Error('个人访问令牌（PAT)不能为空')
+        const input = await window.showInputBox({
+            title: '请输入您的个人访问令牌 (PAT)',
+            prompt: '可通过 [https://account.cnblogs.com/tokens](https://account.cnblogs.com/settings/tokens) 创建',
+            password: true,
+            validateInput,
+        })
 
-        return authProvider.onAccessTokenGranted(pat ?? '', true)
+        if (input == null) throw Error()
+
+        return authProvider.onAccessTokenGranted(input, true)
     }
 
     createSessionFromBrowser(scopes: string[]) {
