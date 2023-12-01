@@ -187,8 +187,8 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
         const userInfo = await UserService.getUserInfoWithToken(token, isPat)
         if (userInfo == null) {
-            const errorMsg = '获取用户信息失败: userInfo is null'
-            void Alert.warn
+            const errorMsg = '获取用户信息失败，错误详情: userInfo is null'
+            void Alert.warn(errorMsg)
             throw Error(errorMsg)
         }
 
