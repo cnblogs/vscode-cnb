@@ -33,8 +33,14 @@ export namespace UserService {
         })
 
         if (!req.ok) {
-            const message = `${req.status}: ${req.statusText}`
-            void Alert.err(`获取用户信息失败: ${message}`)
+            const message = `${req.status} ${req.statusText}`
+            if (req.status === 401) {
+                void Alert.err(
+                    '获取用户信息失败，可能是个人访问令牌(PAT)失效或者不存在，重新[创建PAT](https://account.cnblogs.com/settings/tokens)'
+                )
+            } else {
+                void Alert.err(`获取用户信息失败，错误详情: ${message}`)
+            }
             throw new Error(message)
         }
 
