@@ -20,5 +20,5 @@
         "rootDir": "../"
     },
     "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "./**/*.js", "*.mjs", "../src/model/*.ts"],
-    "exclude": ["./dist"]
+    "exclude": ["node_modules", "./dist"]
 }
