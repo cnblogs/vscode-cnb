@@ -18,7 +18,7 @@ const buildEntry = () => {
         .filter(x => x.isDirectory() && !['share', 'dist', 'lib'].includes(x.name))
         .map(x => x.name)
     for (let folder of folders) {
-        const key = `${folder}/index`
+        const key = `assets/ui/${folder}/index`
         entries[key] = `./ui/${folder}/index.tsx`
         cpSync(`./ui/${folder}/index.html`, `./dist/assets/ui/${folder}/index.html`, { force: true })
     }
@@ -28,8 +28,8 @@ const buildEntry = () => {
 
     cpSync('./node_modules/@fluentui/font-icons-mdl2/fonts/', './dist/assets/fonts/', { recursive: true })
 
-    if (isDevEnv) console.log(entries)
-
+    entries['markdown'] = './src/markdown/markdown.entry.ts'
+    console.log(entries)
     return entries
 }
 
@@ -39,15 +39,16 @@ const buildEntry = () => {
 const config = {
     entry: buildEntry(),
     output: {
-        path: path.resolve('dist/assets/ui'), //打包后的文件存放的地方
+        path: path.resolve('dist'), //打包后的文件存放的地方
         filename: '[name].js', //打包后输出文件的文件名
     },
     resolve: {
-        extensions: ['.tsx', '.ts', 'less', '.css', '.js'],
+        extensions: ['.tsx', '.ts', 'less', '.css', '.js', '.mjs'],
         plugins: [new TsconfigPathsPlugin({ configFile: './ui/tsconfig.json' })],
     },
     devtool: isDevEnv ? 'eval-source-map' : false,
     mode: isDevEnv ? 'development' : 'production',
+    target: 'web',
     module: {
         rules: [
             {
@@ -93,6 +94,12 @@ const config = {
             {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
+            },
+            {
+                test: /\.mjs/,
+                resolve: {
+                    fullySpecified: false,
+                },
             },
         ],
     },

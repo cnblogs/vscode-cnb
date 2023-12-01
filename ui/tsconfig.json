@@ -16,7 +16,8 @@
             "@/*": ["../src/*"]
         },
         "lib": ["DOM", "ES2020"],
-        "strictBindCallApply": true
+        "strictBindCallApply": true,
+        "rootDir": "../"
     },
     "include": ["./**/*.ts", "./**/*.tsx", "./**/*.jsx", "./**/*.js", "*.mjs", "../src/model/*.ts"],
     "exclude": ["./dist"]
