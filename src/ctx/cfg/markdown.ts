@@ -25,6 +25,10 @@ export namespace MarkdownCfg {
         return cfgGet('enableFenceQuote') ?? true
     }
 
+    export function isEnableMarkdownImageSizing(): boolean {
+        return cfgGet('enableImageSizing') ?? true
+    }
+
     export function isEnableMarkdownHighlightCodeLines(): boolean {
         return cfgGet('enableHighlightCodeLines') ?? true
     }

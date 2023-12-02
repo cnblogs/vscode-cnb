@@ -549,6 +549,13 @@
                         "default": true,
                         "markdownDescription": "博客园 Markdown 语法扩展: 三箭头(`<<<`)栅栏引用\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n<<<\n一段引用文字\n\n一段引用文字\n<<<\n\n```"
                     },
+                    "cnblogsClient.markdown.enableImageSizing": {
+                        "order": 10,
+                        "type": "boolean",
+                        "scope": "application",
+                        "default": true,
+                        "markdownDescription": "博客园 Markdown 语法扩展: 指定图片尺寸，`![](... =200x)`指定宽度，`![](... =x200)`指定高度"
+                    },
                     "cnblogsClient.markdown.enableHighlightCodeLines": {
                         "order": 11,
                         "type": "boolean",
@@ -1376,7 +1383,7 @@
     "dependencies": {
         "@cnblogs/code-highlight-adapter": "^1.7.1",
         "@cnblogs/code-quality": "^2.0.2",
-        "@cnblogs/markdown-it-presets": "1.9",
+        "@cnblogs/markdown-it-presets": "^1.10.5",
         "@fluentui/react": "^8.110.11",
         "@types/combined-stream": "^1.0.3",
         "base64url": "^3.0.1",
