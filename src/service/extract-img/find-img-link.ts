@@ -10,7 +10,7 @@ import { RsMatch, RsRegex } from '@/wasm'
 const dataUrlPat = r`data:image\/.*?,[a-zA-Z0-9+/]*?=?=?`
 
 const imgTagDataUrlImgPat = r`(<img.*?src\s*=\s*")(${dataUrlPat})"[^/]*?\/?>`
-const mkdUrlImgPat = r`(!\[[^]]*\]\()([^)]+)\)`
+const mkdUrlImgPat = r`(!\[[^]]*\]\()([^) ]+).*?\)`
 const imgTagUrlImgPat = r`(<img\s*.*?src\s*=\s*["'])(.*?)["'][^>]*?>`
 const mkdDataUrlImgPat = r`(!\[.*?]\()(${dataUrlPat})\)`
 const cnbDomain = r`\.cnblogs\.com\/`
