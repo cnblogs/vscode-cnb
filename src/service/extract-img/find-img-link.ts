@@ -10,9 +10,10 @@ import { RsMatch, RsRegex } from '@/wasm'
 const dataUrlPat = r`data:image\/.*?,[a-zA-Z0-9+/]*?=?=?`
 
 const imgTagDataUrlImgPat = r`(<img.*?src\s*=\s*")(${dataUrlPat})"[^/]*?\/?>`
-const mkdUrlImgPat = r`(!\[[^]]*\]\()([^)]+)\)`
 const imgTagUrlImgPat = r`(<img\s*.*?src\s*=\s*["'])(.*?)["'][^>]*?>`
 const mkdDataUrlImgPat = r`(!\[.*?]\()(${dataUrlPat})\)`
+
+const markdownImages = /(?<prefix>!\[[^\]]*\]\()(?<uri>[^)\s]+)[^)]*\)/g
 const wikilinkImages = /!\[(\[.+?\])\][\s\S]+?(?<prefix>\1:\s*)(?<uri>.*?)\s+/g
 const exludeDomains = /\.cnblogs\.com/i
 const webUrlPrefix = /^https?:\/\//i
@@ -20,7 +21,7 @@ const webUrlPrefix = /^https?:\/\//i
 export const FILTER_BYTE_OFFSET = -9999
 
 function getImagesWithTs(text: string) {
-    return [...text.matchAll(wikilinkImages)].map(m => {
+    return [...text.matchAll(markdownImages)].concat([...text.matchAll(wikilinkImages)]).map(m => {
         const uri = m.groups?.uri ?? ''
         return <ImgInfo>{
             byteOffset: FILTER_BYTE_OFFSET,
@@ -33,8 +34,7 @@ function getImagesWithTs(text: string) {
 
 export function findImgLink(text: string): ImgInfo[] {
     const imgTagUrlImgMgs = RsRegex.matches(imgTagUrlImgPat, text) as RsMatch[]
-    const mkdUrlImgMgs = RsRegex.matches(mkdUrlImgPat, text) as RsMatch[]
-    const urlImgInfo = imgTagUrlImgMgs.concat(mkdUrlImgMgs).map(mg => {
+    const urlImgInfo = imgTagUrlImgMgs.map(mg => {
         const data = mg.groups[2]
         const prefix = mg.groups[1]
         const byteOffset = mg.byte_offset + Buffer.from(prefix).length
