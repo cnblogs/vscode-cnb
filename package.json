@@ -547,7 +547,7 @@
                         "type": "boolean",
                         "scope": "application",
                         "default": true,
-                        "markdownDescription": "博客园 Markdown 语法扩展: 三箭头(`<<<`)栅栏引用\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n<<<\n一段引用文字\n\n一段引用文字\n<<<\n\n```"
+                        "markdownDescription": "博客园 Markdown 语法扩展: 三箭头(`>>>`)栅栏引用\n\n使用示例:\n```markdown\n>>>\n一段引用文字\n\n一段引用文字\n>>>\n```"
                     },
                     "cnblogsClient.markdown.enableImageSizing": {
                         "order": 10,
@@ -562,7 +562,7 @@
                         "scope": "application",
                         "default": true,
                         "editPresentation": "singlelineText",
-                        "markdownDescription": "博客园 Markdown 语法扩展: 代码块指定行高亮\n\n&nbsp;\n\n使用示例:\n\n```markdown\n\n```typescript {1, 3-4}\nconst a = 1\nconst b = 2\nconst c = a + b\nconst d = c\nconst e = 0\n```\n\n```"
+                        "markdownDescription": "博客园 Markdown 语法扩展: 代码块指定行高亮\n\n使用示例:\n```markdown\n```typescript {1, 3-4}\nconst a = 1\nconst b = 2\nconst c = a + b\nconst d = c\nconst e = 0\n```\n```"
                     },
                     "cnblogsClient.markdown.showConfirmMsgWhenUploadPost": {
                         "order": 12,
