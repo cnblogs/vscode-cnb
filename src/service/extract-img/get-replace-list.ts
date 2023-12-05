@@ -17,6 +17,7 @@ export type ImgInfo = {
     byteOffset: number
     data: string
     src: ImgSrc
+    prefix: string | undefined
 }
 
 export const enum ImgSrc {

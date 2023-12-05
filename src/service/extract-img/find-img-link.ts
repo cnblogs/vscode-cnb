@@ -13,7 +13,23 @@ const imgTagDataUrlImgPat = r`(<img.*?src\s*=\s*")(${dataUrlPat})"[^/]*?\/?>`
 const mkdUrlImgPat = r`(!\[[^]]*\]\()([^)]+)\)`
 const imgTagUrlImgPat = r`(<img\s*.*?src\s*=\s*["'])(.*?)["'][^>]*?>`
 const mkdDataUrlImgPat = r`(!\[.*?]\()(${dataUrlPat})\)`
-const cnbDomain = r`\.cnblogs\.com\/`
+const wikilinkImages = /!\[(\[.+?\])\][\s\S]+?(?<prefix>\1:\s*)(?<uri>.*?)\s+/g
+const exludeDomains = /\.cnblogs\.com/i
+const webUrlPrefix = /^https?:\/\//i
+
+export const FILTER_BYTE_OFFSET = -9999
+
+function getImagesWithTs(text: string) {
+    return [...text.matchAll(wikilinkImages)].map(m => {
+        const uri = m.groups?.uri ?? ''
+        return <ImgInfo>{
+            byteOffset: FILTER_BYTE_OFFSET,
+            data: uri,
+            src: webUrlPrefix.test(uri) ? ImgSrc.web : ImgSrc.fs,
+            prefix: m.groups?.prefix,
+        }
+    })
+}
 
 export function findImgLink(text: string): ImgInfo[] {
     const imgTagUrlImgMgs = RsRegex.matches(imgTagUrlImgPat, text) as RsMatch[]
@@ -24,7 +40,7 @@ export function findImgLink(text: string): ImgInfo[] {
         const byteOffset = mg.byte_offset + Buffer.from(prefix).length
 
         let src
-        if (/https?:\/\//.test(data)) src = ImgSrc.web
+        if (webUrlPrefix.test(data)) src = ImgSrc.web
         else src = ImgSrc.fs
 
         return <ImgInfo>{
@@ -48,8 +64,7 @@ export function findImgLink(text: string): ImgInfo[] {
         }
     })
 
-    const acc = urlImgInfo.concat(dataUrlImgInfo)
-
-    // keep links while not cnb
-    return acc.filter(x => !RsRegex.isMatch(cnbDomain, x.data.toLowerCase()))
+    let images = urlImgInfo.concat(dataUrlImgInfo)
+    images = images.concat(getImagesWithTs(text))
+    return images.filter(x => !exludeDomains.test(x.data))
 }

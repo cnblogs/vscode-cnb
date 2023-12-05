@@ -68,6 +68,7 @@ export async function extractImg(text: string, fileDir: string, inputImgSrc?: Im
                 })
             )
     )
+
     const replaceListLen = replaceList.length
 
     return window.withProgress(
