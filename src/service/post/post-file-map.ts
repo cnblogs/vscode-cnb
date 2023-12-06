@@ -2,6 +2,7 @@ import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tre
 import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { LocalState } from '@/ctx/local-state'
 import { Uri } from 'vscode'
+import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && map[1] !== ''
 export type PostFileMap = [postId: number, filePath: string]
@@ -9,6 +10,10 @@ const storageKey = 'postFileMaps'
 
 function getMaps(): PostFileMap[] {
     return <PostFileMap[]>LocalState.getState(storageKey) ?? []
+}
+
+function isUriPath(path: string) {
+    return path.startsWith('/')
 }
 
 export namespace PostFileMapManager {
@@ -67,7 +72,7 @@ export namespace PostFileMapManager {
         if (map === undefined) return
         const path = map[1]
         if (path === '') return
-        return path.startsWith('/') ? Uri.parse(path).fsPath : path
+        return isUriPath(path) ? Uri.parse(path).fsPath : path
     }
 
     export function getPostId(filePath: string): number | undefined {
@@ -80,5 +85,17 @@ export namespace PostFileMapManager {
         const match = /\.(\d+)$/g.exec(fileNameWithoutExt)
         if (match == null) return
         return Number(match[1])
+    }
+
+    export function updateWithWorkspace(oldWorkspaceUri: Uri) {
+        const newWorkspaceUri = WorkspaceCfg.getWorkspaceUri()
+        if (newWorkspaceUri.path === oldWorkspaceUri.path) return
+        getMaps().forEach(x => {
+            const filePath = x[1]
+            if (isUriPath(filePath) && filePath.indexOf(oldWorkspaceUri.path) >= 0)
+                x[1] = filePath.replace(oldWorkspaceUri.path, newWorkspaceUri.path)
+            else if (!isUriPath(filePath) && filePath.indexOf(oldWorkspaceUri.fsPath) >= 0)
+                x[1] = filePath.replace(oldWorkspaceUri.fsPath, newWorkspaceUri.fsPath)
+        })
     }
 }
