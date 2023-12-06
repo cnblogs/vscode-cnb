@@ -3,6 +3,7 @@ import getPlatformCfg = PlatformCfg.getPlatformCfg
 import os from 'os'
 import { ConfigurationTarget, Uri, workspace } from 'vscode'
 import { Alert } from '@/infra/alert'
+import { PostFileMapManager } from '@/service/post/post-file-map'
 
 export namespace WorkspaceCfg {
     export function getWorkspaceUri() {
@@ -23,7 +24,9 @@ export namespace WorkspaceCfg {
             throw e
         }
 
+        const oldWorkspaceUri = WorkspaceCfg.getWorkspaceUri()
         const cfgTarget = ConfigurationTarget.Global
         await getPlatformCfg()?.update('workspace', fsPath, cfgTarget)
+        PostFileMapManager.updateWithWorkspace(oldWorkspaceUri)
     }
 }
