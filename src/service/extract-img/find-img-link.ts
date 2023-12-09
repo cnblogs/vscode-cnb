@@ -13,7 +13,7 @@ const imgTagDataUrlImgPat = r`(<img.*?src\s*=\s*")(${dataUrlPat})"[^/]*?\/?>`
 const imgTagUrlImgPat = r`(<img\s*.*?src\s*=\s*["'])(.*?)["'][^>]*?>`
 const mkdDataUrlImgPat = r`(!\[.*?]\()(${dataUrlPat})\)`
 
-const markdownImages = /(?<prefix>!\[[^\]]*\]\()(?<uri>[^)\s]+)[^)]*\)/g
+const markdownImages = /(?<prefix>!\[[^\]]*\]\()(?<uri>[^)]+)\)/g
 const wikilinkImages = /!\[(\[.+?\])\][\s\S]+?(?<prefix>\1:\s*)(?<uri>.*?)\s+/g
 const exludeDomains = /\.cnblogs\.com/i
 const webUrlPrefix = /^https?:\/\//i
