@@ -3,6 +3,7 @@ import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { LocalState } from '@/ctx/local-state'
 import { Uri } from 'vscode'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
+import { r } from '@/infra/convert/string-literal'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && map[1] !== ''
 export type PostFileMap = [postId: number, filePath: string]
@@ -94,8 +95,8 @@ export namespace PostFileMapManager {
             const filePath = x[1]
             if (isUriPath(filePath) && filePath.indexOf(oldWorkspaceUri.path) >= 0)
                 x[1] = filePath.replace(oldWorkspaceUri.path, newWorkspaceUri.path)
-            else if (!isUriPath(filePath) && filePath.indexOf(oldWorkspaceUri.fsPath) >= 0)
-                x[1] = filePath.replace(oldWorkspaceUri.fsPath, newWorkspaceUri.fsPath)
+            else if (!isUriPath(filePath) && r`filePath`.indexOf(r`oldWorkspaceUri.fsPath`) >= 0)
+                x[1] = filePath.replace(r`${oldWorkspaceUri.fsPath}`, r`${newWorkspaceUri.fsPath}`)
         })
     }
 }
