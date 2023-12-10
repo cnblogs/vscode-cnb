@@ -4,7 +4,7 @@ import { UserInfo } from '@/model/user-info'
 import { ExtConst } from '@/ctx/ext-const'
 
 export namespace UserService {
-    export async function getUserInfo(): Promise<UserInfo> {
+    export async function getUserInfo(): Promise<UserInfo | null> {
         const token = await AuthManager.acquireToken()
         // TODO: need better solution
         const isPatToken = token.length === 64
@@ -16,7 +16,7 @@ export namespace UserService {
         return userInfo?.blogApp != null
     }
 
-    export async function getUserInfoWithToken(token: string, isPat: boolean): Promise<UserInfo> {
+    export async function getUserInfoWithToken(token: string, isPat: boolean): Promise<UserInfo | null> {
         const url = `${ExtConst.ApiBase.OPENAPI}/users/v2`
 
         const headers = new Headers()
@@ -35,9 +35,9 @@ export namespace UserService {
         if (!req.ok) {
             const message = `${req.status} ${req.statusText}`
             if (req.status === 401) {
-                void Alert.err(
-                    '获取用户信息失败，可能是个人访问令牌(PAT)失效或者不存在，重新[创建PAT](https://account.cnblogs.com/settings/tokens)'
-                )
+                void Alert.warn('获取用户信息失败，请重新登录')
+                await AuthManager.logout()
+                return null
             } else {
                 void Alert.err(`获取用户信息失败，错误详情: ${message}`)
             }

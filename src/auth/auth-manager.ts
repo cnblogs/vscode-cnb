@@ -75,10 +75,13 @@ export namespace AuthManager {
     export async function acquireToken() {
         const session = await ensureSession({ createIfNone: false })
 
-        if (session === undefined) throw Error('未授权')
-        if (isAuthSessionExpired(session)) throw Error('授权已过期')
+        if (session === undefined) Alert.throwWithWarn('未授权')
+        if (isAuthSessionExpired(session)) {
+            void Alert.warn('授权已过期，请重新登录')
+            await logout()
+        }
 
-        return session.accessToken
+        return session?.accessToken
     }
 
     export async function updateAuthStatus() {

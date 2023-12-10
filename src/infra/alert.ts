@@ -31,4 +31,9 @@ export namespace Alert {
         file = trimExt ? path.basename(file, path.extname(file)) : file
         void Alert.warn(`本地文件 ${file} 未关联博客园博文`)
     }
+
+    export function throwWithWarn(message: string): never {
+        void warn(message)
+        throw Error(message)
+    }
 }
