@@ -6,17 +6,21 @@ const { copyPlugin } = copyPluginPkg
 const isProduction = process.argv.includes('--production')
 const OUT_DIR = 'dist'
 
-async function buildExtension(isProduction) {
+const defaultOptions = {
+    format: 'cjs',
+    resolveExtensions: ['.ts', '.js', '.mjs'],
+    bundle: true,
+    sourcemap: !isProduction,
+    minify: isProduction,
+    platform: 'node',
+    outdir: OUT_DIR,
+}
+
+async function buildExtension() {
     const options = {
+        ...defaultOptions,
         entryPoints: ['./src/extension.ts'],
-        bundle: true,
-        outdir: OUT_DIR,
-        packages: 'external',
-        external: ['vscode'],
-        format: 'cjs',
-        sourcemap: !isProduction,
-        minify: isProduction,
-        platform: 'node',
+        external: ['vscode', '@mapbox/node-pre-gyp', 'sequelize'],
         plugins: [
             copyPlugin({
                 src: 'src/assets',
@@ -27,13 +31,34 @@ async function buildExtension(isProduction) {
                 dest: `${OUT_DIR}/assets/styles/highlight-code-lines.css`,
             }),
             copyPlugin({
+                src: 'node_modules/@mapbox/node-pre-gyp',
+                dest: `${OUT_DIR}/node_modules/@mapbox/node-pre-gyp`,
+            }),
+            copyPlugin({
+                src: 'node_modules/sequelize',
+                dest: `${OUT_DIR}/node_modules/sequelize`,
+            }),
+            copyPlugin({
                 src: 'src/wasm/rs_bg.wasm',
                 dest: `${OUT_DIR}/rs_bg.wasm`,
             }),
         ],
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await esbuild.build(options)
 }
 
-await buildExtension(isProduction)
+async function buildMarkdownItPlugins() {
+    const options = {
+        ...defaultOptions,
+        entryPoints: ['./src/markdown/markdown.entry.ts'],
+        outdir: '',
+        outfile: `${OUT_DIR}/markdown.js`,
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    await esbuild.build(options)
+}
+
+await Promise.allSettled([buildExtension(), buildMarkdownItPlugins()])
