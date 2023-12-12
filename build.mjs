@@ -4,23 +4,31 @@ import * as process from 'node:process'
 
 const { copyPlugin } = copyPluginPkg
 const isProduction = process.argv.includes('--production')
+const OUT_DIR = 'dist'
 
 /** @type {esbuild.BuildOptions} */
 const options = {
     entryPoints: ['./src/extension.ts'],
     bundle: true,
-    outdir: 'out',
+    outdir: OUT_DIR,
     packages: 'external',
     external: ['vscode'],
     format: 'cjs',
     sourcemap: !isProduction,
     minify: isProduction,
     platform: 'node',
-    logLevel: 'info',
     plugins: [
         copyPlugin({
-            src: './src/assets',
-            dest: './out/assets',
+            src: 'src/assets',
+            dest: `${OUT_DIR}/assets`,
+        }),
+        copyPlugin({
+            src: 'node_modules/@cnblogs/code-highlight-adapter/index.min.css',
+            dest: `${OUT_DIR}/assets/styles/highlight-code-lines.css`,
+        }),
+        copyPlugin({
+            src: 'src/wasm/rs_bg.wasm',
+            dest: `${OUT_DIR}/rs_bg.wasm`,
         }),
     ],
 }
