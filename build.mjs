@@ -8,7 +8,7 @@ const options = {
     entryPoints: ['./src/extension.ts'],
     bundle: true,
     outdir: 'out',
-    external: ['vscode'],
+    external: ['vscode', '@cnblogs/markdown-it-presets', '@mapbox/node-pre-gyp', 'sequelize'],
     format: 'cjs',
     sourcemap: !isProduction,
     minify: isProduction,
