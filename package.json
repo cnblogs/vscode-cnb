@@ -34,7 +34,8 @@
         "format": "prettier --write .",
         "format-check": "prettier --check .",
         "download-icons": "node ./download-iconfont.mjs",
-        "stats": "npm run --silent package -- --env namedChunks=true --profile --json > ./dist/stats.json && webpack-bundle-analyzer ./dist/stats.json ./dist"
+        "stats": "npm run --silent package -- --env namedChunks=true --profile --json > ./dist/stats.json && webpack-bundle-analyzer ./dist/stats.json ./dist",
+        "esbuild": "node ./build.mjs"
     },
     "activationEvents": [
         "onStartupFinished"

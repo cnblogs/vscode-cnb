@@ -15,5 +15,5 @@
         },
         "strict": true
     },
-    "exclude": [".vscode-test", "ui", "src/test", "test", "__mocks__"]
+    "exclude": ["node_modules", "build.mjs", ".vscode-test", "ui", "src/test", "test", "__mocks__"]
 }

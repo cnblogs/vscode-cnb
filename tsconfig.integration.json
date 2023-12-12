@@ -4,5 +4,6 @@
     "compilerOptions": {
         "rootDir": "src",
         "outDir": "out"
-    }
+    },
+    "exclude": ["node_modules", ".vscode-test", "build.js"]
 }
