@@ -177,7 +177,7 @@ jobs:
 
       - name: Build node
         run: |
-          npm run package -- --env CLIENTID="${{ secrets.OAUTHCLIENTID }}" --env CLIENTSECRET="${{ secrets.OAUTHCLIENTSECRET }}" && npm run ui:package
+          npm run package -- --env CLIENTID="${{ secrets.OAUTHCLIENTID }}" --env CLIENTSECRET="${{ secrets.OAUTHCLIENTSECRET }}"
 
       - name: Version
         id: version
