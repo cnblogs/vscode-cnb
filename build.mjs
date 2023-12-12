@@ -1,6 +1,8 @@
 import esbuild from 'esbuild'
+import copyPluginPkg from '@sprout2000/esbuild-copy-plugin'
 import * as process from 'node:process'
 
+const { copyPlugin } = copyPluginPkg
 const isProduction = process.argv.includes('--production')
 
 /** @type {esbuild.BuildOptions} */
@@ -15,6 +17,12 @@ const options = {
     minify: isProduction,
     platform: 'node',
     logLevel: 'info',
+    plugins: [
+        copyPlugin({
+            src: './src/assets',
+            dest: './out/assets',
+        }),
+    ],
 }
 
 await esbuild.build(options)

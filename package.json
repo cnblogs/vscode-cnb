@@ -1372,6 +1372,7 @@
         "@cnblogs/code-quality": "^2.0.2",
         "@cnblogs/markdown-it-presets": "^1.10.5",
         "@fluentui/react": "^8.110.11",
+        "@sprout2000/esbuild-copy-plugin": "^1.1.12",
         "@types/combined-stream": "^1.0.3",
         "base64url": "^3.0.1",
         "blob": "^0.1.0",
