@@ -45,7 +45,6 @@ async function buildExtension() {
         ],
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await esbuild.build(options)
 }
 
@@ -57,7 +56,6 @@ async function buildMarkdownItPlugins() {
         outfile: `${OUT_DIR}/markdown.js`,
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await esbuild.build(options)
 }
 
