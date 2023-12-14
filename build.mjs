@@ -3,7 +3,7 @@ import copyPluginPkg from '@sprout2000/esbuild-copy-plugin'
 import * as process from 'node:process'
 
 const { copyPlugin } = copyPluginPkg
-const isProduction = process.argv.includes('--production')
+const isProduction = !process.argv.includes('--development')
 const OUT_DIR = 'dist'
 
 const defaultOptions = {
@@ -21,6 +21,12 @@ async function buildExtension() {
         ...defaultOptions,
         entryPoints: ['./src/extension.ts'],
         external: ['vscode', '@mapbox/node-pre-gyp', 'sequelize'],
+        define: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            CNBLOGS_CLIENTID: JSON.stringify(process.env.CLIENTID != null || 'UNSET'),
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            CNBLOGS_CLIENTSECRET: JSON.stringify(process.env.CLIENTSECRET != null || 'UNSET'),
+        },
         plugins: [
             copyPlugin({
                 src: 'src/assets',
