@@ -64,8 +64,9 @@ export namespace AuthManager {
         try {
             const session = await authentication.getSession(authProvider.providerId, [])
             if (session == null) return
-            await Oauth.revokeToken(session.accessToken)
+            const token = session.accessToken
             await authProvider.removeSession(session.id)
+            await Oauth.revokeToken(token)
         } catch (e) {
             void Alert.err(`登出发生错误: ${<string>e}`)
             throw e

@@ -23,9 +23,9 @@ async function buildExtension() {
         external: ['vscode', '@mapbox/node-pre-gyp', 'sequelize'],
         define: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            CNBLOGS_CLIENTID: JSON.stringify(process.env.CLIENTID != null || 'UNSET'),
+            CNBLOGS_CLIENTID: JSON.stringify(process.env.CLIENTID),
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            CNBLOGS_CLIENTSECRET: JSON.stringify(process.env.CLIENTSECRET != null || 'UNSET'),
+            CNBLOGS_CLIENTSECRET: JSON.stringify(process.env.CLIENTSECRET),
         },
         plugins: [
             copyPlugin({
