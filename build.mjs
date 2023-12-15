@@ -1,5 +1,6 @@
 import esbuild from 'esbuild'
 import copyPluginPkg from '@sprout2000/esbuild-copy-plugin'
+import { lessLoader } from 'esbuild-plugin-less'
 import * as process from 'node:process'
 
 const { copyPlugin } = copyPluginPkg
@@ -8,7 +9,7 @@ const OUT_DIR = 'dist'
 
 const defaultOptions = {
     format: 'cjs',
-    resolveExtensions: ['.ts', '.js', '.mjs'],
+    resolveExtensions: ['.ts', '.js', '.mjs', '.tsx'],
     bundle: true,
     sourcemap: !isProduction,
     minify: isProduction,
@@ -45,6 +46,10 @@ async function buildExtension() {
                 dest: `${OUT_DIR}/node_modules/sequelize`,
             }),
             copyPlugin({
+                src: 'node_modules/@fluentui/font-icons-mdl2/fonts/',
+                dest: `${OUT_DIR}/assets/fonts`,
+            }),
+            copyPlugin({
                 src: 'src/wasm/rs_bg.wasm',
                 dest: `${OUT_DIR}/rs_bg.wasm`,
             }),
@@ -65,4 +70,27 @@ async function buildMarkdownItPlugins() {
     await esbuild.build(options)
 }
 
-await Promise.allSettled([buildExtension(), buildMarkdownItPlugins()])
+async function buildUI(...apps) {
+    for (const app of apps) {
+        const options = {
+            ...defaultOptions,
+            define: {
+                'process.env.NODE_ENV': JSON.stringify('production'),
+            },
+            tsconfig: './ui/tsconfig.json',
+            entryPoints: [`./ui/${app}/index.tsx`],
+            outdir: `${OUT_DIR}/assets/ui/${app}`,
+            plugins: [
+                lessLoader(),
+                copyPlugin({
+                    src: `ui/${app}/index.html`,
+                    dest: `${OUT_DIR}/assets/ui/${app}/index.html`,
+                }),
+            ],
+        }
+
+        await esbuild.build(options)
+    }
+}
+
+await Promise.allSettled([buildExtension(), buildMarkdownItPlugins(), buildUI('ing', 'post-cfg')])
