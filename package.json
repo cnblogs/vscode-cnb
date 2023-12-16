@@ -41,13 +41,7 @@
     ],
     "main": "./dist/extension.js",
     "contributes": {
-        "markdown.markdownItPlugins": true,
-        "markdown.previewScripts": [
-            "./dist/markdown.js"
-        ],
-        "markdown.previewStyles": [
-            "./dist/assets/styles/highlight-code-lines.css"
-        ],
+        "markdown.markdownItPlugins": true,        
         "icons": {
             "vscode-cnb-date": {
                 "description": "date",
@@ -1381,7 +1375,6 @@
         "webpack-cli": "^5.1.4"
     },
     "dependencies": {
-        "@cnblogs/code-highlight-adapter": "^1.7.1",
         "@cnblogs/code-quality": "^2.0.2",
         "@cnblogs/markdown-it-presets": "^1.10.5",
         "@fluentui/react": "^8.110.11",
