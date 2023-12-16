@@ -34,10 +34,6 @@ async function buildExtension() {
                 dest: `${OUT_DIR}/assets`,
             }),
             copyPlugin({
-                src: 'node_modules/@cnblogs/code-highlight-adapter/index.min.css',
-                dest: `${OUT_DIR}/assets/styles/highlight-code-lines.css`,
-            }),
-            copyPlugin({
                 src: 'node_modules/@mapbox/node-pre-gyp',
                 dest: `${OUT_DIR}/node_modules/@mapbox/node-pre-gyp`,
             }),
@@ -59,32 +55,22 @@ async function buildExtension() {
     await esbuild.build(options)
 }
 
-async function buildMarkdownItPlugins() {
-    const options = {
-        ...defaultOptions,
-        entryPoints: ['./src/markdown/markdown.entry.ts'],
-        outdir: '',
-        outfile: `${OUT_DIR}/markdown.js`,
-    }
-
-    await esbuild.build(options)
-}
-
 async function buildUI(...apps) {
+    const srcPath = './ui/'
+    const outPath = `${OUT_DIR}/assets/ui/`
     for (const app of apps) {
         const options = {
             ...defaultOptions,
             define: {
                 'process.env.NODE_ENV': JSON.stringify('production'),
             },
-            tsconfig: './ui/tsconfig.json',
-            entryPoints: [`./ui/${app}/index.tsx`],
-            outdir: `${OUT_DIR}/assets/ui/${app}`,
+            entryPoints: [`${srcPath}${app}/index.tsx`],
+            outdir: `${outPath}${app}`,
             plugins: [
                 lessLoader(),
                 copyPlugin({
-                    src: `ui/${app}/index.html`,
-                    dest: `${OUT_DIR}/assets/ui/${app}/index.html`,
+                    src: `${srcPath}${app}/index.html`,
+                    dest: `${outPath}${app}/index.html`,
                 }),
             ],
         }
@@ -94,7 +80,7 @@ async function buildUI(...apps) {
 }
 
 try {
-    await Promise.allSettled([buildExtension(), buildMarkdownItPlugins(), buildUI('ing', 'post-cfg')])
+    await Promise.allSettled([buildExtension(), buildUI('ing', 'post-cfg')])
 } catch (ex) {
     // eslint-disable-next-line no-undef
     console.error(ex)
