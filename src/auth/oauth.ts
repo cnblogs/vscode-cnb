@@ -4,7 +4,6 @@ import { OauthReq } from '@/wasm'
 import { ExtConst } from '@/ctx/ext-const'
 
 function getAuthedOauthReq() {
-    console.log('getAuthedOauthReq CLIENT_ID: ' + ExtConst.CLIENT_ID)
     return new OauthReq(ExtConst.CLIENT_ID, ExtConst.CLIENT_SEC)
 }
 
