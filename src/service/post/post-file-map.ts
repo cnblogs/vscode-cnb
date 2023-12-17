@@ -99,4 +99,8 @@ export namespace PostFileMapManager {
                 x[1] = filePath.replace(r`${oldWorkspaceUri.fsPath}`, r`${newWorkspaceUri.fsPath}`)
         })
     }
+
+    export function isInWorkspace(fileUriPath: string) {
+        return fileUriPath.indexOf(WorkspaceCfg.getWorkspaceUri().path) >= 0
+    }
 }
