@@ -19,8 +19,8 @@ export namespace Oauth {
     }
 
     export function revokeToken(token: string) {
-        const req = getAuthedOauthReq()
         try {
+            const req = getAuthedOauthReq()
             return req.revokeToken(token)
         } catch (e) {
             void Alert.err(`撤销 Token 失败: ${<string>e}`)

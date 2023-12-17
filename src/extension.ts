@@ -11,6 +11,7 @@ import { getIngListWebviewProvider } from '@/service/ing/ing-list-webview-provid
 import { setupUi } from '@/setup/setup-ui'
 import { LocalState } from '@/ctx/local-state'
 import { setupState } from '@/setup/setup-state'
+import { Alert } from './infra/alert'
 
 export async function activate(ctx: ExtensionContext) {
     globalCtx.extCtx = ctx
@@ -18,10 +19,15 @@ export async function activate(ctx: ExtensionContext) {
     // WRN: For old version compatibility, NEVER remove this line
     void LocalState.delSecret('user')
 
-    await setupState()
-    await AuthManager.updateAuthStatus()
-    setupCmd()
-    setupExtTreeView()
+    try {
+        await setupState()
+        await AuthManager.updateAuthStatus()
+        setupCmd()
+        setupExtTreeView()
+    } catch (e) {
+        void Alert.err(`扩展激活失败，[立即反馈](https://github.com/cnblogs/vscode-cnb/issues)，错误信息：${<string>e}`)
+        throw e
+    }
 
     ctx.subscriptions.push(
         window.registerWebviewViewProvider(getIngListWebviewProvider().viewId, getIngListWebviewProvider()),

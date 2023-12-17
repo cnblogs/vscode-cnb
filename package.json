@@ -24,7 +24,7 @@
     "scripts": {
         "watch": "./build-wasm.sh && webpack --watch --mode=development",
         "ui:watch": "webpack watch -c ./ui/webpack.config.mjs",
-        "package": "webpack --mode production --devtool hidden-source-map",
+        "package": "node ./build.mjs",
         "ui:package": "webpack --mode production --devtool hidden-source-map -c ./ui/webpack.config.mjs",
         "compile-tests": "tsc -p ./tsconfig.integration.json --outDir out",
         "test:integration:watch": "npm run compile-tests -- --watch",
@@ -34,7 +34,8 @@
         "format": "prettier --write .",
         "format-check": "prettier --check .",
         "download-icons": "node ./download-iconfont.mjs",
-        "stats": "npm run --silent package -- --env namedChunks=true --profile --json > ./dist/stats.json && webpack-bundle-analyzer ./dist/stats.json ./dist"
+        "stats": "npm run --silent package -- --env namedChunks=true --profile --json > ./dist/stats.json && webpack-bundle-analyzer ./dist/stats.json ./dist",
+        "esbuild": "node ./build.mjs"
     },
     "activationEvents": [
         "onStartupFinished"
@@ -1337,6 +1338,7 @@
         "clean-webpack-plugin": "^4.0.0",
         "copy-webpack-plugin": "^11.0.0",
         "css-loader": "^6.8.1",
+        "esbuild": "^0.19.9",
         "eslint": "^8.46.0",
         "eslint-config-prettier": "^8.9.0",
         "eslint-plugin-prettier": "^5.0.0",
@@ -1370,6 +1372,7 @@
         "@cnblogs/code-quality": "^2.0.2",
         "@cnblogs/markdown-it-presets": "^1.10.5",
         "@fluentui/react": "^8.110.11",
+        "@sprout2000/esbuild-copy-plugin": "^1.1.12",
         "@types/combined-stream": "^1.0.3",
         "base64url": "^3.0.1",
         "blob": "^0.1.0",
@@ -1378,6 +1381,7 @@
         "date-fns": "^2.27.0",
         "delayed-stream": "^1.0.0",
         "download-chromium": "^2.1.0",
+        "esbuild-plugin-less": "^1.3.1",
         "express": "^4.17.1",
         "filesize": "^10.0.6",
         "form-data": "^4.0.0",
