@@ -80,9 +80,7 @@ async function buildUI(...apps) {
     }
 }
 
-try {
-    await Promise.all([buildExtension(), buildUI('ing', 'post-cfg')])
-} catch (ex) {
+await Promise.all([buildExtension(), buildUI('ing', 'post-cfg')]).catch(ex => {
     console.error(ex)
     process.exit(1)
-}
+})
