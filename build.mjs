@@ -2,6 +2,7 @@ import esbuild from 'esbuild'
 import copyPluginPkg from '@sprout2000/esbuild-copy-plugin'
 import { lessLoader } from 'esbuild-plugin-less'
 import * as process from 'node:process'
+import * as console from 'node:console'
 
 const { copyPlugin } = copyPluginPkg
 const isProduction = !process.argv.includes('--development')
@@ -79,10 +80,7 @@ async function buildUI(...apps) {
     }
 }
 
-try {
-    await Promise.allSettled([buildExtension(), buildUI('ing', 'post-cfg')])
-} catch (ex) {
-    // eslint-disable-next-line no-undef
+await Promise.all([buildExtension(), buildUI('ing', 'post-cfg')]).catch(ex => {
     console.error(ex)
     process.exit(1)
-}
+})
