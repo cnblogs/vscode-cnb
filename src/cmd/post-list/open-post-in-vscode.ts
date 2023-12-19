@@ -1,20 +1,9 @@
 import { Uri } from 'vscode'
-import { Post } from '@/model/post'
 import { Alert } from '@/infra/alert'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { openPostFile } from './open-post-file'
-import sanitizeFileName from 'sanitize-filename'
-import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { fsUtil } from '@/infra/fs/fsUtil'
 import { postPull } from './post-pull'
-
-export function buildLocalPostFileUri(post: Post, appendToFileName = ''): Uri {
-    const workspaceUri = WorkspaceCfg.getWorkspaceUri()
-    const ext = `${post.isMarkdown ? 'md' : 'html'}`
-    let postTitle = sanitizeFileName(post.title)
-    if (/\.\d+$/.test(postTitle)) postTitle += '_'
-    return Uri.joinPath(workspaceUri, `${postTitle}${appendToFileName}.${post.id}.${ext}`)
-}
 
 export async function openPostInVscode(postId: number): Promise<Uri | undefined> {
     const mappedPostFilePath = await getMappedPostFilePath(postId)

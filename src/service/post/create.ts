@@ -20,7 +20,8 @@ export async function createPost() {
             return
         },
     })
-    if (title === undefined) return
+
+    if (title == null) return
 
     const filePath = path.join(workspacePath, `${title}.md`)
 

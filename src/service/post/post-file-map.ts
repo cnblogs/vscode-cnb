@@ -4,6 +4,8 @@ import { LocalState } from '@/ctx/local-state'
 import { Uri } from 'vscode'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { r } from '@/infra/convert/string-literal'
+import { Post } from '@/model/post'
+import sanitizeFileName from 'sanitize-filename'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && map[1] !== ''
 export type PostFileMap = [postId: number, filePath: string]
@@ -18,6 +20,14 @@ function isUriPath(path: string) {
 }
 
 export namespace PostFileMapManager {
+    export function buildLocalPostFileUri(post: Post, appendToFileName = ''): Uri {
+        const workspaceUri = WorkspaceCfg.getWorkspaceUri()
+        const ext = `${post.isMarkdown ? 'md' : 'html'}`
+        let postTitle = sanitizeFileName(post.title)
+        if (/\.\d+$/.test(postTitle)) postTitle += '_'
+        return Uri.joinPath(workspaceUri, `${postTitle}${appendToFileName}.${post.id}.${ext}`)
+    }
+
     export async function updateOrCreateMany(
         arg:
             | {

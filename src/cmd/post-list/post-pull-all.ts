@@ -3,7 +3,6 @@ import { Alert } from '@/infra/alert'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { basename } from 'path'
 import { ProgressLocation, Uri, window, workspace } from 'vscode'
-import { buildLocalPostFileUri } from '@/cmd/post-list/open-post-in-vscode'
 import { UserService } from '@/service/user.service'
 import { fsUtil } from '@/infra/fs/fsUtil'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
@@ -73,7 +72,7 @@ export async function postPullAll() {
                 !(await fsUtil.exists(path)) ||
                 path.indexOf(WorkspaceCfg.getWorkspaceUri().fsPath) < 0
             ) {
-                const uri = buildLocalPostFileUri(post)
+                const uri = PostFileMapManager.buildLocalPostFileUri(post)
                 const buf = Buffer.from(post.postBody)
                 await workspace.fs.writeFile(uri, buf)
                 await PostFileMapManager.updateOrCreate(post.id, uri.path)
