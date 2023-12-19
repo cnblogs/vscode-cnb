@@ -79,10 +79,4 @@ async function buildUI(...apps) {
     }
 }
 
-try {
-    await Promise.allSettled([buildExtension(), buildUI('ing', 'post-cfg')])
-} catch (ex) {
-    // eslint-disable-next-line no-undef
-    console.error(ex)
-    process.exit(1)
-}
+await Promise.allSettled([buildExtension(), buildUI('ing', 'post-cfg')])
