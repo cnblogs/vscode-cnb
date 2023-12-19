@@ -83,8 +83,11 @@ jobs:
         run: wasm-pack build rs --target=nodejs --out-dir ../src/wasm
 
       - name: Build node
+        env:
+          CLIENTID: ${{ secrets.OAUTHCLIENTID }}
+          CLIENTSECRET: ${{ secrets.OAUTHCLIENTSECRET }}
         run: |
-          npm run package -- --env CLIENTID="${{ secrets.OAUTHCLIENTID }}" --env CLIENTSECRET="${{ secrets.OAUTHCLIENTSECRET }}"
+          npm run package
 
       - name: Version
         id: version
