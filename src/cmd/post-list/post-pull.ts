@@ -11,74 +11,86 @@ import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { fsUtil } from '@/infra/fs/fsUtil'
 import { searchPostByTitle } from '@/service/post/search-post-by-title'
 
-export async function postPull(input: Post | PostTreeItem | Uri | undefined | null, showConfirm = true, mute = false) {
-    const ctxList: CmdCtx[] = []
-    let isFreshPull = false
-    input = input instanceof PostTreeItem ? input.post : input
-    if (parsePostInput(input) && input.id > 0) {
-        const post = input
-        const path = PostFileMapManager.getFilePath(post.id)
-        if (path === undefined || !(await fsUtil.exists(path))) {
-            isFreshPull = true
-            const uri = buildLocalPostFileUri(post)
-            await workspace.fs.writeFile(uri, Buffer.from(post.postBody))
-            await PostFileMapManager.updateOrCreate(post.id, uri.path)
-            await handlePostInput(input, ctxList, uri.path)
-        } else {
-            isFreshPull = !(await fsUtil.exists(path))
-            if (!path.startsWith('/')) await PostFileMapManager.updateOrCreate(post.id, Uri.file(path).path)
-            await handlePostInput(input, ctxList, path)
-        }
-    } else {
-        const uri = parseUriInput(input)
-        if (uri != null) await handleUriInput(uri, ctxList)
+type InputType = Post | PostTreeItem | Uri | number | undefined | null
+
+async function getPostId(input: InputType): Promise<number | undefined | null> {
+    if (typeof input === 'number') return input
+    if (input instanceof Post && input.id > 0) return input.id
+    if (input instanceof PostTreeItem && input.post.id > 0) return input.post.id
+    if (input instanceof Uri) {
+        const postId = await getPostIdFromUri(input)
+        return postId
     }
-
-    const fileName = resolveFileNames(ctxList)
-
-    if (showConfirm && !isFreshPull && MarkdownCfg.isShowConfirmMsgWhenPullPost()) {
-        const answer = await Alert.warn(
-            '确认要拉取远程博文吗?',
-            {
-                modal: true,
-                detail: `本地文件「${fileName}」将被覆盖(可通过设置关闭对话框)`,
-            },
-            '确认'
-        )
-        if (answer !== '确认') return
-    }
-
-    if (ctxList.length <= 0) return
-
-    await update(ctxList)
-
-    if (!mute) {
-        if (isFreshPull) await Alert.info(`博文已下载至本地：${resolveFileNames(ctxList)}`)
-        else await Alert.info(`本地文件已更新: ${resolveFileNames(ctxList)}`)
-    }
-}
-
-type InputType = Post | Uri | undefined | null
-type CmdCtx = {
-    postId: number
-    fileUri: Uri
-}
-
-const parsePostInput = (input: InputType): input is Post => input instanceof Post
-
-async function handlePostInput(post: Post, contexts: CmdCtx[], path: string) {
-    await revealPostListItem(post)
-    contexts.push({ postId: post.id, fileUri: Uri.file(path) })
-}
-
-function parseUriInput(input: InputType): Uri | undefined {
-    if (input instanceof Uri) return input
 
     const doc = window.activeTextEditor?.document
-    if (doc !== undefined && !doc.isUntitled) return doc.uri
+    if (doc != null && !doc.isUntitled) {
+        const postId = await getPostIdFromUri(doc.uri)
+        return postId
+    }
 }
 
-async function handleUriInput(fileUri: Uri, contexts: CmdCtx[]) {
+export async function postPull(input: InputType, showConfirm = true, mute = false): Promise<boolean> {
+    let isFreshPull = false
+    let post: Post | null = null
+
+    const postId = await getPostId(input)
+    if (postId == null) {
+        void Alert.err(`无效的额 postId，值为 ${postId}`)
+        return false
+    }
+
+    post = (await PostService.getPostEditDto(postId))?.post
+    if (post == null) {
+        void Alert.err(`对应的博文不存在，postId: ${postId}`)
+        return false
+    }
+
+    let uriPath = PostFileMapManager.getFilePath(post.id)
+    let fileUri: Uri
+    if (uriPath == null) {
+        fileUri = buildLocalPostFileUri(post)
+    } else {
+        // replace fsPath with uriPath
+        if (!uriPath.startsWith('/')) uriPath = Uri.file(uriPath).path
+        if (!PostFileMapManager.isInWorkspace(uriPath)) fileUri = buildLocalPostFileUri(post)
+        else fileUri = Uri.parse(uriPath)
+    }
+
+    uriPath = fileUri.path
+    const fsPath = fileUri.fsPath
+    const fileName = path.basename(fsPath)
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const fileExists = await fsUtil.exists(fsPath)
+
+    if (fileExists) {
+        if (showConfirm && !isFreshPull && MarkdownCfg.isShowConfirmMsgWhenPullPost()) {
+            const answer = await Alert.warn(
+                '确认要拉取远程博文吗?',
+                {
+                    modal: true,
+                    detail: `本地文件「${fileName}」将被覆盖(可通过设置关闭对话框)`,
+                },
+                '确认'
+            )
+            if (answer !== '确认') return false
+        }
+    } else {
+        isFreshPull = true
+    }
+
+    await workspace.fs.writeFile(fileUri, Buffer.from(post.postBody))
+    await PostFileMapManager.updateOrCreate(post.id, uriPath)
+    await revealPostListItem(post)
+
+    if (!mute) {
+        if (isFreshPull) await Alert.info(`博文已下载至本地：${fileName}`)
+        else await Alert.info(`本地文件已更新: ${fileName}`)
+    }
+
+    return true
+}
+
+async function getPostIdFromUri(fileUri: Uri): Promise<number | undefined> {
     let postId = PostFileMapManager.getPostId(fileUri.path)
     if (postId == null) {
         const mapPost = '关联已有博文并拉取'
@@ -97,7 +109,10 @@ async function handleUriInput(fileUri: Uri, contexts: CmdCtx[]) {
             postId = PostFileMapManager.extractPostId(filenName)
             if (postId == null) {
                 const selectedPost = await searchPostByTitle(filenName, '搜索要关联的博文')
-                if (selectedPost == null) return Alert.info('未选择要关联的博文')
+                if (selectedPost == null) {
+                    void Alert.info('未选择要关联的博文')
+                    return
+                }
                 postId = selectedPost.id
             }
         }
@@ -105,24 +120,7 @@ async function handleUriInput(fileUri: Uri, contexts: CmdCtx[]) {
         if (postId != null) await PostFileMapManager.updateOrCreate(postId, fileUri.path)
     }
 
-    if (postId == null) return Alert.fileNotLinkedToPost(fileUri)
+    if (postId == null) Alert.fileNotLinkedToPost(fileUri)
 
-    contexts.push({ postId, fileUri })
-}
-
-async function update(contexts: CmdCtx[]) {
-    for (const ctx of contexts) {
-        const { fileUri, postId } = ctx
-
-        const { post } = await PostService.getPostEditDto(postId)
-
-        const textEditors = window.visibleTextEditors.filter(x => x.document.uri.fsPath === fileUri.fsPath)
-        await Promise.all(textEditors.map(editor => editor.document.save()))
-        await workspace.fs.writeFile(fileUri, Buffer.from(post.postBody))
-    }
-}
-
-function resolveFileNames(ctxList: CmdCtx[]) {
-    const arr = ctxList.map(x => path.basename(x.fileUri.fsPath))
-    return `${arr.join(', ')}`
+    return postId
 }
