@@ -20,6 +20,12 @@ function isUriPath(path: string) {
 }
 
 export namespace PostFileMapManager {
+    export function ensurePostFileUri(post: Post) {
+        let fileUri = PostFileMapManager.getFileUri(post.id)
+        if (fileUri == null || !isInWorkspace(fileUri.path)) fileUri = buildLocalPostFileUri(post)
+        return fileUri
+    }
+
     export function buildLocalPostFileUri(post: Post, appendToFileName = ''): Uri {
         const workspaceUri = WorkspaceCfg.getWorkspaceUri()
         const ext = `${post.isMarkdown ? 'md' : 'html'}`
@@ -78,12 +84,16 @@ export namespace PostFileMapManager {
         return map
     }
 
-    export function getFilePath(postId: number) {
+    export function getFilePath(postId: number): string | undefined {
+        return getFileUri(postId)?.fsPath
+    }
+
+    export function getFileUri(postId: number): Uri | undefined {
         const map = findByPostId(postId)
-        if (map === undefined) return
+        if (map == null) return
         const path = map[1]
         if (path === '') return
-        return isUriPath(path) ? Uri.parse(path).fsPath : path
+        return isUriPath(path) ? Uri.parse(path) : Uri.file(path)
     }
 
     export function getPostId(filePath: string): number | undefined {
