@@ -1,7 +1,6 @@
 import { Uri, window, workspace } from 'vscode'
 import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
-import { buildLocalPostFileUri } from '@/cmd/post-list/open-post-in-vscode'
 import { PostService } from '@/service/post/post'
 import { Alert } from '@/infra/alert'
 import path from 'path'
@@ -48,11 +47,11 @@ export async function postPull(input: InputType, showConfirm = true, mute = fals
     let uriPath = PostFileMapManager.getFilePath(post.id)
     let fileUri: Uri
     if (uriPath == null) {
-        fileUri = buildLocalPostFileUri(post)
+        fileUri = PostFileMapManager.buildLocalPostFileUri(post)
     } else {
         // replace fsPath with uriPath
         if (!uriPath.startsWith('/')) uriPath = Uri.file(uriPath).path
-        if (!PostFileMapManager.isInWorkspace(uriPath)) fileUri = buildLocalPostFileUri(post)
+        if (!PostFileMapManager.isInWorkspace(uriPath)) fileUri = PostFileMapManager.buildLocalPostFileUri(post)
         else fileUri = Uri.parse(uriPath)
     }
 

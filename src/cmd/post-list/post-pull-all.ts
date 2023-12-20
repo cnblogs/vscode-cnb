@@ -3,10 +3,8 @@ import { Alert } from '@/infra/alert'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { basename } from 'path'
 import { ProgressLocation, Uri, window, workspace } from 'vscode'
-import { buildLocalPostFileUri } from '@/cmd/post-list/open-post-in-vscode'
 import { UserService } from '@/service/user.service'
 import { fsUtil } from '@/infra/fs/fsUtil'
-import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 
 enum ConflictStrategy {
     ask,
@@ -65,22 +63,22 @@ export async function postPullAll() {
 
             p.report({ message: `${post.title}` })
 
-            const path = PostFileMapManager.getFilePath(post.id)
+            const fileUri = PostFileMapManager.ensurePostFileUri(post)
+            if (fileUri == null) {
+                console.warn('fileUri is null')
+                return
+            }
 
-            // 本地没有博文或关联到的文件不存在
-            if (
-                path === undefined ||
-                !(await fsUtil.exists(path)) ||
-                path.indexOf(WorkspaceCfg.getWorkspaceUri().fsPath) < 0
-            ) {
-                const uri = buildLocalPostFileUri(post)
+            if (!(await fsUtil.exists(fileUri.fsPath))) {
                 const buf = Buffer.from(post.postBody)
-                await workspace.fs.writeFile(uri, buf)
-                await PostFileMapManager.updateOrCreate(post.id, uri.path)
+                await workspace.fs.writeFile(fileUri, buf)
+                await PostFileMapManager.updateOrCreate(post.id, fileUri.path)
+                console.info(`Writing post ${post.id} to file '${fileUri.fsPath}'`)
                 continue
             }
 
-            const fileName = basename(path)
+            const fsPath = fileUri.fsPath
+            const fileName = basename(fsPath)
 
             // 存在冲突
             if (strategy === ConflictStrategy.ask) {
@@ -90,17 +88,17 @@ export async function postPullAll() {
                 )
 
                 if (answer === '覆盖') {
-                    await overwriteFile(path, post.postBody)
+                    await overwriteFile(fsPath, post.postBody)
                 } else if (answer === '退出') {
                     break
                 } else if (answer === '跳过所有冲突') {
                     strategy = ConflictStrategy.skip
                 } else if (answer === '覆盖全部') {
                     strategy = ConflictStrategy.overwrite
-                    await overwriteFile(path, post.postBody)
+                    await overwriteFile(fsPath, post.postBody)
                 } // answer eq undefined or '跳过', do nothing.
             } else if (strategy === ConflictStrategy.overwrite) {
-                await overwriteFile(path, post.postBody)
+                await overwriteFile(fsPath, post.postBody)
             } // strategy eq ConflictStrategy.skip, do nothing.
         }
 

@@ -33,22 +33,27 @@ async function buildExtension() {
             copyPlugin({
                 src: 'src/assets',
                 dest: `${OUT_DIR}/assets`,
+                errorOnExist: false,
             }),
             copyPlugin({
                 src: 'node_modules/@mapbox/node-pre-gyp',
                 dest: `${OUT_DIR}/node_modules/@mapbox/node-pre-gyp`,
+                errorOnExist: false,
             }),
             copyPlugin({
                 src: 'node_modules/sequelize',
                 dest: `${OUT_DIR}/node_modules/sequelize`,
+                errorOnExist: false,
             }),
             copyPlugin({
                 src: 'node_modules/@fluentui/font-icons-mdl2/fonts/',
                 dest: `${OUT_DIR}/assets/fonts`,
+                errorOnExist: false,
             }),
             copyPlugin({
                 src: 'src/wasm/rs_bg.wasm',
                 dest: `${OUT_DIR}/rs_bg.wasm`,
+                errorOnExist: false,
             }),
         ],
     }
@@ -72,6 +77,7 @@ async function buildUI(...apps) {
                 copyPlugin({
                     src: `${srcPath}${app}/index.html`,
                     dest: `${outPath}${app}/index.html`,
+                    errorOnExist: false,
                 }),
             ],
         }

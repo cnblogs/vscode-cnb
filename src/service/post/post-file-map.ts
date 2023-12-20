@@ -4,6 +4,8 @@ import { LocalState } from '@/ctx/local-state'
 import { Uri } from 'vscode'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
 import { r } from '@/infra/convert/string-literal'
+import { Post } from '@/model/post'
+import sanitizeFileName from 'sanitize-filename'
 
 const validatePostFileMap = (map: PostFileMap) => map[0] >= 0 && map[1] !== ''
 export type PostFileMap = [postId: number, filePath: string]
@@ -18,6 +20,20 @@ function isUriPath(path: string) {
 }
 
 export namespace PostFileMapManager {
+    export function ensurePostFileUri(post: Post) {
+        let fileUri = PostFileMapManager.getFileUri(post.id)
+        if (fileUri == null || !isInWorkspace(fileUri.path)) fileUri = buildLocalPostFileUri(post)
+        return fileUri
+    }
+
+    export function buildLocalPostFileUri(post: Post, appendToFileName = ''): Uri {
+        const workspaceUri = WorkspaceCfg.getWorkspaceUri()
+        const ext = `${post.isMarkdown ? 'md' : 'html'}`
+        let postTitle = sanitizeFileName(post.title)
+        if (/\.\d+$/.test(postTitle)) postTitle += '_'
+        return Uri.joinPath(workspaceUri, `${postTitle}${appendToFileName}.${post.id}.${ext}`)
+    }
+
     export async function updateOrCreateMany(
         arg:
             | {
@@ -68,12 +84,16 @@ export namespace PostFileMapManager {
         return map
     }
 
-    export function getFilePath(postId: number) {
+    export function getFilePath(postId: number): string | undefined {
+        return getFileUri(postId)?.fsPath
+    }
+
+    export function getFileUri(postId: number): Uri | undefined {
         const map = findByPostId(postId)
-        if (map === undefined) return
+        if (map == null) return
         const path = map[1]
         if (path === '') return
-        return isUriPath(path) ? Uri.parse(path).fsPath : path
+        return isUriPath(path) ? Uri.parse(path) : Uri.file(path)
     }
 
     export function getPostId(filePath: string): number | undefined {
