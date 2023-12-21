@@ -53,8 +53,8 @@ export async function saveLocalPost(localPost: LocalPost) {
         afterSuccess: async savedPost => {
             await PostListView.refresh()
             await openPostFile(localPost)
-
-            await PostFileMapManager.updateOrCreate(savedPost.id, localPost.filePath)
+            const uriPath = Uri.file(localPost.filePath).path
+            await PostFileMapManager.updateOrCreate(savedPost.id, uriPath)
             await openPostFile(localPost)
             postDataProvider.fireTreeDataChangedEvent()
             void Alert.info('博文已创建')
