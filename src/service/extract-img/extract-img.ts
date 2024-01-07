@@ -1,9 +1,13 @@
-import { ProgressLocation, window } from 'vscode'
+import { ProgressLocation, window, workspace } from 'vscode'
 import { ImgSrc } from '@/service/extract-img/get-replace-list'
 import { Alert } from '@/infra/alert'
 import { findImgLink } from '@/service/extract-img/find-img-link'
 import { getReplaceList } from '@/service/extract-img/get-replace-list'
 import { applyReplaceList } from '@/service/extract-img/apply-replace-list'
+import { MarkdownCfg } from '@/ctx/cfg/markdown'
+import { dirname } from 'path'
+import { Post } from '@/model/post'
+import { Workspace } from '@/cmd/workspace'
 
 export async function extractImg(text: string, fileDir: string, inputImgSrc?: ImgSrc) {
     let imgInfoList = findImgLink(text)
@@ -88,4 +92,28 @@ export async function extractImg(text: string, fileDir: string, inputImgSrc?: Im
             return Promise.resolve(extracted)
         }
     )
+}
+
+export async function autoExtractImages(post: Post, fileFsPath: string) {
+    const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
+    const fileDir = dirname(fileFsPath)
+    if (autoExtractImgSrc !== undefined) {
+        const extracted = await extractImg(post.postBody, fileDir, autoExtractImgSrc)
+        if (extracted != null) {
+            if (extracted === '') {
+                void Alert.warn('提取图片后博文内容为空，放弃提取')
+                return
+            }
+
+            post.postBody = extracted
+
+            if (MarkdownCfg.getApplyAutoExtractImgToLocal()) {
+                const doc = window.visibleTextEditors.find(x => x.document.uri.fsPath === fileFsPath)?.document
+                if (doc !== undefined) {
+                    const we = Workspace.resetTextDoc(doc, extracted)
+                    await workspace.applyEdit(we)
+                }
+            }
+        }
+    }
 }
