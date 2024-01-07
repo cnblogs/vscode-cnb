@@ -11,6 +11,7 @@ import { postDataProvider } from '@/tree-view/provider/post-data-provider'
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 import { fsUtil } from '@/infra/fs/fsUtil'
+import { autoExtractImages } from '@/service/extract-img/extract-img'
 
 export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
     let post: Post | undefined
@@ -46,6 +47,7 @@ export async function modifyPostSetting(input: Post | PostTreeItem | Uri) {
             if (localFilePath !== undefined && (await fsUtil.exists(localFilePath))) {
                 await saveFilePendingChanges(localFilePath)
                 post.postBody = await new LocalPost(localFilePath).readAllText()
+                await autoExtractImages(post, localFilePath)
             }
             return true
         },

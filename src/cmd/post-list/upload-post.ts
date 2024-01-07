@@ -15,7 +15,7 @@ import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { MarkdownCfg } from '@/ctx/cfg/markdown'
 import { PostListView } from '@/cmd/post-list/post-list-view'
 import { LocalPost } from '@/service/local-post'
-import { extractImg } from '@/service/extract-img/extract-img'
+import { autoExtractImages, extractImg } from '@/service/extract-img/extract-img'
 import { dirname } from 'path'
 import { Workspace } from '@/cmd/workspace'
 import { fsUtil } from '@/infra/fs/fsUtil'
@@ -69,26 +69,8 @@ export async function saveLocalPost(localPost: LocalPost) {
             const text = await localPost.readAllText()
             if (isEmptyBody(text)) return false
 
-            // TODO: need refactor
-            const autoExtractImgSrc = MarkdownCfg.getAutoExtractImgSrc()
-            const fileDir = dirname(localPost.filePath)
             postToSave.postBody = text
-            if (autoExtractImgSrc !== undefined) {
-                const extracted = await extractImg(text, fileDir, autoExtractImgSrc)
-                if (extracted !== undefined) {
-                    postToSave.postBody = extracted
-                    if (isEmptyBody(postToSave.postBody, '（发生于提取图片后')) return false
-
-                    if (MarkdownCfg.getApplyAutoExtractImgToLocal()) {
-                        const doc = window.visibleTextEditors.find(x => x.document.uri.fsPath === localPost.filePath)
-                            ?.document
-                        if (doc !== undefined) {
-                            const we = Workspace.resetTextDoc(doc, extracted)
-                            await workspace.applyEdit(we)
-                        }
-                    }
-                }
-            }
+            await autoExtractImages(postToSave, localPost.filePath)
 
             return true
         },
