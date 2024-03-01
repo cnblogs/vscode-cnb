@@ -27,6 +27,7 @@ export async function createPost() {
     post.postBody = '# Hello World\n'
     post.isMarkdown = true
     post.isDraft = true
+    post.displayOnHomePage = true
     post.postType = PostType.blogPost
     const postId = (await PostService.update(post)).id
     if (postId > 0) {
