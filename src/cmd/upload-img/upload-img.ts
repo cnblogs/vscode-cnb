@@ -17,16 +17,12 @@ export async function uploadImg() {
 
     let imageUrl: string | undefined
 
-    try {
-        if (selected === options[0]) imageUrl = await uploadFsImage()
-        else if (selected === options[1]) imageUrl = await uploadClipboardImg()
+    if (selected === options[0]) imageUrl = await uploadFsImage()
+    else if (selected === options[1]) imageUrl = await uploadClipboardImg()
 
-        if (imageUrl === undefined) return
+    if (imageUrl === undefined) return
 
-        await showUploadSuccessModel(imageUrl)
+    await showUploadSuccessModel(imageUrl)
 
-        return imageUrl
-    } catch (e) {
-        void Alert.err(`上传图片失败: ${<string>e}`)
-    }
+    return imageUrl
 }

@@ -1,15 +1,13 @@
-import { readableToBytes } from '@/infra/convert/readableToBuffer'
+import { Alert } from '@/infra/alert'
+import { imageService } from '@/service/upload-img/image.service'
 import fs from 'fs'
-import { RsHttp } from '@/wasm'
-import { getAuthedImgReq } from '@/service/extract-img/get-replace-list'
 
-export async function uploadImgFromPath(path: string) {
-    const readable = fs.createReadStream(path)
-
-    const bytes = await readableToBytes(readable)
-    const req = await getAuthedImgReq()
-    const mime = RsHttp.mimeInfer(path)
-    if (mime === undefined) throw Error('未知的 MIME 类型')
-
-    return req.upload(bytes, mime)
+export function uploadImgFromPath(path: string) {
+    try {
+        const readStream = fs.createReadStream(path)
+        return imageService.upload(readStream)
+    } catch (e) {
+        console.log(`上传图片失败: ${<string>e}`)
+        void Alert.err(`上传图片失败: ${<string>e}`)
+    }
 }
