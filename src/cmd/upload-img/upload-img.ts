@@ -1,6 +1,6 @@
 import { Alert } from '@/infra/alert'
 import { uploadClipboardImg } from './upload-clipboard-img'
-import { showUploadSuccessModel } from './upload-img-util'
+import { insertImgLinkToActiveEditor } from './upload-img-util'
 import { uploadFsImage } from './upload-fs-img'
 
 export async function uploadImg() {
@@ -22,7 +22,7 @@ export async function uploadImg() {
 
     if (imageUrl === undefined) return
 
-    await showUploadSuccessModel(imageUrl)
+    await insertImgLinkToActiveEditor(imageUrl)
 
     return imageUrl
 }
