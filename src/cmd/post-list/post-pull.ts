@@ -45,6 +45,9 @@ export async function postPull(input: InputType, showConfirm = true, mute = fals
     }
 
     let uriPath = PostFileMapManager.getFilePath(post.id)
+
+    if (uriPath != null && uriPath.indexOf('＃') < 0 && post.title.indexOf('#') >= 0) uriPath = undefined
+
     let fileUri: Uri
     if (uriPath == null) {
         fileUri = PostFileMapManager.buildLocalPostFileUri(post)

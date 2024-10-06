@@ -29,7 +29,8 @@ export namespace PostFileMapManager {
     export function buildLocalPostFileUri(post: Post, appendToFileName = ''): Uri {
         const workspaceUri = WorkspaceCfg.getWorkspaceUri()
         const ext = `${post.isMarkdown ? 'md' : 'html'}`
-        let postTitle = sanitizeFileName(post.title)
+        let postTitle = post.title.replace(/#/g, '＃')
+        postTitle = sanitizeFileName(postTitle)
         if (/\.\d+$/.test(postTitle)) postTitle += '_'
         return Uri.joinPath(workspaceUri, `${postTitle}${appendToFileName}.${post.id}.${ext}`)
     }
