@@ -2,7 +2,7 @@
     "name": "vscode-cnb",
     "displayName": "博客园 cnblogs 客户端",
     "description": "Cnblogs Client For VSCode",
-    "version": "0.0.1",
+    "version": "1.8.58",
     "license": "LICENSE.txt",
     "preview": false,
     "publisher": "cnblogs",
