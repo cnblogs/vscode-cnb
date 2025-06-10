@@ -13,7 +13,7 @@ export namespace ExtConst {
     export const CLIENT_SEC = CNBLOGS_CLIENTSECRET
 
     export namespace ApiBase {
-        export const BLOG_BACKEND = 'https://i.cnblogs.com/api'
+        export const BLOG_BACKEND = 'https://write.cnblogs.com/api'
         export const OPENAPI = 'https://api.cnblogs.com/api'
         export const OAUTH = 'https://oauth.cnblogs.com'
     }
