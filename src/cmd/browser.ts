@@ -28,7 +28,7 @@ export namespace Browser.Open.User {
         void open(`https://www.cnblogs.com/${blogApp}`)
     }
 
-    export const blogConsole = () => open('https://i.cnblogs.com')
+    export const blogConsole = () => open('https://write.cnblogs.com')
 
     export async function home() {
         const accountId = (await UserService.getUserInfo())?.accountId

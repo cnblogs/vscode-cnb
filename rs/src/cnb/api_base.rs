@@ -1,4 +1,4 @@
-pub const BLOG_BACKEND: &str = "https://i.cnblogs.com/api";
+pub const BLOG_BACKEND: &str = "https://write.cnblogs.com/api";
 
 #[macro_export]
 macro_rules! blog_backend {
