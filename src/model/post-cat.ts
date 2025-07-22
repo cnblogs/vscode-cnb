@@ -5,7 +5,7 @@ export class PostCat {
     visible = true
     description = ''
     updateTime: Date = new Date()
-    count = 0
+    itemCount = 0
     order?: number
     childCount = 0
     visibleChildCount = 0
@@ -31,4 +31,4 @@ export type PostCatAddDto = {
     visible: boolean
     description: string
 }
-export type PostCatUpdateDto = Pick<PostCat, 'categoryId' | 'description' | 'count' | 'title' | 'order' | 'visible'>
+export type PostCatUpdateDto = Pick<PostCat, 'categoryId' | 'description' | 'itemCount' | 'title' | 'order' | 'visible'>

@@ -51,9 +51,9 @@ const postConverter: Converter<Post> = obj => {
     })
 }
 
-const categoryConverter: Converter<PostCat> = ({ title, count }) =>
-    Object.assign<TreeItem, TreeItem>(new TreeItem(`${title}(${count})`), {
-        collapsibleState: count > 0 ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None,
+const categoryConverter: Converter<PostCat> = ({ title, itemCount }) =>
+    Object.assign<TreeItem, TreeItem>(new TreeItem(`${title}(${itemCount})`), {
+        collapsibleState: itemCount > 0 ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None,
         iconPath: categoryIcon(),
         contextValue: 'cnb-post-category',
     })
