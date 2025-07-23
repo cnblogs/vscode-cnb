@@ -28,6 +28,21 @@ export namespace PostCatService {
         }
     }
 
+    export async function getFlatAll() {
+        const categories = await getAll()
+
+        const flat = []
+        const queue = categories
+        while (queue.length > 0) {
+            const current = queue.pop()
+            flat.push(current)
+
+            if (current?.children != null) for (const child of current.children) queue.unshift(child)
+        }
+
+        return flat
+    }
+
     export async function getOne(categoryId: number) {
         const req = await getAuthedPostCatReq()
         try {

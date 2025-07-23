@@ -10,6 +10,7 @@ export class PostCat {
     childCount = 0
     visibleChildCount = 0
     parent?: PostCat | null
+    children?: PostCat | null
 
     flattenParents(includeSelf: boolean): PostCat[] {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
