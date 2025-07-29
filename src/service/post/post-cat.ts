@@ -21,6 +21,7 @@ export namespace PostCatService {
         try {
             const resp = await req.getAll()
             const { categories } = <{ categories: PostCat[] }>JSON.parse(resp)
+            if (categories == null) return []
             return categories.map(x => Object.assign(new PostCat(), x))
         } catch (e) {
             if (await UserService.hasBlog()) void Alert.err(`查询随笔分类失败: ${<string>e}`)
@@ -60,6 +61,7 @@ export namespace PostCatService {
         try {
             const resp = await req.getOne(parentId)
             const { categories } = <{ categories: PostCat[] }>JSON.parse(resp)
+            if (categories == null) return []
             return categories.map(x => Object.assign(new PostCat(), x))
         } catch (e) {
             if (await UserService.hasBlog()) void Alert.err(`查询随笔分类失败: ${<string>e}`)
