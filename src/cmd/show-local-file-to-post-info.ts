@@ -1,12 +1,13 @@
+/* eslint-disable prettier/prettier */
 import path from 'path'
 import { Uri } from 'vscode'
 import { Alert } from '@/infra/alert'
 import { PostService } from '@/service/post/post'
-import { PostCatService } from '@/service/post/post-cat'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { searchPostByTitle } from '@/service/post/search-post-by-title'
 import { viewPostOnline } from './view-post-online'
 import format from 'date-fns/format'
+import { PostCateStore } from '@/stores/post-cate-store'
 
 /**
  * 本地文件所关联的博文信息
@@ -64,7 +65,7 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<numb
 
     const { post } = await PostService.getPostEditDto(postId)
 
-    let categories = await PostCatService.getAll()
+    let categories = (await PostCateStore.createAsync()).getFlatAll()
     categories = categories.filter(x => post.categoryIds?.includes(x.categoryId))
     const categoryDesc = categories.length > 0 ? `博文分类: ${categories.map(c => c.title).join(', ')}\n` : ''
     const tagsDesc = (post.tags?.length ?? 0) > 0 ? `博文标签: ${post.tags?.join(', ')}\n` : ''
@@ -77,9 +78,8 @@ export async function showLocalFileToPostInfo(input: Uri | number): Promise<numb
             detail: `🔗博文链接: ${postUrl}\n博文发布时间: ${format(
                 post.datePublished ?? new Date(),
                 'yyyy-MM-dd HH:mm'
-            )}\n博文发布状态: ${post.isPublished ? '已发布' : '未发布'}\n博文访问权限: ${
-                post.accessPermissionDesc
-            }\n${categoryDesc}${tagsDesc}`.replace(/\n$/, ''),
+            )}\n博文发布状态: ${post.isPublished ? '已发布' : '未发布'}\n博文访问权限: ${post.accessPermissionDesc
+                }\n${categoryDesc}${tagsDesc}`.replace(/\n$/, ''),
         },
         ...options
     )

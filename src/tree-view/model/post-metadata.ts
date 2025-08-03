@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import differenceInSeconds from 'date-fns/differenceInSeconds'
 import differenceInYears from 'date-fns/differenceInYears'
 import format from 'date-fns/format'
@@ -6,12 +7,12 @@ import zhCN from 'date-fns/locale/zh-CN'
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
 import { AccessPermission, Post, formatAccessPermission } from '@/model/post'
 import { PostEditDto } from '@/model/post-edit-dto'
-import { PostCatService } from '@/service/post/post-cat'
 import { PostService } from '@/service/post/post'
 import { BaseEntryTreeItem } from './base-entry-tree-item'
 import { BaseTreeItemSource } from './base-tree-item-source'
 import { PostTreeItem } from './post-tree-item'
 import { PostCat } from '@/model/post-cat'
+import { PostCateStore } from '@/stores/post-cate-store'
 
 export enum RootPostMetadataType {
     categoryEntry = 'categoryEntry',
@@ -81,8 +82,8 @@ export abstract class PostMetadata extends BaseTreeItemSource {
 
 export abstract class PostEntryMetadata<T extends PostMetadata = PostMetadata>
     extends PostMetadata
-    implements BaseEntryTreeItem<T>
-{
+    // eslint-disable-next-line prettier/prettier
+    implements BaseEntryTreeItem<T> {
     constructor(
         parent: Post,
         public readonly children: T[]
@@ -138,8 +139,10 @@ export class PostCatMetadata extends PostMetadata {
     static async parse(parent: Post, editDto?: PostEditDto): Promise<PostCatMetadata[]> {
         if (editDto === undefined) editDto = await PostService.getPostEditDto(parent.id)
 
+        const cateStore = await PostCateStore.createAsync()
+
         const categoryIds = editDto.post.categoryIds ?? []
-        const futList = categoryIds.map(PostCatService.getOne)
+        const futList = categoryIds.map(x => cateStore.getOne(x))
         const categoryList = await Promise.all(futList)
 
         return categoryList
@@ -214,8 +217,8 @@ export abstract class PostDateMetadata extends PostMetadata {
     toTreeItem = (): TreeItem =>
         Object.assign<TreeItem, TreeItem>(
             new TreeItem(
-                `${this.label}: ${
-                    this.shouldUseDistance() ? this.distance + `(${this.formattedDate})` : this.formattedDate
+                // eslint-disable-next-line prettier/prettier
+                `${this.label}: ${this.shouldUseDistance() ? this.distance + `(${this.formattedDate})` : this.formattedDate
                 }`
             ),
             {
@@ -267,7 +270,7 @@ export class PostAccessPermissionMetadata extends PostMetadata {
             Object.assign<TreeItem, Partial<TreeItem>>(
                 new TreeItem(
                     `访问权限: ${formatAccessPermission(this.parent.accessPermission)}` +
-                        (isPasswordRequired ? '(需密码)' : '')
+                    (isPasswordRequired ? '(需密码)' : '')
                 ),
                 {
                     iconPath: PostAccessPermissionMetadata.parseIcon(this.parent.accessPermission, isPasswordRequired),

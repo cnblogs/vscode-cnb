@@ -1,6 +1,5 @@
 import { flattenDepth, take } from 'lodash-es'
 import { EventEmitter, ProviderResult, TreeDataProvider, TreeItem } from 'vscode'
-import { PostCatService } from '@/service/post/post-cat'
 import { PostService } from '@/service/post/post'
 import { toTreeItem } from '@/tree-view/convert'
 import { PostCatListTreeItem } from '@/tree-view/model/category-list-tree-item'
@@ -9,11 +8,13 @@ import { PostEntryMetadata, PostMetadata, RootPostMetadataType } from '@/tree-vi
 import { PostTreeItem } from '@/tree-view/model/post-tree-item'
 import { Alert } from '@/infra/alert'
 import { setCtx } from '@/ctx/global-ctx'
+import { PostCateStore } from '@/stores/post-cate-store'
 
 export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTreeItem> {
     private _treeDataChanged = new EventEmitter<PostCatListTreeItem | null | undefined>()
     private _isLoading = false
     private _roots: PostCatTreeItem[] | null = null
+    private _postCateStore: PostCateStore | null = null
 
     get isLoading() {
         return this._isLoading
@@ -36,6 +37,11 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTree
 
     get onDidChangeTreeData() {
         return this._treeDataChanged.event
+    }
+
+    async getPostCateStore() {
+        if (this._postCateStore == null) this._postCateStore = await PostCateStore.createAsync()
+        return this._postCateStore
     }
 
     async setIsRefreshing(value: boolean) {
@@ -72,7 +78,8 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTree
         this._treeDataChanged.fire(item)
     }
 
-    refresh() {
+    async refreshAsync() {
+        await (await this.getPostCateStore()).refreshAsync()
         this._roots = null
         this.fireTreeDataChangedEvent()
     }
@@ -94,7 +101,8 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTree
     }
 
     private async getRoots() {
-        this._roots = await PostCatService.getAll().then(list => list.map(c => new PostCatTreeItem(c)))
+        const roots = (await this.getPostCateStore()).getRoots()
+        this._roots = roots.map(c => new PostCatTreeItem(c))
         return this._roots
     }
 
@@ -119,7 +127,7 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTree
     private async getCategories(parentId: number) {
         await this.setIsRefreshing(true)
         try {
-            const categories = await PostCatService.getAllUnder(parentId)
+            const categories = (await this.getPostCateStore()).getChildren(parentId)
             await this.setIsRefreshing(false)
             return categories.map(x => new PostCatTreeItem(x))
         } catch (e) {

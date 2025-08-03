@@ -1,11 +1,12 @@
+/* eslint-disable prettier/prettier */
 import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import fs from 'fs'
 import { BlogSettingService } from '@/service/blog-setting'
-import { PostCatService } from '@/service/post/post-cat'
 import { PostCat } from '@/model/post-cat'
 import { markdownItFactory } from '@cnblogs/markdown-it-presets'
 import { UserService } from '@/service/user.service'
+import { PostCateStore } from '@/stores/post-cate-store'
 
 export namespace PostPdfTemplateBuilder {
     export const HighlightedMessage = 'markdown-highlight-finished'
@@ -19,11 +20,11 @@ export namespace PostPdfTemplateBuilder {
 
         const html = isMarkdown
             ? markdownItFactory({
-                  codeHighlight: false,
-                  math: true,
-                  disableRules: [],
-                  html: true,
-              }).render(postBody)
+                codeHighlight: false,
+                math: true,
+                disableRules: [],
+                html: true,
+            }).render(postBody)
             : postBody
 
         const buildTagHtml = (): Promise<string> => {
@@ -36,7 +37,7 @@ export namespace PostPdfTemplateBuilder {
         }
 
         const buildCategoryHtml = async (): Promise<string> => {
-            const categories = await PostCatService.getAll()
+            const categories = (await PostCateStore.createAsync()).getFlatAll()
             const postCategories =
                 post.categoryIds
                     ?.map(categoryId => categories.find(x => x.categoryId === categoryId))
@@ -44,11 +45,11 @@ export namespace PostPdfTemplateBuilder {
             let html =
                 postCategories.length > 0
                     ? postCategories
-                          .map(
-                              c =>
-                                  `<a href="https://www.cnblogs.com/${blogApp}/category/${c.categoryId}.html" target="_blank">${c?.title}</a>`
-                          )
-                          .join(', ')
+                        .map(
+                            c =>
+                                `<a href="https://www.cnblogs.com/${blogApp}/category/${c.categoryId}.html" target="_blank">${c?.title}</a>`
+                        )
+                        .join(', ')
                     : ''
             html = html !== '' ? `<div id="BlogPostCat">分类: ${html}</div>` : ''
             return html

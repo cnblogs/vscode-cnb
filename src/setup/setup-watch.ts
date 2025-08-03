@@ -8,10 +8,10 @@ import { PostListView } from '@/cmd/post-list/post-list-view'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
 
 export const setupCfgWatch = () =>
-    workspace.onDidChangeConfiguration(ev => {
+    workspace.onDidChangeConfiguration(async ev => {
         if (ev.affectsConfiguration('cnblogsClient')) isTargetWorkspace()
 
-        if (ev.affectsConfiguration('workbench.iconTheme')) postCategoryDataProvider.refresh()
+        if (ev.affectsConfiguration('workbench.iconTheme')) await postCategoryDataProvider.refreshAsync()
 
         if (ev.affectsConfiguration('cnblogsClient.pageSize.postList')) void PostListView.refresh({ queue: true })
 

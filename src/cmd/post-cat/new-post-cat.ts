@@ -3,6 +3,7 @@ import { PostCatService } from '@/service/post/post-cat'
 import { extTreeViews } from '@/tree-view/tree-view-register'
 import { inputPostCat } from './input-post-cat'
 import { postCategoryDataProvider } from '@/tree-view/provider/post-category-tree-data-provider'
+import { PostCateStore } from '@/stores/post-cate-store'
 
 export async function newPostCat() {
     const input = await inputPostCat('新建分类')
@@ -22,9 +23,9 @@ export async function newPostCat() {
             increment: 70,
         })
 
-        postCategoryDataProvider.refresh()
+        await postCategoryDataProvider.refreshAsync()
 
-        const allCategory = await PostCatService.getAll()
+        const allCategory = (await PostCateStore.createAsync()).getFlatAll()
         const newCategory = allCategory.find(x => x.title === input.title)
         if (newCategory !== undefined) await extTreeViews.postCategoriesList.reveal(newCategory)
 

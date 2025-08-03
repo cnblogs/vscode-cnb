@@ -56,7 +56,7 @@ export async function delSelectedCat(input?: PostCatTreeItem | PostCat) {
             }
 
             p.report({ increment: 100 })
-            postCategoryDataProvider.refresh()
+            await postCategoryDataProvider.refreshAsync()
         }
     )
 }

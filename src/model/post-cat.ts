@@ -4,7 +4,6 @@ export class PostCat {
     title = ''
     visible = true
     description = ''
-    updateTime: Date = new Date()
     itemCount = 0
     order?: number
     childCount = 0
