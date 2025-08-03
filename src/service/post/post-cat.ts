@@ -8,6 +8,8 @@ import { UserService } from '../user.service'
 // TODO: need better cache impl
 let siteCategoryCache: SiteCat[] | null = null
 
+const DEFAULT_ORDER = 999999
+
 async function getAuthedPostCatReq() {
     const token = await AuthManager.acquireToken()
     // TODO: need better solution
@@ -31,17 +33,24 @@ export namespace PostCatService {
 
     export async function getFlatAll() {
         const categories = await getAll()
+        if (categories == null || categories.length === 0) return []
 
         const flat = []
         const queue = categories
         while (queue.length > 0) {
             const current = queue.pop()
+            if (current == null) continue
             flat.push(current)
-
-            if (current?.children != null) for (const child of current.children) queue.unshift(child)
+            if (current.children != null) for (const child of current.children) queue.unshift(child)
         }
 
-        return flat
+        return flat.sort((x, y) => {
+            const order1 = x.order ?? DEFAULT_ORDER
+            const order2 = y.order ?? DEFAULT_ORDER
+            if (order1 > order2) return 1
+            else if (order1 < order2) return -1
+            else return x.title.localeCompare(y.title)
+        })
     }
 
     export async function getOne(categoryId: number) {
