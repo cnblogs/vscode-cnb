@@ -8,8 +8,6 @@ import { UserService } from '../user.service'
 // TODO: need better cache impl
 let siteCategoryCache: SiteCat[] | null = null
 
-const DEFAULT_ORDER = 999999
-
 async function getAuthedPostCatReq() {
     const token = await AuthManager.acquireToken()
     // TODO: need better solution
@@ -24,54 +22,7 @@ export namespace PostCatService {
             const resp = await req.getAll()
             const { categories } = <{ categories: PostCat[] }>JSON.parse(resp)
             if (categories == null) return []
-            return categories.map(x => Object.assign(new PostCat(), x))
-        } catch (e) {
-            if (await UserService.hasBlog()) void Alert.err(`查询随笔分类失败: ${<string>e}`)
-            throw e
-        }
-    }
-
-    export async function getFlatAll() {
-        const categories = await getAll()
-        if (categories == null || categories.length === 0) return []
-
-        const flat = []
-        const queue = categories
-        while (queue.length > 0) {
-            const current = queue.pop()
-            if (current == null) continue
-            flat.push(current)
-            if (current.children != null) for (const child of current.children) queue.unshift(child)
-        }
-
-        return flat.sort((x, y) => {
-            const order1 = x.order ?? DEFAULT_ORDER
-            const order2 = y.order ?? DEFAULT_ORDER
-            if (order1 > order2) return 1
-            else if (order1 < order2) return -1
-            else return x.title.localeCompare(y.title)
-        })
-    }
-
-    export async function getOne(categoryId: number) {
-        const req = await getAuthedPostCatReq()
-        try {
-            const resp = await req.getOne(categoryId)
-            const { parent } = <{ parent: PostCat | null }>JSON.parse(resp)
-            return Object.assign(new PostCat(), parent)
-        } catch (e) {
-            if (await UserService.hasBlog()) void Alert.err(`查询随笔分类失败: ${<string>e}`)
-            throw e
-        }
-    }
-
-    export async function getAllUnder(parentId: number) {
-        const req = await getAuthedPostCatReq()
-        try {
-            const resp = await req.getOne(parentId)
-            const { categories } = <{ categories: PostCat[] }>JSON.parse(resp)
-            if (categories == null) return []
-            return categories.map(x => Object.assign(new PostCat(), x))
+            return categories
         } catch (e) {
             if (await UserService.hasBlog()) void Alert.err(`查询随笔分类失败: ${<string>e}`)
             throw e

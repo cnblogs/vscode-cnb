@@ -17,6 +17,7 @@ import { Token } from '@/wasm'
 import { PostTagReq } from '@/wasm'
 import { PostTag } from '@/wasm'
 import { AuthManager } from '@/auth/auth-manager'
+import { PostCateStore } from '@/stores/post-cate-store'
 
 async function getAuthedPostTagReq() {
     const token = await AuthManager.acquireToken()
@@ -72,11 +73,13 @@ export namespace PostCfgPanel {
                     baseUrl: webview.asWebviewUri(Uri.joinPath(globalCtx.assetsUri, 'fonts')).toString() + '/',
                 } as WebviewMsg.SetFluentIconBaseUrlMsg)
 
+                const postCateStore = await PostCateStore.createAsync()
+
                 await webview.postMessage({
                     command: Webview.Cmd.Ui.editPostCfg,
                     post: cloneDeep(post),
                     activeTheme: vscode.window.activeColorTheme.kind,
-                    userCats: cloneDeep(await PostCatService.getFlatAll()),
+                    userCats: cloneDeep(postCateStore.getFlatAll()),
                     siteCats: cloneDeep(await PostCatService.getSitePresetList()),
                     tags,
                     breadcrumbs,
@@ -161,10 +164,11 @@ const observeWebviewMsg = (panel: WebviewPanel, options: PostCfgPanelOpenOption)
             await doUploadImg(webview, <WebviewMsg.UploadImgMsg>message)
         } else if (command === Webview.Cmd.Ext.getChildCategories) {
             const { payload } = message as WebviewCommonCmd<Webview.Cmd.GetChildCategoriesPayload>
+            const cateStore = await PostCateStore.createAsync()
             await webview.postMessage({
                 command: Webview.Cmd.Ui.updateChildCategories,
                 payload: {
-                    value: await PostCatService.getAllUnder(payload.parentId).catch(() => []),
+                    value: cateStore.getChildren(payload.parentId),
                     parentId: payload.parentId,
                 },
             })

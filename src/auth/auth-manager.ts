@@ -19,7 +19,7 @@ authProvider.onDidChangeSessions(async e => {
     await AuthManager.updateAuthStatus()
     accountViewDataProvider.fireTreeDataChangedEvent()
 
-    postCategoryDataProvider.refresh()
+    await postCategoryDataProvider.refreshAsync()
 
     if (e.removed != null) postDataProvider.refresh()
     else await PostListView.refresh()

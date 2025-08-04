@@ -92,7 +92,7 @@ export function setupCmd() {
         // post category
         regCmd(extName`.post-category.new`, newPostCat),
         regCmd(extName`.post-category.del-select`, delSelectedCat),
-        regCmd(extName`.post-category.refresh`, () => postCategoryDataProvider.refresh()),
+        regCmd(extName`.post-category.refresh`, () => postCategoryDataProvider.refreshAsync()),
         regCmd(extName`.post-category.update`, updatePostCatTreeView),
         // workspace
         regCmd(extName`.workspace.set`, Workspace.set),
