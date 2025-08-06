@@ -83,7 +83,6 @@ async function getImgBytes(baseDirPath: string, info: ImgInfo) {
     // for fs img
     if (info.src === ImgSrc.fs) {
         const path = info.data
-        // eslint-disable-next-line
         return await caseFsImg(baseDirPath, path)
     }
 

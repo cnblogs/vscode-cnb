@@ -4,7 +4,6 @@ import { PostCatService } from '@/service/post/post-cat'
 const DEFAULT_ORDER: number = 999999
 
 export class PostCateStore {
-    // eslint-disable-next-line prettier/prettier
     constructor(private categories: ReadonlyArray<PostCat>) { }
 
     get isNullOrEmpty() {

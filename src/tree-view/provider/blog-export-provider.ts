@@ -76,9 +76,9 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         if (entry !== null && entry !== undefined) {
             const hasCacheRefreshed = force
                 ? await entry.refresh().then(
-                      () => true,
-                      () => false
-                  )
+                    () => true,
+                    () => false
+                )
                 : true
             if (hasCacheRefreshed) this._treeDataChangedSource?.fire(this._downloadedExportEntry)
 
@@ -111,18 +111,18 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
         // TODO: need refactor
         const hasCacheRefreshed = force
             ? await BlogExportRecordsStore?.refresh()
-                  .then(() => true)
-                  .catch(async e => {
-                      if (notifyOnError && (await UserService.hasBlog()))
-                          void Alert.err(`刷新备份记录失败: ${<string>e}`)
-                      return false
-                  })
+                .then(() => true)
+                .catch(async e => {
+                    if (notifyOnError && (await UserService.hasBlog()))
+                        void Alert.err(`刷新备份记录失败: ${<string>e}`)
+                    return false
+                })
             : clearCache
-              ? await BlogExportRecordsStore.clearCache().then(
+                ? await BlogExportRecordsStore.clearCache().then(
                     () => true,
                     () => true
                 )
-              : true
+                : true
 
         if (hasCacheRefreshed) this._treeDataChangedSource?.fire(null)
 

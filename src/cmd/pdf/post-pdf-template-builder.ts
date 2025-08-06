@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import fs from 'fs'
