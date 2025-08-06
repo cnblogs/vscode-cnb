@@ -4,6 +4,7 @@ import { UserInfo } from '@/model/user-info'
 import { ExtConst } from '@/ctx/ext-const'
 import fetch, { Headers } from 'node-fetch'
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace UserService {
     export async function getUserInfo(): Promise<UserInfo | null> {
         const token = await AuthManager.acquireToken()

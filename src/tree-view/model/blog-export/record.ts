@@ -60,7 +60,6 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
     }
 
     private pollingStatus() {
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         const timeoutId = setTimeout(async () => {
             clearTimeout(timeoutId)
             try {

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ReqHeaderKey {
     export const CONTENT_TYPE = 'Content-Type'
     export const AUTHORIZATION = 'Authorization'

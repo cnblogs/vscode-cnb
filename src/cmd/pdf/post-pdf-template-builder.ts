@@ -7,6 +7,7 @@ import { markdownItFactory } from '@cnblogs/markdown-it-presets'
 import { UserService } from '@/service/user.service'
 import { PostCateStore } from '@/stores/post-cate-store'
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace PostPdfTemplateBuilder {
     export const HighlightedMessage = 'markdown-highlight-finished'
 

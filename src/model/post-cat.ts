@@ -12,6 +12,7 @@ export class PostCat {
     children?: PostCat[] | null
 
     flattenParents(includeSelf: boolean): PostCat[] {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         let i: PostCat | null | undefined = this
         const result: PostCat[] = []
         while (i != null) {

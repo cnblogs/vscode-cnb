@@ -4,6 +4,7 @@ import { mapToJson } from '@/infra/convert/map-to-json'
 
 type Header = Map<string, string>
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Req {
     export function put(url: string, header: Header, body: string) {
         const headerJson = mapToJson(header)

@@ -1,5 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 export function mapToJson<K, V>(map: Map<K, V>) {
-    const obj = <unknown>Object.fromEntries(map)
+    const obj = Object.fromEntries(map) as unknown
     return JSON.stringify(obj)
 }

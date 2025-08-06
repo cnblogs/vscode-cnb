@@ -27,6 +27,7 @@ authProvider.onDidChangeSessions(async e => {
     await BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true })
 })
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace AuthManager {
     export async function isAuthed() {
         const sessionJsonList = await LocalState.getSecret(ExtConst.EXT_SESSION_STORAGE_KEY)
@@ -38,7 +39,7 @@ export namespace AuthManager {
         try {
             return authentication.getSession(authProvider.providerId, [], opt)
         } catch (e) {
-            throw Error(`创建/获取 Session 失败: ${<string>e}`)
+            throw Error(`创建/获取 Session 失败: ${e as string}`)
         }
     }
 
@@ -68,7 +69,7 @@ export namespace AuthManager {
             await authProvider.removeSession(session.id)
             await Oauth.revokeToken(token)
         } catch (e) {
-            void Alert.err(`登出发生错误: ${<string>e}`)
+            void Alert.err(`登出发生错误: ${e as string}`)
             throw e
         }
     }

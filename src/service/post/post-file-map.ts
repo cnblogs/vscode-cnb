@@ -12,13 +12,14 @@ export type PostFileMap = [postId: number, filePath: string]
 const storageKey = 'postFileMaps'
 
 function getMaps(): PostFileMap[] {
-    return <PostFileMap[]>LocalState.getState(storageKey) ?? []
+    return LocalState.getState(storageKey) as PostFileMap[] ?? []
 }
 
 function isUriPath(path: string) {
     return path.startsWith('/')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace PostFileMapManager {
     export function ensurePostFileUri(post: Post) {
         let fileUri = PostFileMapManager.getFileUri(post.id)
@@ -38,9 +39,9 @@ export namespace PostFileMapManager {
     export async function updateOrCreateMany(
         arg:
             | {
-                  emitEvent?: boolean
-                  maps: PostFileMap[]
-              }
+                emitEvent?: boolean
+                maps: PostFileMap[]
+            }
             | PostFileMap[]
     ) {
         let maps: PostFileMap[] = []

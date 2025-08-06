@@ -47,7 +47,7 @@ export async function getReplaceList(fileDir: string, infoList: ImgInfo[], befor
 
             result.push([src, newLink])
         } catch (e) {
-            void Alert.err(`提取失败(${src.data}): ${<string>e}`)
+            void Alert.err(`提取失败(${src.data}): ${e as string}`)
         }
     }
 

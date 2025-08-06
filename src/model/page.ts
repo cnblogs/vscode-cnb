@@ -9,6 +9,7 @@ export type PageList<T> = {
     pages: Page<T>[]
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace PageList {
     export function hasPrev(pageIndex: number) {
         return pageIndex > 1

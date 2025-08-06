@@ -131,7 +131,7 @@ export class PostCatTreeDataProvider implements TreeDataProvider<PostCatListTree
             await this.setIsRefreshing(false)
             return categories.map(x => new PostCatTreeItem(x))
         } catch (e) {
-            void Alert.err(`获取博文分类失败: ${<string>e}`)
+            void Alert.err(`获取博文分类失败: ${e as string}`)
             await this.setIsRefreshing(false)
             throw e
         }

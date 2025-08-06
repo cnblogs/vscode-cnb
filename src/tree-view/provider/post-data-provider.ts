@@ -74,7 +74,7 @@ export class PostDataProvider implements TreeDataProvider<PostListTreeItem> {
 
             return this.page
         } catch (e) {
-            if (await UserService.hasBlog()) void Alert.err(`加载博文失败: ${<string>e}`)
+            if (await UserService.hasBlog()) void Alert.err(`加载博文失败: ${e as string}`)
             throw e
         }
     }

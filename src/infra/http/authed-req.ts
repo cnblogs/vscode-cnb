@@ -14,6 +14,7 @@ async function makeAuthed(header: Header) {
     if (token.length === 64) header.set(ReqHeaderKey.AUTHORIZATION_TYPE, 'pat')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace AuthedReq {
     export async function put(url: string, header: Header, body: string) {
         await makeAuthed(header)

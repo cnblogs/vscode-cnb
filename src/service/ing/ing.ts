@@ -17,6 +17,7 @@ async function getComment(id: number) {
     return list.map(IngComment.parse)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace IngService {
     export async function pub(content: string, isPrivate: boolean) {
         try {
@@ -24,7 +25,7 @@ export namespace IngService {
             await req.publish(content, isPrivate)
             return true
         } catch (e) {
-            void Alert.err(`闪存发布失败: ${<string>e}`)
+            void Alert.err(`闪存发布失败: ${e as string}`)
             return false
         }
     }
@@ -36,7 +37,7 @@ export namespace IngService {
             const arr = JSON.parse(resp) as unknown[]
             return arr.map(Ing.parse)
         } catch (e) {
-            void Alert.err(`获取闪存列表失败: ${<string>e}`)
+            void Alert.err(`获取闪存列表失败: ${e as string}`)
             return []
         }
     }
@@ -53,7 +54,7 @@ export namespace IngService {
             await req.comment(ingId, content, replyTo, parentCommentId)
             return true
         } catch (e) {
-            void Alert.err(`发表评论失败, ${<string>e}`)
+            void Alert.err(`发表评论失败, ${e as string}`)
             return false
         }
     }

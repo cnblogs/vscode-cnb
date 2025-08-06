@@ -1,6 +1,7 @@
 import { BlogExportRecordList } from '@/model/blog-export'
 import { BlogExportApi } from '@/service/blog-export/blog-export'
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace BlogExportRecordsStore {
     let cacheList: Promise<BlogExportRecordList> | null = null
     let cache: BlogExportRecordList | null = null

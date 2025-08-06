@@ -11,6 +11,7 @@ const updateList = (value?: DownloadedBlogExport[] | null) => LocalState.setStat
 const updateExport = (id: number, value?: DownloadedBlogExport | null) =>
     LocalState.setState(`${metadataKey}${id}`, value)
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace DownloadedExportStore {
     export async function add(filePath: string, id?: number | null) {
         const item: DownloadedBlogExport = { id, filePath }
@@ -26,7 +27,7 @@ export namespace DownloadedExportStore {
     }
 
     export async function list({ prune = true } = {}) {
-        let items = <DownloadedBlogExport[]>LocalState.getState(listKey) ?? []
+        let items = LocalState.getState(listKey) as DownloadedBlogExport[] ?? []
 
         if (prune) {
             const prunedItems: DownloadedBlogExport[] = []
@@ -50,7 +51,7 @@ export namespace DownloadedExportStore {
             }
         }
 
-        return Promise.resolve(<DownloadedBlogExport[]>LocalState.getState(listKey) ?? [])
+        return Promise.resolve(LocalState.getState(listKey) as DownloadedBlogExport[] ?? [])
     }
 
     export async function remove(downloaded: DownloadedBlogExport, { shouldRemoveExportRecordMap = true } = {}) {

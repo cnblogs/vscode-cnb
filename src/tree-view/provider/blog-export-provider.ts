@@ -47,8 +47,6 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
             el instanceof ExportPostEntryTreeItem ||
             el instanceof DownloadedExportTreeItem
         ) {
-            // TODO: fix lint
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             return el.getChildrenAsync()
         }
@@ -114,7 +112,7 @@ export class BlogExportProvider implements TreeDataProvider<BlogExportTreeItem> 
                 .then(() => true)
                 .catch(async e => {
                     if (notifyOnError && (await UserService.hasBlog()))
-                        void Alert.err(`刷新备份记录失败: ${<string>e}`)
+                        void Alert.err(`刷新备份记录失败: ${e as string}`)
                     return false
                 })
             : clearCache

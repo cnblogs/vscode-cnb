@@ -51,7 +51,7 @@ export async function delSelectedCat(input?: PostCatTreeItem | PostCat) {
                     await PostCatService.del(category.categoryId)
                     idx++
                 } catch (e) {
-                    void Alert.err(`删除失败: ${<string>e}`)
+                    void Alert.err(`删除失败: ${e as string}`)
                 }
             }
 

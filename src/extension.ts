@@ -24,7 +24,7 @@ export async function activate(ctx: ExtensionContext) {
         setupCmd()
         setupExtTreeView()
     } catch (e) {
-        void Alert.err(`扩展激活失败，[立即反馈](https://github.com/cnblogs/vscode-cnb/issues)，错误信息：${<string>e}`)
+        void Alert.err(`扩展激活失败，[立即反馈](https://github.com/cnblogs/vscode-cnb/issues)，错误信息：${e as string}`)
         throw e
     }
 

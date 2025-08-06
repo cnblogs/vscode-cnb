@@ -201,6 +201,7 @@ export abstract class PostDateMetadata extends PostMetadata {
         this.distance = this.toDistance()
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-literal-property-style
     get enabled(): boolean {
         return true
     }
