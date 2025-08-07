@@ -35,7 +35,7 @@ export async function updatePostCatTreeView(arg?: PostCat | PostCatTreeItem) {
             await postCategoryDataProvider.refreshAsync()
             p.report({ increment: 100 })
         } catch (e) {
-            void Alert.err(`更新博文失败: ${<string>e}`)
+            void Alert.err(`更新博文失败: ${e as string}`)
             p.report({ increment: 100 })
         }
     })

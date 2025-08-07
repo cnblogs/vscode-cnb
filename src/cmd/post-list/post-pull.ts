@@ -61,7 +61,6 @@ export async function postPull(input: InputType, showConfirm = true, mute = fals
     uriPath = fileUri.path
     const fsPath = fileUri.fsPath
     const fileName = path.basename(fsPath)
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const fileExists = await fsUtil.exists(fsPath)
 
     if (fileExists) {
