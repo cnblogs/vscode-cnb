@@ -8,9 +8,8 @@ import { ExtConst } from '@/ctx/ext-const'
 const basePath = `${ExtConst.ApiBase.BLOG_BACKEND}/blogExports`
 const downloadOrigin = 'https://export.cnblogs.com'
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace BlogExportApi {
-    export async function list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }) {
+export class BlogExportApi {
+    static async list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }) {
         const para = consUrlPara(['pageIndex', `${pageIndex ?? ''}`], ['pageSize', `${pageSize ?? ''}`])
         const url = `${basePath}?${para}`
         const resp = await AuthedReq.get(url, consHeader())
@@ -18,22 +17,22 @@ export namespace BlogExportApi {
         return JSON.parse(resp) as BlogExportRecordList
     }
 
-    export async function create() {
+    static async create() {
         const resp = await AuthedReq.post(basePath, consHeader(), '')
         return JSON.parse(resp) as BlogExportRecord
     }
 
-    export async function del(id: number) {
+    static async del(id: number) {
         const url = `${basePath}/${id}`
         await AuthedReq.del(url, consHeader())
     }
 
-    export async function getById(id: number) {
+    static async getById(id: number) {
         const resp = await AuthedReq.get(`${basePath}/${id}`, consHeader())
         return JSON.parse(resp) as BlogExportRecord
     }
 
-    export function download(blogId: number, exportId: number) {
+    static download(blogId: number, exportId: number) {
         const g = got.extend({
             hooks: {
                 beforeRedirect: [

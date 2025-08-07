@@ -1,18 +1,17 @@
 import { PlatformCfg } from '@/ctx/cfg/platform'
-import getPlatformCfg = PlatformCfg.getPlatformCfg
 import os from 'os'
 import { ConfigurationTarget, Uri, workspace } from 'vscode'
 import { Alert } from '@/infra/alert'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 
-export namespace WorkspaceCfg {
-    export function getWorkspaceUri() {
-        const path = getPlatformCfg().get<string>('workspace') ?? '~/Documents/Cnblogs'
+export class WorkspaceCfg {
+    static getWorkspaceUri() {
+        const path = PlatformCfg.getPlatformCfg().get<string>('workspace') ?? '~/Documents/Cnblogs'
         const absPath = path.replace('~', os.homedir())
         return Uri.file(absPath)
     }
 
-    export async function setWorkspaceUri(uri: Uri): Promise<void> {
+    static async setWorkspaceUri(uri: Uri): Promise<void> {
         const fsPath = uri.fsPath
 
         if (uri.scheme !== 'file') throw Error(`Invalid Uri: ${uri.path}`)
@@ -26,7 +25,7 @@ export namespace WorkspaceCfg {
 
         const oldWorkspaceUri = WorkspaceCfg.getWorkspaceUri()
         const cfgTarget = ConfigurationTarget.Global
-        await getPlatformCfg()?.update('workspace', fsPath, cfgTarget)
+        await PlatformCfg.getPlatformCfg()?.update('workspace', fsPath, cfgTarget)
         PostFileMapManager.updateWithWorkspace(oldWorkspaceUri)
     }
 }

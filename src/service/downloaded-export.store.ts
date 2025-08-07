@@ -11,9 +11,8 @@ const updateList = (value?: DownloadedBlogExport[] | null) => LocalState.setStat
 const updateExport = (id: number, value?: DownloadedBlogExport | null) =>
     LocalState.setState(`${metadataKey}${id}`, value)
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace DownloadedExportStore {
-    export async function add(filePath: string, id?: number | null) {
+export class DownloadedExportStore {
+    static async add(filePath: string, id?: number | null) {
         const item: DownloadedBlogExport = { id, filePath }
         const list = await DownloadedExportStore.list()
         const oldIdx = list.findIndex(x => x.filePath === filePath)
@@ -26,7 +25,7 @@ export namespace DownloadedExportStore {
         ])
     }
 
-    export async function list({ prune = true } = {}) {
+    static async list({ prune = true } = {}) {
         let items = LocalState.getState(listKey) as DownloadedBlogExport[] ?? []
 
         if (prune) {
@@ -54,9 +53,9 @@ export namespace DownloadedExportStore {
         return Promise.resolve(LocalState.getState(listKey) as DownloadedBlogExport[] ?? [])
     }
 
-    export async function remove(downloaded: DownloadedBlogExport, { shouldRemoveExportRecordMap = true } = {}) {
+    static async remove(downloaded: DownloadedBlogExport, { shouldRemoveExportRecordMap = true } = {}) {
         const futList = [
-            updateList((await list()).filter(x => x.filePath !== downloaded.filePath)),
+            updateList((await DownloadedExportStore.list()).filter(x => x.filePath !== downloaded.filePath)),
             shouldRemoveExportRecordMap && downloaded.id != null && downloaded.id > 0
                 ? updateExport(downloaded.id, undefined)
                 : await Promise.resolve(),
@@ -64,7 +63,7 @@ export namespace DownloadedExportStore {
         await Promise.all(futList)
     }
 
-    export async function findById(id: number, { prune = true } = {}) {
+    static async findById(id: number, { prune = true } = {}) {
         const key = `${metadataKey}${id}`
 
         let item = LocalState.getState(key) as DownloadedBlogExport | undefined

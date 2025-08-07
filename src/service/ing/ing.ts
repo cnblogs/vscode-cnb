@@ -17,9 +17,8 @@ async function getComment(id: number) {
     return list.map(IngComment.parse)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace IngService {
-    export async function pub(content: string, isPrivate: boolean) {
+export class IngService {
+    static async pub(content: string, isPrivate: boolean) {
         try {
             const req = await getAuthedIngReq()
             await req.publish(content, isPrivate)
@@ -30,7 +29,7 @@ export namespace IngService {
         }
     }
 
-    export async function getList({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}) {
+    static async getList({ pageIndex = 1, pageSize = 30, type = IngType.all } = {}) {
         try {
             const req = await getAuthedIngReq()
             const resp = await req.getList(pageIndex, pageSize, type)
@@ -42,13 +41,13 @@ export namespace IngService {
         }
     }
 
-    export async function getCommentList(...ingIds: number[]) {
+    static async getCommentList(...ingIds: number[]) {
         const futList = ingIds.map(async id => ({ [id]: await getComment(id) }))
         const resList = await Promise.all(futList)
         return resList.reduce((acc, it) => Object.assign(it, acc), {})
     }
 
-    export async function comment(ingId: number, content: string, replyTo?: number, parentCommentId?: number) {
+    static async comment(ingId: number, content: string, replyTo?: number, parentCommentId?: number) {
         try {
             const req = await getAuthedIngReq()
             await req.comment(ingId, content, replyTo, parentCommentId)

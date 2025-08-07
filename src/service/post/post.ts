@@ -22,9 +22,8 @@ async function getAuthedPostReq() {
     return new PostReq(new Token(token, isPatToken))
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace PostService {
-    export async function search(pageIndex: number, pageCap: number, keyword?: string, catId?: number) {
+export class PostService {
+    static async search(pageIndex: number, pageCap: number, keyword?: string, catId?: number) {
         const req = await getAuthedPostReq()
         try {
             const json = await req.search(pageIndex, pageCap, keyword, catId)
@@ -48,7 +47,7 @@ export namespace PostService {
         }
     }
 
-    export async function getPosts({ pageIndex = 1, pageSize = 30, categoryId = '' as '' | number, search = '' }) {
+    static async getPosts({ pageIndex = 1, pageSize = 30, categoryId = '' as '' | number, search = '' }) {
         const para = consUrlPara(
             ['t', '1'],
             ['p', pageIndex.toString()],
@@ -61,7 +60,7 @@ export namespace PostService {
         return JSON.parse(resp) as PostListModel
     }
 
-    export async function getList(pageIndex: number, pageCap: number) {
+    static async getList(pageIndex: number, pageCap: number) {
         const req = await getAuthedPostReq()
         try {
             const resp = await req.getList(pageIndex, pageCap)
@@ -72,7 +71,7 @@ export namespace PostService {
         }
     }
 
-    export async function getCount() {
+    static async getCount() {
         const req = await getAuthedPostReq()
         try {
             return await req.getCount()
@@ -83,8 +82,8 @@ export namespace PostService {
     }
 
     // TODO: need better impl
-    export async function* iterAll() {
-        const postCount = await getCount()
+    static async* iterAll() {
+        const postCount = await PostService.getCount()
         for (const i of Array(postCount).keys()) {
             const list = await PostService.getList(i + 1, 1)
             const id = list[0].id
@@ -93,7 +92,7 @@ export namespace PostService {
         }
     }
 
-    export async function getPostEditDto(postId: number) {
+    static async getPostEditDto(postId: number) {
         const req = await getAuthedPostReq()
         try {
             const resp = await req.getOne(postId)
@@ -112,7 +111,7 @@ export namespace PostService {
         }
     }
 
-    export async function del(...postIds: number[]) {
+    static async del(...postIds: number[]) {
         const req = await getAuthedPostReq()
         try {
             if (postIds.length === 1) await req.delOne(postIds[0])
@@ -122,7 +121,7 @@ export namespace PostService {
         }
     }
 
-    export async function update(post: Post) {
+    static async update(post: Post) {
         if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
 
         if (post.postBody === '') void Alert.warn('博文内容不能为空（发生于 http post 请求之前）')
@@ -135,7 +134,7 @@ export namespace PostService {
     }
 
     // TODO: need caahe
-    export async function getTemplate() {
+    static async getTemplate() {
         const req = await getAuthedPostReq()
         try {
             const resp = await req.getTemplate()

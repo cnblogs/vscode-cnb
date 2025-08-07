@@ -5,7 +5,6 @@ export class NaviViewDataProvider implements TreeDataProvider<TreeItem> {
         return el
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getChildren(el?: TreeItem): ProviderResult<TreeItem[]> {
         return [
             {

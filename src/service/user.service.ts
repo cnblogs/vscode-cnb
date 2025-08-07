@@ -4,21 +4,20 @@ import { UserInfo } from '@/model/user-info'
 import { ExtConst } from '@/ctx/ext-const'
 import fetch, { Headers } from 'node-fetch'
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace UserService {
-    export async function getUserInfo(): Promise<UserInfo | null> {
+export class UserService {
+    static async getUserInfo(): Promise<UserInfo | null> {
         const token = await AuthManager.acquireToken()
         // TODO: need better solution
         const isPatToken = token.length === 64
-        return getUserInfoWithToken(token, isPatToken)
+        return UserService.getUserInfoWithToken(token, isPatToken)
     }
 
-    export async function hasBlog(): Promise<boolean> {
+    static async hasBlog(): Promise<boolean> {
         const userInfo = await UserService.getUserInfo()
         return userInfo?.blogApp != null
     }
 
-    export async function getUserInfoWithToken(token: string, isPat: boolean): Promise<UserInfo | null> {
+    static async getUserInfoWithToken(token: string, isPat: boolean): Promise<UserInfo | null> {
         const url = `${ExtConst.ApiBase.OPENAPI}/users/v2`
 
         const headers = new Headers()

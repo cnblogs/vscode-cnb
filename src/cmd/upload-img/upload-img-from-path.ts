@@ -7,7 +7,7 @@ export function uploadImgFromPath(path: string) {
         const readStream = fs.createReadStream(path)
         return imageService.upload(readStream)
     } catch (e) {
-        console.log(`上传图片失败: ${<string>e}`)
-        void Alert.err(`上传图片失败: ${<string>e}`)
+        console.log(`上传图片失败: ${e as string}`)
+        void Alert.err(`上传图片失败: ${e as string}`)
     }
 }

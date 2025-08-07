@@ -3,17 +3,22 @@ import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import { Alert } from '@/infra/alert'
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const download: (arg: Record<string, unknown>) => Promise<string> = require('download-chromium')
 
-export namespace ChromiumPathProvider {
-    export const defaultChromiumPath = {
-        osx: [`${os.homedir()}/Applications/Google Chrome.app`, '/Applications/Google Chrome.app'],
-        win: ['C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'],
-    }
-    export type ChromiumProviderFunc = () => Promise<string | undefined>
-    const selectFromLocalTitle = '选择本地Chromium'
-    export const lookupExecutableFromMacApp = (path?: string) => {
+export type ChromiumProviderFunc = () => Promise<string | undefined>
+
+const selectFromLocalTitle = '选择本地Chromium'
+
+const defaultChromiumPath = {
+    osx: [`${os.homedir()}/Applications/Google Chrome.app`, '/Applications/Google Chrome.app'],
+    win: ['C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'],
+}
+
+const downloadFromInternetTitle = '帮我下载Chromium'
+
+export class ChromiumPathProvider {
+    static lookupExecutableFromMacApp = (path?: string) => {
         if (path === undefined) return
 
         if (path.endsWith('.app')) {
@@ -28,7 +33,8 @@ export namespace ChromiumPathProvider {
         }
         return path
     }
-    export const selectFromLocal: ChromiumProviderFunc = async (): Promise<string | undefined> => {
+
+    static selectFromLocal: ChromiumProviderFunc = async (): Promise<string | undefined> => {
         const platform = os.platform()
         const path = (
             await window.showOpenDialog({
@@ -37,7 +43,6 @@ export namespace ChromiumPathProvider {
                 canSelectFolders: false,
                 canSelectFiles: true,
                 filters: {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
                     Program: [
                         ...(platform === 'darwin' ? ['app', 'exe'] : []),
                         ...(platform === 'win32' ? ['exe'] : []),
@@ -45,10 +50,10 @@ export namespace ChromiumPathProvider {
                 },
             })
         )?.pop()?.fsPath
-        return lookupExecutableFromMacApp(path)
+        return ChromiumPathProvider.lookupExecutableFromMacApp(path)
     }
-    const downloadFromInternetTitle = '帮我下载Chromium'
-    export const downloadFromInternet: ChromiumProviderFunc = async (): Promise<string | undefined> => {
+
+    static downloadFromInternet: ChromiumProviderFunc = async (): Promise<string | undefined> => {
         const installPath = path.join(os.homedir(), `Downloads`)
         fs.mkdirSync(installPath, { recursive: true })
         const chromiumPath = await window.withProgress(
@@ -81,7 +86,7 @@ export namespace ChromiumPathProvider {
         return chromiumPath
     }
 
-    export const Options: [string, ChromiumPathProvider.ChromiumProviderFunc][] = [
+    static Options: [string, ChromiumProviderFunc][] = [
         [selectFromLocalTitle, ChromiumPathProvider.selectFromLocal],
         [downloadFromInternetTitle, ChromiumPathProvider.downloadFromInternet],
     ]

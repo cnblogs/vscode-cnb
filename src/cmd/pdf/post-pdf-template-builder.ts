@@ -7,11 +7,10 @@ import { markdownItFactory } from '@cnblogs/markdown-it-presets'
 import { UserService } from '@/service/user.service'
 import { PostCateStore } from '@/stores/post-cate-store'
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace PostPdfTemplateBuilder {
-    export const HighlightedMessage = 'markdown-highlight-finished'
+export class PostPdfTemplateBuilder {
+    static HighlightedMessage = 'markdown-highlight-finished'
 
-    export async function build(post: Post, blogApp: string): Promise<string> {
+    static async build(post: Post, blogApp: string): Promise<string> {
         let { postBody } = post
         const { isMarkdown, id: postId } = post
 
@@ -127,7 +126,7 @@ export namespace PostPdfTemplateBuilder {
             <script type="text/javascript">
                 console.log('Begin highlight code block');
                 markdown_highlight().finally(() => {
-                    console.log('${HighlightedMessage}');
+                    console.log('${PostPdfTemplateBuilder.HighlightedMessage}');
                 });
             </script>
         </body>

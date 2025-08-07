@@ -4,24 +4,23 @@ import { mapToJson } from '@/infra/convert/map-to-json'
 
 type Header = Map<string, string>
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace Req {
-    export function put(url: string, header: Header, body: string) {
+export class Req {
+    static put(url: string, header: Header, body: string) {
         const headerJson = mapToJson(header)
         return RsHttp.put(url, headerJson, body)
     }
 
-    export function del(url: string, header: Header) {
+    static del(url: string, header: Header) {
         const headerJson = mapToJson(header)
         return RsHttp.del(url, headerJson)
     }
 
-    export function post(url: string, header: Header, body: string) {
+    static post(url: string, header: Header, body: string) {
         const headerJson = mapToJson(header)
         return RsHttp.post(url, headerJson, body)
     }
 
-    export function get(url: string, header: Header) {
+    static get(url: string, header: Header) {
         const headerJson = mapToJson(header)
         return RsHttp.get(url, headerJson)
     }

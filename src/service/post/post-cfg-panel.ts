@@ -35,9 +35,8 @@ type PostCfgPanelOpenOption = {
     beforeUpdate: (postToUpdate: Post, panel: WebviewPanel) => Promise<boolean>
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace PostCfgPanel {
-    export async function open(option: PostCfgPanelOpenOption) {
+export class PostCfgPanel {
+    static async open(option: PostCfgPanelOpenOption) {
         const { post, breadcrumbs, localFileUri } = option
         const panelTitle = option.panelTitle !== undefined ? option.panelTitle : `博文设置 - ${post.title}`
 

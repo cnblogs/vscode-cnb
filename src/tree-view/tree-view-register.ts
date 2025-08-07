@@ -53,6 +53,7 @@ export function setupExtTreeView() {
     })
 
     const disposables: IDisposable[] = []
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     for (const [, item] of Object.entries(_views)) typeof item === 'function' ? undefined : disposables.push(item)
 
     globalCtx.extCtx.subscriptions.push(...disposables)

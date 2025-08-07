@@ -7,9 +7,8 @@ function getAuthedOauthReq() {
     return new OauthReq(ExtConst.CLIENT_ID, ExtConst.CLIENT_SEC)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace Oauth {
-    export function getToken(verifyCode: string, authCode: string) {
+export class Oauth {
+    static getToken(verifyCode: string, authCode: string) {
         const req = getAuthedOauthReq()
         try {
             return req.getToken(authCode, verifyCode, globalCtx.extUrl)
@@ -19,7 +18,7 @@ export namespace Oauth {
         }
     }
 
-    export function revokeToken(token: string) {
+    static revokeToken(token: string) {
         try {
             const req = getAuthedOauthReq()
             return req.revokeToken(token)

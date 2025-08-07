@@ -15,9 +15,8 @@ async function getAuthedPostCatReq() {
     return new PostCatReq(new Token(token, isPatToken))
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace PostCatService {
-    export async function getAll() {
+export class PostCatService {
+    static async getAll() {
         const req = await getAuthedPostCatReq()
         try {
             const resp = await req.getAll()
@@ -30,7 +29,7 @@ export namespace PostCatService {
         }
     }
 
-    export async function create(dto: PostCatAddDto) {
+    static async create(dto: PostCatAddDto) {
         const req = await getAuthedPostCatReq()
         const body = JSON.stringify(dto)
         try {
@@ -40,7 +39,7 @@ export namespace PostCatService {
         }
     }
 
-    export async function update(category: PostCat) {
+    static async update(category: PostCat) {
         const req = await getAuthedPostCatReq()
         const body = JSON.stringify(category)
         try {
@@ -50,7 +49,7 @@ export namespace PostCatService {
         }
     }
 
-    export async function del(categoryId: number) {
+    static async del(categoryId: number) {
         const req = await getAuthedPostCatReq()
         try {
             await req.del(categoryId)
@@ -59,7 +58,7 @@ export namespace PostCatService {
         }
     }
 
-    export async function getSitePresetList(forceRefresh = false) {
+    static async getSitePresetList(forceRefresh = false) {
         if (siteCategoryCache != null && !forceRefresh) return siteCategoryCache
         const req = await getAuthedPostCatReq()
 
