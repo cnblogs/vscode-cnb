@@ -16,7 +16,7 @@ export class Browser {
             static q = () => Browser.Open.open('https://q.cnblogs.com')
         }
 
-        User = class {
+        static User = class {
             static accountSetting = () => Browser.Open.open('https://account.cnblogs.com/settings/account')
             static buyVip = () => Browser.Open.open('https://cnblogs.vip/')
 
