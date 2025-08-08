@@ -12,21 +12,21 @@ export type PostFileMap = [postId: number, filePath: string]
 const storageKey = 'postFileMaps'
 
 function getMaps(): PostFileMap[] {
-    return <PostFileMap[]>LocalState.getState(storageKey) ?? []
+    return LocalState.getState(storageKey) as PostFileMap[] ?? []
 }
 
 function isUriPath(path: string) {
     return path.startsWith('/')
 }
 
-export namespace PostFileMapManager {
-    export function ensurePostFileUri(post: Post) {
+export class PostFileMapManager {
+    static ensurePostFileUri(post: Post) {
         let fileUri = PostFileMapManager.getFileUri(post.id)
-        if (fileUri == null || !isInWorkspace(fileUri.path)) fileUri = buildLocalPostFileUri(post)
+        if (fileUri == null || !PostFileMapManager.isInWorkspace(fileUri.path)) fileUri = PostFileMapManager.buildLocalPostFileUri(post)
         return fileUri
     }
 
-    export function buildLocalPostFileUri(post: Post, appendToFileName = ''): Uri {
+    static buildLocalPostFileUri(post: Post, appendToFileName = ''): Uri {
         const workspaceUri = WorkspaceCfg.getWorkspaceUri()
         const ext = `${post.isMarkdown ? 'md' : 'html'}`
         let postTitle = post.title.replace(/#/g, '＃')
@@ -35,12 +35,12 @@ export namespace PostFileMapManager {
         return Uri.joinPath(workspaceUri, `${postTitle}${appendToFileName}.${post.id}.${ext}`)
     }
 
-    export async function updateOrCreateMany(
+    static async updateOrCreateMany(
         arg:
             | {
-                  emitEvent?: boolean
-                  maps: PostFileMap[]
-              }
+                emitEvent?: boolean
+                maps: PostFileMap[]
+            }
             | PostFileMap[]
     ) {
         let maps: PostFileMap[] = []
@@ -53,10 +53,10 @@ export namespace PostFileMapManager {
             shouldEmitEvent = arg.emitEvent ?? true
         }
 
-        for (const map of maps) await updateOrCreate(map[0], map[1], { emitEvent: shouldEmitEvent })
+        for (const map of maps) await PostFileMapManager.updateOrCreate(map[0], map[1], { emitEvent: shouldEmitEvent })
     }
 
-    export async function updateOrCreate(postId: number, filePath: string, { emitEvent = true } = {}) {
+    static async updateOrCreate(postId: number, filePath: string, { emitEvent = true } = {}) {
         const validFileExt = ['.md', '.mkd', '.htm', '.html']
         if (filePath !== '' && !validFileExt.some(x => filePath.endsWith(x)))
             throw Error('Invalid filepath, file must have type markdown or html')
@@ -73,43 +73,43 @@ export namespace PostFileMapManager {
         }
     }
 
-    export function findByPostId(postId: number) {
+    static findByPostId(postId: number) {
         const maps = getMaps().filter(validatePostFileMap)
         return maps.find(x => x[0] === postId)
     }
 
-    export function findByFilePath(path: string) {
+    static findByFilePath(path: string) {
         const maps = getMaps().filter(validatePostFileMap)
         let map = maps.find(x => x[0] !== 0 && x[1] === path)
         if (map === undefined) map = maps.find(x => x[0] !== 0 && x[1] === Uri.parse(path).fsPath)
         return map
     }
 
-    export function getFilePath(postId: number): string | undefined {
-        return getFileUri(postId)?.fsPath
+    static getFilePath(postId: number): string | undefined {
+        return PostFileMapManager.getFileUri(postId)?.fsPath
     }
 
-    export function getFileUri(postId: number): Uri | undefined {
-        const map = findByPostId(postId)
+    static getFileUri(postId: number): Uri | undefined {
+        const map = PostFileMapManager.findByPostId(postId)
         if (map == null) return
         const path = map[1]
         if (path === '') return
         return isUriPath(path) ? Uri.parse(path) : Uri.file(path)
     }
 
-    export function getPostId(filePath: string): number | undefined {
-        const map = findByFilePath(filePath)
+    static getPostId(filePath: string): number | undefined {
+        const map = PostFileMapManager.findByFilePath(filePath)
         if (map == null) return
         return map[0]
     }
 
-    export function extractPostId(fileNameWithoutExt: string): number | undefined {
+    static extractPostId(fileNameWithoutExt: string): number | undefined {
         const match = /\.(\d+)$/g.exec(fileNameWithoutExt)
         if (match == null) return
         return Number(match[1])
     }
 
-    export function updateWithWorkspace(oldWorkspaceUri: Uri) {
+    static updateWithWorkspace(oldWorkspaceUri: Uri) {
         const newWorkspaceUri = WorkspaceCfg.getWorkspaceUri()
         if (newWorkspaceUri.path === oldWorkspaceUri.path) return
         getMaps().forEach(x => {
@@ -121,7 +121,7 @@ export namespace PostFileMapManager {
         })
     }
 
-    export function isInWorkspace(fileUriPath: string) {
+    static isInWorkspace(fileUriPath: string) {
         return fileUriPath.indexOf(WorkspaceCfg.getWorkspaceUri().path) >= 0
     }
 }

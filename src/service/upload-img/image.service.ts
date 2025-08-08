@@ -8,7 +8,6 @@ class ImageService {
     async upload<T extends Readable & { name?: string; fileName?: string; filename?: string; path?: string | Buffer }>(
         file: T
     ): Promise<string> {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         const FormData = (await import('form-data')).default
         const form = new FormData()
         const { name, fileName, filename, path: _path } = file

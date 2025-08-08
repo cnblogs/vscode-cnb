@@ -23,12 +23,12 @@ export const FILTER_BYTE_OFFSET = -9999
 function getImagesWithTs(text: string) {
     return [...text.matchAll(markdownImages)].concat([...text.matchAll(wikilinkImages)]).map(m => {
         const uri = m.groups?.uri ?? ''
-        return <ImgInfo>{
+        return {
             byteOffset: FILTER_BYTE_OFFSET,
             data: uri,
             src: webUrlPrefix.test(uri) ? ImgSrc.web : ImgSrc.fs,
             prefix: m.groups?.prefix,
-        }
+        } as ImgInfo
     })
 }
 
@@ -43,11 +43,11 @@ export function findImgLink(text: string): ImgInfo[] {
         if (webUrlPrefix.test(data)) src = ImgSrc.web
         else src = ImgSrc.fs
 
-        return <ImgInfo>{
+        return {
             byteOffset,
             data,
             src,
-        }
+        } as ImgInfo
     })
 
     const imgTagDataUrlImgMgs = RsRegex.matches(imgTagDataUrlImgPat, text) as RsMatch[]
@@ -57,11 +57,11 @@ export function findImgLink(text: string): ImgInfo[] {
         const prefix = mg.groups[1]
         const byteOffset = mg.byte_offset + Buffer.from(prefix).length
 
-        return <ImgInfo>{
+        return {
             byteOffset,
             data,
             src: ImgSrc.dataUrl,
-        }
+        } as ImgInfo
     })
 
     let images = urlImgInfo.concat(dataUrlImgInfo)

@@ -18,9 +18,7 @@ export async function openLocalExport(opts: Partial<typeof defaultOptions> = def
             canSelectFolders: false,
             canSelectMany: false,
             filters: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention
                 Sqlite: ['db', 'zip'],
-                // eslint-disable-next-line @typescript-eslint/naming-convention
                 // ZipSqlite: ['zip'],
             },
         })) ?? []
@@ -44,7 +42,7 @@ export async function openLocalExport(opts: Partial<typeof defaultOptions> = def
     // }
 
     if (isConfirmedToUnzip) {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+
         const AdmZip = (await import('adm-zip')).default
         const zip = new AdmZip(filePath)
         zip.extractEntryTo(`${fileName}.db`, dirname, false, true)

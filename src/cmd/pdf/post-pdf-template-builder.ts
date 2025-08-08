@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Post } from '@/model/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import fs from 'fs'
@@ -8,10 +7,10 @@ import { markdownItFactory } from '@cnblogs/markdown-it-presets'
 import { UserService } from '@/service/user.service'
 import { PostCateStore } from '@/stores/post-cate-store'
 
-export namespace PostPdfTemplateBuilder {
-    export const HighlightedMessage = 'markdown-highlight-finished'
+export class PostPdfTemplateBuilder {
+    static HighlightedMessage = 'markdown-highlight-finished'
 
-    export async function build(post: Post, blogApp: string): Promise<string> {
+    static async build(post: Post, blogApp: string): Promise<string> {
         let { postBody } = post
         const { isMarkdown, id: postId } = post
 
@@ -127,7 +126,7 @@ export namespace PostPdfTemplateBuilder {
             <script type="text/javascript">
                 console.log('Begin highlight code block');
                 markdown_highlight().finally(() => {
-                    console.log('${HighlightedMessage}');
+                    console.log('${PostPdfTemplateBuilder.HighlightedMessage}');
                 });
             </script>
         </body>

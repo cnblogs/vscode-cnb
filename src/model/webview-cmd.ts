@@ -1,5 +1,6 @@
 import { PostCat } from '@/model/post-cat'
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Webview.Cmd {
     export enum Ui {
         editPostCfg = 'editPostCfg',
@@ -27,6 +28,7 @@ export namespace Webview.Cmd {
         value: PostCat[]
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     export namespace Ing {
         export enum Ui {
             setAppState = 'setAppState',

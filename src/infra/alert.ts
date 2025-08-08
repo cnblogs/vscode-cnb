@@ -1,14 +1,14 @@
 import path from 'path'
 import { ProgressLocation, Uri, window } from 'vscode'
 
-export namespace Alert {
-    export const err = window.showErrorMessage
+export class Alert {
+    public static err = window.showErrorMessage
 
-    export const info = window.showInformationMessage
+    public static info = window.showInformationMessage
 
-    export const warn = window.showWarningMessage
+    public static warn = window.showWarningMessage
 
-    export function infoWithTimeout(info: string, sec: number) {
+    infoWithTimeout(info: string, sec: number) {
         return window.withProgress(
             {
                 title: info,
@@ -26,14 +26,14 @@ export namespace Alert {
      * @param file the file path, could be a string or {@link Uri} object
      * @param trimExt
      */
-    export function fileNotLinkedToPost(file: string | Uri, { trimExt = true } = {}) {
+    static fileNotLinkedToPost(file: string | Uri, { trimExt = true } = {}) {
         file = file instanceof Uri ? file.fsPath : file
         file = trimExt ? path.basename(file, path.extname(file)) : file
         void Alert.warn(`本地文件 ${file} 未关联博客园博文`)
     }
 
-    export function throwWithWarn(message: string): never {
-        void warn(message)
+    static throwWithWarn(message: string): never {
+        void Alert.warn(message)
         throw Error(message)
     }
 }

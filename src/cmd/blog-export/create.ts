@@ -17,7 +17,7 @@ export async function createBlogExport() {
         await BlogExportApi.create()
         await BlogExportProvider.optionalInstance?.refreshRecords()
     } catch (e) {
-        void Alert.err(`创建备份失败: ${<string>e}`)
+        void Alert.err(`创建备份失败: ${e as string}`)
         return false
     }
 }

@@ -8,35 +8,35 @@ import { ExtConst } from '@/ctx/ext-const'
 const basePath = `${ExtConst.ApiBase.BLOG_BACKEND}/blogExports`
 const downloadOrigin = 'https://export.cnblogs.com'
 
-export namespace BlogExportApi {
-    export async function list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }) {
+export class BlogExportApi {
+    static async list({ pageIndex, pageSize }: { pageIndex?: number; pageSize?: number }) {
         const para = consUrlPara(['pageIndex', `${pageIndex ?? ''}`], ['pageSize', `${pageSize ?? ''}`])
         const url = `${basePath}?${para}`
         const resp = await AuthedReq.get(url, consHeader())
 
-        return <BlogExportRecordList>JSON.parse(resp)
+        return JSON.parse(resp) as BlogExportRecordList
     }
 
-    export async function create() {
+    static async create() {
         const resp = await AuthedReq.post(basePath, consHeader(), '')
-        return <BlogExportRecord>JSON.parse(resp)
+        return JSON.parse(resp) as BlogExportRecord
     }
 
-    export async function del(id: number) {
+    static async del(id: number) {
         const url = `${basePath}/${id}`
         await AuthedReq.del(url, consHeader())
     }
 
-    export async function getById(id: number) {
+    static async getById(id: number) {
         const resp = await AuthedReq.get(`${basePath}/${id}`, consHeader())
-        return <BlogExportRecord>JSON.parse(resp)
+        return JSON.parse(resp) as BlogExportRecord
     }
 
-    export function download(blogId: number, exportId: number) {
+    static download(blogId: number, exportId: number) {
         const g = got.extend({
             hooks: {
                 beforeRedirect: [
-                    (opt, resp) => {
+                    (_opt: any, resp: { headers: { location: any } }) => {
                         const location = resp.headers.location
                         if (location === undefined) return
                         if (location.includes('account.cnblogs.com')) throw new Error('未授权')

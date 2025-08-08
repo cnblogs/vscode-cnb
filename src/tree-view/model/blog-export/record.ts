@@ -4,8 +4,8 @@ import { BaseTreeItemSource } from '@/tree-view/model/base-tree-item-source'
 import { BlogExportRecordMetadata } from './record-metadata'
 import { parseStatusIcon } from './parser'
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from 'vscode'
-import format from 'date-fns/format'
-import parseISO from 'date-fns/parseISO'
+import { format } from 'date-fns/format'
+import { parseISO } from 'date-fns/parseISO'
 import { DownloadedExportStore } from '@/service/downloaded-export.store'
 import { BlogExportTreeItem, DownloadedExportTreeItem } from '@/tree-view/model/blog-export'
 import os from 'os'
@@ -60,7 +60,6 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
     }
 
     private pollingStatus() {
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         const timeoutId = setTimeout(async () => {
             clearTimeout(timeoutId)
             try {
@@ -92,10 +91,9 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
             new BlogExportRecordMetadata(
                 this,
                 id,
-                `博文数量: ${
-                    status === BlogExportStatus.done
-                        ? record.postCount
-                        : `${record.exportedPostCount}/${record.postCount}`
+                `博文数量: ${status === BlogExportStatus.done
+                    ? record.postCount
+                    : `${record.exportedPostCount}/${record.postCount}`
                 }`,
                 undefined,
                 new ThemeIcon('layers')
@@ -116,35 +114,35 @@ export class BlogExportRecordTreeItem extends BaseTreeItemSource implements Base
             ),
             ...(dateExported !== null && dateExported !== undefined
                 ? [
-                      new BlogExportRecordMetadata(
-                          this,
-                          id,
-                          `完成时间: ${format(parseISO(dateExported), dateTimeFormat)}`,
-                          undefined,
-                          new ThemeIcon('vscode-cnb-date')
-                      ),
-                  ]
+                    new BlogExportRecordMetadata(
+                        this,
+                        id,
+                        `完成时间: ${format(parseISO(dateExported), dateTimeFormat)}`,
+                        undefined,
+                        new ThemeIcon('vscode-cnb-date')
+                    ),
+                ]
                 : []),
             ...(localExport !== undefined && (_downloadingProgress === null || _downloadingProgress === undefined)
                 ? [
-                      new DownloadedExportTreeItem(this, localExport, {
-                          label: `本地文件: ${localExport.filePath.replace(
-                              new RegExp('^' + escapeRegExp(os.homedir())),
-                              '~'
-                          )}`,
-                      }),
-                  ]
+                    new DownloadedExportTreeItem(this, localExport, {
+                        label: `本地文件: ${localExport.filePath.replace(
+                            new RegExp('^' + escapeRegExp(os.homedir())),
+                            '~'
+                        )}`,
+                    }),
+                ]
                 : []),
             ...(_downloadingProgress !== undefined && _downloadingProgress !== null
                 ? [
-                      new BlogExportRecordMetadata(
-                          this,
-                          id,
-                          `${this.formatDownloadProgress(filesize)}`,
-                          undefined,
-                          new ThemeIcon('sync~spin')
-                      ),
-                  ]
+                    new BlogExportRecordMetadata(
+                        this,
+                        id,
+                        `${this.formatDownloadProgress(filesize)}`,
+                        undefined,
+                        new ThemeIcon('sync~spin')
+                    ),
+                ]
                 : []),
         ]
     }

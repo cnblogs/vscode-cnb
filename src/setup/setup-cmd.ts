@@ -65,9 +65,7 @@ export function setupCmd() {
         regCmd(extName`.post.create`, createPost),
         regCmd(extName`.post.upload`, uploadPost),
         regCmd(extName`.post.upload-file`, uploadPostFile),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         regCmd(extName`.post.upload-no-confirm`, arg => uploadPost(arg, false)),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         regCmd(extName`.post.upload-file-no-confirm`, arg => uploadPostFile(arg, false)),
         regCmd(extName`.post.pull`, postPull),
         regCmd(extName`.post.pull-all`, postPullAll),

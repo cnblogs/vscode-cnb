@@ -35,8 +35,8 @@ type PostCfgPanelOpenOption = {
     beforeUpdate: (postToUpdate: Post, panel: WebviewPanel) => Promise<boolean>
 }
 
-export namespace PostCfgPanel {
-    export async function open(option: PostCfgPanelOpenOption) {
+export class PostCfgPanel {
+    static async open(option: PostCfgPanelOpenOption) {
         const { post, breadcrumbs, localFileUri } = option
         const panelTitle = option.panelTitle !== undefined ? option.panelTitle : `博文设置 - ${post.title}`
 
@@ -155,13 +155,13 @@ const observeWebviewMsg = (panel: WebviewPanel, options: PostCfgPanelOpenOption)
                 panel.dispose()
                 afterSuccess(Object.assign({}, post, postSavedModel))
             } catch (e) {
-                void Alert.err(`操作失败: ${<string>e}`)
+                void Alert.err(`操作失败: ${e as string}`)
             }
             return
         } else if (command === Webview.Cmd.Ext.disposePanel) {
             panel.dispose()
         } else if (command === Webview.Cmd.Ext.uploadImg) {
-            await doUploadImg(webview, <WebviewMsg.UploadImgMsg>message)
+            await doUploadImg(webview, (message as WebviewMsg.UploadImgMsg))
         } else if (command === Webview.Cmd.Ext.getChildCategories) {
             const { payload } = message as WebviewCommonCmd<Webview.Cmd.GetChildCategoriesPayload>
             const cateStore = await PostCateStore.createAsync()

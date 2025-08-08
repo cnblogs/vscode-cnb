@@ -44,11 +44,11 @@ export async function inputPostCat(parentTitle: string, cat?: PostCat) {
         const title = await setupTitle(parentTitle, cat?.title ?? '')
         const isVisible = await setupVisible(title)
         const description = await setupDescription(title, cat?.description ?? '')
-        return <PostCatAddDto>{
+        return {
             title,
             visible: isVisible,
             description,
-        }
+        } as PostCatAddDto
     } catch (_) {
         // input canceled, do nothing
     }

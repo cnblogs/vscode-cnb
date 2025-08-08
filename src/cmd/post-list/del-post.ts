@@ -84,7 +84,7 @@ export async function delSelectedPost(arg: unknown) {
                 postIds: selectedPost.map(({ id }) => id),
             })
         } catch (e) {
-            void Alert.err(`删除博文失败: ${<string>e}`)
+            void Alert.err(`删除博文失败: ${e as string}`)
         }
 
         progress.report({ increment: 100 })

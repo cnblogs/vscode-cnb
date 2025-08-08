@@ -77,7 +77,6 @@ class InteractiveState {
     }
 
     private async showConfirm() {
-        // eslint-disable-next-line no-constant-condition
         while (true) {
             const items = [
                 ['确定', () => Promise.resolve(true)],

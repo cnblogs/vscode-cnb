@@ -8,6 +8,6 @@ export function isAuthSessionExpired(authSession: AuthSession) {
 
     const accessTokenPart2 = accessToken.split('.')[1]
     const buf = Buffer.from(accessTokenPart2, 'base64')
-    const exp = <number>JSON.parse(buf.toString()).exp
+    const exp = JSON.parse(buf.toString()).exp as number
     return exp * 1000 < Date.now()
 }

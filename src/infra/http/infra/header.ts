@@ -1,12 +1,12 @@
-export namespace ReqHeaderKey {
-    export const CONTENT_TYPE = 'Content-Type'
-    export const AUTHORIZATION = 'Authorization'
-    export const AUTHORIZATION_TYPE = 'Authorization-Type'
+export class ReqHeaderKey {
+    static CONTENT_TYPE = 'Content-Type'
+    static AUTHORIZATION = 'Authorization'
+    static AUTHORIZATION_TYPE = 'Authorization-Type'
+}
 
-    export enum ContentType {
-        appJson = 'application/json',
-        appX3wfu = 'application/x-www-form-urlencoded',
-    }
+export enum ContentType {
+    appJson = 'application/json',
+    appX3wfu = 'application/x-www-form-urlencoded',
 }
 
 export function consHeader(...kvs: [string, string][]) {

@@ -27,38 +27,38 @@ authProvider.onDidChangeSessions(async e => {
     await BlogExportProvider.optionalInstance?.refreshRecords({ force: false, clearCache: true })
 })
 
-export namespace AuthManager {
-    export async function isAuthed() {
+export class AuthManager {
+    static async isAuthed() {
         const sessionJsonList = await LocalState.getSecret(ExtConst.EXT_SESSION_STORAGE_KEY)
         const sessionList = JSON.parse(sessionJsonList ?? '[]') as AuthSession[]
         return sessionList.length > 0
     }
 
-    export function ensureSession(opt?: AuthGetSessionOpt) {
+    static ensureSession(opt?: AuthGetSessionOpt) {
         try {
             return authentication.getSession(authProvider.providerId, [], opt)
         } catch (e) {
-            throw Error(`创建/获取 Session 失败: ${<string>e}`)
+            throw Error(`创建/获取 Session 失败: ${e as string}`)
         }
     }
 
-    export async function webLogin() {
+    static async webLogin() {
         authProvider.useBrowser()
-        await login()
+        await AuthManager.login()
     }
 
-    export async function patLogin() {
+    static async patLogin() {
         authProvider.usePat()
-        await login()
+        await AuthManager.login()
     }
 
-    export async function login() {
-        const session = await ensureSession({ createIfNone: false, forceNewSession: true })
+    static async login() {
+        const session = await AuthManager.ensureSession({ createIfNone: false, forceNewSession: true })
         if (session !== undefined)
             await LocalState.setSecret(ExtConst.EXT_SESSION_STORAGE_KEY, JSON.stringify([session]))
     }
 
-    export async function logout() {
+    static async logout() {
         if (!(await AuthManager.isAuthed())) return
 
         try {
@@ -68,24 +68,24 @@ export namespace AuthManager {
             await authProvider.removeSession(session.id)
             await Oauth.revokeToken(token)
         } catch (e) {
-            void Alert.err(`登出发生错误: ${<string>e}`)
+            void Alert.err(`登出发生错误: ${e as string}`)
             throw e
         }
     }
 
-    export async function acquireToken() {
-        const session = await ensureSession({ createIfNone: false })
+    static async acquireToken() {
+        const session = await AuthManager.ensureSession({ createIfNone: false })
 
         if (session === undefined) Alert.throwWithWarn('未授权')
         if (isAuthSessionExpired(session)) {
             void Alert.warn('授权已过期，请重新登录')
-            await logout()
+            await AuthManager.logout()
         }
 
         return session?.accessToken
     }
 
-    export async function updateAuthStatus() {
+    static async updateAuthStatus() {
         const isAuthed = await AuthManager.isAuthed()
         await setCtx('isAuthed', isAuthed)
         await setCtx('isUnauthorized', !isAuthed)

@@ -172,7 +172,7 @@ export async function uploadPost(input?: Post | PostTreeItem | PostEditDto, conf
                 await PostListView.refresh()
             } catch (e) {
                 progress.report({ increment: 100 })
-                void Alert.err(`上传失败: ${<string>e}`)
+                void Alert.err(`上传失败: ${e as string}`)
             }
 
             return isSaved

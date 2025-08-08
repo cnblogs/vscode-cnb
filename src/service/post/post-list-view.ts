@@ -32,7 +32,7 @@ export async function revealPostListItem(
 }
 
 export function getListState() {
-    return <PostListState | undefined>LocalState.getState('postListState')
+    return LocalState.getState('postListState') as PostListState | undefined
 }
 
 export async function updatePostListState(
@@ -42,12 +42,12 @@ export async function updatePostListState(
     hasPrev: boolean,
     hasNext: boolean
 ): Promise<void> {
-    const finalState = <PostListState>{
+    const finalState = {
         pageIndex,
         pageSize,
         pageCount,
         hasPrev,
         hasNext,
-    }
+    } as PostListState
     await LocalState.setState('postListState', finalState)
 }

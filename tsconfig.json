@@ -9,6 +9,7 @@
         "rootDir": "src",
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
+        "importHelpers": true,
         "baseUrl": "./",
         "paths": {
             "@/*": ["src/*"]

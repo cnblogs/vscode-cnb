@@ -1,4 +1,3 @@
-import type puppeteer from 'puppeteer-core'
 import fs from 'fs'
 import path from 'path'
 import os from 'os'
@@ -14,6 +13,7 @@ import { PostEditDto } from '@/model/post-edit-dto'
 import { PostPdfTemplateBuilder } from '@/cmd/pdf/post-pdf-template-builder'
 import { ChromiumCfg } from '@/ctx/cfg/chromium'
 import { UserService } from '@/service/user.service'
+import { Page } from 'puppeteer-core'
 
 async function launchBrowser(chromiumPath: string) {
     try {
@@ -37,7 +37,7 @@ const exportOne = async (
     idx: number,
     total: number,
     post: Post,
-    page: puppeteer.Page,
+    page: Page,
     targetFileUri: Uri,
     progress: Progress<{ message: string; increment: number }>,
     blogApp: string
@@ -70,7 +70,7 @@ const exportOne = async (
     report(-100)
 }
 
-const createPdfBuffer = (page: puppeteer.Page) =>
+const createPdfBuffer = (page: Page) =>
     page.pdf({
         format: 'a4',
         printBackground: true,
@@ -82,7 +82,7 @@ const createPdfBuffer = (page: puppeteer.Page) =>
         },
     })
 
-const writePdfToFile = (dir: Uri, post: Post, buffer: Buffer) =>
+const writePdfToFile = (dir: Uri, post: Post, buffer: Uint8Array<ArrayBufferLike>) =>
     new Promise<void>(resolve => {
         fs.writeFile(path.join(dir.fsPath, `${post.title}.pdf`), buffer, () => {
             resolve()
@@ -202,7 +202,7 @@ export async function exportPostToPdf(input?: Post | PostTreeItem | Uri): Promis
                 try {
                     await exportOne(idx++, total, post, page, dir, progress, blogApp)
                 } catch (e) {
-                    void Alert.err(`导出 ${post.title} 失败: ${<string>e}`)
+                    void Alert.err(`导出 ${post.title} 失败: ${e as string}`)
                 }
             }
             await page.close()

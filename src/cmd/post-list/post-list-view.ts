@@ -49,14 +49,14 @@ function updatePostListViewTitle() {
     }
 }
 
-export namespace PostListView {
-    export async function refresh({ queue = false, pageIndex = 1 } = {}): Promise<boolean> {
+export class PostListView {
+    static async refresh({ queue = false, pageIndex = 1 } = {}): Promise<boolean> {
         if (isLoading && !queue) {
             await refreshTask
             return false
         } else if (isLoading && refreshTask != null) {
             await refreshTask
-            return refresh()
+            return PostListView.refresh()
         }
 
         const fut = async () => {
@@ -77,7 +77,7 @@ export namespace PostListView {
         refreshTask = fut()
             .then(() => true)
             .catch(async e => {
-                if (await UserService.hasBlog()) void Alert.err(`刷新随笔列表失败: ${<string>e}`)
+                if (await UserService.hasBlog()) void Alert.err(`刷新随笔列表失败: ${e as string}`)
                 return false
             })
             .finally(() => (refreshTask = null))
@@ -85,11 +85,11 @@ export namespace PostListView {
         return refreshTask
     }
 
-    export const goNext = () => goPage(i => i + 1)
+    static goNext = () => goPage(i => i + 1)
 
-    export const goPrev = () => goPage(i => i - 1)
+    static goPrev = () => goPage(i => i - 1)
 
-    export async function seek() {
+    static async seek() {
         const input = await window.showInputBox({
             placeHolder: '请输入页码',
             validateInput: i => {
@@ -108,8 +108,8 @@ export namespace PostListView {
         if (pageIndex > 0 && !isNaN(pageIndex)) await goPage(() => pageIndex)
     }
 
-    export namespace Search {
-        export async function search() {
+    static Search = class {
+        static async search() {
             const searchKey = await window.showInputBox({
                 ignoreFocusOut: true,
                 title: '搜索随笔',
@@ -122,8 +122,8 @@ export namespace PostListView {
             await postDataProvider.search(searchKey)
         }
 
-        export const clear = () => postDataProvider.clearSearch()
+        static clear = () => postDataProvider.clearSearch()
 
-        export const refresh = () => postDataProvider.refreshSearch()
+        static refresh = () => postDataProvider.refreshSearch()
     }
 }

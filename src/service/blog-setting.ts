@@ -6,8 +6,8 @@ import { ExtConst } from '@/ctx/ext-const'
 
 let cache: BlogSetting | null = null
 
-export namespace BlogSettingService {
-    export async function getBlogSetting(refresh = false) {
+export class BlogSettingService {
+    static getBlogSetting = async (refresh = false) => {
         if (cache != null && !refresh) return cache
 
         const url = `${ExtConst.ApiBase.BLOG_BACKEND}/settings`
@@ -19,7 +19,7 @@ export namespace BlogSettingService {
             cache ??= setting
             return setting
         } catch (e) {
-            void Alert.err(`获取博客设置失败: ${<string>e}`)
+            void Alert.err(`获取博客设置失败: ${e as string}`)
             return cache
         }
     }

@@ -1,14 +1,13 @@
 import { LocalState } from '@/ctx/local-state'
-import getExtCfg = LocalState.getExtCfg
 
-export namespace UiCfg {
-    const cfgGet = <T>(key: string) => getExtCfg().get<T>(`ui.${key}`)
+export class UiCfg {
+    static cfgGet = <T>(key: string) => LocalState.getExtCfg().get<T>(`ui.${key}`)
 
-    export function isEnableTextIngStar() {
-        return cfgGet<boolean>('textIngStar') ?? false
+    static isEnableTextIngStar() {
+        return UiCfg.cfgGet<boolean>('textIngStar') ?? false
     }
 
-    export function isDisableIngUserAvatar() {
-        return cfgGet<boolean>('disableIngUserAvatar') ?? false
+    static isDisableIngUserAvatar() {
+        return UiCfg.cfgGet<boolean>('disableIngUserAvatar') ?? false
     }
 }

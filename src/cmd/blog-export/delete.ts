@@ -48,7 +48,7 @@ async function deleteExportRecordItem(item: BlogExportRecordTreeItem) {
     const hasDeleted = await BlogExportApi.del(record.id)
         .then(() => true)
         .catch(e => {
-            void Alert.err(`删除博客备份失败: ${<string>e}`)
+            void Alert.err(`删除博客备份失败: ${e as string}`)
             return false
         })
     if (hasDeleted) if (downloaded !== undefined) await removeDownloadedBlogExport(downloaded, { shouldDeleteLocal })

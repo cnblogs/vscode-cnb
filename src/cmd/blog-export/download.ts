@@ -9,7 +9,6 @@ import { Progress } from 'got'
 import path from 'path'
 import { promisify } from 'util'
 import { WorkspaceCfg } from '@/ctx/cfg/workspace'
-// eslint-disable-next-line @typescript-eslint/naming-convention
 import AdmZip from 'adm-zip'
 import { setCtx } from '@/ctx/global-ctx'
 import { fsUtil } from '@/infra/fs/fsUtil'
@@ -46,7 +45,7 @@ export async function downloadBlogExport(treeItem?: BlogExportRecordTreeItem) {
             treeItem.reportDownloadingProgress({ percentage, transferred, total: total ?? transferred })
             blogExportProvider?.refreshItem(treeItem)
         })
-        .on('error', e => {
+        .on('error', (e: { toString: () => string }) => {
             treeItem.reportDownloadingProgress(null)
             void onError('下载博客备份失败' + ', ' + e.toString())
         })

@@ -22,12 +22,12 @@ async function getAuthedPostReq() {
     return new PostReq(new Token(token, isPatToken))
 }
 
-export namespace PostService {
-    export async function search(pageIndex: number, pageCap: number, keyword?: string, catId?: number) {
+export class PostService {
+    static async search(pageIndex: number, pageCap: number, keyword?: string, catId?: number) {
         const req = await getAuthedPostReq()
         try {
             const json = await req.search(pageIndex, pageCap, keyword, catId)
-            const listModel = <PostListModel>JSON.parse(json)
+            const listModel = JSON.parse(json) as PostListModel
             const page = {
                 index: listModel.pageIndex,
                 size: listModel.pageSize,
@@ -42,12 +42,12 @@ export namespace PostService {
                 zzkResult: listModel.zzkSearchResult,
             }
         } catch (e) {
-            void Alert.err(`搜索失败: ${<string>e}`)
+            void Alert.err(`搜索失败: ${e as string}`)
             throw e
         }
     }
 
-    export async function getPosts({ pageIndex = 1, pageSize = 30, categoryId = <'' | number>'', search = '' }) {
+    static async getPosts({ pageIndex = 1, pageSize = 30, categoryId = '' as '' | number, search = '' }) {
         const para = consUrlPara(
             ['t', '1'],
             ['p', pageIndex.toString()],
@@ -57,33 +57,33 @@ export namespace PostService {
         )
         const url = `${ExtConst.ApiBase.BLOG_BACKEND}/posts/list?${para}`
         const resp = await AuthedReq.get(url, consHeader())
-        return <PostListModel>JSON.parse(resp)
+        return JSON.parse(resp) as PostListModel
     }
 
-    export async function getList(pageIndex: number, pageCap: number) {
+    static async getList(pageIndex: number, pageCap: number) {
         const req = await getAuthedPostReq()
         try {
             const resp = await req.getList(pageIndex, pageCap)
-            return <PostListRespItem[]>JSON.parse(resp)
+            return JSON.parse(resp) as PostListRespItem[]
         } catch (e) {
-            void Alert.err(`获取随笔列表失败: ${<string>e}`)
+            void Alert.err(`获取随笔列表失败: ${e as string}`)
             return []
         }
     }
 
-    export async function getCount() {
+    static async getCount() {
         const req = await getAuthedPostReq()
         try {
             return await req.getCount()
         } catch (e) {
-            void Alert.err(`获取随笔列表失败: ${<string>e}`)
+            void Alert.err(`获取随笔列表失败: ${e as string}`)
             return 0
         }
     }
 
     // TODO: need better impl
-    export async function* iterAll() {
-        const postCount = await getCount()
+    static async* iterAll() {
+        const postCount = await PostService.getCount()
         for (const i of Array(postCount).keys()) {
             const list = await PostService.getList(i + 1, 1)
             const id = list[0].id
@@ -92,36 +92,36 @@ export namespace PostService {
         }
     }
 
-    export async function getPostEditDto(postId: number) {
+    static async getPostEditDto(postId: number) {
         const req = await getAuthedPostReq()
         try {
             const resp = await req.getOne(postId)
 
             // TODO: need better impl
-            const { blogPost, myConfig } = <{ blogPost?: Post; myConfig?: MyConfig }>JSON.parse(resp)
+            const { blogPost, myConfig } = JSON.parse(resp) as { blogPost?: Post; myConfig?: MyConfig }
             if (blogPost === undefined) throw Error('博文不存在')
 
-            return <PostEditDto>{
+            return {
                 post: Object.assign(new Post(), blogPost),
                 config: myConfig,
-            }
+            } as PostEditDto
         } catch (e) {
-            void Alert.err(`获取博文失败: ${<string>e}`)
+            void Alert.err(`获取博文失败: ${e as string}`)
             throw e
         }
     }
 
-    export async function del(...postIds: number[]) {
+    static async del(...postIds: number[]) {
         const req = await getAuthedPostReq()
         try {
             if (postIds.length === 1) await req.delOne(postIds[0])
             else await req.delSome(new Uint32Array(postIds))
         } catch (e) {
-            void Alert.err(`删除博文失败: ${<string>e}`)
+            void Alert.err(`删除博文失败: ${e as string}`)
         }
     }
 
-    export async function update(post: Post) {
+    static async update(post: Post) {
         if (MarkdownCfg.isIgnoreYfmWhenUploadPost()) post.postBody = rmYfm(post.postBody)
 
         if (post.postBody === '') void Alert.warn('博文内容不能为空（发生于 http post 请求之前）')
@@ -130,24 +130,24 @@ export namespace PostService {
         const req = await getAuthedPostReq()
         const resp = await req.update(body)
 
-        return <PostUpdatedResp>JSON.parse(resp)
+        return JSON.parse(resp) as PostUpdatedResp
     }
 
     // TODO: need caahe
-    export async function getTemplate() {
+    static async getTemplate() {
         const req = await getAuthedPostReq()
         try {
             const resp = await req.getTemplate()
 
             // TODO: need better impl
-            const template = <{ blogPost?: Post; myConfig?: MyConfig }>JSON.parse(resp)
+            const template = JSON.parse(resp) as { blogPost?: Post; myConfig?: MyConfig }
 
-            return <PostEditDto>{
+            return {
                 post: Object.assign(new Post(), template.blogPost),
                 config: template.myConfig,
-            }
+            } as PostEditDto
         } catch (e) {
-            void Alert.err(`获取模板失败: ${<string>e}`)
+            void Alert.err(`获取模板失败: ${e as string}`)
             throw e
         }
     }

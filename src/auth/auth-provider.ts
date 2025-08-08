@@ -1,4 +1,4 @@
-import { AuthenticationSession as AuthSession, AuthenticationSession } from 'vscode'
+import { AuthenticationSession as AuthSession, AuthenticationProviderSessionOptions, AuthenticationSession } from 'vscode'
 import { genVerifyChallengePair } from '@/service/code-challenge'
 import {
     authentication,
@@ -22,7 +22,7 @@ import { LocalState } from '@/ctx/local-state'
 import { ExtConst } from '@/ctx/ext-const'
 import { UserService } from '@/service/user.service'
 
-async function browserSignIn(challengeCode: string, scopes: string[]) {
+async function browserSignIn(challengeCode: string, scopes: readonly string[]) {
     const para = consUrlPara(
         ['client_id', ExtConst.CLIENT_ID],
         ['client_secret', ExtConst.CLIENT_SEC],
@@ -39,7 +39,7 @@ async function browserSignIn(challengeCode: string, scopes: string[]) {
     try {
         await env.openExternal(uri)
     } catch (e) {
-        void Alert.err(`重定向失败: ${<string>e}`)
+        void Alert.err(`重定向失败: ${e as string}`)
     }
 }
 
@@ -73,10 +73,10 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         this._usePat = true
     }
 
-    async getSessions(scopes?: string[]): Promise<readonly AuthSession[]> {
+    async getSessions(scopes: readonly string[] | undefined, options: AuthenticationProviderSessionOptions):
+        Promise<AuthenticationSession[]> {
         const sessions = await this.getAllSessions()
         const parsedScopes = this.ensureScopes(scopes)
-
         return sessions.filter(({ scopes: sessionScopes }) => parsedScopes.every(x => sessionScopes.includes(x)))
     }
 
@@ -84,7 +84,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
         return this._usePat ? this.createSessionFromPat(scopes) : this.createSessionFromBrowser(scopes)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     async createSessionFromPat(scopes: string[]) {
         const validateInput = (value: string) => {
             if (value.trim().length === 0)
@@ -181,7 +181,7 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
                 else keep.push(s)
                 return { remove, keep }
             },
-            { remove: <AuthSession[]>[], keep: <AuthSession[]>[] }
+            { remove: [] as AuthSession[], keep: [] as AuthSession[] }
         )
         await LocalState.setSecret(ExtConst.EXT_SESSION_STORAGE_KEY, JSON.stringify(data.keep))
         this._sessionChangeEmitter.fire({ removed: data.remove, added: undefined, changed: undefined })
@@ -204,15 +204,15 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
 
         const { accountId, displayName } = userInfo
 
-        const session = <AuthenticationSession>{
+        const session = {
             account: {
                 id: new Number(accountId).toString(),
                 label: displayName,
             },
             id: `${this.providerId}-${userInfo.accountId}`,
             accessToken: token,
-            scopes: this.ensureScopes(null),
-        }
+            scopes: this.ensureScopes(undefined),
+        } as AuthenticationSession
 
         await LocalState.setSecret(ExtConst.EXT_SESSION_STORAGE_KEY, JSON.stringify([session]))
 
@@ -239,9 +239,9 @@ export class AuthProvider implements AuthenticationProvider, Disposable {
     }
 
     private ensureScopes(
-        scopes: string[] | null | undefined,
+        scopes: readonly string[] | undefined,
         { default: defaultScopes = ExtConst.OAUTH_SCOPES } = {}
-    ): string[] {
+    ): readonly string[] {
         return scopes == null || scopes.length <= 0 ? defaultScopes : scopes
     }
 }

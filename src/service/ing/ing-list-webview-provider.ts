@@ -45,7 +45,6 @@ export class IngListWebviewProvider implements WebviewViewProvider {
         return this._ingType
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async resolveWebviewView(webviewView: WebviewView, context: WebviewViewResolveContext, token: CancellationToken) {
         if (this._view !== null && this._view === webviewView) return
 
@@ -152,11 +151,11 @@ let _ingListWebviewProvider: any = null
 
 export function getIngListWebviewProvider(): IngListWebviewProvider {
     _ingListWebviewProvider ??= new IngListWebviewProvider()
-    return <IngListWebviewProvider>_ingListWebviewProvider
+    return _ingListWebviewProvider as IngListWebviewProvider
 }
 
 class IngWebviewMessageObserver {
-    constructor(private _provider: IngListWebviewProvider) {}
+    constructor(private _provider: IngListWebviewProvider) { }
 
     observer = ({ command, payload }: IngWebviewHostCmd) => {
         switch (command) {

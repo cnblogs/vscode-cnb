@@ -1,7 +1,7 @@
 import { Uri, workspace } from 'vscode'
 
-export namespace fsUtil {
-    export async function exists(fsPath: string) {
+export class fsUtil {
+    static async exists(fsPath: string) {
         try {
             await workspace.fs.stat(Uri.file(fsPath))
             return true

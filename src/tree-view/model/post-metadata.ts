@@ -1,9 +1,8 @@
-/* eslint-disable prettier/prettier */
-import differenceInSeconds from 'date-fns/differenceInSeconds'
-import differenceInYears from 'date-fns/differenceInYears'
-import format from 'date-fns/format'
-import formatDistanceStrict from 'date-fns/formatDistanceStrict'
-import zhCN from 'date-fns/locale/zh-CN'
+import { differenceInSeconds } from 'date-fns/differenceInSeconds'
+import { differenceInYears } from 'date-fns/differenceInYears'
+import { format } from 'date-fns/format'
+import { formatDistanceStrict } from 'date-fns/formatDistanceStrict'
+import { zhCN } from 'date-fns/locale/zh-CN'
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode'
 import { AccessPermission, Post, formatAccessPermission } from '@/model/post'
 import { PostEditDto } from '@/model/post-edit-dto'
@@ -82,7 +81,6 @@ export abstract class PostMetadata extends BaseTreeItemSource {
 
 export abstract class PostEntryMetadata<T extends PostMetadata = PostMetadata>
     extends PostMetadata
-    // eslint-disable-next-line prettier/prettier
     implements BaseEntryTreeItem<T> {
     constructor(
         parent: Post,
@@ -203,6 +201,7 @@ export abstract class PostDateMetadata extends PostMetadata {
         this.distance = this.toDistance()
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-literal-property-style
     get enabled(): boolean {
         return true
     }
@@ -217,7 +216,6 @@ export abstract class PostDateMetadata extends PostMetadata {
     toTreeItem = (): TreeItem =>
         Object.assign<TreeItem, TreeItem>(
             new TreeItem(
-                // eslint-disable-next-line prettier/prettier
                 `${this.label}: ${this.shouldUseDistance() ? this.distance + `(${this.formattedDate})` : this.formattedDate
                 }`
             ),

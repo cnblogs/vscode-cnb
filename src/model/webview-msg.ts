@@ -6,6 +6,7 @@ import { PostCat } from '@/model/post-cat'
 import { SiteCat } from '@/model/site-category'
 import { PostTag } from '@/wasm'
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace WebviewMsg {
     export type Msg = {
         command: Webview.Cmd.Ui | Webview.Cmd.Ext

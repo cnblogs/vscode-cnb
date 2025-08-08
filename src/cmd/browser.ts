@@ -3,38 +3,40 @@ import { execCmd } from '@/infra/cmd'
 import { UserService } from '@/service/user.service'
 import { Alert } from '@/infra/alert'
 
-export namespace Browser.Open {
-    export function open(url: string) {
-        return execCmd('vscode.open', Uri.parse(url))
-    }
-}
+export class Browser {
+    static Open = class {
+        static open(url: string) {
+            return execCmd('vscode.open', Uri.parse(url))
+        }
 
-export namespace Browser.Open.Cnb {
-    export const home = () => open('https://www.cnblogs.com')
-    export const news = () => open('https://news.cnblogs.com')
-    export const ing = () => open('https://ing.cnblogs.com')
-    export const q = () => open('https://q.cnblogs.com')
-}
+        static Cnb = class {
+            static home = () => Browser.Open.open('https://www.cnblogs.com')
+            static news = () => Browser.Open.open('https://news.cnblogs.com')
+            static ing = () => Browser.Open.open('https://ing.cnblogs.com')
+            static q = () => Browser.Open.open('https://q.cnblogs.com')
+        }
 
-export namespace Browser.Open.User {
-    export const accountSetting = () => open('https://account.cnblogs.com/settings/account')
-    export const buyVip = () => open('https://cnblogs.vip/')
+        User = class {
+            static accountSetting = () => Browser.Open.open('https://account.cnblogs.com/settings/account')
+            static buyVip = () => Browser.Open.open('https://cnblogs.vip/')
 
-    export async function blog() {
-        const blogApp = (await UserService.getUserInfo())?.blogApp
+            static async blog() {
+                const blogApp = (await UserService.getUserInfo())?.blogApp
 
-        if (blogApp == null) return void Alert.warn('未开通博客')
+                if (blogApp == null) return void Alert.warn('未开通博客')
 
-        void open(`https://www.cnblogs.com/${blogApp}`)
-    }
+                void Browser.Open.open(`https://www.cnblogs.com/${blogApp}`)
+            }
 
-    export const blogConsole = () => open('https://write.cnblogs.com')
+            static blogConsole = () => Browser.Open.open('https://write.cnblogs.com')
 
-    export async function home() {
-        const accountId = (await UserService.getUserInfo())?.accountId
-        if (accountId !== undefined) {
-            const url = `https://home.cnblogs.com/u/${accountId}`
-            return open(url)
+            static async home() {
+                const accountId = (await UserService.getUserInfo())?.accountId
+                if (accountId !== undefined) {
+                    const url = `https://home.cnblogs.com/u/${accountId}`
+                    return Browser.Open.open(url)
+                }
+            }
         }
     }
 }

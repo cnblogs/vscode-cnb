@@ -4,7 +4,7 @@ export function readableToBytes(readable: Readable): Promise<Uint8Array> {
     return new Promise(resolve => {
         const bufs: Buffer[] = []
         readable.on('readable', () => {
-            const chunk = <Buffer | null>readable.read()
+            const chunk = readable.read() as Buffer | null
 
             if (chunk !== null) {
                 bufs.push(chunk)

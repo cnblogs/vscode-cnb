@@ -15,58 +15,58 @@ async function getAuthedPostCatReq() {
     return new PostCatReq(new Token(token, isPatToken))
 }
 
-export namespace PostCatService {
-    export async function getAll() {
+export class PostCatService {
+    static async getAll() {
         const req = await getAuthedPostCatReq()
         try {
             const resp = await req.getAll()
-            const { categories } = <{ categories: PostCat[] }>JSON.parse(resp)
+            const { categories } = JSON.parse(resp) as { categories: PostCat[] }
             if (categories == null) return []
             return categories
         } catch (e) {
-            if (await UserService.hasBlog()) void Alert.err(`查询随笔分类失败: ${<string>e}`)
+            if (await UserService.hasBlog()) void Alert.err(`查询随笔分类失败: ${e as string}`)
             throw e
         }
     }
 
-    export async function create(dto: PostCatAddDto) {
+    static async create(dto: PostCatAddDto) {
         const req = await getAuthedPostCatReq()
         const body = JSON.stringify(dto)
         try {
             await req.create(body)
         } catch (e) {
-            void Alert.err(`创建分类失败: ${<string>e}`)
+            void Alert.err(`创建分类失败: ${e as string}`)
         }
     }
 
-    export async function update(category: PostCat) {
+    static async update(category: PostCat) {
         const req = await getAuthedPostCatReq()
         const body = JSON.stringify(category)
         try {
             await req.update(category.categoryId, body)
         } catch (e) {
-            void Alert.err(`更新分类失败: ${<string>e}`)
+            void Alert.err(`更新分类失败: ${e as string}`)
         }
     }
 
-    export async function del(categoryId: number) {
+    static async del(categoryId: number) {
         const req = await getAuthedPostCatReq()
         try {
             await req.del(categoryId)
         } catch (e) {
-            void Alert.err(`删除分类失败: ${<string>e}`)
+            void Alert.err(`删除分类失败: ${e as string}`)
         }
     }
 
-    export async function getSitePresetList(forceRefresh = false) {
+    static async getSitePresetList(forceRefresh = false) {
         if (siteCategoryCache != null && !forceRefresh) return siteCategoryCache
         const req = await getAuthedPostCatReq()
 
         try {
             const resp = await req.getSitePresetList()
-            siteCategoryCache = <SiteCat[]>JSON.parse(resp)
+            siteCategoryCache = JSON.parse(resp) as SiteCat[]
         } catch (e) {
-            void Alert.err(`获取随笔分类失败: ${<string>e}`)
+            void Alert.err(`获取随笔分类失败: ${e as string}`)
         }
 
         return siteCategoryCache

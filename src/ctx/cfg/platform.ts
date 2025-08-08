@@ -12,8 +12,8 @@ function getPlatformPrefix() {
     return 'windows'
 }
 
-export namespace PlatformCfg {
-    export function getPlatformCfg() {
+export class PlatformCfg {
+    static getPlatformCfg() {
         const entry = `cnblogsClient.${getPlatformPrefix()}`
         return workspace.getConfiguration(entry)
     }

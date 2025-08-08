@@ -1,27 +1,26 @@
 import { BlogExportRecordList } from '@/model/blog-export'
 import { BlogExportApi } from '@/service/blog-export/blog-export'
 
-export namespace BlogExportRecordsStore {
-    let cacheList: Promise<BlogExportRecordList> | null = null
-    let cache: BlogExportRecordList | null = null
+export class BlogExportRecordsStore {
+    private static cacheList: Promise<BlogExportRecordList> | null = null
+    private static cache: BlogExportRecordList | null = null
 
-    export function getCached() {
-        return cache
+    static getCached() {
+        return BlogExportRecordsStore.cache
     }
 
-    export async function refresh(options?: { pageIndex?: number; pageSize?: number; shouldRefresh?: boolean }) {
-        await clearCache()
-        return list(options)
+    static async refresh(options?: { pageIndex?: number; pageSize?: number; shouldRefresh?: boolean }) {
+        await BlogExportRecordsStore.clearCache()
+        return BlogExportRecordsStore.list(options)
     }
 
-    export async function clearCache(): Promise<void> {
-        if (cacheList !== null) await cacheList
-
-        cacheList = null
-        cache = null
+    static async clearCache(): Promise<void> {
+        if (BlogExportRecordsStore.cacheList !== null) await BlogExportRecordsStore.cacheList
+        BlogExportRecordsStore.cacheList = null
+        BlogExportRecordsStore.cache = null
     }
 
-    export async function list({
+    static async list({
         pageIndex = 1,
         pageSize = 500,
     }: {
@@ -29,9 +28,9 @@ export namespace BlogExportRecordsStore {
         pageSize?: number
         shouldRefresh?: boolean
     } = {}): Promise<BlogExportRecordList> {
-        cacheList ??= BlogExportApi.list({ pageIndex, pageSize })
-        cache = await cacheList
+        BlogExportRecordsStore.cacheList ??= BlogExportApi.list({ pageIndex, pageSize })
+        BlogExportRecordsStore.cache = await BlogExportRecordsStore.cacheList
 
-        return cache
+        return BlogExportRecordsStore.cache
     }
 }
