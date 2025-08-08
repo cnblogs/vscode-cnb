@@ -3,14 +3,14 @@ import { ExportPostModel } from '@/model/blog-export/export-post'
 import { DataTypes, Op, Sequelize } from 'sequelize'
 import { Disposable } from 'vscode'
 import sqlite3 from 'sqlite3'
-import { isDevEnv } from '@/ctx/ext-const'
+import { ExtConst } from '@/ctx/ext-const'
 
 export class ExportPostStore implements Disposable {
     private _sequelize = new Sequelize({
         dialect: 'sqlite',
         storage: this.downloadedExport.filePath,
         dialectModule: sqlite3,
-        logging: (...msg) => (isDevEnv() ? console.log(msg) : undefined),
+        logging: (...msg) => (ExtConst.isDevEnv() ? console.log(msg) : undefined),
     })
 
     private _table = ExportPostModel

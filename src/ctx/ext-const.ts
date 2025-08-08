@@ -1,8 +1,6 @@
 declare const CNBLOGS_CLIENTID: string
 declare const CNBLOGS_CLIENTSECRET: string
 
-const isDevEnv = () => process.env.NODE_ENV === 'Development'
-
 export class ExtConst {
     static EXT_NAME = 'vscode-cnb'
     static EXT_PUBLISHER = 'cnblogs'
@@ -19,6 +17,8 @@ export class ExtConst {
     }
 
     static OAUTH_SCOPES = ['openid', 'profile', 'CnBlogsApi', 'CnblogsAdminApi']
+
+    static isDevEnv = () => process.env.NODE_ENV === 'Development'
 }
 
 export function extName(tail: any) {
