@@ -3,21 +3,23 @@ import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import { Alert } from '@/infra/alert'
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url);
 const download: (arg: Record<string, unknown>) => Promise<string> = require('download-chromium')
 
 export type ChromiumProviderFunc = () => Promise<string | undefined>
 
 const selectFromLocalTitle = '选择本地Chromium'
 
-const defaultChromiumPath = {
-    osx: [`${os.homedir()}/Applications/Google Chrome.app`, '/Applications/Google Chrome.app'],
-    win: ['C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'],
-}
-
 const downloadFromInternetTitle = '帮我下载Chromium'
 
 export class ChromiumPathProvider {
+    static defaultChromiumPath = {
+        osx: [`${os.homedir()}/Applications/Google Chrome.app`, '/Applications/Google Chrome.app'],
+        win: ['C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'],
+    }
+
     static lookupExecutableFromMacApp = (path?: string) => {
         if (path === undefined) return
 
