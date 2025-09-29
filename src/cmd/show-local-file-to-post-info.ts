@@ -5,7 +5,7 @@ import { PostService } from '@/service/post/post'
 import { PostFileMapManager } from '@/service/post/post-file-map'
 import { searchPostByTitle } from '@/service/post/search-post-by-title'
 import { viewPostOnline } from './view-post-online'
-import { format } from 'date-fns/format'
+import format from 'date-fns/format'
 import { PostCateStore } from '@/stores/post-cate-store'
 
 /**
