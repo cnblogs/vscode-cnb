@@ -1,18 +1,10 @@
-import { window, ProgressLocation } from 'vscode'
+import { window } from 'vscode'
 import fs from 'fs'
 import os from 'os'
-import path from 'path'
-import { Alert } from '@/infra/alert'
-import { createRequire } from 'module'
-
-const require = createRequire(import.meta.url);
-const download: (arg: Record<string, unknown>) => Promise<string> = require('download-chromium')
 
 export type ChromiumProviderFunc = () => Promise<string | undefined>
 
 const selectFromLocalTitle = '选择本地Chromium'
-
-const downloadFromInternetTitle = '帮我下载Chromium'
 
 export class ChromiumPathProvider {
     static defaultChromiumPath = {
@@ -55,41 +47,7 @@ export class ChromiumPathProvider {
         return ChromiumPathProvider.lookupExecutableFromMacApp(path)
     }
 
-    static downloadFromInternet: ChromiumProviderFunc = async (): Promise<string | undefined> => {
-        const installPath = path.join(os.homedir(), `Downloads`)
-        fs.mkdirSync(installPath, { recursive: true })
-        const chromiumPath = await window.withProgress(
-            { title: '正在下载Chromium', location: ProgressLocation.Notification },
-            async progress => {
-                progress.report({ increment: 0 })
-                try {
-                    let percentCache = 0
-                    return await download({
-                        log: false,
-                        revision: 983122,
-                        installPath,
-                        onProgress: ({ percent }: { percent: number }) => {
-                            percent *= 100
-                            percent = Math.floor(percent)
-                            progress.report({
-                                message: `${percent}%`,
-                                increment: percent - percentCache,
-                            })
-                            percentCache = percent
-                        },
-                    })
-                } catch {
-                    return undefined
-                }
-            }
-        )
-        if (chromiumPath === undefined) void Alert.info(`Chromium 已下载至${chromiumPath}`)
-
-        return chromiumPath
-    }
-
     static Options: [string, ChromiumProviderFunc][] = [
         [selectFromLocalTitle, ChromiumPathProvider.selectFromLocal],
-        [downloadFromInternetTitle, ChromiumPathProvider.downloadFromInternet],
     ]
 }
